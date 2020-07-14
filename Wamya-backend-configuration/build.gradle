@@ -1,0 +1,50 @@
+plugins {
+    id "org.springframework.boot" version "2.3.1.RELEASE"
+}
+
+dependencies {
+	
+	compile("org.springframework.boot:spring-boot-devtools")
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    
+    implementation project(':Wamya-backend-common')
+    implementation project(':Wamya-backend-application')
+    implementation project(':Wamya-backend-adapters:Wamya-backend-persistence')
+    implementation project(':Wamya-backend-adapters:Wamya-backend-web')
+    implementation project(':Wamya-backend-adapters:Wamya-backend-messaging')
+       
+    implementation ('org.springframework.boot:spring-boot-starter-web')
+    implementation ('org.springframework.boot:spring-boot-starter-security');
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    
+    runtimeOnly  'org.postgresql:postgresql:42.2.14'
+
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'junit' // excluding junit 4
+    }
+   
+    testImplementation	'org.junit.jupiter:junit-jupiter-api'
+    testRuntimeOnly 	'org.junit.jupiter:junit-jupiter-engine'
+    testRuntimeOnly 	'org.junit.vintage:junit-vintage-engine'
+  	testRuntimeOnly 	'org.junit.platform:junit-platform-launcher'
+    testImplementation 	'org.mockito:mockito-junit-jupiter:3.3.3'
+    testImplementation 	'com.tngtech.archunit:archunit:0.9.3'
+    testImplementation 	'de.adesso:junit-insights:1.1.0'
+    testImplementation 	'com.h2database:h2'
+
+}
+
+eclipse {
+    classpath {
+       downloadSources = true
+       downloadJavadoc = true
+    }
+}
+
+test {
+    useJUnitPlatform()
+    systemProperty 'de.adesso.junitinsights.enabled', 'true'
+}
+
+

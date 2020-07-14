@@ -1,0 +1,30 @@
+dependencies {
+    implementation project(':Wamya-backend-common')
+    implementation project(':Wamya-backend-application')
+
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'junit' // excluding junit 4
+    }
+    
+    testImplementation	'org.junit.jupiter:junit-jupiter-api:5.6.2'
+    testRuntimeOnly 	'org.junit.jupiter:junit-jupiter-engine:5.6.2'
+    testRuntimeOnly 	'org.junit.vintage:junit-vintage-engine:5.6.2'
+  	testRuntimeOnly 	'org.junit.platform:junit-platform-launcher:1.6.2'
+    testImplementation 	'org.mockito:mockito-junit-jupiter:3.3.3'
+    testImplementation 	'com.tngtech.archunit:archunit:0.9.3'
+    testImplementation 	'de.adesso:junit-insights:1.1.0'
+    
+    testImplementation 'com.h2database:h2'
+    testImplementation project(':Wamya-backend-testdata')
+}
+
+test {
+    useJUnitPlatform()
+    systemProperty 'de.adesso.junitinsights.enabled', 'true'
+}

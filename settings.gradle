@@ -1,0 +1,8 @@
+include 'Wamya-backend-common'
+include 'Wamya-backend-configuration'
+
+include 'Wamya-backend-adapters:Wamya-backend-web'
+include 'Wamya-backend-adapters:Wamya-backend-persistence'
+include 'Wamya-backend-adapters:Wamya-backend-messaging'
+include 'Wamya-backend-application'
+include 'Wamya-backend-testdata'

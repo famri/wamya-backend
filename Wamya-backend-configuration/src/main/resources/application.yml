@@ -1,0 +1,38 @@
+server:
+  port: 8080
+  
+logging:
+  level:
+    com.codisiac.wamya: DEBUG
+    org.springframework.boot.devtools: TRACE
+
+#some properties configurations
+code-generator:
+  code-length: 4
+
+---
+spring:
+  profiles: development
+  devtools:
+    remote:
+      secret: test
+      debug:
+        local-port: 8000
+  jpa:    generate-ddl: true
+    show-sql: true
+    database: POSTGRESQL
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate.jdbc.lob.non_contextual_creation: true
+  datasource:
+    platform: postgres
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://database:5432/${POSTGRES_DB}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+
+logging:
+  level:
+    com.codisiac.wamya: DEBUG
+  

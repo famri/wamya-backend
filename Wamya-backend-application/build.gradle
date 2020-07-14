@@ -1,0 +1,39 @@
+dependencies {
+    implementation project(':Wamya-backend-common')
+
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    
+    implementation 'org.springframework.boot:spring-boot-starter-security';
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    implementation 'javax.transaction:javax.transaction-api'
+
+
+//   testCompileOnly 'org.projectlombok:lombok'
+//	 testAnnotationProcessor 'org.projectlombok:lombok'
+	
+	
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'junit' // excluding junit 4
+    }
+    
+    testImplementation 'org.junit.jupiter:junit-jupiter-api'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    testRuntimeOnly 'org.junit.vintage:junit-vintage-engine'
+    testImplementation 'org.mockito:mockito-junit-jupiter:3.3.3'
+    testImplementation 'com.tngtech.archunit:archunit:0.9.3'
+    testImplementation 'de.adesso:junit-insights:1.1.0'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation 'org.springframework.boot:spring-boot-starter-validation'   
+    testImplementation project(':Wamya-backend-testdata')
+    
+
+    
+
+}
+
+test {
+    useJUnitPlatform()
+}
+
