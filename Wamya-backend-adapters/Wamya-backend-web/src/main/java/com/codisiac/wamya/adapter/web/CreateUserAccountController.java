@@ -2,19 +2,15 @@ package com.codisiac.wamya.adapter.web;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.codisiac.wamya.adapter.web.dto.CreateUserAccountDto;
 import com.codisiac.wamya.application.port.in.CreateUserAccountUseCase;
 import com.codisiac.wamya.application.port.in.CreateUserAccountUseCase.CreateUserAccountCommand;
-import com.codisiac.wamya.common.annotation.Generated;
 import com.codisiac.wamya.common.annotation.WebAdapter;
 import com.codisiac.wamya.domain.UserAccount.MobilePhoneNumber;
 import com.codisiac.wamya.domain.UserAccount.UserPasswordPair;
@@ -39,14 +35,6 @@ class CreateUserAccountController {
 						createUserAccountDto.getPasswordConfirmation()));
 
 		createUserAccountUseCase.registerUserAccountCreationDemand(command);
-	}
-
-	@Generated
-	@GetMapping(path = "/hello")
-	ResponseEntity test(@RequestParam String message) {
-
-		return ResponseEntity.ok("hello bonjour" + message + "good");
-
 	}
 
 }
