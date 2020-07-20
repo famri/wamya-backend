@@ -1,21 +1,23 @@
 package com.codisiac.wamya.application.port.in;
 
-import javax.validation.*;
-import javax.validation.constraints.*;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
-import com.codisiac.wamya.common.*;
-import com.codisiac.wamya.domain.UserAccount.*;
+import com.codisiac.wamya.domain.UserAccount.MobilePhoneNumber;
+import com.codisiac.wamya.domain.UserAccount.UserPasswordPair;
 
-import lombok.*;
-
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 public interface CreateUserAccountUseCase {
 
 	boolean registerUserAccountCreationDemand(CreateUserAccountCommand command);
 
-	@Value
-	@EqualsAndHashCode(callSuper = false)
-	class CreateUserAccountCommand extends SelfValidating<CreateUserAccountCommand> {
+	@Data
+	@AllArgsConstructor
+	@NoArgsConstructor
+	class CreateUserAccountCommand {
 		@NotNull
 		@Valid
 		MobilePhoneNumber mobilePhoneNumber;
@@ -23,14 +25,6 @@ public interface CreateUserAccountUseCase {
 		@NotNull
 		@Valid
 		UserPasswordPair userPasswordPair;
-
-		public CreateUserAccountCommand(MobilePhoneNumber mobilePhoneNumber, UserPasswordPair userPasswordPair) {
-
-			this.mobilePhoneNumber = mobilePhoneNumber;
-			this.userPasswordPair = userPasswordPair;
-
-			this.validateSelf();
-		}
 
 	}
 }

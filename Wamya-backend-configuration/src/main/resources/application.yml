@@ -1,16 +1,16 @@
 server:
   port: 8080
-  
-logging:
-  level:
-    com.codisiac.wamya: DEBUG
-    org.springframework.boot.devtools: TRACE
+  error:
+    include-stacktrace: never
 
 #some properties configurations
 code-generator:
   code-length: 4
 
 ---
+server:
+  error:
+    include-stacktrace: always
 spring:
   profiles: development
   devtools:
