@@ -31,6 +31,12 @@ spring:
     url: jdbc:postgresql://database:5432/${POSTGRES_DB}
     username: ${POSTGRES_USER}
     password: ${POSTGRES_PASSWORD}
+  
+  rabbitmq:
+    host: rabbitmq
+    port: 5673
+    username: ${RABBITMQ_USER}
+    password: ${RABBITMQ_PASS}
 
 logging:
   level:
