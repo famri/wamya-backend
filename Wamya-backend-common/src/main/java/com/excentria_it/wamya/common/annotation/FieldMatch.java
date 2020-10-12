@@ -33,7 +33,7 @@ import com.excentria_it.wamya.common.impl.FieldMatchValidator;
 @Constraint(validatedBy = FieldMatchValidator.class)
 @Documented
 public @interface FieldMatch {
-	String message() default "{com.codisiac.wamya.common.FieldMatch.message}";
+	String message() default "{com.excentria_it.wamya.common.FieldMatch.message}";
 
 	Class<?>[] groups() default {};
 

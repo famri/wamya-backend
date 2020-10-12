@@ -4,8 +4,8 @@ server:
     include-stacktrace: never
 
 #some properties configurations
-code-generator:
-  code-length: 4
+code.generator:
+  length: 4
 
 ---
 server:
@@ -34,11 +34,11 @@ spring:
   
   rabbitmq:
     host: rabbitmq
-    port: 5673
+    port: 5672
     username: ${RABBITMQ_USER}
     password: ${RABBITMQ_PASS}
 
 logging:
   level:
-    com.codisiac.wamya: DEBUG
+    com.excentria_it.wamya: DEBUG
   
