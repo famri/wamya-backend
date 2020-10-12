@@ -2,16 +2,18 @@ package com.excentria_it.wamya.adapter.persistence.adapter;
 
 import java.util.Optional;
 
+import com.excentria_it.wamya.adapter.persistence.entity.InternationalCallingCodeJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.UserAccountJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.mapper.UserAccountMapper;
+import com.excentria_it.wamya.adapter.persistence.repository.InternationalCallingCodeRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.UserAccountRepository;
 import com.excentria_it.wamya.application.port.out.CreateUserAccountPort;
 import com.excentria_it.wamya.application.port.out.LoadUserAccountPort;
 import com.excentria_it.wamya.application.port.out.UpdateUserAccountPort;
-import com.excentria_it.wamya.application.service.exception.UserAccountNotFoundException;
 import com.excentria_it.wamya.common.annotation.PersistenceAdapter;
+import com.excentria_it.wamya.common.exception.UnsupportedInternationalCallingCode;
+import com.excentria_it.wamya.common.exception.UserAccountNotFoundException;
 import com.excentria_it.wamya.domain.UserAccount;
-import com.excentria_it.wamya.domain.UserAccount.MobilePhoneNumber;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,18 +23,32 @@ public class UserAccountPersistenceAdapter
 		implements CreateUserAccountPort, LoadUserAccountPort, UpdateUserAccountPort {
 
 	private final UserAccountRepository userAccountRepository;
+
+	private final InternationalCallingCodeRepository iccRepository;
+
 	private final UserAccountMapper userAccountMapper;
 
 	@Override
-	public void createUserAccount(UserAccount userAccount) {
-		userAccountRepository.save(userAccountMapper.mapToJpaEntity(userAccount));
+	public void createUserAccount(UserAccount userAccount) throws UnsupportedInternationalCallingCode {
+		Optional<InternationalCallingCodeJpaEntity> iccEntity = iccRepository
+				.findByValue(userAccount.getMobilePhoneNumber().getInternationalCallingCode());
+		if (iccEntity.isEmpty())
+			throw new UnsupportedInternationalCallingCode(
+					userAccount.getMobilePhoneNumber().getInternationalCallingCode());
+		userAccountRepository.save(userAccountMapper.mapToJpaEntity(userAccount, iccEntity.get()));
 	}
 
 	@Override
-	public Optional<UserAccount> loadUserAccount(MobilePhoneNumber mobilePhoneNumber) {
+	public Optional<UserAccount> loadUserAccountByIccAndMobileNumber(String icc, String mobileNumber) {
 
-		Optional<UserAccountJpaEntity> optionalEntity = userAccountRepository.findByMobilePhoneNumber(
-				mobilePhoneNumber.getInternationalCallingCode(), mobilePhoneNumber.getMobileNumber());
+		if (mobileNumber == null || icc == null)
+			return Optional.ofNullable(null);
+
+		Optional<UserAccountJpaEntity> optionalEntity = userAccountRepository.findByMobilePhoneNumber(icc,
+				mobileNumber);
+
+		if (optionalEntity.isEmpty())
+			return Optional.ofNullable(null);
 
 		UserAccountJpaEntity entity = optionalEntity.get();
 
@@ -44,15 +60,41 @@ public class UserAccountPersistenceAdapter
 	@Override
 	public void updateUserAccount(UserAccount userAccount) {
 
-		if (userAccount.getId() != null && userAccount.getId().getValue() != null) {
-			Optional<UserAccountJpaEntity> optionalEntity = userAccountRepository
-					.findById(userAccount.getId().getValue());
+		if (userAccount.getId() != null) {
+
+			Optional<UserAccountJpaEntity> optionalEntity = userAccountRepository.findById(userAccount.getId());
+
 			if (optionalEntity.isPresent()) {
-				userAccountRepository.save(userAccountMapper.mapToJpaEntity(userAccount));
+				Optional<InternationalCallingCodeJpaEntity> iccEntity = iccRepository
+						.findByValue(userAccount.getMobilePhoneNumber().getInternationalCallingCode());
+				if (iccEntity.isEmpty()) {
+					throw new UnsupportedInternationalCallingCode(
+							userAccount.getMobilePhoneNumber().getInternationalCallingCode());
+				}
+				UserAccountJpaEntity entity = userAccountMapper.mapToJpaEntity(userAccount, iccEntity.get());
+				userAccountRepository.save(entity);
 			} else
-				throw new UserAccountNotFoundException(userAccount.getId().getValue());
+				throw new UserAccountNotFoundException(
+						String.format("No account was found by ID %d.", userAccount.getId()));
 		}
 
+	}
+
+	@Override
+	public Optional<UserAccount> loadUserAccountByEmail(String email) {
+		if (email == null)
+			return Optional.ofNullable(null);
+
+		Optional<UserAccountJpaEntity> optionalEntity = userAccountRepository.findByEmail(email);
+
+		if (optionalEntity.isEmpty())
+			return Optional.ofNullable(null);
+
+		UserAccountJpaEntity entity = optionalEntity.get();
+
+		UserAccount userAccount = userAccountMapper.mapToDomainEntity(entity);
+
+		return Optional.ofNullable(userAccount);
 	}
 
 }

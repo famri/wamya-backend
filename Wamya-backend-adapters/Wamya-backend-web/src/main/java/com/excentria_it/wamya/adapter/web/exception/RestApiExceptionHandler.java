@@ -25,7 +25,10 @@ import org.springframework.web.multipart.support.MissingServletRequestPartExcept
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import lombok.extern.slf4j.Slf4j;
+
 @ControllerAdvice
+@Slf4j
 public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 
 	// 400
@@ -33,7 +36,7 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 	@Override
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(final MethodArgumentNotValidException ex,
 			final HttpHeaders headers, final HttpStatus status, final WebRequest request) {
-		logger.info(ex.getClass().getName());
+		log.info(ex.getClass().getName());
 		//
 		final List<String> errors = new ArrayList<String>();
 		for (final FieldError error : ex.getBindingResult().getFieldErrors()) {
@@ -49,7 +52,7 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 	@Override
 	protected ResponseEntity<Object> handleBindException(final BindException ex, final HttpHeaders headers,
 			final HttpStatus status, final WebRequest request) {
-		logger.info(ex.getClass().getName());
+		log.info(ex.getClass().getName());
 		//
 		final List<String> errors = new ArrayList<String>();
 		for (final FieldError error : ex.getBindingResult().getFieldErrors()) {
@@ -65,8 +68,8 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 	@ExceptionHandler({ MethodArgumentTypeMismatchException.class })
 	public ResponseEntity<Object> handleMethodArgumentTypeMismatch(final MethodArgumentTypeMismatchException ex,
 			final WebRequest request) {
-		logger.info(ex.getClass().getName());
-		
+		log.info(ex.getClass().getName());
+
 		final String error = ex.getName() + " should be of type " + ex.getRequiredType().getName();
 
 		final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), error);
@@ -76,7 +79,7 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 	@Override
 	protected ResponseEntity<Object> handleTypeMismatch(final TypeMismatchException ex, final HttpHeaders headers,
 			final HttpStatus status, final WebRequest request) {
-		logger.info(ex.getClass().getName());
+		log.info(ex.getClass().getName());
 		//
 		final String error = ex.getValue() + " value for " + ex.getPropertyName() + " should be of type "
 				+ ex.getRequiredType();
@@ -88,7 +91,7 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 	@Override
 	protected ResponseEntity<Object> handleMissingServletRequestPart(final MissingServletRequestPartException ex,
 			final HttpHeaders headers, final HttpStatus status, final WebRequest request) {
-		logger.info(ex.getClass().getName());
+		log.info(ex.getClass().getName());
 		//
 		final String error = ex.getRequestPartName() + " part is missing";
 		final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), error);
@@ -99,7 +102,7 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 	protected ResponseEntity<Object> handleMissingServletRequestParameter(
 			final MissingServletRequestParameterException ex, final HttpHeaders headers, final HttpStatus status,
 			final WebRequest request) {
-		logger.info(ex.getClass().getName());
+		log.info(ex.getClass().getName());
 		//
 		final String error = ex.getParameterName() + " parameter is missing";
 		final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), error);
@@ -111,7 +114,7 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 	@ExceptionHandler({ ConstraintViolationException.class })
 	public ResponseEntity<Object> handleConstraintViolation(final ConstraintViolationException ex,
 			final WebRequest request) {
-		logger.info(ex.getClass().getName());
+		log.info(ex.getClass().getName());
 		//
 		final List<String> errors = new ArrayList<String>();
 		for (final ConstraintViolation<?> violation : ex.getConstraintViolations()) {
@@ -128,7 +131,7 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 	@Override
 	protected ResponseEntity<Object> handleNoHandlerFoundException(final NoHandlerFoundException ex,
 			final HttpHeaders headers, final HttpStatus status, final WebRequest request) {
-		logger.info(ex.getClass().getName());
+		log.info(ex.getClass().getName());
 		//
 		final String error = "No handler found for " + ex.getHttpMethod() + " " + ex.getRequestURL();
 
@@ -142,7 +145,7 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 	protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(
 			final HttpRequestMethodNotSupportedException ex, final HttpHeaders headers, final HttpStatus status,
 			final WebRequest request) {
-		logger.info(ex.getClass().getName());
+		log.info(ex.getClass().getName());
 		//
 		final StringBuilder builder = new StringBuilder();
 		builder.append(ex.getMethod());
@@ -159,7 +162,7 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 	@Override
 	protected ResponseEntity<Object> handleHttpMediaTypeNotSupported(final HttpMediaTypeNotSupportedException ex,
 			final HttpHeaders headers, final HttpStatus status, final WebRequest request) {
-		logger.info(ex.getClass().getName());
+		log.info(ex.getClass().getName());
 		//
 		final StringBuilder builder = new StringBuilder();
 		builder.append(ex.getContentType());
@@ -175,8 +178,8 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 
 	@ExceptionHandler({ Exception.class })
 	public ResponseEntity<Object> handleAll(final Exception ex, final WebRequest request) {
-		logger.info(ex.getClass().getName());
-		logger.error("error", ex);
+		log.info(ex.getClass().getName());
+		log.error("error", ex);
 		//
 		final ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, ex.getLocalizedMessage(),
 				"error occurred");

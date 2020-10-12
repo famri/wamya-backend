@@ -2,8 +2,11 @@ package com.excentria_it.wamya.adapter.web;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import java.util.Locale;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,12 +16,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.excentria_it.wamya.adapter.web.CreateUserAccountController;
 import com.excentria_it.wamya.application.port.in.CreateUserAccountUseCase;
 import com.excentria_it.wamya.application.port.in.CreateUserAccountUseCase.CreateUserAccountCommand;
-import com.excentria_it.wamya.common.UserAccountTestData;
-import com.excentria_it.wamya.domain.UserAccount.MobilePhoneNumber;
-import com.excentria_it.wamya.domain.UserAccount.UserPasswordPair;
+import com.excentria_it.wamya.test.data.common.UserAccountTestData;
 import com.google.gson.Gson;
 
 @WebMvcTest(controllers = CreateUserAccountController.class, excludeAutoConfiguration = SecurityAutoConfiguration.class)
@@ -33,23 +33,15 @@ class CreateUserAccountControllerTest {
 	@Test
 	void testCreateUserAccount() throws Exception {
 		Gson gson = new Gson();
-		CreateUserAccountCommand createUserAccountCommand = new CreateUserAccountCommand(
-				new MobilePhoneNumber(UserAccountTestData.DEFAULT_INTERNATIONAL_CALLING_CODE,
-						UserAccountTestData.DEFAULT_MOBILE_NUMBER),
-				new UserPasswordPair(UserAccountTestData.DEFAULT_RAW_PASSWORD,
-						UserAccountTestData.DEFAULT_RAW_PASSWORD));
-
+		CreateUserAccountCommand createUserAccountCommand = UserAccountTestData.defaultCreateUserAccountCommandBuilder()
+				.build();
 		String createUserAccountJson = gson.toJson(createUserAccountCommand);
 
 		mockMvc.perform(post("/accounts").contentType(MediaType.APPLICATION_JSON).content(createUserAccountJson))
 				.andExpect(status().isCreated());
 
-		then(createUserAccountUseCase).should()
-				.registerUserAccountCreationDemand(eq(new CreateUserAccountCommand(
-						new MobilePhoneNumber(UserAccountTestData.DEFAULT_INTERNATIONAL_CALLING_CODE,
-								UserAccountTestData.DEFAULT_MOBILE_NUMBER),
-						new UserPasswordPair(UserAccountTestData.DEFAULT_RAW_PASSWORD,
-								UserAccountTestData.DEFAULT_RAW_PASSWORD))));
+		then(createUserAccountUseCase).should(times(1)).registerUserAccountCreationDemand(eq(createUserAccountCommand),
+				any(Locale.class));
 
 	}
 

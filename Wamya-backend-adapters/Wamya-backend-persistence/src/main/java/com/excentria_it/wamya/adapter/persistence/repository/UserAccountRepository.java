@@ -10,9 +10,12 @@ import com.excentria_it.wamya.adapter.persistence.entity.UserAccountJpaEntity;
 
 public interface UserAccountRepository extends JpaRepository<UserAccountJpaEntity, Long> {
 
-	@Query("select u from UserAccountJpaEntity u " + "where u.internationalCallingCode = :internationalCallingCode "
+	@Query("select u from UserAccountJpaEntity u " + "where u.icc.code = :internationalCallingCode "
 			+ "and u.mobileNumber = :mobileNumber")
 	Optional<UserAccountJpaEntity> findByMobilePhoneNumber(
 			@Param("internationalCallingCode") String internationalCallingCode,
 			@Param("mobileNumber") String mobileNumber);
+
+	@Query("select u from UserAccountJpaEntity u " + "where u.email = :email")
+	Optional<UserAccountJpaEntity> findByEmail(@Param("email") String email);
 }

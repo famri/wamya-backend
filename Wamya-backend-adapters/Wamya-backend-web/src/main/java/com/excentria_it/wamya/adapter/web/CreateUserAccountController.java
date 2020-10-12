@@ -1,5 +1,7 @@
 package com.excentria_it.wamya.adapter.web;
 
+import java.util.Locale;
+
 import javax.validation.Valid;
 
 import org.springframework.http.HttpStatus;
@@ -13,10 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.excentria_it.wamya.application.port.in.CreateUserAccountUseCase;
-import com.excentria_it.wamya.application.port.in.SendValidationCodeUseCase;
 import com.excentria_it.wamya.application.port.in.CreateUserAccountUseCase.CreateUserAccountCommand;
-import com.excentria_it.wamya.application.service.exception.UserAccountAlreadyExistsException;
 import com.excentria_it.wamya.common.annotation.WebAdapter;
+import com.excentria_it.wamya.common.exception.UnsupportedInternationalCallingCode;
+import com.excentria_it.wamya.common.exception.UserAccountAlreadyExistsException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -30,13 +32,19 @@ public class CreateUserAccountController {
 
 	@PostMapping(path = "/accounts", consumes = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
-	public void createUserAccount(@Valid @RequestBody CreateUserAccountCommand command) {
+	public void createUserAccount(@Valid @RequestBody CreateUserAccountCommand command, Locale locale) {
 
-		createUserAccountUseCase.registerUserAccountCreationDemand(command);
+		createUserAccountUseCase.registerUserAccountCreationDemand(command, locale);
 	}
 
 	@ExceptionHandler({ UserAccountAlreadyExistsException.class })
 	public void handleUserAccountAlreadyExistsException(UserAccountAlreadyExistsException exception) {
 		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage(), exception);
 	}
+
+	@ExceptionHandler({ UnsupportedInternationalCallingCode.class })
+	public void handleUnsupportedInternationalCallingCode(UnsupportedInternationalCallingCode exception) {
+		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage(), exception);
+	}
+
 }
