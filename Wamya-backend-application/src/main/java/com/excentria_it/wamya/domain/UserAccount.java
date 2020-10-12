@@ -1,83 +1,75 @@
 package com.excentria_it.wamya.domain;
 
-import javax.validation.constraints.Pattern;
-
-import com.excentria_it.wamya.common.annotation.FieldMatch;
+import java.time.LocalDateTime;
+import java.util.Date;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.Value;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Getter
-@Setter
+@Builder
+@Data
 public class UserAccount {
 
-	private final UserAccountId id;
+	private Long id;
+
+	private Boolean isTransporter;
+
+	private Gender gender;
+
+	private String firstName;
+
+	private String lastName;
+
+	private Date dateOfBirth;
+
+	private String email;
+
+	private String emailValidationCode;
+
+	private Boolean isValidatedEmail;
 
 	private MobilePhoneNumber mobilePhoneNumber;
 
-	private UserPassword userPassword;
+	private String mobileNumberValidationCode;
 
-	private ValidationCode validationCode;
+	private Boolean isValidatedMobileNumber;
 
-	private boolean validated;
+	private String userPassword;
 
-	/**
-	 * Creates an {@link UserAccount} entity without an ID. Use to create a new
-	 * entity that is not yet persisted.
-	 */
-	public static UserAccount withoutId(MobilePhoneNumber mobilePhoneNumber, UserPassword userPassword,
-			ValidationCode validationCode) {
-		return new UserAccount(null, mobilePhoneNumber, userPassword, validationCode, false);
-	}
+	private Boolean receiveNewsletter;
 
-	/**
-	 * Creates an {@link UserAccount} entity with an ID. Use to re-constitute a
-	 * persisted entity.
-	 */
-	public static UserAccount withId(UserAccountId userAccountId, MobilePhoneNumber mobilePhoneNumber,
-			UserPassword userPassword, ValidationCode validationCode, boolean validated) {
-		return new UserAccount(userAccountId, mobilePhoneNumber, userPassword, validationCode, validated);
-	}
+	private LocalDateTime creationTimestamp;
 
 	@NoArgsConstructor
 	@AllArgsConstructor
 	@Data
 	public static class MobilePhoneNumber {
-		@Pattern(regexp = "\\A\\+[0-9]{2,3}\\z", message = "{com.codisiac.wamya.domain.MobilePhoneNumber.internationalCallingCode.message}")
+
 		String internationalCallingCode;
 
-		@Pattern(regexp = "\\A[0-9]{8,10}\\z", message = "{com.codisiac.wamya.domain.MobilePhoneNumber.mobileNumber.message}")
 		String mobileNumber;
-	}
 
-	@NoArgsConstructor
-	@AllArgsConstructor
-	@Data
-	@FieldMatch.List({
-			@FieldMatch(first = "password", second = "passwordConfirmation", message = "{com.codisiac.wamya.domain.UserPasswordPair.message}") })
-	public static class UserPasswordPair {
+		public String toCallable() {
 
-		@Pattern(regexp = "\\A(?=[^a-z]*[a-z])(?=[^A-Z]*[A-Z])(?=\\D*\\d)\\w{8,20}\\z", message = "{com.codisiac.wamya.domain.UserPasswordPair.password.message}")
-		String password;
+			StringBuilder strBuilder = new StringBuilder();
+			if (this.internationalCallingCode != null) {
+				strBuilder.append(this.internationalCallingCode.trim().replace(" ", "").replace("+", "00"));
+			}
+			if (this.mobileNumber != null) {
+				strBuilder.append(mobileNumber);
+			}
+			return strBuilder.toString();
+		}
 
-		String passwordConfirmation;
-	}
-
-	@Value
-	public static class UserPassword {
-
-		String encodedPassword;
+		@Override
+		public String toString() {
+			return this.internationalCallingCode + this.mobileNumber;
+		}
 
 	}
 
-	@Value
-	public static class UserAccountId {
-		private Long value;
-	}
 }
