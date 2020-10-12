@@ -1,15 +1,12 @@
-package com.excentria_it.wamya.common.impl;
+package com.excentria_it.wamya.application.service.helper.impl;
 
 import static org.assertj.core.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
 import com.excentria_it.wamya.common.CodeGenerator;
-import com.excentria_it.wamya.common.impl.CodeGeneratorImpl;
 
 public class CodeGeneratorImplTest {
-
-
 
 	@Test
 	void generateCodeWithCorrectLength() {

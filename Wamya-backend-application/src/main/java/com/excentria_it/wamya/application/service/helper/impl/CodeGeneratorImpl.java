@@ -1,4 +1,6 @@
-package com.excentria_it.wamya.common.impl;
+package com.excentria_it.wamya.application.service.helper.impl;
+
+import org.springframework.stereotype.Component;
 
 import com.excentria_it.wamya.common.CodeGenerator;
 import com.excentria_it.wamya.common.props.CodeGeneratorProperties;
@@ -8,6 +10,7 @@ import lombok.NoArgsConstructor;
 
 @AllArgsConstructor
 @NoArgsConstructor
+@Component
 public class CodeGeneratorImpl implements CodeGenerator {
 
 	private CodeGeneratorProperties codeGeneratorProperties;
