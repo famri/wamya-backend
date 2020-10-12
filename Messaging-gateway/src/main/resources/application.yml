@@ -1,0 +1,48 @@
+server:
+  port: 8080
+  error:
+    include-stacktrace: never
+
+---
+server:
+  error:
+    include-stacktrace: always
+
+front.url:
+  port: 8080
+  host: 192.168.50.4
+  protocol: http
+  
+spring:
+  profiles: development
+  devtools:
+    remote:
+      secret: test
+      debug:
+        local-port: 8000
+  rabbitmq:
+    host: rabbitmq
+    port: 5672
+    username: ${RABBITMQ_USER}
+    password: ${RABBITMQ_PASS}
+  
+  sms.gateway:
+    host: ${SMS_GATEWAY_USER}
+    port: ${SMS_GATEWAY_PORT}
+    username: ${SMS_GATEWAY_USERNAME}
+    password: ${SMS_GATEWAY_PASSWORD}
+  
+  mail:
+    host: smtp.gmail.com
+    username: amri.foued@gmail.com
+    password: nuzvqkqdposcqabc
+    properties.mail.transport.protocol: smtp
+    properties.mail.smtp.port: 25
+    properties.mail.smtp.auth: true
+    properties.mail.smtp.starttls.enable: true
+    
+
+
+logging:
+  level:
+    com.excentria_it.wamya: DEBUG
