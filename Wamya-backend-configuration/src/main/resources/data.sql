@@ -1,0 +1,2 @@
+INSERT INTO international_calling_code(id, code, country_name, flag_path, enabled) VALUES(1, '+216', 'TUNISIA', 'assets/images/icons/tunisia.png', TRUE);
+INSERT INTO international_calling_code(id, code, country_name, flag_path, enabled) VALUES(2, '+216', 'TUNISIA', 'assets/images/icons/tunisia.png', FALSE);

@@ -30,13 +30,14 @@ services:
       environment:
         - RABBITMQ_DEFAULT_USER=dev
         - RABBITMQ_DEFAULT_PASS=dev
+
       healthcheck:
         test: [ "CMD", "nc", "-z", "localhost", "5672" ]
         interval: 5s
         timeout: 15s
         retries: 3
         
-# THE SPRING BOOT APP
+# THE SPRING BOOT WAMYA APP
   wamya:
     build: .
     mem_limit: 512m
@@ -56,7 +57,9 @@ services:
         condition: service_healthy 
       rabbitmq:
         condition: service_healthy
-       
+# THE SPRING BOOT messaging-gateway APP  
+  messaging-gateway:
+    build: .   
 volumes:
   database-data:
     driver: local

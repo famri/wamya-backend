@@ -2,7 +2,6 @@ package com.excentria_it.wamya;
 
 import java.util.Locale;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,8 +13,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
-import com.excentria_it.wamya.common.CodeGenerator;
-import com.excentria_it.wamya.common.impl.CodeGeneratorImpl;
+import com.excentria_it.wamya.common.annotation.ValidationMessageSource;
+import com.excentria_it.wamya.common.annotation.ViewMessageSource;
 
 @Configuration
 public class WamyaConfiguration implements WebMvcConfigurer {
@@ -25,17 +24,20 @@ public class WamyaConfiguration implements WebMvcConfigurer {
 		registry.addInterceptor(localeChangeInterceptor());
 	}
 
-	@Bean
-	@ConfigurationProperties(prefix = "code-generator")
-	public CodeGenerator codeGenerator() {
-		return new CodeGeneratorImpl();
-	}
-
 	// I18N validation messages
-	@Bean
+	@ValidationMessageSource
 	public MessageSource validationMessageSource() {
 		ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
 		messageSource.setBasename("classpath:messages/validation/messages");
+		messageSource.setDefaultEncoding("UTF-8");
+		return messageSource;
+
+	}
+
+	@ViewMessageSource
+	public MessageSource viewMessageSource() {
+		ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
+		messageSource.setBasename("classpath:messages/view/messages");
 		messageSource.setDefaultEncoding("UTF-8");
 		return messageSource;
 

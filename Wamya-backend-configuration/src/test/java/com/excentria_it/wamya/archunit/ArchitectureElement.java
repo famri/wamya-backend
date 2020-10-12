@@ -23,10 +23,10 @@ abstract class ArchitectureElement {
   static void denyDependency(String fromPackageName, String toPackageName, JavaClasses classes) {
     noClasses()
         .that()
-        .resideInAPackage("com.codisiac.wamya.domain..")
+        .resideInAPackage("com.excentria_it.wamya.domain..")
         .should()
         .dependOnClassesThat()
-        .resideInAnyPackage("com.codisiac.wamya.application..")
+        .resideInAnyPackage("com.excentria_it.wamya.application..")
         .check(classes);
   }
 

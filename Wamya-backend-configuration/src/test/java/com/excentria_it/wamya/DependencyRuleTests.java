@@ -10,7 +10,7 @@ class DependencyRuleTests {
 
 	@Test
 	void validateRegistrationContextArchitecture() {
-		HexagonalArchitecture.boundedContext("com.codisiac.wamya")
+		HexagonalArchitecture.boundedContext("com.excentria_it.wamya")
 
 				.withDomainLayer("domain")
 
@@ -27,19 +27,19 @@ class DependencyRuleTests {
 
 				.withConfiguration("configuration")
 				.check(new ClassFileImporter()
-						.importPackages("com.codisiac.wamya.."));
+						.importPackages("com.excentria_it.wamya.."));
 	}
 
 	@Test
 	void testPackageDependencies() {
 		noClasses()
 				.that()
-				.resideInAPackage("com.codisiac.wamya.domain..")
+				.resideInAPackage("com.excentria_it.wamya.domain..")
 				.should()
 				.dependOnClassesThat()
-				.resideInAnyPackage("com.codisiac.wamya.application..")
+				.resideInAnyPackage("com.excentria_it.wamya.application..")
 				.check(new ClassFileImporter()
-						.importPackages("com.codisiac.wamya.."));
+						.importPackages("com.excentria_it.wamya.."));
 	}
 
 }
