@@ -36,7 +36,8 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 	@Override
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(final MethodArgumentNotValidException ex,
 			final HttpHeaders headers, final HttpStatus status, final WebRequest request) {
-		log.info(ex.getClass().getName());
+		log.error("Exception at " + ex.getClass().getName() + ": ", ex);
+
 		//
 		final List<String> errors = new ArrayList<String>();
 		for (final FieldError error : ex.getBindingResult().getFieldErrors()) {
@@ -45,15 +46,16 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 		for (final ObjectError error : ex.getBindingResult().getGlobalErrors()) {
 			errors.add(error.getObjectName() + ": " + error.getDefaultMessage());
 		}
-		final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), errors);
+
+		final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, errors);
 		return handleExceptionInternal(ex, apiError, headers, apiError.getStatus(), request);
 	}
 
 	@Override
 	protected ResponseEntity<Object> handleBindException(final BindException ex, final HttpHeaders headers,
 			final HttpStatus status, final WebRequest request) {
-		log.info(ex.getClass().getName());
-		//
+		log.error("Exception at " + ex.getClass().getName() + ": ", ex);
+
 		final List<String> errors = new ArrayList<String>();
 		for (final FieldError error : ex.getBindingResult().getFieldErrors()) {
 			errors.add(error.getField() + ": " + error.getDefaultMessage());
@@ -61,40 +63,40 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 		for (final ObjectError error : ex.getBindingResult().getGlobalErrors()) {
 			errors.add(error.getObjectName() + ": " + error.getDefaultMessage());
 		}
-		final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), errors);
+		final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, errors);
 		return handleExceptionInternal(ex, apiError, headers, apiError.getStatus(), request);
 	}
 
 	@ExceptionHandler({ MethodArgumentTypeMismatchException.class })
 	public ResponseEntity<Object> handleMethodArgumentTypeMismatch(final MethodArgumentTypeMismatchException ex,
 			final WebRequest request) {
-		log.info(ex.getClass().getName());
+		log.error("Exception at " + ex.getClass().getName() + ": ", ex);
 
 		final String error = ex.getName() + " should be of type " + ex.getRequiredType().getName();
 
-		final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), error);
+		final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, error);
 		return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
 	}
 
 	@Override
 	protected ResponseEntity<Object> handleTypeMismatch(final TypeMismatchException ex, final HttpHeaders headers,
 			final HttpStatus status, final WebRequest request) {
-		log.info(ex.getClass().getName());
-		//
+		log.error("Exception at " + ex.getClass().getName() + ": ", ex);
+
 		final String error = ex.getValue() + " value for " + ex.getPropertyName() + " should be of type "
 				+ ex.getRequiredType();
 
-		final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), error);
+		final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, error);
 		return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
 	}
 
 	@Override
 	protected ResponseEntity<Object> handleMissingServletRequestPart(final MissingServletRequestPartException ex,
 			final HttpHeaders headers, final HttpStatus status, final WebRequest request) {
-		log.info(ex.getClass().getName());
-		//
+		log.error("Exception at " + ex.getClass().getName() + ": ", ex);
+
 		final String error = ex.getRequestPartName() + " part is missing";
-		final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), error);
+		final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, error);
 		return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
 	}
 
@@ -102,10 +104,10 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 	protected ResponseEntity<Object> handleMissingServletRequestParameter(
 			final MissingServletRequestParameterException ex, final HttpHeaders headers, final HttpStatus status,
 			final WebRequest request) {
-		log.info(ex.getClass().getName());
-		//
+		log.error("Exception at " + ex.getClass().getName() + ": ", ex);
+
 		final String error = ex.getParameterName() + " parameter is missing";
-		final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), error);
+		final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, error);
 		return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
 	}
 
@@ -114,15 +116,15 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 	@ExceptionHandler({ ConstraintViolationException.class })
 	public ResponseEntity<Object> handleConstraintViolation(final ConstraintViolationException ex,
 			final WebRequest request) {
-		log.info(ex.getClass().getName());
-		//
+		log.error("Exception at " + ex.getClass().getName() + ": ", ex);
+
 		final List<String> errors = new ArrayList<String>();
 		for (final ConstraintViolation<?> violation : ex.getConstraintViolations()) {
 			errors.add(violation.getRootBeanClass().getName() + " " + violation.getPropertyPath() + ": "
 					+ violation.getMessage());
 		}
 
-		final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), errors);
+		final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, errors);
 		return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
 	}
 
@@ -131,11 +133,11 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 	@Override
 	protected ResponseEntity<Object> handleNoHandlerFoundException(final NoHandlerFoundException ex,
 			final HttpHeaders headers, final HttpStatus status, final WebRequest request) {
-		log.info(ex.getClass().getName());
-		//
+		log.error("Exception at " + ex.getClass().getName() + ": ", ex);
+
 		final String error = "No handler found for " + ex.getHttpMethod() + " " + ex.getRequestURL();
 
-		final ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, ex.getLocalizedMessage(), error);
+		final ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, error);
 		return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
 	}
 
@@ -145,15 +147,14 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 	protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(
 			final HttpRequestMethodNotSupportedException ex, final HttpHeaders headers, final HttpStatus status,
 			final WebRequest request) {
-		log.info(ex.getClass().getName());
-		//
+		log.error("Exception at " + ex.getClass().getName() + ": ", ex);
+
 		final StringBuilder builder = new StringBuilder();
 		builder.append(ex.getMethod());
 		builder.append(" method is not supported for this request. Supported methods are ");
 		ex.getSupportedHttpMethods().forEach(t -> builder.append(t + " "));
 
-		final ApiError apiError = new ApiError(HttpStatus.METHOD_NOT_ALLOWED, ex.getLocalizedMessage(),
-				builder.toString().trim());
+		final ApiError apiError = new ApiError(HttpStatus.METHOD_NOT_ALLOWED, builder.toString().trim());
 		return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
 	}
 
@@ -162,15 +163,14 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 	@Override
 	protected ResponseEntity<Object> handleHttpMediaTypeNotSupported(final HttpMediaTypeNotSupportedException ex,
 			final HttpHeaders headers, final HttpStatus status, final WebRequest request) {
-		log.info(ex.getClass().getName());
-		//
+		log.error("Exception at " + ex.getClass().getName() + ": ", ex);
+
 		final StringBuilder builder = new StringBuilder();
 		builder.append(ex.getContentType());
 		builder.append(" media type is not supported. Supported media types are ");
 		ex.getSupportedMediaTypes().forEach(t -> builder.append(t + " "));
 
-		final ApiError apiError = new ApiError(HttpStatus.UNSUPPORTED_MEDIA_TYPE, ex.getLocalizedMessage(),
-				builder.toString().trim());
+		final ApiError apiError = new ApiError(HttpStatus.UNSUPPORTED_MEDIA_TYPE, builder.toString().trim());
 		return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
 	}
 
@@ -178,11 +178,9 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 
 	@ExceptionHandler({ Exception.class })
 	public ResponseEntity<Object> handleAll(final Exception ex, final WebRequest request) {
-		log.info(ex.getClass().getName());
-		log.error("error", ex);
-		//
-		final ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, ex.getLocalizedMessage(),
-				"error occurred");
+		log.error("Exception at " + ex.getClass().getName() + ": ", ex);
+
+		final ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "error occurred.");
 		return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
 	}
 

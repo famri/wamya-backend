@@ -23,8 +23,7 @@ public class UserAccountMapper {
 				.mobileNumberValidationCode(userAccount.getMobileNumberValidationCode())
 				.isValidatedMobileNumber(userAccount.getIsValidatedMobileNumber())
 				.password(userAccount.getUserPassword()).receiveNewsletter(userAccount.getReceiveNewsletter())
-				.creationTimestamp(
-						userAccount.getId() == null ? LocalDateTime.now() : userAccount.getCreationTimestamp())
+				.creationTimestamp(userAccount.getCreationTimestamp())
 				.build();
 	}
 

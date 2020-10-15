@@ -70,7 +70,7 @@ public class SendValidationCodeService implements SendValidationCodeUseCase {
 	}
 
 	@Override
-	public boolean sendEmailValidationCode(SendEmailValidationCodeCommand command, Locale locale) {
+	public boolean sendEmailValidationLink(SendEmailValidationLinkCommand command, Locale locale) {
 		UserAccount userAccount = checkExistingAccount(command);
 
 		if (!userAccount.getIsValidatedEmail()) {
@@ -103,7 +103,7 @@ public class SendValidationCodeService implements SendValidationCodeUseCase {
 		return userAccountOptional.get();
 	}
 
-	protected UserAccount checkExistingAccount(SendEmailValidationCodeCommand command) {
+	protected UserAccount checkExistingAccount(SendEmailValidationLinkCommand command) {
 
 		Optional<UserAccount> userAccountOptional = loadUserAccountPort.loadUserAccountByEmail(command.getEmail());
 		if (userAccountOptional.isEmpty()) {

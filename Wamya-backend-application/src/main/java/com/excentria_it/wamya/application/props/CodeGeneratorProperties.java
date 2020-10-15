@@ -1,4 +1,4 @@
-package com.excentria_it.wamya.common.props;
+package com.excentria_it.wamya.application.props;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

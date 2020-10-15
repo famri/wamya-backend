@@ -7,16 +7,11 @@ public class MyBindException extends BindException {
 
 	private static final long serialVersionUID = 1L;
 
-	private String localizedMessage;
+	
 
-	public MyBindException(BindingResult bindingResult, String localizedMessage) {
+	public MyBindException(BindingResult bindingResult) {
 		super(bindingResult);
-		this.localizedMessage = localizedMessage;
-	}
 
-	@Override
-	public String getLocalizedMessage() {
-		return this.localizedMessage;
 	}
 
 }

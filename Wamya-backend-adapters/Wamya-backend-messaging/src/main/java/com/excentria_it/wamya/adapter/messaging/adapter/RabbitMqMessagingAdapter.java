@@ -34,7 +34,7 @@ public class RabbitMqMessagingAdapter implements MessagingPort {
 
 	}
 
-	private void validateSMSMessage(SMSMessage message) {
+	protected boolean validateSMSMessage(SMSMessage message) {
 		List<String> invalidParametersMessages = new ArrayList<>();
 
 		if (message.getTo() == null) {
@@ -46,14 +46,17 @@ public class RabbitMqMessagingAdapter implements MessagingPort {
 		if (message.getTemplate() == null) {
 			invalidParametersMessages.add("SMSMessage.template is null");
 		}
+		if (message.getTemplate() != null) {
+			List<String> templateParams = message.getTemplate().getTemplateParams();
+			Map<String, String> givenParams = message.getParams();
 
-		List<String> templateParams = message.getTemplate().getTemplateParams();
-		Map<String, String> givenParams = message.getParams();
+			if (templateParams != null && !templateParams.isEmpty() && (givenParams == null || givenParams.isEmpty()
+					|| !givenParams.keySet().containsAll(templateParams))) {
+				invalidParametersMessages.add("SMSMessage.params do not match SMSMessage.template parameters");
+			}
 
-		if (templateParams != null && !templateParams.isEmpty() && (givenParams == null || givenParams.isEmpty()
-				|| !givenParams.keySet().containsAll(templateParams))) {
-			invalidParametersMessages.add("SMSMessage.params do not match SMSMessage.template parameters");
 		}
+
 		if (!invalidParametersMessages.isEmpty()) {
 			StringBuilder validationErrorMessage = new StringBuilder("[");
 
@@ -65,9 +68,10 @@ public class RabbitMqMessagingAdapter implements MessagingPort {
 
 			throw new IllegalArgumentException("Invalid SMSMessage parameter: " + validationErrorMessage.toString());
 		}
+		return true;
 	}
 
-	private void validateEmailMessage(EmailMessage message) {
+	protected boolean validateEmailMessage(EmailMessage message) {
 		List<String> invalidParametersMessages = new ArrayList<>();
 		if (message.getFrom() == null) {
 			invalidParametersMessages.add("EmailMessage.from is null");
@@ -84,14 +88,16 @@ public class RabbitMqMessagingAdapter implements MessagingPort {
 		if (message.getTemplate() == null) {
 			invalidParametersMessages.add("EmailMessage.template is null");
 		}
+		if (message.getTemplate() != null) {
+			List<String> templateParams = message.getTemplate().getTemplateParams();
+			Map<String, String> givenParams = message.getParams();
 
-		List<String> templateParams = message.getTemplate().getTemplateParams();
-		Map<String, String> givenParams = message.getParams();
-
-		if (templateParams != null && !templateParams.isEmpty() && (givenParams == null || givenParams.isEmpty()
-				|| !givenParams.keySet().containsAll(templateParams))) {
-			invalidParametersMessages.add("EmailMessage.params do not match EmailMessage.template parameters");
+			if (templateParams != null && !templateParams.isEmpty() && (givenParams == null || givenParams.isEmpty()
+					|| !givenParams.keySet().containsAll(templateParams))) {
+				invalidParametersMessages.add("EmailMessage.params do not match EmailMessage.template parameters");
+			}
 		}
+
 		if (!invalidParametersMessages.isEmpty()) {
 			StringBuilder validationErrorMessage = new StringBuilder("[");
 
@@ -103,6 +109,8 @@ public class RabbitMqMessagingAdapter implements MessagingPort {
 
 			throw new IllegalArgumentException("Invalid EmailMessage parameter: " + validationErrorMessage.toString());
 		}
+
+		return true;
 	}
 
 }

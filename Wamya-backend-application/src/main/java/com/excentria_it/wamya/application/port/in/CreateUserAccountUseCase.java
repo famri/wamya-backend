@@ -9,6 +9,7 @@ import javax.validation.constraints.Pattern;
 import com.excentria_it.wamya.common.exception.UnsupportedInternationalCallingCode;
 import com.excentria_it.wamya.common.exception.UserAccountAlreadyExistsException;
 import com.excentria_it.wamya.domain.Gender;
+import com.excentria_it.wamya.domain.RegexPattern;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,14 +18,19 @@ import lombok.NoArgsConstructor;
 
 public interface CreateUserAccountUseCase {
 
-	boolean registerUserAccountCreationDemand(CreateUserAccountCommand command, Locale locale)
+	Long registerUserAccountCreationDemand(CreateUserAccountCommand command, Locale locale)
 			throws UserAccountAlreadyExistsException, UnsupportedInternationalCallingCode;
+
+	void checkExistingAccount(CreateUserAccountCommand command);
+	
 
 	@Data
 	@AllArgsConstructor
 	@NoArgsConstructor
 	@Builder
 	class CreateUserAccountCommand {
+
+		Long id;
 
 		@NotNull
 		Boolean isTransporter;
@@ -42,19 +48,19 @@ public interface CreateUserAccountUseCase {
 		Date dateOfBirth;
 
 		@NotNull
-		@Pattern(regexp = "^[A-Za-z0-9._-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$", message = "{com.excentria_it.wamya.domain.mobilephone.icc.message}")
+		@Pattern(regexp = RegexPattern.EMAIL_PATTERN, message = "{com.excentria_it.wamya.domain.mobilephone.icc.message}")
 		String email;
 
 		@NotNull
-		@Pattern(regexp = "\\A\\+[0-9]{2,3}\\z", message = "{com.excentria_it.wamya.domain.mobilephone.icc.message}")
+		@Pattern(regexp = RegexPattern.ICC_PATTERN, message = "{com.excentria_it.wamya.domain.mobilephone.icc.message}")
 		String icc;
 
 		@NotNull
-		@Pattern(regexp = "\\A[0-9]{8,10}\\z", message = "{com.excentria_it.wamya.domain.mobilephone.number.message}")
+		@Pattern(regexp = RegexPattern.MOBILE_NUMBER_PATTERN, message = "{com.excentria_it.wamya.domain.mobilephone.number.message}")
 		String mobileNumber;
 
 		@NotNull
-		@Pattern(regexp = "^(?=[0-9a-zA-Z@#$%^&+=(?=\\\\S+$)]){8,20}$", message = "{com.excentria_it.wamya.domain.user.password.message}")
+		@Pattern(regexp = RegexPattern.USER_PASSWORD_PATTERN, message = "{com.excentria_it.wamya.domain.user.password.message}")
 		String userPassword;
 
 		@NotNull

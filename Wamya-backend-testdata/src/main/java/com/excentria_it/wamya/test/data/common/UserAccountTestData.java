@@ -13,10 +13,10 @@ import com.excentria_it.wamya.domain.UserAccount.UserAccountBuilder;
 
 public class UserAccountTestData {
 
-	private static UserAccountBuilder defaultUserAccountBuilder() {
+	public static UserAccountBuilder defaultUserAccountBuilder() {
 
 		return UserAccount.builder().id(1L).isTransporter(false).gender(Gender.MAN).firstName(DEFAULT_FIRSTNAME)
-				.lastName(DEFAULT_LASTNAME).dateOfBirth(DEFAULT_DATE_OF_BIRTH).email("user-email@gmail.com")
+				.lastName(DEFAULT_LASTNAME).dateOfBirth(DEFAULT_DATE_OF_BIRTH).email(TestConstants.DEFAULT_EMAIL)
 				.emailValidationCode(DEFAULT_VALIDATION_CODE).isValidatedEmail(true)
 				.mobilePhoneNumber(defaultMobilePhoneNumber()).mobileNumberValidationCode(DEFAULT_VALIDATION_CODE)
 				.isValidatedMobileNumber(true).userPassword(DEFAULT_ENCODED_PASSWORD).receiveNewsletter(true)

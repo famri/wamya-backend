@@ -37,16 +37,12 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
-import com.excentria_it.wamya.adapter.web.exception.ApiError;
-import com.excentria_it.wamya.adapter.web.exception.RestApiExceptionHandler;
-
 @ExtendWith(MockitoExtension.class)
 public class RestApiExceptionHandlerTest {
 
 	@InjectMocks
 	private RestApiExceptionHandler RestApiExceptionHandler;
 
-	private static final String LOCALIZED_MESSAGE = "Some localized message";
 	private static final String SOME_MESSAGE = "Some message";
 
 	private static final String FIELD_1 = "field1";
@@ -69,7 +65,7 @@ public class RestApiExceptionHandlerTest {
 
 	private static final String SOME_REQUEST_URL = "/exceptions/not-found";
 
-	private static final String ERROR_OCCURED = "error occurred";
+	private static final String ERROR_OCCURED = "error occurred.";
 
 	@Test
 	void whenHandleMethodArgumentNotValid_thenStatusIsBadRequest() {
@@ -92,7 +88,7 @@ public class RestApiExceptionHandlerTest {
 		expectedErrors.add(OBJECT_TO_VALIDATE + ": " + GLOBAL_ERROR_2);
 
 		then(responseEntity.getBody() instanceof ApiError);
-		then(((ApiError) responseEntity.getBody()).getMessage()).isEqualTo(LOCALIZED_MESSAGE);
+
 		then(((ApiError) responseEntity.getBody()).getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
 		then(((ApiError) responseEntity.getBody()).getErrors()).containsExactlyElementsOf(expectedErrors);
 		then(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -120,7 +116,7 @@ public class RestApiExceptionHandlerTest {
 		expectedErrors.add(OBJECT_TO_VALIDATE + ": " + GLOBAL_ERROR_2);
 
 		then(responseEntity.getBody() instanceof ApiError);
-		then(((ApiError) responseEntity.getBody()).getMessage()).isEqualTo(LOCALIZED_MESSAGE);
+
 		then(((ApiError) responseEntity.getBody()).getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
 		then(((ApiError) responseEntity.getBody()).getErrors()).containsExactlyElementsOf(expectedErrors);
 		then(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -140,7 +136,6 @@ public class RestApiExceptionHandlerTest {
 
 		// Then
 		then(responseEntity.getBody() instanceof ApiError);
-		then(((ApiError) responseEntity.getBody()).getMessage()).isEqualTo(LOCALIZED_MESSAGE);
 		then(((ApiError) responseEntity.getBody()).getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
 		then(((ApiError) responseEntity.getBody()).getErrors())
 				.containsExactly(FIELD_1 + " should be of type " + Long.class.getName());
@@ -163,7 +158,6 @@ public class RestApiExceptionHandlerTest {
 
 		// Then
 		then(responseEntity.getBody() instanceof ApiError);
-		then(((ApiError) responseEntity.getBody()).getMessage()).isEqualTo(LOCALIZED_MESSAGE);
 		then(((ApiError) responseEntity.getBody()).getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
 		then(((ApiError) responseEntity.getBody()).getErrors()).containsExactly(
 				VAL_DOUBLE + " value for " + FIELD_1 + " should be of type " + typeMismatchException.getRequiredType());
@@ -186,7 +180,6 @@ public class RestApiExceptionHandlerTest {
 
 		// Then
 		then(responseEntity.getBody() instanceof ApiError);
-		then(((ApiError) responseEntity.getBody()).getMessage()).isEqualTo(LOCALIZED_MESSAGE);
 		then(((ApiError) responseEntity.getBody()).getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
 		then(((ApiError) responseEntity.getBody()).getErrors()).containsExactly(REQUEST_PART + " part is missing");
 		then(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -208,7 +201,6 @@ public class RestApiExceptionHandlerTest {
 
 		// Then
 		then(responseEntity.getBody() instanceof ApiError);
-		then(((ApiError) responseEntity.getBody()).getMessage()).isEqualTo(LOCALIZED_MESSAGE);
 		then(((ApiError) responseEntity.getBody()).getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
 		then(((ApiError) responseEntity.getBody()).getErrors())
 				.containsExactly(missingServletRequestParameterException.getParameterName() + " parameter is missing");
@@ -232,7 +224,6 @@ public class RestApiExceptionHandlerTest {
 		expectedErrors.add(SomeObject.class.getName() + " " + SOME_PATH + ": " + SOME_MESSAGE);
 
 		then(responseEntity.getBody() instanceof ApiError);
-		then(((ApiError) responseEntity.getBody()).getMessage()).isEqualTo(LOCALIZED_MESSAGE);
 		then(((ApiError) responseEntity.getBody()).getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
 		then(((ApiError) responseEntity.getBody()).getErrors()).containsExactlyElementsOf(expectedErrors);
 		then(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -254,7 +245,6 @@ public class RestApiExceptionHandlerTest {
 
 		// Then
 		then(responseEntity.getBody() instanceof ApiError);
-		then(((ApiError) responseEntity.getBody()).getMessage()).isEqualTo(LOCALIZED_MESSAGE);
 		then(((ApiError) responseEntity.getBody()).getStatus()).isEqualTo(HttpStatus.NOT_FOUND);
 		then(((ApiError) responseEntity.getBody()).getErrors()).containsExactly("No handler found for "
 				+ noHandlerFoundException.getHttpMethod() + " " + noHandlerFoundException.getRequestURL());
@@ -282,7 +272,6 @@ public class RestApiExceptionHandlerTest {
 
 		// Then
 		then(responseEntity.getBody() instanceof ApiError);
-		then(((ApiError) responseEntity.getBody()).getMessage()).isEqualTo(LOCALIZED_MESSAGE);
 		then(((ApiError) responseEntity.getBody()).getStatus()).isEqualTo(HttpStatus.METHOD_NOT_ALLOWED);
 		then(((ApiError) responseEntity.getBody()).getErrors()).containsExactly(builder.toString().trim());
 		then(responseEntity.getStatusCode()).isEqualTo(HttpStatus.METHOD_NOT_ALLOWED);
@@ -309,7 +298,6 @@ public class RestApiExceptionHandlerTest {
 
 		// Then
 		then(responseEntity.getBody() instanceof ApiError);
-		then(((ApiError) responseEntity.getBody()).getMessage()).isEqualTo(LOCALIZED_MESSAGE);
 		then(((ApiError) responseEntity.getBody()).getStatus()).isEqualTo(HttpStatus.UNSUPPORTED_MEDIA_TYPE);
 		then(((ApiError) responseEntity.getBody()).getErrors()).containsExactly(builder.toString().trim());
 		then(responseEntity.getStatusCode()).isEqualTo(HttpStatus.UNSUPPORTED_MEDIA_TYPE);
@@ -328,7 +316,6 @@ public class RestApiExceptionHandlerTest {
 
 		// Then
 		then(responseEntity.getBody() instanceof ApiError);
-		then(((ApiError) responseEntity.getBody()).getMessage()).isEqualTo(LOCALIZED_MESSAGE);
 		then(((ApiError) responseEntity.getBody()).getStatus()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
 		then(((ApiError) responseEntity.getBody()).getErrors()).containsExactly(ERROR_OCCURED);
 		then(responseEntity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -337,8 +324,6 @@ public class RestApiExceptionHandlerTest {
 
 	private Exception givenAnyOtherException() {
 		Exception exception = Mockito.mock(NullPointerException.class);
-		
-		given(exception.getLocalizedMessage()).willReturn(LOCALIZED_MESSAGE);
 
 		return exception;
 	}
@@ -348,7 +333,6 @@ public class RestApiExceptionHandlerTest {
 		given(exception.getContentType()).willReturn(MediaType.APPLICATION_XML);
 		given(exception.getSupportedMediaTypes())
 				.willReturn(java.util.Arrays.asList(MediaType.APPLICATION_JSON, MediaType.APPLICATION_FORM_URLENCODED));
-		given(exception.getLocalizedMessage()).willReturn(LOCALIZED_MESSAGE);
 
 		return exception;
 	}
@@ -358,7 +342,6 @@ public class RestApiExceptionHandlerTest {
 		given(exception.getMethod()).willReturn(HttpMethod.DELETE.toString());
 		given(exception.getSupportedHttpMethods())
 				.willReturn(new HashSet<HttpMethod>(java.util.Arrays.asList(HttpMethod.GET, HttpMethod.POST)));
-		given(exception.getLocalizedMessage()).willReturn(LOCALIZED_MESSAGE);
 
 		return exception;
 	}
@@ -367,7 +350,6 @@ public class RestApiExceptionHandlerTest {
 		NoHandlerFoundException exception = Mockito.mock(NoHandlerFoundException.class);
 		given(exception.getHttpMethod()).willReturn(HttpMethod.GET.toString());
 		given(exception.getRequestURL()).willReturn(SOME_REQUEST_URL);
-		given(exception.getLocalizedMessage()).willReturn(LOCALIZED_MESSAGE);
 		return exception;
 	}
 
@@ -393,16 +375,12 @@ public class RestApiExceptionHandlerTest {
 
 		given(exception.getConstraintViolations()).willReturn(constraintViolations);
 
-		given(exception.getLocalizedMessage()).willReturn(LOCALIZED_MESSAGE);
-
 		return exception;
 
 	}
 
 	private MissingServletRequestParameterException givenMissingServletRequestParameterExceptionWith1Error() {
 		MissingServletRequestParameterException exception = Mockito.mock(MissingServletRequestParameterException.class);
-		given(exception.getParameterName()).willReturn(REQUEST_PARAMETER);
-		given(exception.getLocalizedMessage()).willReturn(LOCALIZED_MESSAGE);
 
 		return exception;
 	}
@@ -410,7 +388,6 @@ public class RestApiExceptionHandlerTest {
 	private MissingServletRequestPartException givenMissingServletRequestPartExceptionWith1Error() {
 		MissingServletRequestPartException exception = Mockito.mock(MissingServletRequestPartException.class);
 		given(exception.getRequestPartName()).willReturn(REQUEST_PART);
-		given(exception.getLocalizedMessage()).willReturn(LOCALIZED_MESSAGE);
 
 		return exception;
 	}
@@ -421,7 +398,6 @@ public class RestApiExceptionHandlerTest {
 		given(exception.getValue()).willReturn(VAL_DOUBLE);
 		doReturn(Long.class).when(exception).getRequiredType();
 		given(exception.getPropertyName()).willReturn(FIELD_1);
-		given(exception.getLocalizedMessage()).willReturn(LOCALIZED_MESSAGE);
 
 		return exception;
 	}
@@ -430,7 +406,6 @@ public class RestApiExceptionHandlerTest {
 		MethodArgumentTypeMismatchException exception = Mockito.mock(MethodArgumentTypeMismatchException.class);
 		given(exception.getName()).willReturn(FIELD_1);
 		doReturn(Long.class).when(exception).getRequiredType();
-		given(exception.getLocalizedMessage()).willReturn(LOCALIZED_MESSAGE);
 
 		return exception;
 	}
@@ -439,7 +414,7 @@ public class RestApiExceptionHandlerTest {
 
 		BindingResult bindingResult = Mockito.mock(BindingResult.class);
 
-		MyBindException exception = new MyBindException(bindingResult, LOCALIZED_MESSAGE);
+		MyBindException exception = new MyBindException(bindingResult);
 
 		List<FieldError> fieldErrors = new ArrayList<FieldError>();
 		fieldErrors.add(new FieldError(OBJECT_TO_VALIDATE, FIELD_1, FIELD_ERROR_1));
@@ -463,8 +438,6 @@ public class RestApiExceptionHandlerTest {
 		BindingResult bindingResult = Mockito.mock(BindingResult.class);
 
 		given(exception.getBindingResult()).willReturn(bindingResult);
-
-		given(exception.getLocalizedMessage()).willReturn(LOCALIZED_MESSAGE);
 
 		List<FieldError> fieldErrors = new ArrayList<FieldError>();
 		fieldErrors.add(new FieldError(OBJECT_TO_VALIDATE, FIELD_1, FIELD_ERROR_1));

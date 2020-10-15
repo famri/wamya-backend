@@ -30,37 +30,35 @@ public class UserLoginValidator implements ConstraintValidator<ValidUserLogin, O
 
 	@Override
 	public boolean isValid(Object value, ConstraintValidatorContext context) {
+
+		String loginTypeStr = null, loginValue = null;
+
 		try {
-			final Object loginType = BeanUtils.getProperty(value, loginTypeFieldName);
-			final Object loginValue = BeanUtils.getProperty(value, loginValueFieldName);
-			if (loginType instanceof LoginType) {
-				if (LoginType.EMAIL.equals(loginType)) {
-					if (loginValue instanceof String) {
-
-						Matcher emailMatcher = VALID_EMAIL_ADDRESS_REGEX.matcher(loginValue.toString());
-						return emailMatcher.matches();
-
-					} else {
-						return false;
-					}
-				} else if (LoginType.PHONE_NUMBER.equals(loginType)) {
-					if (loginValue instanceof String) {
-
-						Matcher phoneMatcher = VALID_PHONE_NUMBER_REGEX.matcher(loginValue.toString());
-						return phoneMatcher.matches();
-
-					} else {
-						return false;
-					}
-				} else {
-					return false;
-				}
-
-			}
-			return false;
+			loginTypeStr = BeanUtils.getProperty(value, loginTypeFieldName);
+			loginValue = BeanUtils.getProperty(value, loginValueFieldName);
 		} catch (Exception e) {
 			return false;
 		}
+
+		LoginType loginTypeEnum;
+		try {
+			loginTypeEnum = LoginType.valueOf(loginTypeStr);
+			if (LoginType.EMAIL.equals(loginTypeEnum)) {
+
+				Matcher emailMatcher = VALID_EMAIL_ADDRESS_REGEX.matcher(loginValue.toString());
+				return emailMatcher.matches();
+
+			} else if (LoginType.PHONE_NUMBER.equals(loginTypeEnum)) {
+
+				Matcher phoneMatcher = VALID_PHONE_NUMBER_REGEX.matcher(loginValue.toString());
+				return phoneMatcher.matches();
+
+			}
+		} catch (IllegalArgumentException e) {
+			return false;
+		}
+		return false;
+
 	}
 
 }

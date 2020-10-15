@@ -1,6 +1,7 @@
 dependencies {
     implementation project(':Wamya-backend-application')
     implementation project(':Wamya-backend-common')
+    implementation project(':Wamya-backend-adapters:Wamya-backend-persistence')
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'com.fasterxml.jackson.core:jackson-databind'
     compileOnly 'org.projectlombok:lombok'

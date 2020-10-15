@@ -19,7 +19,7 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.MessageSource;
 
-import com.excentria_it.wamya.application.port.in.SendValidationCodeUseCase.SendEmailValidationCodeCommand;
+import com.excentria_it.wamya.application.port.in.SendValidationCodeUseCase.SendEmailValidationLinkCommand;
 import com.excentria_it.wamya.application.port.in.SendValidationCodeUseCase.SendSMSValidationCodeCommand;
 import com.excentria_it.wamya.application.port.out.LoadUserAccountPort;
 import com.excentria_it.wamya.application.port.out.MessagingPort;
@@ -89,11 +89,9 @@ public class SendValidationCodeServiceTests {
 	void givenNonExistentEmail_whenCheckExistingAccount_ThenThrowUserAccountNotFoundException() {
 		givenNonExistentEmail();
 
-		SendEmailValidationCodeCommand sendEmailValidationCodeCommand = new SendEmailValidationCodeCommand(
-				TestConstants.DEFAULT_EMAIL);
+		SendEmailValidationLinkCommand command = new SendEmailValidationLinkCommand(TestConstants.DEFAULT_EMAIL);
 
-		assertThrows(UserAccountNotFoundException.class,
-				() -> sendValidationCodeService.checkExistingAccount(sendEmailValidationCodeCommand));
+		assertThrows(UserAccountNotFoundException.class, () -> sendValidationCodeService.checkExistingAccount(command));
 	}
 
 	@Test
@@ -112,10 +110,9 @@ public class SendValidationCodeServiceTests {
 
 		UserAccount account = Mockito.mock(UserAccount.class);
 		givenExistentEmail(account);
-		SendEmailValidationCodeCommand sendEmailValidationCodeCommand = new SendEmailValidationCodeCommand(
-				TestConstants.DEFAULT_EMAIL);
+		SendEmailValidationLinkCommand command = new SendEmailValidationLinkCommand(TestConstants.DEFAULT_EMAIL);
 
-		UserAccount result = sendValidationCodeService.checkExistingAccount(sendEmailValidationCodeCommand);
+		UserAccount result = sendValidationCodeService.checkExistingAccount(command);
 
 		assertEquals(account, result);
 	}
@@ -136,11 +133,10 @@ public class SendValidationCodeServiceTests {
 	@Test
 	void givenNonExistentEmailAccount_WhenSendEmailValidationCode_ThenThrowUserAccountNotFoundException() {
 		givenNonExistentEmail();
-		SendEmailValidationCodeCommand sendEmailValidationCodeCommand = new SendEmailValidationCodeCommand(
-				TestConstants.DEFAULT_EMAIL);
+		SendEmailValidationLinkCommand command = new SendEmailValidationLinkCommand(TestConstants.DEFAULT_EMAIL);
 
-		assertThrows(UserAccountNotFoundException.class, () -> sendValidationCodeService
-				.sendEmailValidationCode(sendEmailValidationCodeCommand, new Locale("fr")));
+		assertThrows(UserAccountNotFoundException.class,
+				() -> sendValidationCodeService.sendEmailValidationLink(command, new Locale("fr")));
 	}
 
 	@Test
@@ -159,14 +155,13 @@ public class SendValidationCodeServiceTests {
 		UserAccount userAccount = Mockito.mock(UserAccount.class);
 		given(userAccount.getIsValidatedEmail()).willReturn(true);
 
-		SendEmailValidationCodeCommand sendEmailValidationCodeCommand = new SendEmailValidationCodeCommand(
-				TestConstants.DEFAULT_EMAIL);
+		SendEmailValidationLinkCommand command = new SendEmailValidationLinkCommand(TestConstants.DEFAULT_EMAIL);
 
 		// Use doReturn() instead of given() because Spy not Mock
-		doReturn(userAccount).when(sendValidationCodeService).checkExistingAccount(sendEmailValidationCodeCommand);
+		doReturn(userAccount).when(sendValidationCodeService).checkExistingAccount(command);
 
-		assertThrows(UserEmailValidationException.class, () -> sendValidationCodeService
-				.sendEmailValidationCode(sendEmailValidationCodeCommand, new Locale("fr")));
+		assertThrows(UserEmailValidationException.class,
+				() -> sendValidationCodeService.sendEmailValidationLink(command, new Locale("fr")));
 	}
 
 	@Test
@@ -217,13 +212,12 @@ public class SendValidationCodeServiceTests {
 		given(userAccount.getIsValidatedEmail()).willReturn(false);
 		givenDefaultGeneratedCode();
 
-		SendEmailValidationCodeCommand sendEmailValidationCodeCommand = new SendEmailValidationCodeCommand(
-				TestConstants.DEFAULT_EMAIL);
+		SendEmailValidationLinkCommand command = new SendEmailValidationLinkCommand(TestConstants.DEFAULT_EMAIL);
 
 		// Use doReturn() instead of given() because Spy not Mock
-		doReturn(userAccount).when(sendValidationCodeService).checkExistingAccount(sendEmailValidationCodeCommand);
+		doReturn(userAccount).when(sendValidationCodeService).checkExistingAccount(command);
 
-		sendValidationCodeService.sendEmailValidationCode(sendEmailValidationCodeCommand, new Locale("fr"));
+		sendValidationCodeService.sendEmailValidationLink(command, new Locale("fr"));
 
 		InOrder inOrder = Mockito.inOrder(codeGenerator, sendValidationCodeService, messagingPort);
 

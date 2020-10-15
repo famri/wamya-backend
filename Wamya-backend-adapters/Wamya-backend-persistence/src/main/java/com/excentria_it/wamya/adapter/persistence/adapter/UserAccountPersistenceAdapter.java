@@ -29,13 +29,15 @@ public class UserAccountPersistenceAdapter
 	private final UserAccountMapper userAccountMapper;
 
 	@Override
-	public void createUserAccount(UserAccount userAccount) throws UnsupportedInternationalCallingCode {
+	public Long createUserAccount(UserAccount userAccount) throws UnsupportedInternationalCallingCode {
 		Optional<InternationalCallingCodeJpaEntity> iccEntity = iccRepository
 				.findByValue(userAccount.getMobilePhoneNumber().getInternationalCallingCode());
 		if (iccEntity.isEmpty())
-			throw new UnsupportedInternationalCallingCode(
-					userAccount.getMobilePhoneNumber().getInternationalCallingCode());
-		userAccountRepository.save(userAccountMapper.mapToJpaEntity(userAccount, iccEntity.get()));
+			throw new UnsupportedInternationalCallingCode(String.format("Unsupported international calling code %s",
+					userAccount.getMobilePhoneNumber().getInternationalCallingCode()));
+		UserAccountJpaEntity result = userAccountRepository
+				.save(userAccountMapper.mapToJpaEntity(userAccount, iccEntity.get()));
+		return result.getId();
 	}
 
 	@Override
@@ -69,13 +71,16 @@ public class UserAccountPersistenceAdapter
 						.findByValue(userAccount.getMobilePhoneNumber().getInternationalCallingCode());
 				if (iccEntity.isEmpty()) {
 					throw new UnsupportedInternationalCallingCode(
-							userAccount.getMobilePhoneNumber().getInternationalCallingCode());
+							String.format("Unsupported international calling code %s",
+									userAccount.getMobilePhoneNumber().getInternationalCallingCode()));
 				}
 				UserAccountJpaEntity entity = userAccountMapper.mapToJpaEntity(userAccount, iccEntity.get());
 				userAccountRepository.save(entity);
 			} else
 				throw new UserAccountNotFoundException(
 						String.format("No account was found by ID %d.", userAccount.getId()));
+		} else {
+			throw new UnsupportedOperationException("Should not update an Entity that does not already exist");
 		}
 
 	}

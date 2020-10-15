@@ -1,15 +1,14 @@
 package com.excentria_it.wamya.adapter.web.domain;
 
-import lombok.Getter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @NoArgsConstructor
-@Setter
-@Getter
+@AllArgsConstructor
+@Data
 public class ValidationCodeRequest {
 
-	private long id;
 	private ValidationCodeRequestStatus status;
 
 }

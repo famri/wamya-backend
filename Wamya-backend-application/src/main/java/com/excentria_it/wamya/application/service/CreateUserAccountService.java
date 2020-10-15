@@ -1,5 +1,6 @@
 package com.excentria_it.wamya.application.service;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -9,6 +10,7 @@ import javax.transaction.Transactional;
 
 import org.apache.commons.text.StrSubstitutor;
 import org.springframework.context.MessageSource;
+import org.springframework.context.NoSuchMessageException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.excentria_it.wamya.application.port.in.CreateUserAccountUseCase;
@@ -56,8 +58,7 @@ public class CreateUserAccountService implements CreateUserAccountUseCase {
 	public static final String EMAIL_VALIDATION_URL_TEMPLATE = "${protocol}://${host}:${port}/accounts/validate?email=${email}&code=${code}";
 
 	@Override
-	public boolean registerUserAccountCreationDemand(CreateUserAccountCommand command, Locale locale)
-			throws UserAccountAlreadyExistsException {
+	public Long registerUserAccountCreationDemand(CreateUserAccountCommand command, Locale locale) {
 
 		checkExistingAccount(command);
 
@@ -71,20 +72,18 @@ public class CreateUserAccountService implements CreateUserAccountUseCase {
 				.mobilePhoneNumber(new MobilePhoneNumber(command.getIcc(), command.getMobileNumber()))
 				.isValidatedMobileNumber(false).mobileNumberValidationCode(mobileNumberValidationCode)
 				.isValidatedMobileNumber(false).userPassword(passwordEncoder.encode(command.getUserPassword()))
-				.receiveNewsletter(command.getReceiveNewsletter()).build();
+				.creationTimestamp(LocalDateTime.now()).receiveNewsletter(command.getReceiveNewsletter()).build();
 
-		createUserAccountPort.createUserAccount(userAccount);
+		Long userAccountId = createUserAccountPort.createUserAccount(userAccount);
 
-		if (!requestSendingEmailValidationLink(command.getEmail(), emailValidationCode, locale))
-			return false;
+		requestSendingEmailValidationLink(command.getEmail(), emailValidationCode, locale);
 
-		if (!requestSendingSMSValidationCode(userAccount.getMobilePhoneNumber(), mobileNumberValidationCode, locale))
-			return false;
+		requestSendingSMSValidationCode(userAccount.getMobilePhoneNumber(), mobileNumberValidationCode, locale);
 
-		return true;
+		return userAccountId;
 	}
 
-	private void checkExistingAccount(CreateUserAccountCommand command) {
+	public void checkExistingAccount(CreateUserAccountCommand command) {
 
 		MobilePhoneNumber mobilePhoneNumber = new MobilePhoneNumber(command.getIcc(), command.getMobileNumber());
 		try {
@@ -126,12 +125,15 @@ public class CreateUserAccountService implements CreateUserAccountUseCase {
 		Map<String, String> emailTemplateParams = Map.of(EmailTemplate.EMAIL_VALIDATION.getTemplateParams().get(0),
 				emailValidationLink);
 
-		EmailMessage emailMessage = EmailMessage.builder().from(EmailSender.WAMYA_TEAM).to(email)
-				.subject(messageSource.getMessage(EmailSubject.EMAIL_VALIDATION, null, locale))
-				.template(EmailTemplate.EMAIL_VALIDATION).params(emailTemplateParams).locale(locale).build();
 		try {
+
+			EmailMessage emailMessage = EmailMessage.builder().from(EmailSender.WAMYA_TEAM).to(email)
+					.subject(messageSource.getMessage(EmailSubject.EMAIL_VALIDATION, null, locale))
+					.template(EmailTemplate.EMAIL_VALIDATION).params(emailTemplateParams).locale(locale).build();
+
 			messagingPort.sendEmailMessage(emailMessage);
-		} catch (IllegalArgumentException e) {
+
+		} catch (IllegalArgumentException | NoSuchMessageException e) {
 			log.error("Exception sending EmailMessage:", e);
 			return false;
 		}

@@ -1,6 +1,5 @@
 package com.excentria_it.messaging.gateway.email;
 
-import static com.excentria_it.wamya.test.data.common.EmailMessageTestData.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -26,7 +25,6 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 
 import com.excentria_it.messaging.gateway.common.TemplateManager;
 import com.excentria_it.messaging.gateway.common.TemplateType;
-import com.excentria_it.wamya.common.domain.EmailMessage;
 import com.excentria_it.wamya.test.data.common.TestConstants;
 
 @ExtendWith(MockitoExtension.class)
@@ -93,8 +91,8 @@ public class EmailServiceImplTests {
 
 	@Test
 	void givenInexistingEmailTemplateName_ThenShouldReturnFalse() {
-		EmailMessage message = defaultEmailMessageBuilder().build();
-		givenTemplateManagerLoadTemplateThrowsFileNotFoundExcepion(message);
+
+		givenTemplateManagerLoadTemplateThrowsFileNotFoundExcepion();
 		Boolean result = emailService.sendEmailWithHTMTemplate(TestConstants.DEFAULT_FROM_EMAIL,
 				TestConstants.DEFAULT_EMAIL, TestConstants.DEFAULT_EMAIL_SUBJECT, TestConstants.DEFAULT_EMAIL_TEMPLATE,
 				TestConstants.DEFAULT_TEMPLATE_LANGUAGE, TestConstants.DEFAULT_TEMPLATE_PARAMS,
@@ -152,11 +150,12 @@ public class EmailServiceImplTests {
 		}
 	}
 
-	private void givenTemplateManagerLoadTemplateThrowsFileNotFoundExcepion(EmailMessage message) {
+	private void givenTemplateManagerLoadTemplateThrowsFileNotFoundExcepion() {
 
 		try {
-			given(templateManager.loadTemplate(message.getTemplate().name(), message.getParams(), TemplateType.EMAIL,
-					message.getLocale().getLanguage())).willThrow(FileNotFoundException.class);
+			doThrow(FileNotFoundException.class).when(templateManager).loadTemplate(any(String.class), any(Map.class),
+					any(TemplateType.class), any(String.class));
+
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

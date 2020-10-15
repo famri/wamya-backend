@@ -107,9 +107,7 @@ public class CreateUserAccountServiceTest {
 
 		String emailValidationLink = givenPatchUrl(command.getEmail(), validationCode);
 
-		boolean success = createUserAccountService.registerUserAccountCreationDemand(command, locale);
-
-		assertThat(success).isTrue();
+		assertDoesNotThrow(() -> createUserAccountService.registerUserAccountCreationDemand(command, locale));
 
 		ArgumentCaptor<UserAccount> userAccountCaptor = ArgumentCaptor.forClass(UserAccount.class);
 
@@ -168,7 +166,7 @@ public class CreateUserAccountServiceTest {
 	}
 
 	@Test
-	void givenSendingSMSValidationCodeFailed_whenRegisterUserAccountCreationDemand_thenReturnFalse() {
+	void givenSendingSMSValidationCodeFailed_whenRegisterUserAccountCreationDemand_thenReturnCreatedUserAccountId() {
 
 		givenNonExistingMobilePhoneNumber();
 		givenNonExistingEmail();
@@ -177,13 +175,13 @@ public class CreateUserAccountServiceTest {
 		CreateUserAccountCommand command = defaultCreateUserAccountCommandBuilder().build();
 		givenRequestSendingEmailValidationLinkReturns(true);
 		givenRequestSendingSMSValidationCodeReturns(false);
-		boolean result = createUserAccountService.registerUserAccountCreationDemand(command, locale);
-		assertEquals(false, result);
+		Long userAccountId = createUserAccountService.registerUserAccountCreationDemand(command, locale);
+		assertNotNull(userAccountId);
 
 	}
 
 	@Test
-	void givenSendingEmailValidationLinkFailed_whenRegisterUserAccountCreationDemand_thenReturnFalse() {
+	void givenSendingEmailValidationLinkFailed_whenRegisterUserAccountCreationDemand_thenReturnCreatedUserAccountId() {
 
 		givenNonExistingMobilePhoneNumber();
 		givenNonExistingEmail();
@@ -192,8 +190,8 @@ public class CreateUserAccountServiceTest {
 		CreateUserAccountCommand command = defaultCreateUserAccountCommandBuilder().build();
 		givenRequestSendingEmailValidationLinkReturns(false);
 
-		boolean result = createUserAccountService.registerUserAccountCreationDemand(command, locale);
-		assertEquals(false, result);
+		Long userAccountId = createUserAccountService.registerUserAccountCreationDemand(command, locale);
+		assertNotNull(userAccountId);
 
 	}
 
@@ -265,9 +263,7 @@ public class CreateUserAccountServiceTest {
 
 	private String givenPatchUrl(String email, String validationCode) {
 		String result = "SOME_EMAIL_VALIDATION_LINK";
-//		given(createUserAccountService.patchURL(CreateUserAccountService.EMAIL_VALIDATION_URL_TEMPLATE,
-//				serverUrlProperties.getProtocol(), serverUrlProperties.getHost(), serverUrlProperties.getPort(), email,
-//				validationCode)).willReturn(result);
+
 		doReturn(result).when(createUserAccountService).patchURL(any(String.class), any(String.class),
 				any(String.class), any(String.class), any(String.class), any(String.class));
 		return result;

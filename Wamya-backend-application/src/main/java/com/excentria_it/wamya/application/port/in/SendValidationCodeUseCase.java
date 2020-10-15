@@ -6,6 +6,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,11 +14,12 @@ public interface SendValidationCodeUseCase {
 
 	boolean sendSMSValidationCode(SendSMSValidationCodeCommand command, Locale locale);
 
-	boolean sendEmailValidationCode(SendEmailValidationCodeCommand command, Locale locale);
+	boolean sendEmailValidationLink(SendEmailValidationLinkCommand command, Locale locale);
 
 	@Data
 	@AllArgsConstructor
 	@NoArgsConstructor
+	@Builder
 	class SendSMSValidationCodeCommand {
 		@NotNull
 		@Pattern(regexp = "\\A[0-9]{8,10}\\z", message = "{com.excentria_it.wamya.domain.mobilephone.number.message}")
@@ -32,10 +34,11 @@ public interface SendValidationCodeUseCase {
 	@Data
 	@NoArgsConstructor
 	@AllArgsConstructor
-	class SendEmailValidationCodeCommand {
+	@Builder
+	class SendEmailValidationLinkCommand {
 
 		@NotNull
-		@Pattern(regexp = "^[A-Za-z0-9._-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$", message = "{com.excentria_it.wamya.domain.mobilephone.icc.message}")
+		@Pattern(regexp = "^[A-Za-z0-9._-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$", message = "{com.excentria_it.wamya.domain.user.email.message}")
 		String email;
 
 	}

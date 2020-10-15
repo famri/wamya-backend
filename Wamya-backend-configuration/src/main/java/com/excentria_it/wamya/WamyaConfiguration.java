@@ -25,6 +25,7 @@ public class WamyaConfiguration implements WebMvcConfigurer {
 	}
 
 	// I18N validation messages
+	@Bean
 	@ValidationMessageSource
 	public MessageSource validationMessageSource() {
 		ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
@@ -34,11 +35,13 @@ public class WamyaConfiguration implements WebMvcConfigurer {
 
 	}
 
+	@Bean
 	@ViewMessageSource
 	public MessageSource viewMessageSource() {
 		ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
 		messageSource.setBasename("classpath:messages/view/messages");
 		messageSource.setDefaultEncoding("UTF-8");
+
 		return messageSource;
 
 	}

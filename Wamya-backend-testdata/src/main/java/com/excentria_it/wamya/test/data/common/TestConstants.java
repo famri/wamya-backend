@@ -8,7 +8,6 @@ import java.util.Date;
 import java.util.Map;
 
 import com.excentria_it.wamya.common.domain.EmailTemplate;
-import com.excentria_it.wamya.domain.EmailSubject;
 
 public class TestConstants {
 	public static final String DEFAULT_RAW_PASSWORD = "NeDD93816M7F1IlM4nZ3";
@@ -35,8 +34,8 @@ public class TestConstants {
 
 	public static final EmailTemplate DEFAULT_EMAIL_TEMPLATE = EmailTemplate.EMAIL_VALIDATION;
 
-	public static final String DEFAULT_EMAIL_SUBJECT ="EMAIL DEFAULT SUBJECT" ;
-	
+	public static final String DEFAULT_EMAIL_SUBJECT = "EMAIL DEFAULT SUBJECT";
+
 	public static final String DEFAULT_TEMPLATE_BODY = "<h1>This is an email template test</h1>";
 
 	public static Date DEFAULT_DATE_OF_BIRTH;
@@ -54,8 +53,6 @@ public class TestConstants {
 
 		DEFAULT_TEMPLATE_ATTACHEMENTS = Map.of("File_1",
 				new File(classLoader.getResource(attachementName).getFile()).getAbsolutePath());
-		
-		
 
 	}
 

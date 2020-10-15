@@ -3,7 +3,6 @@ server:
   error:
     include-stacktrace: never
 
-#some properties configurations
 code.generator:
   length: 4
 
@@ -41,4 +40,10 @@ spring:
 logging:
   level:
     com.excentria_it.wamya: DEBUG
+    
+#custom configuration properties
+front. url: 
+  protocol: http
+  host: 192.168.50.4
+  port: 8080
   

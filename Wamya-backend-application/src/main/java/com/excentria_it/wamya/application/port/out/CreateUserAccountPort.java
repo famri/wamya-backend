@@ -4,6 +4,6 @@ import com.excentria_it.wamya.domain.UserAccount;
 
 public interface CreateUserAccountPort {
 	
-	void createUserAccount(UserAccount userAccount);
+	Long createUserAccount(UserAccount userAccount);
 
 }
