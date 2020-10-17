@@ -18,7 +18,7 @@ public class EmailRequestListener {
 	public void receiveEmailRequest(EmailMessage message) {
 
 		emailService.sendEmailWithHTMTemplate(message.getFrom(), message.getTo(), message.getSubject(),
-				message.getTemplate(), message.getLocale().getLanguage(), message.getParams(),
+				message.getTemplate(), message.getLanguage(), message.getParams(),
 				message.getAttachements());
 	}
 

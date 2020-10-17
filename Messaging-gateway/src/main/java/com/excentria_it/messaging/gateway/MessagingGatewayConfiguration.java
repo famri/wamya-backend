@@ -1,7 +1,7 @@
 package com.excentria_it.messaging.gateway;
 
-import java.util.Properties;
-
+import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
+import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -13,17 +13,17 @@ public class MessagingGatewayConfiguration {
 	@Bean
 	public JavaMailSender getJavaMailSender() {
 		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-		mailSender.setHost("smtp.gmail.com");
-		mailSender.setPort(587);
-
-		mailSender.setUsername("my.gmail@gmail.com");
-		mailSender.setPassword("password");
-
-		Properties props = mailSender.getJavaMailProperties();
-		props.put("mail.transport.protocol", "smtp");
-		props.put("mail.smtp.auth", "true");
-		props.put("mail.smtp.starttls.enable", "true");
-		props.put("mail.debug", "true");
+//		mailSender.setHost("smtp.gmail.com");
+//		mailSender.setPort(587);
+//
+//		mailSender.setUsername("my.gmail@gmail.com");
+//		mailSender.setPassword("password");
+//
+//		Properties props = mailSender.getJavaMailProperties();
+//		props.put("mail.transport.protocol", "smtp");
+//		props.put("mail.smtp.auth", "true");
+//		props.put("mail.smtp.starttls.enable", "true");
+//		props.put("mail.debug", "true");
 
 		return mailSender;
 	}
@@ -32,4 +32,10 @@ public class MessagingGatewayConfiguration {
 	public RestTemplate restTemplate() {
 		return new RestTemplate();
 	}
+
+	@Bean
+	public MessageConverter messageConverter() {
+		return new Jackson2JsonMessageConverter();
+	}
+
 }

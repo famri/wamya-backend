@@ -1,6 +1,5 @@
 package com.excentria_it.wamya.common.domain;
 
-import java.util.Locale;
 import java.util.Map;
 
 import lombok.Builder;
@@ -15,7 +14,7 @@ public class EmailMessage {
 	private String subject;
 	private EmailTemplate template;
 	private Map<String, String> params;
-	private Locale locale;
+	private String language;
 	private Map<String, String> attachements;
 
 }

@@ -40,8 +40,8 @@ public class RabbitMqMessagingAdapter implements MessagingPort {
 		if (message.getTo() == null) {
 			invalidParametersMessages.add("SMSMessage.to is null");
 		}
-		if (message.getLocale() == null) {
-			invalidParametersMessages.add("SMSMessage.locale is null");
+		if (message.getLanguage() == null) {
+			invalidParametersMessages.add("SMSMessage.language is null");
 		}
 		if (message.getTemplate() == null) {
 			invalidParametersMessages.add("SMSMessage.template is null");
@@ -82,7 +82,7 @@ public class RabbitMqMessagingAdapter implements MessagingPort {
 		if (message.getSubject() == null) {
 			invalidParametersMessages.add("EmailMessage.subject is null");
 		}
-		if (message.getLocale() == null) {
+		if (message.getLanguage() == null) {
 			invalidParametersMessages.add("EmailMessage.locale is null");
 		}
 		if (message.getTemplate() == null) {

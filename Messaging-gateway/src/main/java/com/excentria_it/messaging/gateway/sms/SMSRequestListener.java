@@ -36,7 +36,7 @@ public class SMSRequestListener {
 
 		try {
 			templateManager.loadTemplate(message.getTemplate().name(), message.getParams(), TemplateType.SMS,
-					message.getLocale().getLanguage());
+					message.getLanguage());
 		} catch (FileNotFoundException e1) {
 
 			log.error(e1.getMessage(), e1);

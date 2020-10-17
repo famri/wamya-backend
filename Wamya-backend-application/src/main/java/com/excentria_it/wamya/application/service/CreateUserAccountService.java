@@ -129,7 +129,8 @@ public class CreateUserAccountService implements CreateUserAccountUseCase {
 
 			EmailMessage emailMessage = EmailMessage.builder().from(EmailSender.WAMYA_TEAM).to(email)
 					.subject(messageSource.getMessage(EmailSubject.EMAIL_VALIDATION, null, locale))
-					.template(EmailTemplate.EMAIL_VALIDATION).params(emailTemplateParams).locale(locale).build();
+					.template(EmailTemplate.EMAIL_VALIDATION).params(emailTemplateParams).language(locale.getLanguage())
+					.build();
 
 			messagingPort.sendEmailMessage(emailMessage);
 
@@ -148,7 +149,8 @@ public class CreateUserAccountService implements CreateUserAccountUseCase {
 				validationCode);
 
 		SMSMessage smsMessage = SMSMessage.builder().to(mobileNumber.toCallable())
-				.template(SMSTemplate.PHONE_VALIDATION).params(smsTemplateParams).locale(locale).build();
+				.template(SMSTemplate.PHONE_VALIDATION).params(smsTemplateParams).language(locale.getLanguage())
+				.build();
 		try {
 			messagingPort.sendSMSMessage(smsMessage);
 		} catch (IllegalArgumentException e) {

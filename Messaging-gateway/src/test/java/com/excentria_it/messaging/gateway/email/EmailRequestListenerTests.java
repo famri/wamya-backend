@@ -28,7 +28,7 @@ public class EmailRequestListenerTests {
 		emailRequestListener.receiveEmailRequest(emailMessage);
 
 		then(emailService).should(times(1)).sendEmailWithHTMTemplate(emailMessage.getFrom(), emailMessage.getTo(),
-				emailMessage.getSubject(), emailMessage.getTemplate(), emailMessage.getLocale().getLanguage(),
+				emailMessage.getSubject(), emailMessage.getTemplate(), emailMessage.getLanguage(),
 				emailMessage.getParams(), emailMessage.getAttachements());
 
 	}

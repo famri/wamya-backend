@@ -3,7 +3,6 @@ package com.excentria_it.wamya.test.data.common;
 import static com.excentria_it.wamya.test.data.common.TestConstants.*;
 
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import com.excentria_it.wamya.common.domain.SMSMessage;
@@ -19,6 +18,6 @@ public class SMSMessageTestData {
 
 		});
 		return SMSMessage.builder().to(DEFAULT_CALLABLE_MOBILE_NUMBER).template(SMSTemplate.PHONE_VALIDATION)
-				.params(params).locale(new Locale("fr"));
+				.params(params).language(TestConstants.DEFAULT_TEMPLATE_LANGUAGE);
 	}
 }

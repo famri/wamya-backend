@@ -52,9 +52,9 @@ public class RabbitMqMessagingAdapterTests {
 	}
 
 	@Test
-	void givenNullLocale_WhenValidateSMSMessage_ThenShouldThrowIllegalArgumentException() {
+	void givenNullLanguage_WhenValidateSMSMessage_ThenShouldThrowIllegalArgumentException() {
 		SMSMessageBuilder sMSMessageBuilder = SMSMessageTestData.defaultSMSMessageBuilder();
-		sMSMessageBuilder.locale(null);
+		sMSMessageBuilder.language(null);
 
 		assertThrows(IllegalArgumentException.class,
 				() -> rabbitMqMessagingAdapter.validateSMSMessage(sMSMessageBuilder.build()));
@@ -99,10 +99,10 @@ public class RabbitMqMessagingAdapterTests {
 	}
 
 	@Test
-	void givenNullToAndNullLocale_WhenValidateSMSMessage_ThenShouldThrowIllegalArgumentException() {
+	void givenNullToAndNullLanguage_WhenValidateSMSMessage_ThenShouldThrowIllegalArgumentException() {
 		SMSMessageBuilder sMSMessageBuilder = SMSMessageTestData.defaultSMSMessageBuilder();
 		sMSMessageBuilder.to(null);
-		sMSMessageBuilder.locale(null);
+		sMSMessageBuilder.language(null);
 
 		assertThrows(IllegalArgumentException.class,
 				() -> rabbitMqMessagingAdapter.validateSMSMessage(sMSMessageBuilder.build()));
@@ -144,9 +144,9 @@ public class RabbitMqMessagingAdapterTests {
 	}
 
 	@Test
-	void givenNullLocale_WhenValidateEmailMessage_ThenShouldThrowIllegalArgumentException() {
+	void givenNullLanguage_WhenValidateEmailMessage_ThenShouldThrowIllegalArgumentException() {
 		EmailMessageBuilder emailMessageBuilder = EmailMessageTestData.defaultEmailMessageBuilder();
-		emailMessageBuilder.locale(null);
+		emailMessageBuilder.language(null);
 
 		assertThrows(IllegalArgumentException.class,
 				() -> rabbitMqMessagingAdapter.validateEmailMessage(emailMessageBuilder.build()));

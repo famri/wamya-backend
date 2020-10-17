@@ -97,7 +97,7 @@ public class SMSRequestListenerTests {
 
 		try {
 			given(templateManager.loadTemplate(message.getTemplate().name(), message.getParams(), TemplateType.SMS,
-					message.getLocale().getLanguage())).willThrow(FileNotFoundException.class);
+					message.getLanguage())).willThrow(FileNotFoundException.class);
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -122,7 +122,7 @@ public class SMSRequestListenerTests {
 		try {
 
 			given(templateManager.loadTemplate(message.getTemplate().name(), message.getParams(), TemplateType.SMS,
-					message.getLocale().getLanguage())).willReturn(true);
+					message.getLanguage())).willReturn(true);
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -17,7 +17,7 @@ public class EmailMessageTestData {
 		EmailMessageBuilder result = EmailMessage.builder().from(TestConstants.DEFAULT_FROM_EMAIL)
 				.to(TestConstants.DEFAULT_EMAIL).subject(TestConstants.DEFAULT_EMAIL_SUBJECT)
 				.template(TestConstants.DEFAULT_EMAIL_TEMPLATE).params(params)
-				.locale(new Locale(TestConstants.DEFAULT_TEMPLATE_LANGUAGE));
+				.language(TestConstants.DEFAULT_TEMPLATE_LANGUAGE);
 
 		return result;
 	}

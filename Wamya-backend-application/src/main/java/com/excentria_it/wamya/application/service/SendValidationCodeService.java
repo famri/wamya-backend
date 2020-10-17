@@ -59,7 +59,7 @@ public class SendValidationCodeService implements SendValidationCodeUseCase {
 			updateSMSValidationCode(userAccount, validationCode);
 
 			messagingPort.sendSMSMessage(SMSMessage.builder().template(SMSTemplate.PHONE_VALIDATION)
-					.to(mobilePhoneNumber.toCallable()).locale(locale)
+					.to(mobilePhoneNumber.toCallable()).language(locale.getLanguage())
 					.params(Map.of(SMSTemplate.PHONE_VALIDATION.getTemplateParams().get(0), validationCode)).build());
 
 			return true;
@@ -83,7 +83,7 @@ public class SendValidationCodeService implements SendValidationCodeUseCase {
 					.subject(messageSource.getMessage(EmailSubject.EMAIL_VALIDATION, null, locale))
 					.template(EmailTemplate.EMAIL_VALIDATION)
 					.params(Map.of(EmailTemplate.EMAIL_VALIDATION.getTemplateParams().get(0), validationCode))
-					.locale(locale).build());
+					.language(locale.getLanguage()).build());
 			return true;
 		} else {
 			throw new UserEmailValidationException(
