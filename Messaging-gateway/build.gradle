@@ -1,0 +1,46 @@
+plugins {
+	id 'org.springframework.boot' version '2.3.1.RELEASE'
+}
+
+group = 'com.excentria_it'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	compile("org.springframework.boot:spring-boot-devtools")
+	compile group: 'org.antlr', name: 'ST4', version: '4.3'
+	
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+        
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
+	implementation project(':Wamya-backend-common')
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-amqp'
+	implementation ('org.springframework.boot:spring-boot-starter-validation')
+	 
+	testImplementation('org.springframework.boot:spring-boot-starter-test') {
+		 exclude group: 'junit' // excluding junit 4
+	}
+	testImplementation 'org.springframework.amqp:spring-rabbit-test'
+	testImplementation	'org.junit.jupiter:junit-jupiter-api'
+    testRuntimeOnly 	'org.junit.jupiter:junit-jupiter-engine'
+    testRuntimeOnly 	'org.junit.vintage:junit-vintage-engine'
+  	testRuntimeOnly 	'org.junit.platform:junit-platform-launcher'
+    testImplementation 	'org.mockito:mockito-junit-jupiter'
+    testImplementation 	'com.tngtech.archunit:archunit:0.9.3'
+    testImplementation 	'de.adesso:junit-insights:1.1.0'
+    testImplementation 	'com.h2database:h2'
+    testImplementation project(':Wamya-backend-testdata')
+
+}
+
+test {
+	useJUnitPlatform()
+	systemProperty 'de.adesso.junitinsights.enabled', 'true'
+	testLogging.showStandardStreams = true
+}

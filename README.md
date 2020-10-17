@@ -1,17 +1,21 @@
-# Example Implementation of a Hexagonal Architecture
+# Wamya backend application and messaging gateway (sms and email) application 
 
-[![Build Status](https://travis-ci.org/thombergs/buckpal.svg?branch=master)](https://travis-ci.org/thombergs/buckpal)
+This is the source code for wamya application and the messaging gateway (sms & email)
 
-This is the companion code to my eBook [Get Your Hands Dirty on Clean Architecture](https://leanpub.com/get-your-hands-dirty-on-clean-architecture).
 
-It implements a domain-centric "Hexagonal" approach of a common web application with Java and Spring Boot. 
+## Official website
 
-## Companion Articles
+* [Excentira IT](https://excentria-it.com)
 
-* [Hexagonal Architecture with Java and Spring](https://reflectoring.io/spring-hexagonal/)
-* [Building a Multi-Module Spring Boot Application with Gradle](https://reflectoring.io/spring-boot-gradle-multi-module/)
+## Getting started: How To ?
 
-## Prerequisites
-
-* JDK 8
-* this project uses Lombok, so enable annotation processing in your IDE
+* clone the source code 
+* download and install VirtualBox from [virtualbox.org](https://www.virtualbox.org/wiki/Downloads)
+* download and install Vagrant on your development machine from [vagrantup.com](https://www.vagrantup.com/)
+* open command line terminal in Wamya-backend folder 
+* run "vagrant up" from command line terminal and wait for development environment set up
+* if vagrant up succeded, run "vagrant ssh" into command line terminal while in Wamya-backend folder to log into the virtual machine that holds the development environment 
+* once in the vagrant machine, go to /vagrant/Wamya-backend-configuration folder
+* run "docker-compose stop <service name>" to stop any service from those defined in docker-compose.yml
+* run "docker-compose build" to rebuild the services docker-compose.yml if code changes
+* run "docker-compose start <service name>" to start any service from those defined in docker-compose.yml

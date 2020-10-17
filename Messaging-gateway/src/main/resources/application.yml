@@ -1,0 +1,59 @@
+server:
+  port: 8585
+  error:
+    include-stacktrace: never
+
+---
+server:
+  error:
+    include-stacktrace: always
+  
+spring:
+  profiles: development
+  devtools:
+    remote:
+      secret: test
+  rabbitmq:
+    host: rabbitmq
+    port: 5672
+    username: ${RABBITMQ_USER}
+    password: ${RABBITMQ_PASS}
+    
+logging:
+  level:
+    com.excentria_it.wamya: DEBUG
+    
+sms.gateway:
+  host: ${SMS_GATEWAY_HOST}
+  port: ${SMS_GATEWAY_PORT}
+  username: ${SMS_GATEWAY_USERNAME}
+  password: ${SMS_GATEWAY_PASSWORD}
+
+#gmail SMTP server properties
+spring.mail:
+  host: smtp.gmail.com
+  port: 587
+  username: amri.foued@gmail.com
+  password: nuzvqkqdposcqabc
+  properties.mail.smtp:
+    auth: true
+    starttls.enable: true
+ 
+---
+spring:
+  profiles: localtest
+sms.gateway:
+ host: ${SMS_GATEWAY_HOST}
+ port: ${SMS_GATEWAY_PORT}
+ username: ${SMS_GATEWAY_USERNAME}
+ password: ${SMS_GATEWAY_PASSWORD}
+
+#gmail SMTP server properties
+spring.mail:
+  host: smtp.gmail.com
+  port: 587
+  username: amri.foued@gmail.com
+  password: nuzvqkqdposcqabc
+  properties.mail.smtp:
+    auth: true
+    starttls.enable: true

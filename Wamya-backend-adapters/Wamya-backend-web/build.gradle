@@ -2,8 +2,9 @@ dependencies {
     compile("org.springframework.boot:spring-boot-devtools")
     implementation project(':Wamya-backend-common')
     implementation project(':Wamya-backend-application')
-    
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    
     
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
@@ -12,14 +13,20 @@ dependencies {
         exclude group: 'junit' // excluding junit 4
     }
     
-    testImplementation	'org.junit.jupiter:junit-jupiter-api'
     testRuntimeOnly 	'org.junit.jupiter:junit-jupiter-engine'
     testRuntimeOnly 	'org.junit.vintage:junit-vintage-engine'
-  	testRuntimeOnly 	'org.junit.platform:junit-platform-launcher'
-    testImplementation 	'org.mockito:mockito-junit-jupiter:3.3.3'
+  	testRuntimeOnly		'org.junit.platform:junit-platform-launcher'
+  	
+    testImplementation	'org.junit.jupiter:junit-jupiter-api'
+    testImplementation 	'org.mockito:mockito-junit-jupiter'
     testImplementation 	'com.tngtech.archunit:archunit:0.9.3'
     testImplementation 	'de.adesso:junit-insights:1.1.0'
-    testImplementation project(':Wamya-backend-testdata')
+    testImplementation 	project(':Wamya-backend-testdata')
+
+
+    
+    
+    
 }
 
 test {

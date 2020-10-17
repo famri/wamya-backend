@@ -4,7 +4,7 @@ plugins {
 
 subprojects {
 
-    group = 'com.codisiac.wamya'
+    group = 'com.excentria_it.wamya'
     version = '0.0.1-SNAPSHOT'
 
     apply plugin: 'java'
@@ -27,7 +27,7 @@ subprojects {
 					minimum = 1.0
 				}
 				excludes = [
-					//'com.codisiac.wamya.WamyaApplication' #commented because redendent when @Generated is used
+					//'com.excentria_it.wamya.WamyaApplication' #commented because redendent when @Generated is used
 				]
 			}
 		}
