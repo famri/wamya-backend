@@ -25,8 +25,8 @@ services:
     mem_limit: 512m
     container_name: rabbitmq
     ports:
-      - 5672:5672
-      - 15672:15672
+      - "5672:5672"
+      - "15672:15672"
 
 #    environment:
 #      - RABBITMQ_DEFAULT_USER=dev
@@ -35,28 +35,26 @@ services:
       - ../rabbitmq/conf/definitions.json:/opt/definitions.json:ro
       - ../rabbitmq/conf/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
     healthcheck:
-#        test: [ "CMD", "nc", "-z", "localhost", "5672" ]
       test: ["CMD", "rabbitmqctl", "status"]
       interval: 5s
       timeout: 15s
       retries: 3
 # THE KANNEL SMS GATEWAY
   kannel:
-    image: bulktrade/kannel:r5159
+    build: ../kannel
     container_name: kannel
     ports:
-      - 13013 # smsbox
-      - 13000 # kannel admin
-#    entrypoint: []
-    volumes:
-      - ../kannel/conf/kannel.conf:/etc/kannel/kannel.conf
-#      - ../../kannel_vagrant_sms_gateway:/var/logs
-#    - "./opensmppbox.conf:/etc/kannel/opensmppbox.conf"
-#    healthcheck:
-#      test: [ "CMD", "nc", "-z", "localhost", "5672" ]
-#      interval: 5s
-#      timeout: 15s
-#      retries: 3
+      - "13001:13001" # smsbox
+      - "13000:13000" # kannel admin
+#    volumes:
+#      - ../kannel/conf/kannel.conf:/etc/kannel/kannel.conf
+#    - "../kannel/conf/opensmppbox.conf:/etc/kannel/opensmppbox.conf"
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:13000/status?password=admin || exit 1"]
+      interval: 5s
+      timeout: 15s
+      retries: 3
+      start_period: 10s
 
           
 # THE SPRING BOOT WAMYA APP
@@ -96,8 +94,8 @@ services:
       - RABBITMQ_PASS=dev  
     entrypoint: ["java", "-Djava.security.egd=file:/dev/./urandom", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:9595", "-jar", "/messaging-gateway.jar"]
     depends_on:
-#      kannel:
-#        condition: service_healthy 
+      kannel:
+        condition: service_healthy 
       rabbitmq:
         condition: service_healthy
      
