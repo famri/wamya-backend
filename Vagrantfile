@@ -75,7 +75,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.synced_folder "Messaging-gateway", "/vagrant/Messaging-gateway"
   config.vm.synced_folder "rabbitmq", "/vagrant/rabbitmq"
   config.vm.synced_folder "kannel", "/vagrant/kannel"
-#  config.vm.synced_folder "../kannel_vagrant_sms_gateway", "/vagrant/kannel_vagrant_sms_gateway"
   
   config.vm.network "private_network", ip: "192.168.50.4"
   config.vm.network "forwarded_port", guest: 22, host: 2222
