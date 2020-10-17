@@ -6,11 +6,15 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "international_calling_code")
+@NoArgsConstructor
+@AllArgsConstructor
 @Data
 @Builder
 public class InternationalCallingCodeJpaEntity {

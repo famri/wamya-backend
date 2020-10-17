@@ -72,12 +72,20 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   
   config.vm.synced_folder ".", "/vagrant", disabled: true
   config.vm.synced_folder "Wamya-backend-configuration", "/vagrant/Wamya-backend-configuration"
+  config.vm.synced_folder "Messaging-gateway", "/vagrant/Messaging-gateway"
+  config.vm.synced_folder "rabbitmq", "/vagrant/rabbitmq"
+  config.vm.synced_folder "kannel", "/vagrant/kannel"
+#  config.vm.synced_folder "../kannel_vagrant_sms_gateway", "/vagrant/kannel_vagrant_sms_gateway"
   
   config.vm.network "private_network", ip: "192.168.50.4"
   config.vm.network "forwarded_port", guest: 22, host: 2222
   config.vm.network "forwarded_port", guest: 5432, host: 5432
   config.vm.network "forwarded_port", guest: 8080, host: 8080
   config.vm.network "forwarded_port", guest: 9090, host: 9090
+  config.vm.network "forwarded_port", guest: 8585, host: 8585
+  config.vm.network "forwarded_port", guest: 9595, host: 9595
   config.vm.network "forwarded_port", guest: 15672, host: 15672
-
+  config.vm.network "forwarded_port", guest: 13000, host: 13000
+  config.vm.network "forwarded_port", guest: 13001, host: 13001
+  
 end

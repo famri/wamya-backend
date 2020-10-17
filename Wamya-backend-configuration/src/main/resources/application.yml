@@ -3,13 +3,13 @@ server:
   error:
     include-stacktrace: never
 
-code.generator:
-  length: 4
 
 ---
 server:
+  port: 8080
   error:
     include-stacktrace: always
+
 spring:
   profiles: development
   devtools:
@@ -30,6 +30,7 @@ spring:
     url: jdbc:postgresql://database:5432/${POSTGRES_DB}
     username: ${POSTGRES_USER}
     password: ${POSTGRES_PASSWORD}
+    initialization-mode: always
   
   rabbitmq:
     host: rabbitmq
@@ -37,13 +38,36 @@ spring:
     username: ${RABBITMQ_USER}
     password: ${RABBITMQ_PASS}
 
+
+#phone number and email validation code generator properties
+code.generator.length: 4
+
+#the url properties of the front server
+front.url:
+  protocol: http
+  host: 192.168.50.4
+  port: 8080
+
+
+
 logging:
   level:
     com.excentria_it.wamya: DEBUG
     
-#custom configuration properties
-front. url: 
+  
+---
+spring:
+  profiles: localtest
+#phone number and email validation code generator properties
+code.generator:
+  length: 4
+
+#the url properties of the front server
+front.url:
   protocol: http
   host: 192.168.50.4
   port: 8080
-  
+
+logging:
+  level:
+    com.excentria_it.wamya: DEBUG

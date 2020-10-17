@@ -24,7 +24,7 @@ import com.excentria_it.wamya.application.port.in.SendValidationCodeUseCase.Send
 import com.excentria_it.wamya.application.port.out.LoadUserAccountPort;
 import com.excentria_it.wamya.application.port.out.MessagingPort;
 import com.excentria_it.wamya.application.port.out.UpdateUserAccountPort;
-import com.excentria_it.wamya.common.CodeGenerator;
+import com.excentria_it.wamya.application.service.helper.CodeGenerator;
 import com.excentria_it.wamya.common.domain.EmailMessage;
 import com.excentria_it.wamya.common.domain.SMSMessage;
 import com.excentria_it.wamya.common.exception.UserAccountNotFoundException;

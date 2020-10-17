@@ -18,7 +18,7 @@ import com.excentria_it.wamya.application.port.out.CreateUserAccountPort;
 import com.excentria_it.wamya.application.port.out.LoadUserAccountPort;
 import com.excentria_it.wamya.application.port.out.MessagingPort;
 import com.excentria_it.wamya.application.props.ServerUrlProperties;
-import com.excentria_it.wamya.common.CodeGenerator;
+import com.excentria_it.wamya.application.service.helper.CodeGenerator;
 import com.excentria_it.wamya.common.annotation.UseCase;
 import com.excentria_it.wamya.common.annotation.ViewMessageSource;
 import com.excentria_it.wamya.common.domain.EmailMessage;

@@ -3,13 +3,11 @@ package com.excentria_it.wamya.application.service.helper.impl;
 import org.springframework.stereotype.Component;
 
 import com.excentria_it.wamya.application.props.CodeGeneratorProperties;
-import com.excentria_it.wamya.common.CodeGenerator;
+import com.excentria_it.wamya.application.service.helper.CodeGenerator;
 
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 
 @AllArgsConstructor
-@NoArgsConstructor
 @Component
 public class CodeGeneratorImpl implements CodeGenerator {
 

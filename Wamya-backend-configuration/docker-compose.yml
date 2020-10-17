@@ -20,23 +20,45 @@ services:
       retries: 5
       
 #### THE RABBITMQ
-    rabbitmq:
-      image: rabbitmq:3.8.5-management-alpine
-      container_name: rabbitmq
-      ports:
-        - 5672:5672
-        - 15672:15672
-      mem_limit: 512m
-      environment:
-        - RABBITMQ_DEFAULT_USER=dev
-        - RABBITMQ_DEFAULT_PASS=dev
+  rabbitmq:
+    image: rabbitmq:3.8.5-management-alpine
+    mem_limit: 512m
+    container_name: rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
 
-      healthcheck:
-        test: [ "CMD", "nc", "-z", "localhost", "5672" ]
-        interval: 5s
-        timeout: 15s
-        retries: 3
-        
+#    environment:
+#      - RABBITMQ_DEFAULT_USER=dev
+#      - RABBITMQ_DEFAULT_PASS=dev
+    volumes:
+      - ../rabbitmq/conf/definitions.json:/opt/definitions.json:ro
+      - ../rabbitmq/conf/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
+    healthcheck:
+#        test: [ "CMD", "nc", "-z", "localhost", "5672" ]
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 5s
+      timeout: 15s
+      retries: 3
+# THE KANNEL SMS GATEWAY
+  kannel:
+    image: bulktrade/kannel:r5159
+    container_name: kannel
+    ports:
+      - 13013 # smsbox
+      - 13000 # kannel admin
+#    entrypoint: []
+    volumes:
+      - ../kannel/conf/kannel.conf:/etc/kannel/kannel.conf
+#      - ../../kannel_vagrant_sms_gateway:/var/logs
+#    - "./opensmppbox.conf:/etc/kannel/opensmppbox.conf"
+#    healthcheck:
+#      test: [ "CMD", "nc", "-z", "localhost", "5672" ]
+#      interval: 5s
+#      timeout: 15s
+#      retries: 3
+
+          
 # THE SPRING BOOT WAMYA APP
   wamya:
     build: .
@@ -59,7 +81,26 @@ services:
         condition: service_healthy
 # THE SPRING BOOT messaging-gateway APP  
   messaging-gateway:
-    build: .   
+    build: ../Messaging-gateway
+    mem_limit: 512m
+    ports:
+      - "9595:9595"
+      - "8585:8585"
+    environment:
+      - SPRING_PROFILES_ACTIVE=development
+      - SMS_GATEWAY_HOST=kannel
+      - SMS_GATEWAY_PORT=13013
+      - SMS_GATEWAY_USERNAME=user
+      - SMS_GATEWAY_PASSWORD=user
+      - RABBITMQ_USER=dev
+      - RABBITMQ_PASS=dev  
+    entrypoint: ["java", "-Djava.security.egd=file:/dev/./urandom", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:9595", "-jar", "/messaging-gateway.jar"]
+    depends_on:
+#      kannel:
+#        condition: service_healthy 
+      rabbitmq:
+        condition: service_healthy
+     
 volumes:
   database-data:
     driver: local

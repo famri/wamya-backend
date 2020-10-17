@@ -14,11 +14,15 @@ import javax.persistence.Table;
 
 import com.excentria_it.wamya.domain.Gender;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "user_account")
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 @Data
 public class UserAccountJpaEntity {
