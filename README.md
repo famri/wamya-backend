@@ -13,6 +13,7 @@ This is the source code for wamya application and the messaging gateway (sms & e
 * download and install VirtualBox from [virtualbox.org](https://www.virtualbox.org/wiki/Downloads)
 * download and install Vagrant on your development machine from [vagrantup.com](https://www.vagrantup.com/)
 * open command line terminal in Wamya-backend folder 
+* run "./gradlew build" to build the source code
 * run "vagrant up" from command line terminal and wait for development environment set up
 * if vagrant up succeded, run "vagrant ssh" into command line terminal while in Wamya-backend folder to log into the virtual machine that holds the development environment 
 * once in the vagrant machine, go to /vagrant/Wamya-backend-configuration folder
