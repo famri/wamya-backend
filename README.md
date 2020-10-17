@@ -19,3 +19,7 @@ This is the source code for wamya application and the messaging gateway (sms & e
 * run "docker-compose stop <service name>" to stop any service from those defined in docker-compose.yml
 * run "docker-compose build" to rebuild the services docker-compose.yml if code changes
 * run "docker-compose start <service name>" to start any service from those defined in docker-compose.yml
+* use [http://192.168.50.4:8080](http://192.168.50.4:8080) to query the Wamya-backend application
+* use [http://localhost:15672/](http://localhost:15672/) to configure RabbitMQ broker
+* use [http://192.168.50.4:13000/status?password=admin](http://192.168.50.4:13000/status?password=admin) to check the kannel sms gateway status
+
