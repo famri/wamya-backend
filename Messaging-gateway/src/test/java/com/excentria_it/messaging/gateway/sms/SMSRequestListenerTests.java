@@ -6,7 +6,6 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.*;
 
-import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 
 import org.junit.jupiter.api.Test;
@@ -17,6 +16,7 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.excentria_it.messaging.gateway.common.TemplateManager;
@@ -37,7 +37,7 @@ public class SMSRequestListenerTests {
 
 	@Spy
 	@InjectMocks
-	private SMSRequestListener smsRequestListener;
+	private SMSRequestReceiver smsRequestReceiver;
 
 	@Test
 	void givenValidSMSMessage_ThenShouldReturnTrue() {
@@ -52,7 +52,7 @@ public class SMSRequestListenerTests {
 
 		givenRestTemplateWillMakeTheCall(message);
 
-		Boolean result = smsRequestListener.receiveSMSRequest(message);
+		Boolean result = smsRequestReceiver.receiveSMSRequest(message);
 
 		assertThat(result);
 
@@ -61,13 +61,13 @@ public class SMSRequestListenerTests {
 	@Test
 	void givenInexistingSMSTemplateName_ThenShouldReturnFalse() {
 		SMSMessage message = defaultSMSMessageBuilder().build();
-		givenTemplateManagerLoadTemplateThrowsFileNotFoundExcepion(message);
-		Boolean result = smsRequestListener.receiveSMSRequest(message);
+		givenTemplateManagerLoadTemplateReturnsFalse(message);
+		Boolean result = smsRequestReceiver.receiveSMSRequest(message);
 		assertThat(!result);
 	}
 
 	@Test
-	void givenUnsupportedEncoding_ThenShouldReturnFalse() {
+	void givenUnsupportedEncoding_ThenShouldReturnFalse() throws UnsupportedEncodingException {
 		SMSMessage message = defaultSMSMessageBuilder().build();
 
 		givenTemplateManagerLoadsTemplateCorrectly(message);
@@ -76,32 +76,40 @@ public class SMSRequestListenerTests {
 
 		givenToURIEncodedThrowsUnsupportedEncodingException(templateBody);
 
-		Boolean result = smsRequestListener.receiveSMSRequest(message);
+		Boolean result = smsRequestReceiver.receiveSMSRequest(message);
 
 		assertThat(!result);
 	}
 
-	private void givenToURIEncodedThrowsUnsupportedEncodingException(String content) {
+	@Test
+	void givenRestTemplateThrowsException_ThenShouldReturnFalse() {
 
-		try {
-			doThrow(UnsupportedEncodingException.class).when(smsRequestListener).toURIEncoded(content,
-					java.nio.charset.StandardCharsets.UTF_8);
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		SMSMessage message = defaultSMSMessageBuilder().build();
+
+		givenTemplateManagerLoadsTemplateCorrectly(message);
+
+		String templateBody = givenTemplateManagerRendersTemplateCorrectly();
+
+		doThrow(RestClientException.class).when(restTemplate).getForEntity(any(String.class), any(Class.class),
+				any(String.class), any(String.class), any(String.class), any(String.class), any(String.class),
+				any(String.class));
+
+		Boolean result = smsRequestReceiver.receiveSMSRequest(message);
+
+		assertThat(!result);
+	}
+
+	private void givenToURIEncodedThrowsUnsupportedEncodingException(String content) throws UnsupportedEncodingException {
+
+		doThrow(UnsupportedEncodingException.class).when(smsRequestReceiver).toURIEncoded(content,
+				java.nio.charset.StandardCharsets.UTF_8);
 
 	}
 
-	private void givenTemplateManagerLoadTemplateThrowsFileNotFoundExcepion(SMSMessage message) {
+	private void givenTemplateManagerLoadTemplateReturnsFalse(SMSMessage message) {
 
-		try {
-			given(templateManager.loadTemplate(message.getTemplate().name(), message.getParams(), TemplateType.SMS,
-					message.getLanguage())).willThrow(FileNotFoundException.class);
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		given(templateManager.loadTemplate(message.getTemplate().name(), message.getParams(), TemplateType.SMS,
+				message.getLanguage())).willReturn(false);
 
 	}
 
@@ -119,14 +127,9 @@ public class SMSRequestListenerTests {
 	}
 
 	private void givenTemplateManagerLoadsTemplateCorrectly(SMSMessage message) {
-		try {
 
-			given(templateManager.loadTemplate(message.getTemplate().name(), message.getParams(), TemplateType.SMS,
-					message.getLanguage())).willReturn(true);
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		given(templateManager.loadTemplate(message.getTemplate().name(), message.getParams(), TemplateType.SMS,
+				message.getLanguage())).willReturn(true);
 
 	}
 

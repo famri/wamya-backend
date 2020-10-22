@@ -1,7 +1,6 @@
 package com.excentria_it.messaging.gateway.common;
 
-import java.io.FileNotFoundException;
-import java.net.URL;
+import java.io.File;
 import java.util.Map;
 
 import org.springframework.stereotype.Component;
@@ -11,19 +10,20 @@ import org.stringtemplate.v4.STRawGroupDir;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
 @RequiredArgsConstructor
+@Getter
+@Slf4j
 public class TemplateManagerImpl implements TemplateManager {
-
-	@Getter
-	private String templatesBaseDir;
 
 	private ST stTemplate;
 
-	@Getter
+	private String templatesBaseDir;
+
 	private boolean loaded = false;
-	@Getter
+
 	private boolean configured = false;
 
 	public void configure(String templatesBaseDir) {
@@ -33,25 +33,25 @@ public class TemplateManagerImpl implements TemplateManager {
 	}
 
 	public boolean loadTemplate(String templateName, Map<String, String> templateParams, TemplateType templateType,
-			String language) throws FileNotFoundException {
+			String language) {
 		if (!configured)
 			throw new IllegalStateException(String
 					.format("TemplateManager should be configured via configure() before calling loadTemplate()"));
+
 		String localeTemplateName = new StringBuilder(templateName).append("_").append(language).toString()
 				.toLowerCase();
 
-		URL templateURL = getClass().getClassLoader()
-				.getResource(templatesBaseDir + "/" + templateType.name() + "/" + localeTemplateName + ".st");
-
-		if (templateURL == null) {
-			throw new FileNotFoundException(String.format("Template %s does not exist: ", localeTemplateName));
-		}
-		String templateSubDir = new StringBuilder(templatesBaseDir).append("/")
+		String templateSubDir = new StringBuilder(templatesBaseDir).append(File.separator)
 				.append(templateType.name().toLowerCase()).toString();
+
 		STGroup group = new STRawGroupDir(templateSubDir, "UTF-8", '$', '$');
 
 		stTemplate = group.getInstanceOf(localeTemplateName);
 
+		if (stTemplate == null) {
+			log.error("Template not found:" + templateSubDir + File.separator + localeTemplateName);
+			return false;
+		}
 		if (templateParams != null) {
 			templateParams.forEach((k, v) -> {
 

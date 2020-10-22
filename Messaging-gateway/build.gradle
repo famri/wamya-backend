@@ -12,6 +12,7 @@ repositories {
 
 dependencies {
 	compile("org.springframework.boot:spring-boot-devtools")
+	compile("org.springframework.boot:spring-boot-starter-actuator")
 	compile group: 'org.antlr', name: 'ST4', version: '4.3'
 	
 	compileOnly 'org.projectlombok:lombok'

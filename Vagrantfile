@@ -46,7 +46,7 @@ INSTALL_DOCKER
 #A shell script to bring spring boot app and database containers up in Vagrant VM
 $docker_compose = <<-'RUN_DOCKER_COMPOSE'
 
- cd /vagrant/Wamya-backend-configuration && docker-compose up --build -d
+ cd /vagrant/Messaging-gateway && docker-compose up --build -d && cd /vagrant/Wamya-backend && docker-compose up --build -d
 
 RUN_DOCKER_COMPOSE
 
@@ -60,31 +60,34 @@ DATABASE_VOLUME
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   
-  config.vm.box = "ubuntu/eoan64" 
+  config.vm.define "dev_env" do |dev|
+		dev.vm.box = "ubuntu/eoan64"
+	  	dev.vm.provider "virtualbox" do |vb|
+	  	  vb.memory = "2048"
+	  	  vb.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
+	  	end
+	  	dev.vm.disk :disk, size: "20GB", primary: true
+	  	dev.vm.provision "shell", inline: $bootstrap, args: VAGRANT_USER
+		dev.vm.provision "shell", inline: $create_database_volume
+#		dev.vm.provision "shell", inline: $docker_compose, run: 'always'
   
-  config.vm.provider "virtualbox" do |vb|
-    vb.memory = "2048"
-  end
-  
-  config.vm.provision "shell", inline: $bootstrap, args: VAGRANT_USER
-  config.vm.provision "shell", inline: $create_database_volume
-  config.vm.provision "shell", inline: $docker_compose, run: 'always'
-  
-  config.vm.synced_folder ".", "/vagrant", disabled: true
-  config.vm.synced_folder "Wamya-backend-configuration", "/vagrant/Wamya-backend-configuration"
-  config.vm.synced_folder "Messaging-gateway", "/vagrant/Messaging-gateway"
-  config.vm.synced_folder "rabbitmq", "/vagrant/rabbitmq"
-  config.vm.synced_folder "kannel", "/vagrant/kannel"
-  
-  config.vm.network "private_network", ip: "192.168.50.4"
-  config.vm.network "forwarded_port", guest: 22, host: 2222
-  config.vm.network "forwarded_port", guest: 5432, host: 5432
-  config.vm.network "forwarded_port", guest: 8080, host: 8080
-  config.vm.network "forwarded_port", guest: 9090, host: 9090
-  config.vm.network "forwarded_port", guest: 8585, host: 8585
-  config.vm.network "forwarded_port", guest: 9595, host: 9595
-  config.vm.network "forwarded_port", guest: 15672, host: 15672
-  config.vm.network "forwarded_port", guest: 13000, host: 13000
-  config.vm.network "forwarded_port", guest: 13001, host: 13001
-  
+		dev.vm.synced_folder ".", "/vagrant", disabled: true
+		dev.vm.synced_folder "Wamya-backend-configuration", "/vagrant/Wamya-backend-configuration"		
+		dev.vm.synced_folder "Messaging-gateway", "/vagrant/Messaging-gateway"
+
+
+		dev.vm.network "private_network", ip: "192.168.50.4"
+		dev.vm.network "forwarded_port", guest: 22, host: 2222
+		dev.vm.network "forwarded_port", guest: 5432, host: 5432
+		dev.vm.network "forwarded_port", guest: 8080, host: 8080
+		dev.vm.network "forwarded_port", guest: 9090, host: 9090
+		dev.vm.network "forwarded_port", guest: 8585, host: 8585
+		dev.vm.network "forwarded_port", guest: 9595, host: 9595
+		dev.vm.network "forwarded_port", guest: 15672, host: 15672
+		dev.vm.network "forwarded_port", guest: 13000, host: 13000
+		dev.vm.network "forwarded_port", guest: 13013, host: 13013
+		dev.vm.network "forwarded_port", guest: 8025, host: 8025
+		
+
+	end
 end

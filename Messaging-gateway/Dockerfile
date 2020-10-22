@@ -1,5 +1,5 @@
 FROM openjdk:12-oracle
 
-EXPOSE 8080 9090
+EXPOSE 8585 9595
 
-ADD ./build/libs/*.jar messaging-gateway.jar
+COPY build/libs/*.jar messaging-gateway.jar

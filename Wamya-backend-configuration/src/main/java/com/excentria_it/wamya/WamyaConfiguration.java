@@ -7,7 +7,7 @@ import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -30,7 +30,7 @@ public class WamyaConfiguration implements WebMvcConfigurer {
 	@Bean
 	@ValidationMessageSource
 	public MessageSource validationMessageSource() {
-		ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
+		ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
 		messageSource.setBasename("classpath:messages/validation/messages");
 		messageSource.setDefaultEncoding("UTF-8");
 		return messageSource;
@@ -40,7 +40,7 @@ public class WamyaConfiguration implements WebMvcConfigurer {
 	@Bean
 	@ViewMessageSource
 	public MessageSource viewMessageSource() {
-		ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
+		ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
 		messageSource.setBasename("classpath:messages/view/messages");
 		messageSource.setDefaultEncoding("UTF-8");
 

@@ -89,7 +89,7 @@
                 <tr>
                     <td align="center" valign="top" style="padding: 40px 10px 40px 10px;">
                         <a href="http://www.wamya.com" target="_blank">
-                            <img mc:edit="logo" alt="Logo" src="cid:wamya_logo" width="200" height="200" style="display: block; width: 200px; max-width: 200px; min-width: 200px; font-family: 'Lato', Helvetica, Arial, sans-serif; color: #ffffff; font-size: 18px;" border="0">
+                            <img mc:edit="logo" alt="Logo" src="cid:logo_wamya" width="200" height="200" style="display: block; width: 200px; max-width: 200px; min-width: 200px; font-family: 'Lato', Helvetica, Arial, sans-serif; color: #ffffff; font-size: 18px;" border="0">
                         </a>
                     </td>
                 </tr>
@@ -135,7 +135,7 @@
               <!-- COPY -->
               <tr>
                 <td bgcolor="#ffffff" align="left" style="padding: 20px 30px 40px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;" mc:edit="lead">
-                  <p style="margin: 0;">Nous sommes excité de vous avoir ici! Préparez vous à explorer votre nouveau compte!. D'abord, vous devez valider votre adresse email. Juste cliquez sur le bouton suivant.</p>
+                  <p style="margin: 0;">Nous sommes excité de vous avoir ici! Préparez vous à explorer votre nouveau compte! <br/>D'abord, vous devez valider votre adresse email. Juste cliquez sur le bouton suivant.</p>
                 </td>
               </tr>
               <!-- BULLETPROOF BUTTON -->
@@ -163,7 +163,7 @@
               <!-- COPY -->
                 <tr>
                   <td bgcolor="#ffffff" align="left" style="padding: 20px 30px 20px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;" mc:edit="cta link">
-                    <p style="margin: 0;"><a href="http://litmus.com" target="_blank" style="color: #01B2D4;">$validation_url$</a></p>
+                    <p style="margin: 0;"><a href="$validation_url$" target="_blank" style="color: #01B2D4;">$validation_url$</a></p>
                   </td>
                 </tr>
               <!-- COPY -->
@@ -175,7 +175,7 @@
               <!-- COPY -->
               <tr>
                 <td bgcolor="#ffffff" align="left" style="padding: 0px 30px 40px 30px; border-radius: 0px 0px 4px 4px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;" mc:edit="copy block 4">
-                  <p style="margin: 0;">À bientôt!,<br>L&rsquo;équipe Wamya</p>
+                  <p style="margin: 0;">À bientôt!<br>L&rsquo;équipe Wamya</p>
                 </td>
               </tr>
             </table>

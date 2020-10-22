@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import javax.transaction.Transactional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 
 import com.excentria_it.wamya.application.port.in.SendValidationCodeUseCase;
@@ -27,23 +28,22 @@ import com.excentria_it.wamya.domain.EmailSubject;
 import com.excentria_it.wamya.domain.UserAccount;
 import com.excentria_it.wamya.domain.UserAccount.MobilePhoneNumber;
 
-import lombok.RequiredArgsConstructor;
-
-@RequiredArgsConstructor
 @UseCase
 @Transactional
 public class SendValidationCodeService implements SendValidationCodeUseCase {
+	@Autowired
+	private CodeGenerator codeGenerator;
+	@Autowired
+	private MessagingPort messagingPort;
+	@Autowired
+	private LoadUserAccountPort loadUserAccountPort;
 
-	private final CodeGenerator codeGenerator;
+	@Autowired
+	private UpdateUserAccountPort updateUserAccountPort;
 
-	private final MessagingPort messagingPort;
-
-	private final LoadUserAccountPort loadUserAccountPort;
-
-	private final UpdateUserAccountPort updateUserAccountPort;
-
+	@Autowired
 	@ViewMessageSource
-	private final MessageSource messageSource;
+	private MessageSource messageSource;
 
 	@Override
 	public boolean sendSMSValidationCode(SendSMSValidationCodeCommand command, Locale locale) {

@@ -1,5 +1,9 @@
 package com.excentria_it.messaging.gateway;
 
+import org.springframework.amqp.core.AcknowledgeMode;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
+import org.springframework.amqp.rabbit.listener.api.ChannelAwareMessageListener;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
@@ -8,22 +12,20 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.web.client.RestTemplate;
 
+import com.excentria_it.messaging.gateway.email.EmailRequestReceiver;
+import com.excentria_it.messaging.gateway.sms.SMSRequestReceiver;
+import com.excentria_it.wamya.common.domain.EmailMessage;
+import com.excentria_it.wamya.common.domain.SMSMessage;
+import com.excentria_it.wamya.common.rabbitmq.RabbitMqQueue;
+
 @Configuration
+//TODO add @ActiveProfiles("localtest") and configure local rabbitmq in application.yml
 public class MessagingGatewayConfiguration {
 	@Bean
 	public JavaMailSender getJavaMailSender() {
 		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-//		mailSender.setHost("smtp.gmail.com");
-//		mailSender.setPort(587);
-//
-//		mailSender.setUsername("my.gmail@gmail.com");
-//		mailSender.setPassword("password");
-//
-//		Properties props = mailSender.getJavaMailProperties();
-//		props.put("mail.transport.protocol", "smtp");
-//		props.put("mail.smtp.auth", "true");
-//		props.put("mail.smtp.starttls.enable", "true");
-//		props.put("mail.debug", "true");
+		mailSender.setHost("mailhog");
+		mailSender.setPort(1025);
 
 		return mailSender;
 	}
@@ -34,8 +36,75 @@ public class MessagingGatewayConfiguration {
 	}
 
 	@Bean
-	public MessageConverter messageConverter() {
+	public MessageConverter jackson2JsonMessageConverter() {
 		return new Jackson2JsonMessageConverter();
 	}
+
+	@Bean
+	public SimpleMessageListenerContainer smsMessageListenerContainer(ConnectionFactory connectionFactory,
+			SMSRequestReceiver receiver) {
+		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+		container.setConnectionFactory(connectionFactory);
+		container.setQueueNames(RabbitMqQueue.SMS_QUEUE);
+		container.setExposeListenerChannel(true);
+		container.setAcknowledgeMode(AcknowledgeMode.MANUAL);
+		container.setDefaultRequeueRejected(false);
+		container.setExclusive(true);
+		container.setConcurrentConsumers(1);
+		container.setMessageListener(getSMSMessageMessageListener(receiver));
+
+		return container;
+	}
+
+	protected ChannelAwareMessageListener getSMSMessageMessageListener(SMSRequestReceiver receiver) {
+		return (ChannelAwareMessageListener) (message, channel) -> {
+			SMSMessage smsMessage = (SMSMessage) jackson2JsonMessageConverter().fromMessage(message);
+			boolean success = receiver.receiveSMSRequest(smsMessage);
+			if (success) {
+				channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+			}
+		};
+	}
+//	@Bean
+//	MessageListenerAdapter smsMessageListenerAdapter(SMSRequestReceiver receiver) {
+//		MessageListenerAdapter messageListenerAdapter = new MessageListenerAdapter(receiver, "receiveSMSRequest");
+//		messageListenerAdapter.setMessageConverter(jackson2JsonMessageConverter());
+//
+//		return messageListenerAdapter;
+//	}
+
+	@Bean
+	public SimpleMessageListenerContainer emailMessageListenerContainer(ConnectionFactory connectionFactory,
+			EmailRequestReceiver receiver) {
+		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+		container.setConnectionFactory(connectionFactory);
+
+		container.setQueueNames(RabbitMqQueue.EMAIL_QUEUE);
+		container.setExposeListenerChannel(true);
+		container.setAcknowledgeMode(AcknowledgeMode.MANUAL);
+		container.setDefaultRequeueRejected(false);
+		container.setExclusive(true);
+		container.setConcurrentConsumers(1);
+		container.setMessageListener(getEmailMessageMessageListener(receiver));
+
+		return container;
+	}
+
+	protected ChannelAwareMessageListener getEmailMessageMessageListener(EmailRequestReceiver receiver) {
+		return (ChannelAwareMessageListener) (message, channel) -> {
+			EmailMessage emailMessage = (EmailMessage) jackson2JsonMessageConverter().fromMessage(message);
+			boolean success = receiver.receiveEmailRequest(emailMessage);
+			if (success) {
+				channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+			}
+		};
+	}
+//	@Bean
+//	MessageListenerAdapter emailMessageListenerAdapter(EmailRequestReceiver receiver) {
+//		MessageListenerAdapter messageListenerAdapter = new MessageListenerAdapter(receiver, "receiveEmailRequest");
+//		messageListenerAdapter.setMessageConverter(jackson2JsonMessageConverter());
+//		return messageListenerAdapter;
+//
+//	}
 
 }

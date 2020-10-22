@@ -3,6 +3,7 @@ package com.excentria_it.messaging.gateway.common;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
@@ -14,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 public class TemplateManagerImplTests {
 
 	private static final String TEST_TEMPLATES_DIR = "test/templates";
+
 	@InjectMocks
 	private TemplateManagerImpl templateManager;
 
@@ -40,15 +42,18 @@ public class TemplateManagerImplTests {
 
 	// SMS Template tests
 	@Test
-	void testLoadTemplateOfSMS() throws FileNotFoundException {
+	void testLoadTemplateOfSMS() throws IOException {
 		templateManager.configure(TEST_TEMPLATES_DIR);
+
 		Boolean result = templateManager.loadTemplate("dummy", Map.of("content", "TEST"), TemplateType.SMS, "fr");
+
 		assertTrue(result);
 	}
 
 	@Test
 	void testLoadTemplateOfSMSWithEmptyParams() throws FileNotFoundException {
 		templateManager.configure(TEST_TEMPLATES_DIR);
+
 		Boolean result = templateManager.loadTemplate("dummy", Map.of(), TemplateType.SMS, "fr");
 		assertTrue(result);
 	}
@@ -56,6 +61,7 @@ public class TemplateManagerImplTests {
 	@Test
 	void testLoadTemplateOfSMSWithNullParams() throws FileNotFoundException {
 		templateManager.configure(TEST_TEMPLATES_DIR);
+
 		Boolean result = templateManager.loadTemplate("dummy", null, TemplateType.SMS, "fr");
 		assertTrue(result);
 	}
@@ -63,6 +69,7 @@ public class TemplateManagerImplTests {
 	@Test
 	void testRenderTemplateOfSMS() throws FileNotFoundException {
 		templateManager.configure(TEST_TEMPLATES_DIR);
+
 		Boolean loadingResult = templateManager.loadTemplate("dummy", Map.of("content", "TEST"), TemplateType.SMS,
 				"fr");
 		String renderingResult = templateManager.renderTemplate();
@@ -71,11 +78,10 @@ public class TemplateManagerImplTests {
 	}
 
 	@Test
-	void testLoadInexistingTemplateOfSMS() throws FileNotFoundException {
+	void testLoadInexistingTemplateOfSMS() throws IOException {
 		templateManager.configure(TEST_TEMPLATES_DIR);
 
-		assertThrows(FileNotFoundException.class, () -> templateManager.loadTemplate("I_do_not_exist",
-				Map.of("content", "TEST"), TemplateType.SMS, "fr"));
+		assertFalse(templateManager.loadTemplate("I_do_not_exist", Map.of("content", "TEST"), TemplateType.SMS, "fr"));
 
 	}
 
@@ -91,6 +97,7 @@ public class TemplateManagerImplTests {
 	@Test
 	void testLoadTemplateOfEmail() throws FileNotFoundException {
 		templateManager.configure(TEST_TEMPLATES_DIR);
+
 		Boolean result = templateManager.loadTemplate("dummy", Map.of("content", "TEST"), TemplateType.EMAIL, "fr");
 		assertTrue(result);
 	}
@@ -98,6 +105,7 @@ public class TemplateManagerImplTests {
 	@Test
 	void testRenderTemplateOfEmail() throws FileNotFoundException {
 		templateManager.configure(TEST_TEMPLATES_DIR);
+
 		Boolean loadingResult = templateManager.loadTemplate("dummy", Map.of("content", "TEST"), TemplateType.EMAIL,
 				"fr");
 		String renderingResult = templateManager.renderTemplate();
@@ -106,16 +114,17 @@ public class TemplateManagerImplTests {
 	}
 
 	@Test
-	void testLoadInexistingTemplateOfEmail() throws FileNotFoundException {
+	void testLoadInexistingTemplateOfEmail() throws IOException {
 		templateManager.configure(TEST_TEMPLATES_DIR);
 
-		assertThrows(FileNotFoundException.class, () -> templateManager.loadTemplate("I_do_not_exist",
-				Map.of("content", "TEST"), TemplateType.EMAIL, "fr"));
+		assertFalse(
+				templateManager.loadTemplate("I_do_not_exist", Map.of("content", "TEST"), TemplateType.EMAIL, "fr"));
 	}
 
 	@Test
 	void testLoadTemplateOfEmailWithEmptyParams() throws FileNotFoundException {
 		templateManager.configure(TEST_TEMPLATES_DIR);
+
 		Boolean result = templateManager.loadTemplate("dummy", Map.of(), TemplateType.EMAIL, "fr");
 		assertTrue(result);
 	}
@@ -123,6 +132,7 @@ public class TemplateManagerImplTests {
 	@Test
 	void testLoadTemplateOfEmailWithNullParams() throws FileNotFoundException {
 		templateManager.configure(TEST_TEMPLATES_DIR);
+
 		Boolean result = templateManager.loadTemplate("dummy", null, TemplateType.EMAIL, "fr");
 		assertTrue(result);
 	}

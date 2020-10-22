@@ -2,11 +2,15 @@ package com.excentria_it.wamya.common.domain;
 
 import java.util.Map;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Builder
-@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
 public class EmailMessage {
 
 	private String from;

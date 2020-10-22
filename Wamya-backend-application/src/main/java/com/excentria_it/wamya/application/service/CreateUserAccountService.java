@@ -9,6 +9,7 @@ import java.util.NoSuchElementException;
 import javax.transaction.Transactional;
 
 import org.apache.commons.text.StrSubstitutor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,29 +32,34 @@ import com.excentria_it.wamya.domain.EmailSubject;
 import com.excentria_it.wamya.domain.UserAccount;
 import com.excentria_it.wamya.domain.UserAccount.MobilePhoneNumber;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@RequiredArgsConstructor
 @UseCase
 @Transactional
 @Slf4j
 public class CreateUserAccountService implements CreateUserAccountUseCase {
 
-	private final LoadUserAccountPort loadUserAccountPort;
+	@Autowired
+	private LoadUserAccountPort loadUserAccountPort;
 
-	private final CreateUserAccountPort createUserAccountPort;
+	@Autowired
+	private CreateUserAccountPort createUserAccountPort;
 
-	private final MessagingPort messagingPort;
+	@Autowired
+	private MessagingPort messagingPort;
 
-	private final CodeGenerator codeGenerator;
+	@Autowired
+	private CodeGenerator codeGenerator;
 
-	private final PasswordEncoder passwordEncoder;
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
-	private final ServerUrlProperties serverUrlProperties;
+	@Autowired
+	private ServerUrlProperties serverUrlProperties;
 
+	@Autowired
 	@ViewMessageSource
-	private final MessageSource messageSource;
+	private MessageSource messageSource;
 
 	public static final String EMAIL_VALIDATION_URL_TEMPLATE = "${protocol}://${host}:${port}/accounts/validate?email=${email}&code=${code}";
 

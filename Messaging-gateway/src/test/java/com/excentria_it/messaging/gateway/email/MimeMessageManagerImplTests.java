@@ -8,6 +8,7 @@ import static org.mockito.Mockito.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Map;
 
 import javax.mail.MessagingException;
@@ -85,7 +86,7 @@ public class MimeMessageManagerImplTests {
 	}
 
 	@Test
-	void testAddNullTemplateResources() throws FileNotFoundException, MessagingException {
+	void testAddNullTemplateResources() throws IOException, MessagingException {
 
 		mimeMessageManager.addTemplateResources(mimeMessageHelper, null);
 		then(mimeMessageHelper).should(never()).addInline(any(String.class), any(File.class));
@@ -93,7 +94,7 @@ public class MimeMessageManagerImplTests {
 	}
 
 	@Test
-	void testEmptyTemplateResources() throws MessagingException, FileNotFoundException {
+	void testEmptyTemplateResources() throws MessagingException, IOException {
 
 		mimeMessageManager.addTemplateResources(mimeMessageHelper, Map.of());
 		then(mimeMessageHelper).should(never()).addInline(any(String.class), any(File.class));
@@ -118,7 +119,7 @@ public class MimeMessageManagerImplTests {
 			then(mimeMessageManager).should(times(1)).addAttachements(any(MimeMessageHelper.class),
 					eq(emailMessage.getAttachements()));
 
-		} catch (FileNotFoundException e) {
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (MessagingException e) {

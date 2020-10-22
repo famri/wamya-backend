@@ -1,0 +1,1 @@
+رمز التحقق من رقم هاتفك المحمول على www.wamya.com هو $ validation_code $

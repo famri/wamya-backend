@@ -21,7 +21,10 @@ spring:
     
 logging:
   level:
-    com.excentria_it.wamya: DEBUG
+    com.excentria_it.messaging.gateway: DEBUG
+
+management.endpoints.web.exposure.include: "*"
+
     
 sms.gateway:
   host: ${SMS_GATEWAY_HOST}
@@ -30,15 +33,18 @@ sms.gateway:
   password: ${SMS_GATEWAY_PASSWORD}
 
 #gmail SMTP server properties
+#spring.mail:
+#  host: smtp.gmail.com
+#  port: 587
+#  username: amri.foued@gmail.com
+#  password: nuzvqkqdposcqabc
+#  properties.mail.smtp:
+#    auth: true
+#    starttls.enable: true
 spring.mail:
-  host: smtp.gmail.com
-  port: 587
-  username: amri.foued@gmail.com
-  password: nuzvqkqdposcqabc
-  properties.mail.smtp:
-    auth: true
-    starttls.enable: true
- 
+  host: mailhog
+  port: 1025
+
 ---
 spring:
   profiles: localtest
@@ -47,13 +53,3 @@ sms.gateway:
  port: ${SMS_GATEWAY_PORT}
  username: ${SMS_GATEWAY_USERNAME}
  password: ${SMS_GATEWAY_PASSWORD}
-
-#gmail SMTP server properties
-spring.mail:
-  host: smtp.gmail.com
-  port: 587
-  username: amri.foued@gmail.com
-  password: nuzvqkqdposcqabc
-  properties.mail.smtp:
-    auth: true
-    starttls.enable: true

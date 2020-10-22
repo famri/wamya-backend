@@ -18,45 +18,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-      
-#### THE RABBITMQ
-  rabbitmq:
-    image: rabbitmq:3.8.5-management-alpine
-    mem_limit: 512m
-    container_name: rabbitmq
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-
-#    environment:
-#      - RABBITMQ_DEFAULT_USER=dev
-#      - RABBITMQ_DEFAULT_PASS=dev
-    volumes:
-      - ../rabbitmq/conf/definitions.json:/opt/definitions.json:ro
-      - ../rabbitmq/conf/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
-    healthcheck:
-      test: ["CMD", "rabbitmqctl", "status"]
-      interval: 5s
-      timeout: 15s
-      retries: 3
-# THE KANNEL SMS GATEWAY
-  kannel:
-    build: ../kannel
-    container_name: kannel
-    ports:
-      - "13001:13001" # smsbox
-      - "13000:13000" # kannel admin
-#    volumes:
-#      - ../kannel/conf/kannel.conf:/etc/kannel/kannel.conf
-#    - "../kannel/conf/opensmppbox.conf:/etc/kannel/opensmppbox.conf"
-    healthcheck:
-      test: [ "CMD-SHELL", "curl -f http://localhost:13000/status?password=admin || exit 1"]
-      interval: 5s
-      timeout: 15s
-      retries: 3
-      start_period: 10s
-
-          
+    networks:
+      - default        
 # THE SPRING BOOT WAMYA APP
   wamya:
     build: .
@@ -75,29 +38,9 @@ services:
     depends_on:
       database:
         condition: service_healthy 
-      rabbitmq:
-        condition: service_healthy
-# THE SPRING BOOT messaging-gateway APP  
-  messaging-gateway:
-    build: ../Messaging-gateway
-    mem_limit: 512m
-    ports:
-      - "9595:9595"
-      - "8585:8585"
-    environment:
-      - SPRING_PROFILES_ACTIVE=development
-      - SMS_GATEWAY_HOST=kannel
-      - SMS_GATEWAY_PORT=13013
-      - SMS_GATEWAY_USERNAME=user
-      - SMS_GATEWAY_PASSWORD=user
-      - RABBITMQ_USER=dev
-      - RABBITMQ_PASS=dev  
-    entrypoint: ["java", "-Djava.security.egd=file:/dev/./urandom", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:9595", "-jar", "/messaging-gateway.jar"]
-    depends_on:
-      kannel:
-        condition: service_healthy 
-      rabbitmq:
-        condition: service_healthy
+    networks:
+      - default
+      - backend
      
 volumes:
   database-data:
@@ -106,3 +49,7 @@ volumes:
       type: 'none'
       o: 'bind'
       device: '/postgres/database-data'
+
+networks:
+  backend:
+    driver: bridge
