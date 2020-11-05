@@ -2,6 +2,7 @@ package com.excentria_it.wamya.domain;
 
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.UUID;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -16,6 +17,8 @@ public class UserAccount {
 
 	private Long id;
 
+	private UUID oauthUuid;
+	
 	private Boolean isTransporter;
 
 	private Gender gender;

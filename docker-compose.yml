@@ -1,0 +1,245 @@
+version: '2.3'
+
+services:
+## SPRING CLOUD GATEWAY EDGE SERVER
+  gateway:
+    container_name: gateway
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    build: Wamya-spring-cloud/gateway
+    mem_limit: 350m
+#    deploy:
+#      resources:
+#        limits:
+#          memory: 350M
+#        reservations:
+#          memory: 50M
+    ports:
+      - "8443:8443"
+
+## SPRING CLOUD NETFLIX EUREKA SERVER
+  eureka:
+    container_name: eureka
+    build: Wamya-spring-cloud/eureka-server
+    mem_limit: 350m
+#    deploy:
+#      resources:
+#        limits:
+#          memory: 350M
+#        reservations:
+#          memory: 50M  
+
+#### THE AUTHORIZATION SERVER POSTGRES DATABASE
+  auth-database:
+    container_name: auth-database
+    image: postgres:12.3-alpine
+    mem_limit: 350m
+#    deploy:
+#      resources:
+#        limits:
+#          memory: 350M
+#        reservations:
+#          memory: 50M
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_DB=oauth_db
+      - POSTGRES_USER=oauth
+      - POSTGRES_PASSWORD=oauth   
+    volumes:
+      - database-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U oauth -p 5432 -d oauth_db"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+## SPRING OAUTH SERVER
+  auth-server:
+    container_name: auth-server
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - POSTGRES_DB=oauth_db
+      - POSTGRES_USER=oauth
+      - POSTGRES_PASSWORD=oauth  
+    build: Wamya-spring-cloud/authorization-server
+    mem_limit: 350m
+#    deploy:
+#      resources:
+#        limits:
+#          memory: 350M
+#        reservations:
+#          memory: 50M
+    depends_on:
+      - "auth-database"
+ 
+#### THE WAMYA APP POSTGRES DATABASE
+  database:
+    container_name: database
+    image: postgres:12.3-alpine
+    mem_limit: 350m
+#    deploy:
+#      resources:
+#        limits:
+#          memory: 350M
+#        reservations:
+#          memory: 50M
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=wamya_db
+      - POSTGRES_USER=wamya
+      - POSTGRES_PASSWORD=wamya   
+    volumes:
+      - auth-database-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U wamya -p 5432 -d wamya_db"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+             
+# THE SPRING BOOT WAMYA APP
+  wamya:
+    container_name: wamya
+    build: Wamya-backend-configuration
+    mem_limit: 1024m
+#    deploy:
+#      resources:
+#        limits:
+#          memory: 350M
+#        reservations:
+#          memory: 50M
+#    ports:
+#      - "9090:9090"
+#      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - POSTGRES_DB=wamya_db
+      - POSTGRES_USER=wamya
+      - POSTGRES_PASSWORD=wamya
+      - RABBITMQ_USER=dev
+      - RABBITMQ_PASS=dev      
+    entrypoint: ["java", "-Djava.security.egd=file:/dev/./urandom", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:9090", "-jar", "/wamya-backend.jar"]
+    depends_on:
+      - "database"
+
+#### THE RABBITMQ
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:3.8.5-management-alpine
+    mem_limit: 350m
+#    deploy:
+#      resources:
+#        limits:
+#          memory: 350M
+#        reservations:
+#          memory: 50M
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+#    environment:
+#      - RABBITMQ_DEFAULT_USER=dev
+#      - RABBITMQ_DEFAULT_PASS=dev
+    volumes:
+      - ./Messaging-gateway/rabbitmq/conf/definitions.json:/opt/definitions.json:ro
+      - ./Messaging-gateway/rabbitmq/conf/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
+    
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+      
+# THE KANNEL SMS GATEWAY
+  kannel:
+    container_name: kannel
+    build: Messaging-gateway/kannel
+    mem_limit: 350m
+#    deploy:
+#      resources:
+#        limits:
+#          memory: 350M
+#        reservations:
+#          memory: 50M
+    ports:
+      - "13013:13013" # smsbox
+      - "13000:13000" # kannel admin
+    volumes:
+      - ./Messaging-gateway/kannel/conf/kannel.conf:/etc/kannel/kannel.conf
+      - ./Messaging-gateway/kannel/conf/supervisord.conf:/etc/supervisor/conf.d/supervisord.conf
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:13000/status?password=admin || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+# THE FAKE SMTP SERVER: mailhog
+  mailhog:
+    container_name: mailhog
+    image: mailhog/mailhog:v1.0.1
+    mem_limit: 350m
+#    deploy:
+#      resources:
+#        limits:
+#          memory: 350M
+#        reservations:
+#          memory: 50M
+    restart: always
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    
+    healthcheck:
+      test: [ "CMD-SHELL", "ps cax | rev | cut -f1 -d' ' | rev | grep MailHog"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+          
+# THE SPRING BOOT messaging-gateway APP  
+  messaging-gateway:
+    container_name: messaging-gateway
+    build: Messaging-gateway
+    mem_limit: 350m
+#    deploy:
+#      resources:
+#        limits:
+#          memory: 350M
+#        reservations:
+#          memory: 50M
+    ports:
+      - "9595:9595"
+      - "8585:8585"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SMS_GATEWAY_HOST=kannel
+      - SMS_GATEWAY_PORT=13013
+      - SMS_GATEWAY_USERNAME=user
+      - SMS_GATEWAY_PASSWORD=user
+      - RABBITMQ_USER=dev
+      - RABBITMQ_PASS=dev  
+    entrypoint: ["java", "-Djava.security.egd=file:/dev/./urandom", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:9595", "-jar", "/messaging-gateway.jar"]
+    depends_on:
+      - "kannel"
+      - "rabbitmq"
+      - "mailhog"
+     
+volumes:
+  database-data:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: '/postgres/database-data'
+  
+  auth-database-data:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: '/postgres/auth-database-data'
+

@@ -1,7 +1,5 @@
 package com.excentria_it.wamya.adapter.persistence.mapper;
 
-import java.time.LocalDateTime;
-
 import org.springframework.stereotype.Component;
 
 import com.excentria_it.wamya.adapter.persistence.entity.InternationalCallingCodeJpaEntity;
@@ -13,7 +11,7 @@ import com.excentria_it.wamya.domain.UserAccount.MobilePhoneNumber;
 public class UserAccountMapper {
 
 	public UserAccountJpaEntity mapToJpaEntity(UserAccount userAccount, InternationalCallingCodeJpaEntity icc) {
-		return UserAccountJpaEntity.builder().id(userAccount.getId() == null ? null : userAccount.getId())
+		return UserAccountJpaEntity.builder().id(userAccount.getId()).oauthUuid(userAccount.getOauthUuid())
 				.isTransporter(userAccount.getIsTransporter()).gender(userAccount.getGender())
 				.firstName(userAccount.getFirstName()).lastName(userAccount.getLastName())
 				.dateOfBirth(userAccount.getDateOfBirth()).email(userAccount.getEmail())
@@ -23,8 +21,7 @@ public class UserAccountMapper {
 				.mobileNumberValidationCode(userAccount.getMobileNumberValidationCode())
 				.isValidatedMobileNumber(userAccount.getIsValidatedMobileNumber())
 				.password(userAccount.getUserPassword()).receiveNewsletter(userAccount.getReceiveNewsletter())
-				.creationTimestamp(userAccount.getCreationTimestamp())
-				.build();
+				.creationTimestamp(userAccount.getCreationTimestamp()).build();
 	}
 
 	public UserAccount mapToDomainEntity(UserAccountJpaEntity userAccountJpaEntity) {

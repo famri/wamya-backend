@@ -50,7 +50,7 @@ public class SMSRequestReceiver {
 
 			log.debug("RESULT OF SENDING SMS TO {} ===> {}", to, response.getBody());
 		} catch (UnsupportedEncodingException e) {
-			log.error("Encoding SMS template content to %s", e);
+			log.error("Encoding SMS template content to UTF-8", e);
 			return false;
 		} catch (Exception e) {
 			log.error("Exception when processiong SMSMessage: ", e);

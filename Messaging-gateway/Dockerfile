@@ -1,4 +1,4 @@
-FROM openjdk:12-oracle
+FROM openjdk:12.0.2
 
 EXPOSE 8585 9595
 

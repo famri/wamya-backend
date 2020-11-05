@@ -2,6 +2,7 @@ package com.excentria_it.messaging.gateway;
 
 import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.*;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.*;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,7 +26,7 @@ import com.rabbitmq.client.Channel;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles(profiles = "localtest")
-@SpringBootTest
+@SpringBootTest(webEnvironment = RANDOM_PORT, properties = {"eureka.client.enabled=false"})
 public class MessagingGatewayApplicationTests {
 
 	@Mock

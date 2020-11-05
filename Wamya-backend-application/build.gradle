@@ -1,3 +1,27 @@
+apply plugin: 'jacoco'
+
+jacoco {
+	toolVersion = "0.8.2"
+}
+	
+jacocoTestCoverageVerification {
+	violationRules {
+		rule {
+			element = 'CLASS'
+			limit {
+			counter = 'LINE'
+			value = 'COVEREDRATIO'
+			minimum = 1.0
+			}
+			excludes = [
+					//'com.excentria_it.wamya.WamyaApplication' #commented because redendent when @Generated is used
+				]
+		}
+	}
+}
+
+check.dependsOn jacocoTestCoverageVerification
+
 dependencies {
     implementation project(':Wamya-backend-common')
 
@@ -32,6 +56,7 @@ dependencies {
 }
 
 test {
+    finalizedBy jacocoTestReport
     useJUnitPlatform()
 }
 

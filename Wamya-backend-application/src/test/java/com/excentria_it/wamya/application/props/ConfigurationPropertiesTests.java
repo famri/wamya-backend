@@ -6,13 +6,13 @@ import org.junit.jupiter.api.Test;
 
 public class ConfigurationPropertiesTests {
 
-	private ConfigurationProperties configurationProperties = new ConfigurationProperties();
+	private ApplicationConfigurationProperties configurationProperties = new ApplicationConfigurationProperties();
 
 	@Test
 	void testCodeGeneratorProperties() {
 		assertNotNull(configurationProperties.codeGeneratorProperties());
 	}
-	
+
 	@Test
 	void testServerUrlProperties() {
 		assertNotNull(configurationProperties.serverUrlProperties());

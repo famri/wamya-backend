@@ -2,9 +2,11 @@ package com.excentria_it.wamya.application.service;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.UUID;
 
 import javax.transaction.Transactional;
 
@@ -15,6 +17,7 @@ import org.springframework.context.NoSuchMessageException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.excentria_it.wamya.application.port.in.CreateUserAccountUseCase;
+import com.excentria_it.wamya.application.port.out.CreateOAuthUserAccountPort;
 import com.excentria_it.wamya.application.port.out.CreateUserAccountPort;
 import com.excentria_it.wamya.application.port.out.LoadUserAccountPort;
 import com.excentria_it.wamya.application.port.out.MessagingPort;
@@ -29,6 +32,8 @@ import com.excentria_it.wamya.common.domain.SMSTemplate;
 import com.excentria_it.wamya.common.exception.UserAccountAlreadyExistsException;
 import com.excentria_it.wamya.domain.EmailSender;
 import com.excentria_it.wamya.domain.EmailSubject;
+import com.excentria_it.wamya.domain.OAuthRole;
+import com.excentria_it.wamya.domain.OAuthUserAccount;
 import com.excentria_it.wamya.domain.UserAccount;
 import com.excentria_it.wamya.domain.UserAccount.MobilePhoneNumber;
 
@@ -44,6 +49,9 @@ public class CreateUserAccountService implements CreateUserAccountUseCase {
 
 	@Autowired
 	private CreateUserAccountPort createUserAccountPort;
+
+	@Autowired
+	private CreateOAuthUserAccountPort createOAuthUserAccountPort;
 
 	@Autowired
 	private MessagingPort messagingPort;
@@ -69,9 +77,18 @@ public class CreateUserAccountService implements CreateUserAccountUseCase {
 		checkExistingAccount(command);
 
 		String mobileNumberValidationCode = codeGenerator.generateNumericCode();
-		String emailValidationCode = codeGenerator.generateNumericCode();
+		String emailValidationCode = codeGenerator.generateUUID();
 
-		UserAccount userAccount = UserAccount.builder().isTransporter(command.getIsTransporter())
+		OAuthUserAccount oauthUserAccount = OAuthUserAccount.builder().firstname(command.getFirstName())
+				.lastname(command.getLastName()).email(command.getEmail())
+				.phoneNumber(command.getIcc() + command.getMobileNumber())
+				.password(passwordEncoder.encode(command.getUserPassword())).isAccountNonExpired(true)
+				.isAccountNonLocked(true).isCredentialsNonExpired(true).isEnabled(true)
+				.roles(List.of(new OAuthRole(command.getIsTransporter() ? "TRANSPORTER" : "CLIENT"))).build();
+
+		UUID uuid = createOAuthUserAccountPort.createOAuthUserAccount(oauthUserAccount);
+
+		UserAccount userAccount = UserAccount.builder().oauthUuid(uuid).isTransporter(command.getIsTransporter())
 				.gender(command.getGender()).firstName(command.getFirstName()).lastName(command.getLastName())
 				.dateOfBirth(command.getDateOfBirth()).email(command.getEmail())
 				.emailValidationCode(emailValidationCode).isValidatedEmail(false)

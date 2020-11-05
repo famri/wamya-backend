@@ -2,6 +2,7 @@ package com.excentria_it.wamya.adapter.persistence.entity;
 
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -32,6 +33,9 @@ public class UserAccountJpaEntity {
 	private Long id;
 
 	@Column
+	private UUID oauthUuid;
+
+	@Column
 	private Boolean isTransporter;
 
 	@Enumerated(EnumType.STRING)
@@ -58,7 +62,7 @@ public class UserAccountJpaEntity {
 	@ManyToOne
 	private InternationalCallingCodeJpaEntity icc;
 	@Column
-	
+
 	private String mobileNumber;
 
 	@Column

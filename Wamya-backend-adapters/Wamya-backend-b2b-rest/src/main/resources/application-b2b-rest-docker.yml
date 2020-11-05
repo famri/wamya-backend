@@ -1,0 +1,19 @@
+spring:
+  security:
+    oauth2:
+      client:   
+        registration:
+          on-prem-auth-server:
+            authorization-grant-type: client_credentials
+            client-id: wamya-mobile-app
+            client-secret: S3CR3T
+            provider: on-prem-auth-server
+        provider:
+          on-prem-auth-server:
+            token-uri: "http://${app.auth-server}:9999/oauth/token"
+#            authorization-uri: "lb://${app.auth-server}:9999/oauth/authorize"
+#            jwk-set-uri: "lb://${app.auth-server}:9999/.well-known/jwks.json"
+
+app:
+  auth-server: auth-server
+

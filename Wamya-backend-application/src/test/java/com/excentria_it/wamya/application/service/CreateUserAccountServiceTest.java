@@ -23,6 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.excentria_it.wamya.application.port.in.CreateUserAccountUseCase.CreateUserAccountCommand;
 import com.excentria_it.wamya.application.port.in.CreateUserAccountUseCase.CreateUserAccountCommand.CreateUserAccountCommandBuilder;
+import com.excentria_it.wamya.application.port.out.CreateOAuthUserAccountPort;
 import com.excentria_it.wamya.application.port.out.CreateUserAccountPort;
 import com.excentria_it.wamya.application.port.out.LoadUserAccountPort;
 import com.excentria_it.wamya.application.port.out.MessagingPort;
@@ -59,6 +60,9 @@ public class CreateUserAccountServiceTest {
 
 	@Mock
 	private MessageSource messageSource;
+
+	@Mock
+	private CreateOAuthUserAccountPort createOAuthUserAccountPort;
 
 	@Spy
 	@InjectMocks
@@ -99,7 +103,7 @@ public class CreateUserAccountServiceTest {
 		givenServerUrlProperties();
 
 		String validationCode = givenDefaultGeneratedCode();
-
+		String uuid = givenDefaultGeneratedUUID();
 		String encodedPassword = givenDefaultEncodedPassword();
 
 		CreateUserAccountCommandBuilder commandBuilder = defaultCreateUserAccountCommandBuilder();
@@ -123,11 +127,12 @@ public class CreateUserAccountServiceTest {
 
 		assertThat(userAccountCaptor.getValue().getUserPassword()).isEqualTo(encodedPassword);
 
-		assertThat(userAccountCaptor.getValue().getEmailValidationCode()).isEqualTo(validationCode);
+		assertThat(userAccountCaptor.getValue().getEmailValidationCode()).isEqualTo(uuid);
 
 		assertThat(userAccountCaptor.getValue().getMobileNumberValidationCode()).isEqualTo(validationCode);
 
-		then(codeGenerator).should(times(2)).generateNumericCode();
+		then(codeGenerator).should(times(1)).generateNumericCode();
+		then(codeGenerator).should(times(1)).generateUUID();
 
 		// Testing mobile phone number validation SMS
 		ArgumentCaptor<SMSMessage> smsMessageCaptor = ArgumentCaptor.forClass(SMSMessage.class);
@@ -171,7 +176,7 @@ public class CreateUserAccountServiceTest {
 		givenNonExistingMobilePhoneNumber();
 		givenNonExistingEmail();
 		givenDefaultGeneratedCode();
-
+		givenDefaultGeneratedUUID();
 		CreateUserAccountCommand command = defaultCreateUserAccountCommandBuilder().build();
 		givenRequestSendingEmailValidationLinkReturns(true);
 		givenRequestSendingSMSValidationCodeReturns(false);
@@ -186,7 +191,7 @@ public class CreateUserAccountServiceTest {
 		givenNonExistingMobilePhoneNumber();
 		givenNonExistingEmail();
 		givenDefaultGeneratedCode();
-
+		givenDefaultGeneratedUUID();
 		CreateUserAccountCommand command = defaultCreateUserAccountCommandBuilder().build();
 		givenRequestSendingEmailValidationLinkReturns(false);
 
@@ -226,7 +231,11 @@ public class CreateUserAccountServiceTest {
 		given(codeGenerator.generateNumericCode()).willReturn(DEFAULT_VALIDATION_CODE);
 		return DEFAULT_VALIDATION_CODE;
 	}
-
+	private String givenDefaultGeneratedUUID() {
+		given(codeGenerator.generateUUID()).willReturn(DEFAULT_VALIDATION_UUID);
+		return DEFAULT_VALIDATION_UUID;
+	}
+	
 	private void givenNonExistingMobilePhoneNumber() {
 
 		given(loadUserAccountPort.loadUserAccountByIccAndMobileNumber(any(String.class), any(String.class)))

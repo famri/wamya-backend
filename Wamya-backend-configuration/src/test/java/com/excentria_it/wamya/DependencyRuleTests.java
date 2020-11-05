@@ -16,7 +16,7 @@ class DependencyRuleTests {
 
 				.withAdaptersLayer("adapter")
 				.incoming("web")
-				.outgoing("persistence")
+				.outgoing("persistence").outgoing("messaging").outgoing("b2b.rest")
 				.and()
 
 				.withApplicationLayer("application")

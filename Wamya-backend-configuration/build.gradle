@@ -2,9 +2,34 @@ plugins {
     id "org.springframework.boot" version "2.3.1.RELEASE"
 }
 
+apply plugin: 'jacoco'
+
+jacoco {
+	toolVersion = "0.8.2"
+}
+	
+jacocoTestCoverageVerification {
+	violationRules {
+		rule {
+			element = 'CLASS'
+			limit {
+			counter = 'LINE'
+			value = 'COVEREDRATIO'
+			minimum = 1.0
+			}
+			excludes = [
+					//'com.excentria_it.wamya.WamyaApplication' #commented because redendent when @Generated is used
+				]
+		}
+	}
+}
+
+check.dependsOn jacocoTestCoverageVerification
+
+
 dependencies {
 	
-	compile("org.springframework.boot:spring-boot-devtools")
+
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     
@@ -13,14 +38,10 @@ dependencies {
     implementation project(':Wamya-backend-adapters:Wamya-backend-persistence')
     implementation project(':Wamya-backend-adapters:Wamya-backend-web')
     implementation project(':Wamya-backend-adapters:Wamya-backend-messaging')
-       
-    implementation ('org.springframework.boot:spring-boot-starter-web')
-    implementation ('org.springframework.boot:spring-boot-starter-security');
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'org.springframework.boot:spring-boot-starter-amqp'
-    
-    runtimeOnly  'org.postgresql:postgresql:42.2.14'
-
+    implementation project(':Wamya-backend-adapters:Wamya-backend-b2b-rest')
+    implementation('org.springframework.cloud:spring-cloud-starter-netflix-eureka-client')
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+         
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'junit' // excluding junit 4
     }
@@ -29,11 +50,11 @@ dependencies {
     testRuntimeOnly 	'org.junit.jupiter:junit-jupiter-engine'
     testRuntimeOnly 	'org.junit.vintage:junit-vintage-engine'
   	testRuntimeOnly 	'org.junit.platform:junit-platform-launcher'
+  	testRuntimeOnly 	'com.h2database:h2'
     testImplementation 	'org.mockito:mockito-junit-jupiter'
     testImplementation 	'com.tngtech.archunit:archunit:0.9.3'
     testImplementation 	'de.adesso:junit-insights:1.1.0'
-    testImplementation 	'com.h2database:h2'
-
+	
 }
 
 eclipse {
@@ -44,6 +65,7 @@ eclipse {
 }
 
 test {
+    finalizedBy jacocoTestReport
     useJUnitPlatform()
     systemProperty 'de.adesso.junitinsights.enabled', 'true'
 }

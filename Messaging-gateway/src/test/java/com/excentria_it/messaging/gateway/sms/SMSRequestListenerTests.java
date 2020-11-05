@@ -82,24 +82,36 @@ public class SMSRequestListenerTests {
 	}
 
 	@Test
-	void givenRestTemplateThrowsException_ThenShouldReturnFalse() {
+	void givenRestTemplateThrowsException_ThenShouldReturnFalse() throws UnsupportedEncodingException {
 
 		SMSMessage message = defaultSMSMessageBuilder().build();
 
 		givenTemplateManagerLoadsTemplateCorrectly(message);
 
 		String templateBody = givenTemplateManagerRendersTemplateCorrectly();
+		givenSmsGatewayProperties();
+		doReturn("SOME STRING").when(smsRequestReceiver).toURIEncoded(templateBody,
+				java.nio.charset.StandardCharsets.UTF_8);
 
-		doThrow(RestClientException.class).when(restTemplate).getForEntity(any(String.class), any(Class.class),
-				any(String.class), any(String.class), any(String.class), any(String.class), any(String.class),
-				any(String.class));
+		doThrow(RestClientException.class).when(restTemplate).getForEntity(
+				"http://{host}:{port}/cgi-bin/sendsms?username={username}&password={password}&to={destination}&text={content}",
+				String.class, "HOST", "PORT",
+				"USERNAME", "PASSWORD", message.getTo(), "SOME STRING");
 
 		Boolean result = smsRequestReceiver.receiveSMSRequest(message);
 
 		assertThat(!result);
 	}
 
-	private void givenToURIEncodedThrowsUnsupportedEncodingException(String content) throws UnsupportedEncodingException {
+	private void givenSmsGatewayProperties() {
+		doReturn("HOST").when(smsGatewayProperties).getHost();
+		doReturn("PORT").when(smsGatewayProperties).getPort();
+		doReturn("USERNAME").when(smsGatewayProperties).getUsername();
+		doReturn("PASSWORD").when(smsGatewayProperties).getPassword();
+	}
+
+	private void givenToURIEncodedThrowsUnsupportedEncodingException(String content)
+			throws UnsupportedEncodingException {
 
 		doThrow(UnsupportedEncodingException.class).when(smsRequestReceiver).toURIEncoded(content,
 				java.nio.charset.StandardCharsets.UTF_8);

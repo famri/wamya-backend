@@ -1,0 +1,22 @@
+spring.profiles: local
+spring.profiles.include: default, b2b-rest-local, messaging-local, persistence-local, web-local, app-local
+
+app:
+  eureka-server: localhost
+  eureka-username: u
+  eureka-password: p
+
+  
+eureka:
+  client:
+    initialInstanceInfoReplicationIntervalSeconds: 5
+    registryFetchIntervalSeconds: 30
+  instance:
+    leaseRenewalIntervalInSeconds: 5
+    leaseExpirationDurationInSeconds: 8
+
+ribbon.ServerListRefreshInterval: 30000
+ribbon.NFLoadBalancerPingInterval: 5
+
+management.endpoint.health.show-details: "ALWAYS"
+management.endpoints.web.exposure.include: "*"

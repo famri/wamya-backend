@@ -1,0 +1,27 @@
+spring.profiles: docker
+spring.profiles.include: default, b2b-rest-docker, messaging-docker, persistence-docker, web-docker, app-docker
+
+app:
+  eureka-server: eureka
+  eureka-username: u
+  eureka-password: p
+    
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: "http://${app.eureka-username}:${app.eureka-password}@${app.eureka-server}:8761/eureka/"
+    initialInstanceInfoReplicationIntervalSeconds: 5
+    registryFetchIntervalSeconds: 30
+  instance:
+    leaseRenewalIntervalInSeconds: 5
+    leaseExpirationDurationInSeconds: 8
+
+ribbon.ServerListRefreshInterval: 30000
+ribbon.NFLoadBalancerPingInterval: 5
+
+management.endpoint.health.show-details: "ALWAYS"
+management.endpoints.web.exposure.include: "*"
+
+
+     
+

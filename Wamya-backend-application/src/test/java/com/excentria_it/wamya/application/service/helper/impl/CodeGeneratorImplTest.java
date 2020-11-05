@@ -28,4 +28,13 @@ public class CodeGeneratorImplTest {
 		}
 
 	}
+
+	@Test
+	void generateUUIDWithCorrectLength() {
+		String uuid = codeGenerator.generateUUID();
+		String[] tokens = uuid.split("-");
+		assertThat(codeGenerator.generateUUID()).hasSize("cbbb422d-4b41-4697-aa16-5fba0c8a665c".length());
+		assertThat(tokens).hasSize(5);
+
+	}
 }

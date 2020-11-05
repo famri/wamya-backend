@@ -1,0 +1,62 @@
+apply plugin: 'jacoco'
+
+jacoco {
+	toolVersion = "0.8.2"
+}
+	
+jacocoTestCoverageVerification {
+	violationRules {
+		rule {
+			element = 'CLASS'
+			limit {
+			counter = 'LINE'
+			value = 'COVEREDRATIO'
+			minimum = 1.0
+			}
+			excludes = [
+					//'com.excentria_it.wamya.WamyaApplication' #commented because redendent when @Generated is used
+				]
+		}
+	}
+}
+
+check.dependsOn jacocoTestCoverageVerification
+
+dependencies {
+    implementation project(':Wamya-backend-common')
+    implementation project(':Wamya-backend-application')
+
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+  	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+  	
+  	implementation ('org.springframework.boot:spring-boot-starter-security');
+	implementation "org.springframework.security:spring-security-oauth2-client:${springSecurityVersion}"
+    
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'junit' // excluding junit 4
+    }
+    
+    testRuntimeOnly 	'org.junit.jupiter:junit-jupiter-engine'
+    testRuntimeOnly 	'org.junit.vintage:junit-vintage-engine'
+  	testRuntimeOnly		'org.junit.platform:junit-platform-launcher'
+  	
+    testImplementation	'org.junit.jupiter:junit-jupiter-api'
+    testImplementation 	'org.mockito:mockito-junit-jupiter'
+    testImplementation 	'com.tngtech.archunit:archunit:0.9.3'
+    testImplementation 	'de.adesso:junit-insights:1.1.0'
+    testImplementation 'com.squareup.okhttp3:okhttp:4.0.1'
+    testImplementation 'com.squareup.okhttp3:mockwebserver:4.0.1'
+	testImplementation "org.springframework.security:spring-security-test:${springSecurityVersion}"
+    
+}
+
+test {
+
+   	finalizedBy jacocoTestReport
+	useJUnitPlatform()
+    systemProperty 'de.adesso.junitinsights.enabled', 'true'
+}

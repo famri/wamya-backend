@@ -1,3 +1,27 @@
+apply plugin: 'jacoco'
+
+jacoco {
+	toolVersion = "0.8.2"
+}
+	
+jacocoTestCoverageVerification {
+	violationRules {
+		rule {
+			element = 'CLASS'
+			limit {
+			counter = 'LINE'
+			value = 'COVEREDRATIO'
+			minimum = 1.0
+			}
+			excludes = [
+					//'com.excentria_it.wamya.WamyaApplication' #commented because redendent when @Generated is used
+				]
+		}
+	}
+}
+
+check.dependsOn jacocoTestCoverageVerification
+
 dependencies {
     implementation project(':Wamya-backend-common')
     implementation project(':Wamya-backend-application')
@@ -5,6 +29,8 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
+	runtimeOnly  'org.postgresql:postgresql:42.2.14'
+    
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
@@ -25,6 +51,7 @@ dependencies {
 }
 
 test {
+   	finalizedBy jacocoTestReport
     useJUnitPlatform()
     systemProperty 'de.adesso.junitinsights.enabled', 'true'
 }

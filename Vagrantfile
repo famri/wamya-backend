@@ -4,6 +4,8 @@
 VAGRANTFILE_API_VERSION = "2"
 VAGRANT_USER = "vagrant"
 
+#ENV['VAGRANT_EXPERIMENTAL'] = 'disks'
+
 #A shell script to install docker and docker-compose 
 $bootstrap = <<-'INSTALL_DOCKER'
 
@@ -55,30 +57,35 @@ $create_database_volume = <<-'DATABASE_VOLUME'
 
 mkdir -m 700 -p /postgres/database-data
 
+mkdir -m 700 -p /postgres/auth-database-data
+
 DATABASE_VOLUME
 
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  
+  config.disksize.size = '50GB'
   config.vm.define "dev_env" do |dev|
 		dev.vm.box = "ubuntu/eoan64"
 	  	dev.vm.provider "virtualbox" do |vb|
 	  	  vb.memory = "2048"
 	  	  vb.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
 	  	end
-	  	dev.vm.disk :disk, size: "20GB", primary: true
+	  	
 	  	dev.vm.provision "shell", inline: $bootstrap, args: VAGRANT_USER
 		dev.vm.provision "shell", inline: $create_database_volume
 #		dev.vm.provision "shell", inline: $docker_compose, run: 'always'
   
-		dev.vm.synced_folder ".", "/vagrant", disabled: true
-		dev.vm.synced_folder "Wamya-backend-configuration", "/vagrant/Wamya-backend-configuration"		
-		dev.vm.synced_folder "Messaging-gateway", "/vagrant/Messaging-gateway"
+#		dev.vm.synced_folder ".", "/vagrant", disabled:true
+#		dev.vm.synced_folder "Wamya-backend-configuration", "/vagrant/Wamya-backend-configuration"		
+#		dev.vm.synced_folder "Messaging-gateway", "/vagrant/Messaging-gateway"
+#		dev.vm.synced_folder "Wamya-spring-cloud", "/vagrant/Wamya-spring-cloud"
 
 
 		dev.vm.network "private_network", ip: "192.168.50.4"
 		dev.vm.network "forwarded_port", guest: 22, host: 2222
 		dev.vm.network "forwarded_port", guest: 5432, host: 5432
+		dev.vm.network "forwarded_port", guest: 5433, host: 5433
+		dev.vm.network "forwarded_port", guest: 8443, host: 8443
 		dev.vm.network "forwarded_port", guest: 8080, host: 8080
 		dev.vm.network "forwarded_port", guest: 9090, host: 9090
 		dev.vm.network "forwarded_port", guest: 8585, host: 8585

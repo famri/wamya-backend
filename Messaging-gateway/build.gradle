@@ -2,7 +2,7 @@ plugins {
 	id 'org.springframework.boot' version '2.3.1.RELEASE'
 }
 
-group = 'com.excentria_it'
+group = 'com.excentria_it.wamya'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8'
 
@@ -10,19 +10,44 @@ repositories {
 	mavenCentral()
 }
 
+apply plugin: 'jacoco'
+
+jacoco {
+	toolVersion = "0.8.2"
+}
+	
+jacocoTestCoverageVerification {
+	violationRules {
+		rule {
+			element = 'CLASS'
+			limit {
+			counter = 'LINE'
+			value = 'COVEREDRATIO'
+			minimum = 1.0
+			}
+			excludes = [
+					//'com.excentria_it.wamya.WamyaApplication' #commented because redendent when @Generated is used
+				]
+		}
+	}
+}
+
+check.dependsOn jacocoTestCoverageVerification
 dependencies {
 	compile("org.springframework.boot:spring-boot-devtools")
-	compile("org.springframework.boot:spring-boot-starter-actuator")
+	
 	compile group: 'org.antlr', name: 'ST4', version: '4.3'
 	
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
-        
+    
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'    
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 	implementation project(':Wamya-backend-common')
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-amqp'
 	implementation ('org.springframework.boot:spring-boot-starter-validation')
+	
 	 
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		 exclude group: 'junit' // excluding junit 4
@@ -41,6 +66,7 @@ dependencies {
 }
 
 test {
+    finalizedBy jacocoTestReport
 	useJUnitPlatform()
 	systemProperty 'de.adesso.junitinsights.enabled', 'true'
 	testLogging.showStandardStreams = true

@@ -9,7 +9,7 @@ server:
     include-stacktrace: always
   
 spring:
-  profiles: development
+  profiles: docker
   devtools:
     remote:
       secret: test
@@ -23,6 +23,7 @@ logging:
   level:
     com.excentria_it.messaging.gateway: DEBUG
 
+management.endpoint.health.show-details: "ALWAYS"
 management.endpoints.web.exposure.include: "*"
 
     

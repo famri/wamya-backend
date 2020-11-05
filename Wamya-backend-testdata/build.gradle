@@ -1,7 +1,13 @@
 dependencies {
-    implementation project(':Wamya-backend-application')
-    implementation project(':Wamya-backend-common')
-    implementation project(':Wamya-backend-adapters:Wamya-backend-persistence')
+    implementation (project(':Wamya-backend-application')){
+     transitive = false
+    }
+    implementation (project(':Wamya-backend-common')){
+     transitive = false
+    }
+    implementation (project(':Wamya-backend-adapters:Wamya-backend-persistence')){
+     transitive = false
+    }
 
     implementation 'com.fasterxml.jackson.core:jackson-databind'
     compileOnly 'org.projectlombok:lombok'

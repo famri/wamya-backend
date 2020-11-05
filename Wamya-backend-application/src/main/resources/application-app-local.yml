@@ -1,0 +1,5 @@
+front:
+  url:
+    protocol: https
+    host: localhost
+    port: 8443
