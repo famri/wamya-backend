@@ -8,6 +8,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,8 +23,6 @@ import com.excentria_it.wamya.application.port.in.CreateUserAccountUseCase.Creat
 import com.excentria_it.wamya.common.annotation.WebAdapter;
 import com.excentria_it.wamya.common.exception.UnsupportedInternationalCallingCode;
 import com.excentria_it.wamya.common.exception.UserAccountAlreadyExistsException;
-import com.excentria_it.wamya.domain.UserAccount;
-import com.excentria_it.wamya.domain.UserAccount.MobilePhoneNumber;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,18 +39,13 @@ public class CreateUserAccountController {
 
 	@PostMapping(path = "/accounts", consumes = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
-	public UserAccount createUserAccount(@Valid @RequestBody CreateUserAccountCommand command, Locale locale) {
+	public OAuth2AccessToken createUserAccount(@Valid @RequestBody CreateUserAccountCommand command, Locale locale) {
 
-		Long userAccountId = createUserAccountUseCase.registerUserAccountCreationDemand(command, locale);
+		OAuth2AccessToken accessToken = createUserAccountUseCase.registerUserAccountCreationDemand(command, locale);
 
-		return UserAccount.builder().id(userAccountId).isTransporter(command.getIsTransporter())
-				.gender(command.getGender()).firstName(command.getFirstName()).lastName(command.getLastName())
-				.dateOfBirth(command.getDateOfBirth()).email(command.getEmail()).emailValidationCode("****")
-				.isValidatedEmail(false)
-				.mobilePhoneNumber(new MobilePhoneNumber(command.getIcc(), command.getMobileNumber()))
-				.mobileNumberValidationCode("****").isValidatedMobileNumber(false).userPassword("********")
-				.receiveNewsletter(command.getReceiveNewsletter()).receiveNewsletter(command.getReceiveNewsletter())
-				.creationTimestamp(null).build();
+		// Authenticate user and return access token
+
+		return accessToken;
 	}
 
 	@ExceptionHandler({ UserAccountAlreadyExistsException.class })

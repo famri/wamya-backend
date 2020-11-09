@@ -8,11 +8,20 @@ import org.springframework.validation.annotation.Validated;
 
 import lombok.Data;
 
-@ConfigurationProperties(prefix = "app")
+@ConfigurationProperties(prefix = "app.oauth2")
 @Validated
 @Data
 public class AuthServerProperties {
 	@NotEmpty
 	@NotNull
-	private String authServer;
+	private String clientCredentialsRegistrationId;
+
+	@NotEmpty
+	@NotNull
+	private String passwordRegistrationId;
+
+	@NotEmpty
+	@NotNull
+	private String createUserUri;
+
 }

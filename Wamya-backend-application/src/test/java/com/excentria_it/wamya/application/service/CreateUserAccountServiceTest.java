@@ -16,17 +16,19 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.MessageSource;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.core.OAuth2AccessToken;
 
 import com.excentria_it.wamya.application.port.in.CreateUserAccountUseCase.CreateUserAccountCommand;
 import com.excentria_it.wamya.application.port.in.CreateUserAccountUseCase.CreateUserAccountCommand.CreateUserAccountCommandBuilder;
-import com.excentria_it.wamya.application.port.out.CreateOAuthUserAccountPort;
 import com.excentria_it.wamya.application.port.out.CreateUserAccountPort;
 import com.excentria_it.wamya.application.port.out.LoadUserAccountPort;
 import com.excentria_it.wamya.application.port.out.MessagingPort;
+import com.excentria_it.wamya.application.port.out.OAuthUserAccountPort;
 import com.excentria_it.wamya.application.props.ServerUrlProperties;
 import com.excentria_it.wamya.application.service.helper.CodeGenerator;
 import com.excentria_it.wamya.common.domain.EmailMessage;
@@ -36,6 +38,7 @@ import com.excentria_it.wamya.common.domain.SMSTemplate;
 import com.excentria_it.wamya.common.exception.UserAccountAlreadyExistsException;
 import com.excentria_it.wamya.domain.UserAccount;
 import com.excentria_it.wamya.domain.UserAccount.MobilePhoneNumber;
+import com.excentria_it.wamya.test.data.common.TestConstants;
 
 @ExtendWith(MockitoExtension.class)
 public class CreateUserAccountServiceTest {
@@ -62,7 +65,7 @@ public class CreateUserAccountServiceTest {
 	private MessageSource messageSource;
 
 	@Mock
-	private CreateOAuthUserAccountPort createOAuthUserAccountPort;
+	private OAuthUserAccountPort oAuthUserAccountPort;
 
 	@Spy
 	@InjectMocks
@@ -171,7 +174,7 @@ public class CreateUserAccountServiceTest {
 	}
 
 	@Test
-	void givenSendingSMSValidationCodeFailed_whenRegisterUserAccountCreationDemand_thenReturnCreatedUserAccountId() {
+	void givenSendingSMSValidationCodeFailed_whenRegisterUserAccountCreationDemand_thenReturnAccessToken() {
 
 		givenNonExistingMobilePhoneNumber();
 		givenNonExistingEmail();
@@ -180,8 +183,17 @@ public class CreateUserAccountServiceTest {
 		CreateUserAccountCommand command = defaultCreateUserAccountCommandBuilder().build();
 		givenRequestSendingEmailValidationLinkReturns(true);
 		givenRequestSendingSMSValidationCodeReturns(false);
-		Long userAccountId = createUserAccountService.registerUserAccountCreationDemand(command, locale);
-		assertNotNull(userAccountId);
+		// given(createUserAccountPort.createUserAccount(any(UserAccount.class))).willReturn(1L);
+
+		OAuth2AccessToken oAuth2AccessToken = Mockito.mock(OAuth2AccessToken.class);
+		given(oAuth2AccessToken.getTokenValue()).willReturn(TestConstants.DEFAULT_ACCESS_TOKEN);
+
+		given(oAuthUserAccountPort.authorizeOAuthUser(command.getEmail(), command.getUserPassword()))
+				.willReturn(oAuth2AccessToken);
+
+		OAuth2AccessToken accessToken = createUserAccountService.registerUserAccountCreationDemand(command, locale);
+		
+		assertEquals(oAuth2AccessToken.getTokenValue(), accessToken.getTokenValue());
 
 	}
 
@@ -195,8 +207,16 @@ public class CreateUserAccountServiceTest {
 		CreateUserAccountCommand command = defaultCreateUserAccountCommandBuilder().build();
 		givenRequestSendingEmailValidationLinkReturns(false);
 
-		Long userAccountId = createUserAccountService.registerUserAccountCreationDemand(command, locale);
-		assertNotNull(userAccountId);
+		OAuth2AccessToken oAuth2AccessToken = Mockito.mock(OAuth2AccessToken.class);
+		given(oAuth2AccessToken.getTokenValue()).willReturn(TestConstants.DEFAULT_ACCESS_TOKEN);
+
+		given(oAuthUserAccountPort.authorizeOAuthUser(command.getEmail(), command.getUserPassword()))
+				.willReturn(oAuth2AccessToken);
+
+		OAuth2AccessToken accessToken = createUserAccountService.registerUserAccountCreationDemand(command, locale);
+		
+		assertEquals(oAuth2AccessToken.getTokenValue(), accessToken.getTokenValue());
+	
 
 	}
 
@@ -231,11 +251,12 @@ public class CreateUserAccountServiceTest {
 		given(codeGenerator.generateNumericCode()).willReturn(DEFAULT_VALIDATION_CODE);
 		return DEFAULT_VALIDATION_CODE;
 	}
+
 	private String givenDefaultGeneratedUUID() {
 		given(codeGenerator.generateUUID()).willReturn(DEFAULT_VALIDATION_UUID);
 		return DEFAULT_VALIDATION_UUID;
 	}
-	
+
 	private void givenNonExistingMobilePhoneNumber() {
 
 		given(loadUserAccountPort.loadUserAccountByIccAndMobileNumber(any(String.class), any(String.class)))

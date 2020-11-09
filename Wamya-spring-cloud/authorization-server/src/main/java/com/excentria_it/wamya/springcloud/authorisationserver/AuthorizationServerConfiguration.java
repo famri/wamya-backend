@@ -57,6 +57,7 @@ import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -77,6 +78,7 @@ import com.nimbusds.jose.jwk.RSAKey;
  * @since 5.1
  */
 @EnableAuthorizationServer
+@EnableTransactionManagement
 @Configuration
 public class AuthorizationServerConfiguration extends AuthorizationServerConfigurerAdapter {
 
@@ -165,22 +167,26 @@ class UserConfig extends WebSecurityConfigurerAdapter {
 		return passwordEncoder;
 	}
 
+//	@Override
+//    public void configure(WebSecurity webSecurity) throws Exception {
+//       webSecurity.ignoring().antMatchers("/h2-console/**");
+//    }
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		// @formatter:off
 		http.authorizeRequests(authz -> authz
-				
-				.antMatchers("/actuator/**").permitAll()
-				.mvcMatchers("/.well-known/jwks.json").permitAll()
-				.antMatchers(HttpMethod.POST, "/oauth/users").hasAuthority("SCOPE_user:write")
-				.anyRequest().authenticated())
-			
-		.oauth2ResourceServer(oauth2 -> oauth2.jwt())
-		
-		.csrf().ignoringRequestMatchers(
-				request -> "/introspect".equals(request.getRequestURI()),
-				request -> "/oauth/users".equals(request.getRequestURI())
-				);
+
+				.antMatchers("/actuator/**").permitAll().antMatchers("/h2-console/**").permitAll()
+				.antMatchers(HttpMethod.POST, "/oauth/users").permitAll().mvcMatchers("/.well-known/jwks.json")
+				.permitAll().mvcMatchers("/favicon.ico").permitAll())
+
+				.authorizeRequests().anyRequest().authenticated().and().csrf(csrf -> csrf.ignoringRequestMatchers(
+
+						request -> "/introspect".equals(request.getRequestURI()),
+						request -> "/oauth/users".equals(request.getRequestURI()))
+
+						.ignoringAntMatchers("/h2-console/**"));
+
 		// @formatter:on
 	}
 

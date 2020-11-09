@@ -12,12 +12,15 @@ import java.util.List;
 import java.util.Locale;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.oauth2.core.OAuth2AccessToken;
+import org.springframework.security.oauth2.core.OAuth2AccessToken.TokenType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -35,6 +38,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @WebMvcTest(controllers = CreateUserAccountController.class, excludeAutoConfiguration = SecurityAutoConfiguration.class)
 public class CreateUserAccountControllerTest {
 
+	private static final String ACCESS_TOKEN = "SOME_ACCESS_TOKEN";
 	@Autowired
 	private MockMvc mockMvc;
 
@@ -48,8 +52,12 @@ public class CreateUserAccountControllerTest {
 	void givenValidInput_WhenCreateUserAccount_ThenReturnCreatedUserAccount() throws Exception {
 
 		CreateUserAccountCommand command = UserAccountTestData.defaultCreateUserAccountCommandBuilder().build();
+
+		OAuth2AccessToken oAuth2AccessToken = new OAuth2AccessToken(TokenType.BEARER, ACCESS_TOKEN, null, null);
+	
+		
 		given(createUserAccountUseCase.registerUserAccountCreationDemand(eq(command), any(Locale.class)))
-				.willReturn(1L);
+				.willReturn(oAuth2AccessToken);
 
 		String createUserAccountJson = objectMapper.writeValueAsString(command);
 
@@ -60,18 +68,10 @@ public class CreateUserAccountControllerTest {
 		then(createUserAccountUseCase).should(times(1)).registerUserAccountCreationDemand(eq(command),
 				any(Locale.class));
 
-		UserAccount expectedResponseBody = UserAccount.builder().id(1L).isTransporter(command.getIsTransporter())
-				.gender(command.getGender()).firstName(command.getFirstName()).lastName(command.getLastName())
-				.dateOfBirth(command.getDateOfBirth()).email(command.getEmail()).emailValidationCode("****")
-				.isValidatedEmail(false)
-				.mobilePhoneNumber(new MobilePhoneNumber(command.getIcc(), command.getMobileNumber()))
-				.mobileNumberValidationCode("****").isValidatedMobileNumber(false).userPassword("********")
-				.receiveNewsletter(command.getReceiveNewsletter()).creationTimestamp(null).build();
-
 		String actualResponseBody = mvcResult.getResponse().getContentAsString();
 
 		assertThat(actualResponseBody)
-				.isEqualToIgnoringWhitespace(objectMapper.writeValueAsString(expectedResponseBody));
+				.isEqualToIgnoringWhitespace(objectMapper.writeValueAsString(oAuth2AccessToken));
 
 	}
 

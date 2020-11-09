@@ -3,10 +3,10 @@ server:
 
 
 spring.application.name: auth-server
-spring:
-  security:
-   oauth2:     resourceserver:       jwt:
-         jwk-set-uri: http://localhost:9999/.well-known/jwks.json
+#spring:
+#  security:
+#   oauth2:#     resourceserver:#       jwt:
+#         jwk-set-uri: http://localhost:9999/.well-known/jwks.json
 
 app:
   eureka-username: u
@@ -29,7 +29,6 @@ management.endpoints.web.exposure.include: "*"
 # security.oauth2.authorizationserver.jwt.enabled: false
 
 ---
-
 spring:
   profiles: docker
   
@@ -75,7 +74,14 @@ spring:
     driver-class-name: org.h2.Driver
     username: sa
     password: password
-
+  
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings:
+        trace: false
+        web-allow-others: false
 logging:
     level:
       org.springframework.security: DEBUG

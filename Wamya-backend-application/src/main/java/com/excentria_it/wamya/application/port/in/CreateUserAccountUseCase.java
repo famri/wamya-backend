@@ -6,6 +6,8 @@ import java.util.Locale;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
+import org.springframework.security.oauth2.core.OAuth2AccessToken;
+
 import com.excentria_it.wamya.common.exception.UnsupportedInternationalCallingCode;
 import com.excentria_it.wamya.common.exception.UserAccountAlreadyExistsException;
 import com.excentria_it.wamya.domain.Gender;
@@ -18,11 +20,10 @@ import lombok.NoArgsConstructor;
 
 public interface CreateUserAccountUseCase {
 
-	Long registerUserAccountCreationDemand(CreateUserAccountCommand command, Locale locale)
+	OAuth2AccessToken registerUserAccountCreationDemand(CreateUserAccountCommand command, Locale locale)
 			throws UserAccountAlreadyExistsException, UnsupportedInternationalCallingCode;
 
 	void checkExistingAccount(CreateUserAccountCommand command);
-	
 
 	@Data
 	@AllArgsConstructor
@@ -48,7 +49,7 @@ public interface CreateUserAccountUseCase {
 		Date dateOfBirth;
 
 		@NotNull
-		@Pattern(regexp = RegexPattern.EMAIL_PATTERN, message = "{com.excentria_it.wamya.domain.mobilephone.icc.message}")
+		@Pattern(regexp = RegexPattern.EMAIL_PATTERN, message = "{com.excentria_it.wamya.domain.user.email.message}")
 		String email;
 
 		@NotNull

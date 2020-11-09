@@ -13,6 +13,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
 
 import lombok.Data;
@@ -59,7 +60,9 @@ public class UserEntity {
 	private boolean isEnabled;
 
 	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "oauthId"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
+	@JoinTable(name = "users_roles", uniqueConstraints = {
+			@UniqueConstraint(name = "unique_userid_role_id", columnNames = { "user_id",
+					"role_id" }) }, joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "oauthId"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
 	private Collection<RoleEntity> roles;
 
 }

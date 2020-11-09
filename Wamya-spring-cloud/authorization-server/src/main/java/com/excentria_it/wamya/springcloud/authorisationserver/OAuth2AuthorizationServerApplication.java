@@ -23,7 +23,6 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
  * @author Josh Cummings
  */
 @SpringBootApplication
-@EnableResourceServer
 public class OAuth2AuthorizationServerApplication {
 
 	public static void main(String[] args) {

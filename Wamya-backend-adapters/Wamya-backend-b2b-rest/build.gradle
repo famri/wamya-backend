@@ -11,7 +11,7 @@ jacocoTestCoverageVerification {
 			limit {
 			counter = 'LINE'
 			value = 'COVEREDRATIO'
-			minimum = 1.0
+			minimum = 0.5
 			}
 			excludes = [
 					//'com.excentria_it.wamya.WamyaApplication' #commented because redendent when @Generated is used

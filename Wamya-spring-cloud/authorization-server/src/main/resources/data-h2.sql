@@ -109,9 +109,35 @@ INSERT INTO user_account(
 	true,
 	true
 	);
-	
+
+INSERT INTO user_account(
+	oauth_id, 
+	firstname, 
+	lastname, 
+	email, 
+	phone_number, 
+	password, 
+	is_account_non_expired, 
+	is_account_non_locked, 
+	is_credentials_non_expired,
+	is_enabled
+	) 
+	VALUES(
+	'a7cd23b8-991d-470f-ac63-d8fb106f391a',
+	'Foued',
+	'AMRI',
+	'amri.foued@gmail.com',
+	'+21622222222',
+	'{noop}test',
+	true,
+	true,
+	true,
+	true
+	);
+		
 /*******************************************
 * INSERTING ADMIN USER ROLE
 ********************************************/ 
-	INSERT INTO users_roles(user_id, role_id)
-	VALUES('d7cd23b8-991c-470f-ac63-d8fb106f391e', 1);
+INSERT INTO users_roles(user_id, role_id) VALUES('d7cd23b8-991c-470f-ac63-d8fb106f391e', 1);
+
+INSERT INTO users_roles(user_id, role_id) VALUES('a7cd23b8-991d-470f-ac63-d8fb106f391a', 2);

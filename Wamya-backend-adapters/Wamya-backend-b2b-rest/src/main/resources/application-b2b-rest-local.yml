@@ -17,4 +17,9 @@ spring:
 #            jwk-set-uri: "lb://${app.auth-server}:9999/.well-known/jwks.json"
 
 app:
-  auth-server: localhost    
+  auth-server: localhost
+  oauth2:
+    client-credentials-registration-id: client-credentials-on-prem-auth-server
+    password-registration-id: password-on-prem-auth-server
+    create-user-uri: "lb://${app.auth-server}:9999/oauth/users"
+

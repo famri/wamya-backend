@@ -6,6 +6,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.excentria_it.wamya.springcloud.authorisationserver.dto.User;
 import com.excentria_it.wamya.springcloud.authorisationserver.dto.UserPrincipal;
@@ -20,6 +21,7 @@ import lombok.AllArgsConstructor;
 
 @Service
 @AllArgsConstructor
+@Transactional
 public class UserServiceImpl implements UserDetailsService, UserService {
 
 	private UserRepository userRepository;
@@ -31,9 +33,9 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		Optional<UserEntity> userEntity = userRepository.findByEmail(username);
-		if (userEntity.isEmpty()) {
+		if (!userEntity.isPresent()) {
 			userEntity = userRepository.findByPhoneNumber(username);
-			if (userEntity.isEmpty()) {
+			if (!userEntity.isPresent()) {
 				throw new UsernameNotFoundException(username);
 			}
 

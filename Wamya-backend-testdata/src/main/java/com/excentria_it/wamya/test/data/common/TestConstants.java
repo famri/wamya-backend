@@ -14,7 +14,7 @@ public class TestConstants {
 	public static final String DEFAULT_ENCODED_PASSWORD = "NeDD93816M7F1IlM4nZ3YNAqXX6xSxPHinRJ72qvNx1omoa30zLBFsxMQwYxk28uY0fa6C46XFx76rGEKK6BriWBE8aS7bfKP0";
 	public static final String DEFAULT_VALIDATION_CODE = "1234";
 	public static final String DEFAULT_VALIDATION_UUID = "cbbb422d-4b41-4697-aa16-5fba0c8a665c";
-
+	public static final String DEFAULT_ACCESS_TOKEN = "SOME_ACCESS_TOKEN";
 	public static final String DEFAULT_INTERNATIONAL_CALLING_CODE = "+216";
 	public static final String DEFAULT_MOBILE_NUMBER = "99999999";
 	public static final String DEFAULT_CALLABLE_MOBILE_NUMBER = "0021699999999";

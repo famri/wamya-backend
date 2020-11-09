@@ -15,12 +15,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.core.OAuth2AccessToken;
 
 import com.excentria_it.wamya.application.port.in.CreateUserAccountUseCase;
-import com.excentria_it.wamya.application.port.out.CreateOAuthUserAccountPort;
 import com.excentria_it.wamya.application.port.out.CreateUserAccountPort;
 import com.excentria_it.wamya.application.port.out.LoadUserAccountPort;
 import com.excentria_it.wamya.application.port.out.MessagingPort;
+import com.excentria_it.wamya.application.port.out.OAuthUserAccountPort;
 import com.excentria_it.wamya.application.props.ServerUrlProperties;
 import com.excentria_it.wamya.application.service.helper.CodeGenerator;
 import com.excentria_it.wamya.common.annotation.UseCase;
@@ -51,7 +52,7 @@ public class CreateUserAccountService implements CreateUserAccountUseCase {
 	private CreateUserAccountPort createUserAccountPort;
 
 	@Autowired
-	private CreateOAuthUserAccountPort createOAuthUserAccountPort;
+	private OAuthUserAccountPort oAuthUserAccountPort;
 
 	@Autowired
 	private MessagingPort messagingPort;
@@ -72,7 +73,7 @@ public class CreateUserAccountService implements CreateUserAccountUseCase {
 	public static final String EMAIL_VALIDATION_URL_TEMPLATE = "${protocol}://${host}:${port}/accounts/validate?email=${email}&code=${code}";
 
 	@Override
-	public Long registerUserAccountCreationDemand(CreateUserAccountCommand command, Locale locale) {
+	public OAuth2AccessToken registerUserAccountCreationDemand(CreateUserAccountCommand command, Locale locale) {
 
 		checkExistingAccount(command);
 
@@ -86,7 +87,7 @@ public class CreateUserAccountService implements CreateUserAccountUseCase {
 				.isAccountNonLocked(true).isCredentialsNonExpired(true).isEnabled(true)
 				.roles(List.of(new OAuthRole(command.getIsTransporter() ? "TRANSPORTER" : "CLIENT"))).build();
 
-		UUID uuid = createOAuthUserAccountPort.createOAuthUserAccount(oauthUserAccount);
+		UUID uuid = oAuthUserAccountPort.createOAuthUserAccount(oauthUserAccount);
 
 		UserAccount userAccount = UserAccount.builder().oauthUuid(uuid).isTransporter(command.getIsTransporter())
 				.gender(command.getGender()).firstName(command.getFirstName()).lastName(command.getLastName())
@@ -97,13 +98,16 @@ public class CreateUserAccountService implements CreateUserAccountUseCase {
 				.isValidatedMobileNumber(false).userPassword(passwordEncoder.encode(command.getUserPassword()))
 				.creationTimestamp(LocalDateTime.now()).receiveNewsletter(command.getReceiveNewsletter()).build();
 
-		Long userAccountId = createUserAccountPort.createUserAccount(userAccount);
+		createUserAccountPort.createUserAccount(userAccount);
 
 		requestSendingEmailValidationLink(command.getEmail(), emailValidationCode, locale);
 
 		requestSendingSMSValidationCode(userAccount.getMobilePhoneNumber(), mobileNumberValidationCode, locale);
 
-		return userAccountId;
+		OAuth2AccessToken accessToken = oAuthUserAccountPort.authorizeOAuthUser(command.getEmail(),
+				command.getUserPassword());
+
+		return accessToken;
 	}
 
 	public void checkExistingAccount(CreateUserAccountCommand command) {

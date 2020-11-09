@@ -1,73 +1,45 @@
 package com.excentria_it.wamya.adapter.b2b.rest;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.oauth2.client.AuthorizedClientServiceOAuth2AuthorizedClientManager;
+import org.springframework.security.oauth2.client.OAuth2AuthorizationContext;
+import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProvider;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProviderBuilder;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.reactive.function.client.ServletOAuth2AuthorizedClientExchangeFilterFunction;
+import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
+import org.springframework.util.StringUtils;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.excentria_it.wamya.adapter.b2b.rest.props.AuthServerProperties;
+
+import lombok.AllArgsConstructor;
+
 @Configuration
+@AllArgsConstructor
 public class B2bRestConfiguration {
 
-	private static final String REGISTRATION_ID = "on-prem-auth-server";
-
-//	@Bean(name = "on-prem-auth-server-web-client")
-//	@LoadBalanced
-//	public WebClient.Builder webClientBuilder(ReactiveOAuth2AuthorizedClientManager authorizedClientManager) {
-//		ServerOAuth2AuthorizedClientExchangeFilterFunction oauth = new ServerOAuth2AuthorizedClientExchangeFilterFunction();
-//
-//		oauth.setDefaultClientRegistrationId(REGISTRATION_ID);
-//
-//		return WebClient.builder().filter(oauth);
-//
-//	}
-
-//	@Bean
-//	public ReactiveOAuth2AuthorizedClientManager reactiveOAuth2AuthorizedClientManager(
-//			ClientRegistrationRepository clientRegistrationRepository) {
-//
-//		// Create authorized client provider supporting client_credentials grant flow
-//		ReactiveOAuth2AuthorizedClientProvider authorizedClientProvider = ReactiveOAuth2AuthorizedClientProviderBuilder
-//				.builder().clientCredentials().build();
-//
-//		// Fetch the client registration from application.yml by registration ID
-//		ClientRegistration clientRegistration = clientRegistrationRepository.findByRegistrationId(REGISTRATION_ID);
-//
-//		// Create a ClientRegistrationRepository using the client registration
-//		// configuration from application.yml
-//		InMemoryReactiveClientRegistrationRepository clientRegistrationRepo = new InMemoryReactiveClientRegistrationRepository(
-//				clientRegistration);
-//
-//		// Create an AuthorizedClientService using the ClientRegistrationRepository
-//		ReactiveOAuth2AuthorizedClientService authorizedClientService = new InMemoryReactiveOAuth2AuthorizedClientService(
-//				clientRegistrationRepo);
-//
-//		// Create an AuthorizedClientManager using the ClientRegistrationRepository and
-//		// the AuthorizedClientService
-//		AuthorizedClientServiceReactiveOAuth2AuthorizedClientManager authorizedClientManager = new AuthorizedClientServiceReactiveOAuth2AuthorizedClientManager(
-//				clientRegistrationRepo, authorizedClientService);
-//
-//		// Set the client_credentials AuthorizedClientProvider as
-//		// AuthorizedClientProvider in AuthorizedClientManager
-//		authorizedClientManager.setAuthorizedClientProvider(authorizedClientProvider);
-//
-//		return authorizedClientManager;
-//
-//	}
+	private AuthServerProperties authServerProperties;
 
 	@Bean
-	public OAuth2AuthorizedClientManager OAuth2AuthorizedClientManager(
+	public OAuth2AuthorizedClientManager authorizedClientManager(
 			ClientRegistrationRepository clientRegistrationRepository,
 			OAuth2AuthorizedClientService authorizedClientService) {
 
 		// Create authorized client provider supporting client_credentials grant flow
 		OAuth2AuthorizedClientProvider authorizedClientProvider = OAuth2AuthorizedClientProviderBuilder.builder()
-				.clientCredentials().build();
+				.clientCredentials().password().build();
 
 		// Create an AuthorizedClientManager using the ClientRegistrationRepository and
 		// the AuthorizedClientService
@@ -78,19 +50,69 @@ public class B2bRestConfiguration {
 		// AuthorizedClientProvider in AuthorizedClientManager
 		authorizedClientManager.setAuthorizedClientProvider(authorizedClientProvider);
 
+		// Tell the AuthorizedClientManager how to find username and password
+		authorizedClientManager.setContextAttributesMapper(contextAttributesMapper());
+
 		return authorizedClientManager;
 
 	}
 
-	@Bean(name = "on-prem-auth-server-web-client")
-	public WebClient.Builder webClientBuilder(OAuth2AuthorizedClientManager authorizedClientManager) {
-		ServletOAuth2AuthorizedClientExchangeFilterFunction oauth2 = new ServletOAuth2AuthorizedClientExchangeFilterFunction(
+	@Bean(name = "client-credentials-web-client")
+	public WebClient.Builder clientCredentialsWebClientBuilder(OAuth2AuthorizedClientManager authorizedClientManager) {
+
+		ServletOAuth2AuthorizedClientExchangeFilterFunction oauth2ExchangeFunction = new ServletOAuth2AuthorizedClientExchangeFilterFunction(
 				authorizedClientManager);
 
-		oauth2.setDefaultClientRegistrationId(REGISTRATION_ID);
+		oauth2ExchangeFunction
+				.setDefaultClientRegistrationId(authServerProperties.getClientCredentialsRegistrationId());
 
-		return WebClient.builder().apply(oauth2.oauth2Configuration());
+		return WebClient.builder().apply(oauth2ExchangeFunction.oauth2Configuration());
 
 	}
 
+	@Bean(name = "password-web-client")
+	public WebClient.Builder passwordWebClientBuilder(OAuth2AuthorizedClientManager authorizedClientManager) {
+
+		ServletOAuth2AuthorizedClientExchangeFilterFunction oauth2ExchangeFunction = new ServletOAuth2AuthorizedClientExchangeFilterFunction(
+				authorizedClientManager);
+
+		oauth2ExchangeFunction.setDefaultClientRegistrationId(authServerProperties.getPasswordRegistrationId());
+
+		return WebClient.builder().apply(oauth2ExchangeFunction.oauth2Configuration());
+
+	}
+
+	@Bean(name = "no-oauth-web-client")
+	public WebClient.Builder noOAuthWebClientBuilder(OAuth2AuthorizedClientManager authorizedClientManager) {
+
+		return WebClient.builder();
+
+	}
+	private Function<OAuth2AuthorizeRequest, Map<String, Object>> contextAttributesMapper() {
+		return authorizeRequest -> {
+			Map<String, Object> contextAttributes = Collections.emptyMap();
+
+			String username, password;
+			// get username and password from authorizeRequest(for example: when trying to
+			// get access token after user sign up)
+			if ((username = authorizeRequest.getAttribute(OAuth2ParameterNames.USERNAME)) == null
+					|| (password = authorizeRequest.getAttribute(OAuth2ParameterNames.PASSWORD)) == null) {
+
+				// get username and password from httpRequest(for example: when trying to login
+				// user)
+				HttpServletRequest servletRequest = authorizeRequest.getAttribute(HttpServletRequest.class.getName());
+
+				username = servletRequest.getParameter(OAuth2ParameterNames.USERNAME);
+				password = servletRequest.getParameter(OAuth2ParameterNames.PASSWORD);
+
+			}
+			if (StringUtils.hasText(username) && StringUtils.hasText(password)) {
+				contextAttributes = new HashMap<>();
+				// `PasswordOAuth2AuthorizedClientProvider` requires both attributes
+				contextAttributes.put(OAuth2AuthorizationContext.USERNAME_ATTRIBUTE_NAME, username);
+				contextAttributes.put(OAuth2AuthorizationContext.PASSWORD_ATTRIBUTE_NAME, password);
+			}
+			return contextAttributes;
+		};
+	}
 }
