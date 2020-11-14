@@ -1,4 +1,4 @@
-package com.excentria_it.wamya.adapter.web.exception;
+package com.excentria_it.wamya.common.exception;
 
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.mockito.BDDMockito.*;
@@ -51,7 +51,6 @@ public class RestApiExceptionHandlerTest {
 	private static final String VAL_DOUBLE = "3.14";
 
 	private static final String REQUEST_PART = "Some request part";
-	private static final String REQUEST_PARAMETER = "Some request parameter";
 
 	private static final String FIELD_ERROR_1 = "Some field error 1";
 	private static final String FIELD_ERROR_2 = "Some field error 2";

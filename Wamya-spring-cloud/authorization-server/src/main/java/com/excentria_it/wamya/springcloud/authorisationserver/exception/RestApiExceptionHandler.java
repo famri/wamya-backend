@@ -1,4 +1,4 @@
-package com.excentria_it.wamya.adapter.web.exception;
+package com.excentria_it.wamya.springcloud.authorisationserver.exception;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +19,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
@@ -172,6 +173,19 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 
 		final ApiError apiError = new ApiError(HttpStatus.UNSUPPORTED_MEDIA_TYPE, builder.toString().trim());
 		return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
+	}
+
+	// 400
+
+	@ExceptionHandler({ UserAccountAlreadyExistsException.class })
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public ResponseEntity<Object> handleUserAccountAlreadyExistsException(UserAccountAlreadyExistsException exception) {
+
+		log.error("Exception at " + exception.getClass() + ": ", exception);
+		final String error = "User account already exists.";
+		final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, error);
+		return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
+
 	}
 
 	// 500

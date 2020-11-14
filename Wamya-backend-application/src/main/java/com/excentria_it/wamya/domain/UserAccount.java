@@ -17,7 +17,7 @@ public class UserAccount {
 
 	private Long id;
 
-	private UUID oauthUuid;
+	private Long oauthId;
 	
 	private Boolean isTransporter;
 

@@ -12,25 +12,21 @@ import java.util.List;
 import java.util.Locale;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.security.oauth2.core.OAuth2AccessToken;
-import org.springframework.security.oauth2.core.OAuth2AccessToken.TokenType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import com.excentria_it.wamya.adapter.web.exception.RestApiExceptionHandler;
 import com.excentria_it.wamya.application.port.in.CreateUserAccountUseCase;
 import com.excentria_it.wamya.application.port.in.CreateUserAccountUseCase.CreateUserAccountCommand;
+import com.excentria_it.wamya.common.exception.RestApiExceptionHandler;
 import com.excentria_it.wamya.common.exception.UnsupportedInternationalCallingCode;
 import com.excentria_it.wamya.common.exception.UserAccountAlreadyExistsException;
-import com.excentria_it.wamya.domain.UserAccount;
-import com.excentria_it.wamya.domain.UserAccount.MobilePhoneNumber;
+import com.excentria_it.wamya.domain.JwtOAuth2AccessToken;
 import com.excentria_it.wamya.test.data.common.UserAccountTestData;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -53,9 +49,8 @@ public class CreateUserAccountControllerTest {
 
 		CreateUserAccountCommand command = UserAccountTestData.defaultCreateUserAccountCommandBuilder().build();
 
-		OAuth2AccessToken oAuth2AccessToken = new OAuth2AccessToken(TokenType.BEARER, ACCESS_TOKEN, null, null);
-	
-		
+		JwtOAuth2AccessToken oAuth2AccessToken = new JwtOAuth2AccessToken();
+		oAuth2AccessToken.setAccessToken(ACCESS_TOKEN);
 		given(createUserAccountUseCase.registerUserAccountCreationDemand(eq(command), any(Locale.class)))
 				.willReturn(oAuth2AccessToken);
 
@@ -70,8 +65,7 @@ public class CreateUserAccountControllerTest {
 
 		String actualResponseBody = mvcResult.getResponse().getContentAsString();
 
-		assertThat(actualResponseBody)
-				.isEqualToIgnoringWhitespace(objectMapper.writeValueAsString(oAuth2AccessToken));
+		assertThat(actualResponseBody).isEqualToIgnoringWhitespace(objectMapper.writeValueAsString(oAuth2AccessToken));
 
 	}
 

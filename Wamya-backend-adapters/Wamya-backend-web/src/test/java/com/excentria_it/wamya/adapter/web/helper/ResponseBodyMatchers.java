@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.springframework.test.web.servlet.ResultMatcher;
 
-import com.excentria_it.wamya.adapter.web.exception.ApiError;
+import com.excentria_it.wamya.common.exception.ApiError;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ResponseBodyMatchers {

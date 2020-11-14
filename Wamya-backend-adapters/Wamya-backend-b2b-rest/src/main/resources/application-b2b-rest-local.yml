@@ -1,5 +1,3 @@
-logging.level.root: DEBUG
-
 spring:
   security:
     oauth2:
@@ -13,13 +11,15 @@ spring:
         provider:
           on-prem-auth-server:
             token-uri: "http://${app.auth-server}:9999/oauth/token"
-#            authorization-uri: "lb://${app.auth-server}:9999/oauth/authorize"
-#            jwk-set-uri: "lb://${app.auth-server}:9999/.well-known/jwks.json"
+            authorization-uri: "http://${app.auth-server}:9999/oauth/authorize"
+            jwk-set-uri: "http://${app.auth-server}:9999/.well-known/jwks.json"
 
 app:
   auth-server: localhost
   oauth2:
     client-credentials-registration-id: client-credentials-on-prem-auth-server
     password-registration-id: password-on-prem-auth-server
-    create-user-uri: "lb://${app.auth-server}:9999/oauth/users"
-
+    create-user-uri: "http://${app.auth-server}:9999/oauth/users"
+    token-uri: "http://${app.auth-server}:9999/oauth/token"
+    client-id: wamya-mobile-app
+    client-secret: S3CR3T

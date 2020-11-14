@@ -18,11 +18,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.excentria_it.wamya.adapter.web.domain.ValidationCodeRequest;
 import com.excentria_it.wamya.adapter.web.domain.ValidationCodeRequestStatus;
-import com.excentria_it.wamya.adapter.web.exception.ApiError;
 import com.excentria_it.wamya.application.port.in.SendValidationCodeUseCase;
 import com.excentria_it.wamya.application.port.in.SendValidationCodeUseCase.SendEmailValidationLinkCommand;
 import com.excentria_it.wamya.application.port.in.SendValidationCodeUseCase.SendSMSValidationCodeCommand;
 import com.excentria_it.wamya.common.annotation.WebAdapter;
+import com.excentria_it.wamya.common.exception.ApiError;
 import com.excentria_it.wamya.common.exception.UserAccountNotFoundException;
 import com.excentria_it.wamya.common.exception.UserEmailValidationException;
 import com.excentria_it.wamya.common.exception.UserMobileNumberValidationException;

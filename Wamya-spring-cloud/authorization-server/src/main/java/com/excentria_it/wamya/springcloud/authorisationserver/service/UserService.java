@@ -1,7 +1,7 @@
 package com.excentria_it.wamya.springcloud.authorisationserver.service;
 
-import com.excentria_it.wamya.springcloud.authorisationserver.dto.User;
+import com.excentria_it.wamya.springcloud.authorisationserver.dto.OAuthUserAccount;
 
 public interface UserService {
-	User createUser(User user);
+	OAuthUserAccount createUser(OAuthUserAccount user);
 }

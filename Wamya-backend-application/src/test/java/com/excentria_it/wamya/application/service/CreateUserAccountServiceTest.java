@@ -10,6 +10,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.Locale;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,7 +22,6 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.MessageSource;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.core.OAuth2AccessToken;
 
 import com.excentria_it.wamya.application.port.in.CreateUserAccountUseCase.CreateUserAccountCommand;
 import com.excentria_it.wamya.application.port.in.CreateUserAccountUseCase.CreateUserAccountCommand.CreateUserAccountCommandBuilder;
@@ -36,6 +36,7 @@ import com.excentria_it.wamya.common.domain.EmailTemplate;
 import com.excentria_it.wamya.common.domain.SMSMessage;
 import com.excentria_it.wamya.common.domain.SMSTemplate;
 import com.excentria_it.wamya.common.exception.UserAccountAlreadyExistsException;
+import com.excentria_it.wamya.domain.JwtOAuth2AccessToken;
 import com.excentria_it.wamya.domain.UserAccount;
 import com.excentria_it.wamya.domain.UserAccount.MobilePhoneNumber;
 import com.excentria_it.wamya.test.data.common.TestConstants;
@@ -185,15 +186,15 @@ public class CreateUserAccountServiceTest {
 		givenRequestSendingSMSValidationCodeReturns(false);
 		// given(createUserAccountPort.createUserAccount(any(UserAccount.class))).willReturn(1L);
 
-		OAuth2AccessToken oAuth2AccessToken = Mockito.mock(OAuth2AccessToken.class);
-		given(oAuth2AccessToken.getTokenValue()).willReturn(TestConstants.DEFAULT_ACCESS_TOKEN);
+		JwtOAuth2AccessToken oAuth2AccessToken = Mockito.mock(JwtOAuth2AccessToken.class);
+		given(oAuth2AccessToken.getAccessToken()).willReturn(TestConstants.DEFAULT_ACCESS_TOKEN);
 
-		given(oAuthUserAccountPort.authorizeOAuthUser(command.getEmail(), command.getUserPassword()))
+		given(oAuthUserAccountPort.fetchJwtTokenForUser(command.getEmail(), command.getUserPassword()))
 				.willReturn(oAuth2AccessToken);
 
-		OAuth2AccessToken accessToken = createUserAccountService.registerUserAccountCreationDemand(command, locale);
-		
-		assertEquals(oAuth2AccessToken.getTokenValue(), accessToken.getTokenValue());
+		JwtOAuth2AccessToken accessToken = createUserAccountService.registerUserAccountCreationDemand(command, locale);
+
+		assertEquals(oAuth2AccessToken.getAccessToken(), accessToken.getAccessToken());
 
 	}
 
@@ -207,16 +208,15 @@ public class CreateUserAccountServiceTest {
 		CreateUserAccountCommand command = defaultCreateUserAccountCommandBuilder().build();
 		givenRequestSendingEmailValidationLinkReturns(false);
 
-		OAuth2AccessToken oAuth2AccessToken = Mockito.mock(OAuth2AccessToken.class);
-		given(oAuth2AccessToken.getTokenValue()).willReturn(TestConstants.DEFAULT_ACCESS_TOKEN);
+		JwtOAuth2AccessToken oAuth2AccessToken = new JwtOAuth2AccessToken(DEFAULT_ACCESS_TOKEN, "Bearer", null, 36000L,"read write", UUID.randomUUID().toString()); 
+		
 
-		given(oAuthUserAccountPort.authorizeOAuthUser(command.getEmail(), command.getUserPassword()))
+		given(oAuthUserAccountPort.fetchJwtTokenForUser(command.getEmail(), command.getUserPassword()))
 				.willReturn(oAuth2AccessToken);
 
-		OAuth2AccessToken accessToken = createUserAccountService.registerUserAccountCreationDemand(command, locale);
-		
-		assertEquals(oAuth2AccessToken.getTokenValue(), accessToken.getTokenValue());
-	
+		JwtOAuth2AccessToken accessToken = createUserAccountService.registerUserAccountCreationDemand(command, locale);
+
+		assertEquals(oAuth2AccessToken.getAccessToken(), accessToken.getAccessToken());
 
 	}
 

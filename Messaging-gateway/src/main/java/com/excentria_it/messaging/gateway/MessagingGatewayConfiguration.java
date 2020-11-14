@@ -6,6 +6,7 @@ import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.api.ChannelAwareMessageListener;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -13,12 +14,14 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.web.client.RestTemplate;
 
 import com.excentria_it.messaging.gateway.email.EmailRequestReceiver;
+import com.excentria_it.messaging.gateway.sms.SMSGatewayProperties;
 import com.excentria_it.messaging.gateway.sms.SMSRequestReceiver;
 import com.excentria_it.wamya.common.domain.EmailMessage;
 import com.excentria_it.wamya.common.domain.SMSMessage;
 import com.excentria_it.wamya.common.rabbitmq.RabbitMqQueue;
 
 @Configuration
+@EnableConfigurationProperties(value = SMSGatewayProperties.class)
 //TODO add @ActiveProfiles("localtest") and configure local rabbitmq in application.yml
 public class MessagingGatewayConfiguration {
 	@Bean

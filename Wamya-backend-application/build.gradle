@@ -34,7 +34,7 @@ dependencies {
 
     implementation 'javax.transaction:javax.transaction-api'
 	implementation 'org.apache.commons:commons-text:1.9'
-
+	implementation 'com.fasterxml.jackson.core:jackson-annotations:2.11.0'
 	testCompileOnly 'org.projectlombok:lombok'
 	testAnnotationProcessor 'org.projectlombok:lombok'
 	

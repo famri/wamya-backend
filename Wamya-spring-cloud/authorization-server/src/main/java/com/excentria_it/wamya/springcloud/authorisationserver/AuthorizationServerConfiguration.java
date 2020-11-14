@@ -35,15 +35,10 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
-import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
@@ -151,26 +146,42 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
  * For configuring the end users recognized by this Authorization Server
  */
 @Configuration
+@EnableWebSecurity
 class UserConfig extends WebSecurityConfigurerAdapter {
-	@Bean
-	public DelegatingPasswordEncoder passwordEncoder() {
 
-		String idForEncode = "bcrypt";
-		Map<String, PasswordEncoder> encoders = new HashMap<>();
-		encoders.put(idForEncode, new BCryptPasswordEncoder());
-		encoders.put("noop", NoOpPasswordEncoder.getInstance());
-		encoders.put("pbkdf2", new Pbkdf2PasswordEncoder());
-		encoders.put("scrypt", new SCryptPasswordEncoder());
+//	private PasswordEncoder passwordEncoder;
+//
+//	@Autowired
+//	private UserDetailsService userDetailsService;
+//
+//	@Bean
+//	public PasswordEncoder passwordEncoder() {
+//
+//		if (this.passwordEncoder == null) {
+//			String idForEncode = "bcrypt";
+//			Map<String, PasswordEncoder> encoders = new HashMap<>();
+//			encoders.put(idForEncode, new BCryptPasswordEncoder());
+//			encoders.put("noop", NoOpPasswordEncoder.getInstance());
+//			encoders.put("pbkdf2", new Pbkdf2PasswordEncoder());
+//			encoders.put("scrypt", new SCryptPasswordEncoder());
+//
+//			this.passwordEncoder = new DelegatingPasswordEncoder(idForEncode, encoders);
+//		}
+//
+//		return this.passwordEncoder;
+//	}
 
-		DelegatingPasswordEncoder passwordEncoder = new DelegatingPasswordEncoder(idForEncode, encoders);
-
-		return passwordEncoder;
-	}
-
+//	@Bean
 //	@Override
-//    public void configure(WebSecurity webSecurity) throws Exception {
-//       webSecurity.ignoring().antMatchers("/h2-console/**");
-//    }
+//	public AuthenticationManager authenticationManagerBean() throws Exception {
+//		return super.authenticationManagerBean();
+//	}
+//
+//	@Override
+//	protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
+//		auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+//	}
+
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		// @formatter:off
@@ -180,7 +191,8 @@ class UserConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers(HttpMethod.POST, "/oauth/users").permitAll().mvcMatchers("/.well-known/jwks.json")
 				.permitAll().mvcMatchers("/favicon.ico").permitAll())
 
-				.authorizeRequests().anyRequest().authenticated().and().csrf(csrf -> csrf.ignoringRequestMatchers(
+				.authorizeRequests().anyRequest().authenticated().and().headers().frameOptions().disable().and()
+				.csrf(csrf -> csrf.ignoringRequestMatchers(
 
 						request -> "/introspect".equals(request.getRequestURI()),
 						request -> "/oauth/users".equals(request.getRequestURI()))

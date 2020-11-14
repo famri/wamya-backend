@@ -52,10 +52,6 @@ spring:
 app:
  eureka-server: eureka
 
-logging:
-    level:
-      org.springframework.security: DEBUG
-      org.springframework.security.oauth2: DEBUG
 ---
 
 spring:
@@ -82,7 +78,3 @@ spring:
       settings:
         trace: false
         web-allow-others: false
-logging:
-    level:
-      org.springframework.security: DEBUG
-      org.springframework.security.oauth2: DEBUG

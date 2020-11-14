@@ -1,12 +1,12 @@
-package com.excentria_it.wamya.adapter.web;
+package com.excentria_it.wamya.application;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
-@ActiveProfiles(value = { "web-local" })
-public class WebModuleTest {
+@ActiveProfiles(value = { "app-local" })
+public class ApplicationModuleTest {
 
 	@Test
 	void testAllBeansLoaded() {

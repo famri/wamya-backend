@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.excentria_it.wamya.springcloud.authorisationserver.dto.User;
+import com.excentria_it.wamya.springcloud.authorisationserver.dto.OAuthUserAccount;
 import com.excentria_it.wamya.springcloud.authorisationserver.service.UserService;
 
 import lombok.AllArgsConstructor;
@@ -24,9 +24,9 @@ public class UserController {
 
 	@PostMapping(path = "/users", consumes = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
-	public User createUser(@Valid @RequestBody User user) {
+	public OAuthUserAccount createUser(@Valid @RequestBody OAuthUserAccount user) {
 
-		User newUser = userService.createUser(user);
+		OAuthUserAccount newUser = userService.createUser(user);
 
 		return newUser;
 	}

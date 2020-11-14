@@ -1,12 +1,12 @@
-package com.excentria_it.wamya.domain;
+package com.excentria_it.wamya.springcloud.authorisationserver.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
 public class OAuthRole {
 	private String name;
 }

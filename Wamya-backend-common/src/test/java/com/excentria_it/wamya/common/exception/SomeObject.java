@@ -1,4 +1,4 @@
-package com.excentria_it.wamya.adapter.web.exception;
+package com.excentria_it.wamya.common.exception;
 
 import javax.validation.constraints.NotNull;
 

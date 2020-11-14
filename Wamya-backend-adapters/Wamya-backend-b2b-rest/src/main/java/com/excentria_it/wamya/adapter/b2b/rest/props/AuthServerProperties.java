@@ -24,4 +24,15 @@ public class AuthServerProperties {
 	@NotNull
 	private String createUserUri;
 
+	@NotEmpty
+	@NotNull
+	private String tokenUri;
+
+	@NotEmpty
+	@NotNull
+	private String clientId;
+
+	@NotEmpty
+	@NotNull
+	private String clientSecret;
 }

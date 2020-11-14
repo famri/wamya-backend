@@ -1,118 +1,95 @@
 package com.excentria_it.wamya.adapter.b2b.rest.adapter;
 
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.*;
 
-import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.UUID;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
-import org.springframework.security.oauth2.core.OAuth2AccessToken;
-import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.client.ExpectedCount;
+import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.web.client.RestTemplate;
 
-import com.excentria_it.wamya.adapter.b2b.rest.dto.User;
 import com.excentria_it.wamya.adapter.b2b.rest.props.AuthServerProperties;
+import com.excentria_it.wamya.domain.JwtOAuth2AccessToken;
 import com.excentria_it.wamya.domain.OAuthRole;
 import com.excentria_it.wamya.domain.OAuthUserAccount;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import okhttp3.mockwebserver.MockResponse;
-import okhttp3.mockwebserver.MockWebServer;
-
+@SpringBootTest
+@ActiveProfiles("b2b-rest-local")
 public class OAuthUserAccountIntegrationAdapterTests {
 
-	private static MockWebServer mockBackEnd;
+	@Autowired
+	private RestTemplate restTemplate;
+
+	@Autowired
+	private AuthServerProperties authServerProperties;
+
+	private MockRestServiceServer mockServer;
+
+	private ObjectMapper objectMapper = new ObjectMapper();
 
 	private static final String ACCESS_TOKEN_STRING = "SOME_TOKEN_STRING";
 
+	@Autowired
 	private OAuthUserAccountIntegrationAdapter oAuthUserAccountIntegrationAdapter;
 
-	@BeforeAll
-	static void setUp() throws IOException {
-		mockBackEnd = new MockWebServer();
-		mockBackEnd.start();
-	}
-
-	@AfterAll
-	static void tearDown() throws IOException {
-		mockBackEnd.shutdown();
-	}
-
 	@BeforeEach
-	void initialize() throws JsonProcessingException {
-
-		AuthServerProperties authServerProperties = Mockito.mock(AuthServerProperties.class);
-		when(authServerProperties.getCreateUserUri())
-				.thenReturn(String.format("http://localhost:%s/users", mockBackEnd.getPort()));
-		when(authServerProperties.getPasswordRegistrationId()).thenReturn("someRegistrationId");
-
-		OAuth2AuthorizedClientManager authorizedClientManager = Mockito.mock(OAuth2AuthorizedClientManager.class);
-
-		OAuth2AuthorizedClient oAuth2AuthorizedClient = Mockito.mock(OAuth2AuthorizedClient.class);
-
-		OAuth2AccessToken oAuth2AccessToken = Mockito.mock(OAuth2AccessToken.class);
-
-		when(oAuth2AccessToken.getTokenValue()).thenReturn("SOME_TOKEN_STRING");
-
-		when(oAuth2AuthorizedClient.getAccessToken()).thenReturn(oAuth2AccessToken);
-
-		when(authorizedClientManager.authorize(any(OAuth2AuthorizeRequest.class))).thenReturn(oAuth2AuthorizedClient);
-
-		oAuthUserAccountIntegrationAdapter = new OAuthUserAccountIntegrationAdapter(authServerProperties,
-				WebClient.builder(), authorizedClientManager);
-
+	public void init() {
+		mockServer = MockRestServiceServer.createServer(restTemplate);
 	}
 
 	@Test
-	void testCreateOAuthUserAccount() throws JsonProcessingException {
-		UUID uuid = UUID.randomUUID();
-		ObjectMapper objectMapper = new ObjectMapper();
+	void testCreateOAuthUserAccount() throws JsonProcessingException, URISyntaxException {
 
-		User user = new User();
-		user.setOauthId(uuid);
+		Long userOAuthId = 1L;
 
-		mockBackEnd.enqueue(new MockResponse().setBody(objectMapper.writeValueAsString(user)).addHeader("Content-Type",
-				"application/json"));
+		OAuthUserAccount oAuthUserAccountResponse = new OAuthUserAccount(userOAuthId, "foued", "amri", "test@test.com",
+				"+21622222222", "password", true, true, true, true, List.of(new OAuthRole("ROLE_TRANSPORTER")));
 
-		OAuthUserAccount userAccount = new OAuthUserAccount("foued", "amri", "test@test.com", "+21622222222",
+		mockServer.expect(ExpectedCount.once(), requestTo(new URI(authServerProperties.getCreateUserUri())))
+				.andExpect(method(HttpMethod.POST))
+				.andRespond(withStatus(HttpStatus.CREATED).contentType(MediaType.APPLICATION_JSON)
+						.body(objectMapper.writeValueAsString(oAuthUserAccountResponse)));
+
+		OAuthUserAccount oAuthUserAccount = new OAuthUserAccount(null, "foued", "amri", "test@test.com", "+21622222222",
 				"password", true, true, true, true, List.of(new OAuthRole("TRANSPORTER")));
 
-		UUID result = oAuthUserAccountIntegrationAdapter.createOAuthUserAccount(userAccount);
+		Long result = oAuthUserAccountIntegrationAdapter.createOAuthUserAccount(oAuthUserAccount);
 
-		assertEquals(uuid, result);
-
-	}
-
-	@Test
-	void testCreateOAuthUserAccountException() throws JsonProcessingException {
-
-		mockBackEnd.enqueue(new MockResponse().setResponseCode(500));
-
-		OAuthUserAccount userAccount = new OAuthUserAccount("foued", "amri", "test@test.com", "+21622222222",
-				"password", true, true, true, true, List.of(new OAuthRole("TRANSPORTER")));
-
-		assertThrows(WebClientException.class,
-				() -> oAuthUserAccountIntegrationAdapter.createOAuthUserAccount(userAccount));
+		assertEquals(userOAuthId, result);
 
 	}
 
 	@Test
-	void testAuthorizeOAuthUser() {
+	void testAuthorizeOAuthUser() throws JsonProcessingException, URISyntaxException {
+		JwtOAuth2AccessToken oAuth2AccessTokenResponse = new JwtOAuth2AccessToken(ACCESS_TOKEN_STRING, "Bearer",
+				"REFRESH_TOKEN", 36000L, "read write", UUID.randomUUID().toString());
 
-		OAuth2AccessToken oAuth2AccessToken = oAuthUserAccountIntegrationAdapter.authorizeOAuthUser("test", "test");
+		mockServer.expect(ExpectedCount.once(), requestTo(new URI(authServerProperties.getTokenUri())))
+				.andExpect(method(HttpMethod.POST)).andExpect(jsonPath("$.username", equalTo("test")))
+				.andExpect(jsonPath("$.password", equalTo("test"))).andExpect(jsonPath("$.grant_type", equalTo("password")))
+				.andRespond(withStatus(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
+						.body(objectMapper.writeValueAsString(oAuth2AccessTokenResponse)));
 
-		assertEquals(ACCESS_TOKEN_STRING, oAuth2AccessToken.getTokenValue());
+		JwtOAuth2AccessToken oAuth2AccessToken = oAuthUserAccountIntegrationAdapter.fetchJwtTokenForUser("test",
+				"test");
+
+		assertEquals(ACCESS_TOKEN_STRING, oAuth2AccessToken.getAccessToken());
 
 	}
 }

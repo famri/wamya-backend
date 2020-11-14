@@ -6,11 +6,10 @@ import java.util.Locale;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
-import org.springframework.security.oauth2.core.OAuth2AccessToken;
-
 import com.excentria_it.wamya.common.exception.UnsupportedInternationalCallingCode;
 import com.excentria_it.wamya.common.exception.UserAccountAlreadyExistsException;
 import com.excentria_it.wamya.domain.Gender;
+import com.excentria_it.wamya.domain.JwtOAuth2AccessToken;
 import com.excentria_it.wamya.domain.RegexPattern;
 
 import lombok.AllArgsConstructor;
@@ -20,7 +19,7 @@ import lombok.NoArgsConstructor;
 
 public interface CreateUserAccountUseCase {
 
-	OAuth2AccessToken registerUserAccountCreationDemand(CreateUserAccountCommand command, Locale locale)
+	JwtOAuth2AccessToken registerUserAccountCreationDemand(CreateUserAccountCommand command, Locale locale)
 			throws UserAccountAlreadyExistsException, UnsupportedInternationalCallingCode;
 
 	void checkExistingAccount(CreateUserAccountCommand command);

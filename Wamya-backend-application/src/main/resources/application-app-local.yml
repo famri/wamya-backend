@@ -1,3 +1,8 @@
+#phone number and email validation code generator properties
+code:
+  generator:
+    length: 4
+    
 front:
   url:
     protocol: https

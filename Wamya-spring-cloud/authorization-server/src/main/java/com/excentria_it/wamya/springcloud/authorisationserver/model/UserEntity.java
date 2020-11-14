@@ -1,17 +1,18 @@
 package com.excentria_it.wamya.springcloud.authorisationserver.model;
 
 import java.util.Collection;
-import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
@@ -22,12 +23,16 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "user_account", indexes = { @Index(name = "email_index", columnList = "email", unique = true),
 		@Index(name = "phoneNumber_index", columnList = "phoneNumber", unique = true) })
+@SequenceGenerator(name = UserEntity.USER_SEQ, initialValue = 1, allocationSize = 5)
 @NoArgsConstructor
 @Data
 public class UserEntity {
+
+	public static final String USER_SEQ = "user_seq";
+
 	@Id
-	@GeneratedValue
-	private UUID oauthId;
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = USER_SEQ)
+	private Long oauthId;
 
 	@Version
 	private Integer version;

@@ -1,6 +1,9 @@
 package com.excentria_it.wamya.springcloud.authorisationserver.service.impl;
 
+import java.util.Collections;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -8,7 +11,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.excentria_it.wamya.springcloud.authorisationserver.dto.User;
+import com.excentria_it.wamya.springcloud.authorisationserver.dto.OAuthRole;
+import com.excentria_it.wamya.springcloud.authorisationserver.dto.OAuthUserAccount;
 import com.excentria_it.wamya.springcloud.authorisationserver.dto.UserPrincipal;
 import com.excentria_it.wamya.springcloud.authorisationserver.model.RoleEntity;
 import com.excentria_it.wamya.springcloud.authorisationserver.model.UserEntity;
@@ -44,17 +48,25 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 	}
 
 	@Override
-	public User createUser(User user) {
-		Optional<UserEntity> userEntity = userRepository.findByEmail(user.getEmail());
-		if (userEntity.isPresent()) {
+	public OAuthUserAccount createUser(OAuthUserAccount user) {
+		Optional<UserEntity> optionalUserEntity = userRepository.findByEmail(user.getEmail());
+		if (optionalUserEntity.isPresent()) {
 			throw new RuntimeException(String.format("User with email %s already exists.", user.getEmail()));
 		}
 
-		userEntity = userRepository.findByPhoneNumber(user.getPhoneNumber());
-		if (userEntity.isPresent()) {
+		optionalUserEntity = userRepository.findByPhoneNumber(user.getPhoneNumber());
+		if (optionalUserEntity.isPresent()) {
 			throw new RuntimeException(
 					String.format("User with mobile number %s already exists.", user.getPhoneNumber()));
 		}
+
+		// Remove ADMIN and invalid roles
+		Set<OAuthRole> filteredRoles = filterRoles(user);
+		if (filteredRoles.isEmpty()) {
+			throw new RuntimeException(String.format("Invalid user roles."));
+		}
+
+		user.setRoles(filteredRoles);
 
 		UserEntity entity = mapper.apiToEntity(user);
 
@@ -62,12 +74,25 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
 			Optional<RoleEntity> roleEntity = roleRepository.findByName(r.getName());
 			r.setId(roleEntity.get().getId());
-			r.setPrivileges(roleEntity.get().getPrivileges());
 		});
 
 		UserEntity newEntity = userRepository.save(entity);
 
 		return mapper.entityToApi(newEntity);
+
+	}
+
+	private Set<OAuthRole> filterRoles(OAuthUserAccount user) {
+		Set<OAuthRole> filteredRoles = Collections.<OAuthRole>emptySet();
+		// Disable ADMIN user creation from API
+		// Remove invalid RoleType
+		if (user.getRoles() != null && !user.getRoles().isEmpty()) {
+			filteredRoles = user.getRoles().stream().filter(r -> {
+				return r != null && !"ROLE_ADMIN".equals(r.getName());
+			}).collect(Collectors.toSet());
+
+		}
+		return filteredRoles;
 
 	}
 }

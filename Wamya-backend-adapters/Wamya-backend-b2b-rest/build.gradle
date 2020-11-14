@@ -11,7 +11,7 @@ jacocoTestCoverageVerification {
 			limit {
 			counter = 'LINE'
 			value = 'COVEREDRATIO'
-			minimum = 0.5
+			minimum = 1.0
 			}
 			excludes = [
 					//'com.excentria_it.wamya.WamyaApplication' #commented because redendent when @Generated is used
@@ -28,10 +28,10 @@ dependencies {
 
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation 'org.springframework.boot:spring-boot-starter-web'
-  	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
-  	
-  	implementation ('org.springframework.boot:spring-boot-starter-security');
-	implementation "org.springframework.security:spring-security-oauth2-client:${springSecurityVersion}"
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+
+    implementation 'commons-codec:commons-codec:1.15'
     
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'

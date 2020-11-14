@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.UUID;
 
 import javax.transaction.Transactional;
 
@@ -15,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.core.OAuth2AccessToken;
 
 import com.excentria_it.wamya.application.port.in.CreateUserAccountUseCase;
 import com.excentria_it.wamya.application.port.out.CreateUserAccountPort;
@@ -33,6 +31,7 @@ import com.excentria_it.wamya.common.domain.SMSTemplate;
 import com.excentria_it.wamya.common.exception.UserAccountAlreadyExistsException;
 import com.excentria_it.wamya.domain.EmailSender;
 import com.excentria_it.wamya.domain.EmailSubject;
+import com.excentria_it.wamya.domain.JwtOAuth2AccessToken;
 import com.excentria_it.wamya.domain.OAuthRole;
 import com.excentria_it.wamya.domain.OAuthUserAccount;
 import com.excentria_it.wamya.domain.UserAccount;
@@ -73,7 +72,7 @@ public class CreateUserAccountService implements CreateUserAccountUseCase {
 	public static final String EMAIL_VALIDATION_URL_TEMPLATE = "${protocol}://${host}:${port}/accounts/validate?email=${email}&code=${code}";
 
 	@Override
-	public OAuth2AccessToken registerUserAccountCreationDemand(CreateUserAccountCommand command, Locale locale) {
+	public JwtOAuth2AccessToken registerUserAccountCreationDemand(CreateUserAccountCommand command, Locale locale) {
 
 		checkExistingAccount(command);
 
@@ -85,11 +84,12 @@ public class CreateUserAccountService implements CreateUserAccountUseCase {
 				.phoneNumber(command.getIcc() + command.getMobileNumber())
 				.password(passwordEncoder.encode(command.getUserPassword())).isAccountNonExpired(true)
 				.isAccountNonLocked(true).isCredentialsNonExpired(true).isEnabled(true)
-				.roles(List.of(new OAuthRole(command.getIsTransporter() ? "TRANSPORTER" : "CLIENT"))).build();
+				.roles(List.of(new OAuthRole(command.getIsTransporter() ? "ROLE_TRANSPORTER" : "ROLE_CUSTOMER")))
+				.build();
 
-		UUID uuid = oAuthUserAccountPort.createOAuthUserAccount(oauthUserAccount);
+		Long oauthId = oAuthUserAccountPort.createOAuthUserAccount(oauthUserAccount);
 
-		UserAccount userAccount = UserAccount.builder().oauthUuid(uuid).isTransporter(command.getIsTransporter())
+		UserAccount userAccount = UserAccount.builder().oauthId(oauthId).isTransporter(command.getIsTransporter())
 				.gender(command.getGender()).firstName(command.getFirstName()).lastName(command.getLastName())
 				.dateOfBirth(command.getDateOfBirth()).email(command.getEmail())
 				.emailValidationCode(emailValidationCode).isValidatedEmail(false)
@@ -104,7 +104,7 @@ public class CreateUserAccountService implements CreateUserAccountUseCase {
 
 		requestSendingSMSValidationCode(userAccount.getMobilePhoneNumber(), mobileNumberValidationCode, locale);
 
-		OAuth2AccessToken accessToken = oAuthUserAccountPort.authorizeOAuthUser(command.getEmail(),
+		JwtOAuth2AccessToken accessToken = oAuthUserAccountPort.fetchJwtTokenForUser(command.getEmail(),
 				command.getUserPassword());
 
 		return accessToken;

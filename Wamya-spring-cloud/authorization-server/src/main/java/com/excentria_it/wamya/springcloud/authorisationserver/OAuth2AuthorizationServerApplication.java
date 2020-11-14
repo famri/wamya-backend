@@ -17,7 +17,6 @@ package com.excentria_it.wamya.springcloud.authorisationserver;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 
 /**
  * @author Josh Cummings

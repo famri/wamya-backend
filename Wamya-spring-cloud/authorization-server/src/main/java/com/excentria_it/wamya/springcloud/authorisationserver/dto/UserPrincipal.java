@@ -1,9 +1,8 @@
 package com.excentria_it.wamya.springcloud.authorisationserver.dto;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -64,12 +63,11 @@ public class UserPrincipal implements UserDetails {
 	}
 
 	private final Collection<? extends GrantedAuthority> getAuthorities(Collection<RoleEntity> roles) {
-		List<GrantedAuthority> authorities = new ArrayList<>();
+		Set<GrantedAuthority> authorities = new HashSet<>();
 		roles.forEach(r -> {
 
-			authorities.add(new SimpleGrantedAuthority(r.getName().name()));
-			authorities.addAll(r.getPrivileges().stream().map(p -> new SimpleGrantedAuthority(p.getName()))
-					.collect(Collectors.toList()));
+			authorities.add(new SimpleGrantedAuthority(r.getName()));
+
 		});
 
 		return authorities;

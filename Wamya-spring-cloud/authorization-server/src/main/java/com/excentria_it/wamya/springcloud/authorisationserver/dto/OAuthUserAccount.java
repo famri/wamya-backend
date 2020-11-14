@@ -1,37 +1,48 @@
 package com.excentria_it.wamya.springcloud.authorisationserver.dto;
 
 import java.util.Collection;
-import java.util.UUID;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
+@AllArgsConstructor
+@Builder
 @Data
-public class User {
+public class OAuthUserAccount {
 
-	private UUID oauthId;
+	private Long oauthId;
 
 	@NotNull
+	@NotEmpty
 	private String firstname;
+
 	@NotNull
+	@NotEmpty
 	private String lastname;
+
 	@NotNull
+	@NotEmpty
 	private String email;
+
 	@NotNull
+	@NotEmpty
 	private String phoneNumber;
+
 	@NotNull
+	@NotEmpty
 	private String password;
 
 	private boolean isAccountNonExpired;
-
 	private boolean isAccountNonLocked;
-
 	private boolean isCredentialsNonExpired;
-
 	private boolean isEnabled;
+
 	@NotNull
 	@NotEmpty
-	private Collection<Role> roles;
+	private Collection<OAuthRole> roles;
+
 }

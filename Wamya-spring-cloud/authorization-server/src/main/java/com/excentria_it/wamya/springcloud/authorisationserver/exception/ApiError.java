@@ -1,4 +1,4 @@
-package com.excentria_it.wamya.adapter.web.exception;
+package com.excentria_it.wamya.springcloud.authorisationserver.exception;
 
 import java.util.Arrays;
 import java.util.List;
