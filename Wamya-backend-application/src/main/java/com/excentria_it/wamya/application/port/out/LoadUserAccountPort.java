@@ -9,4 +9,8 @@ public interface LoadUserAccountPort {
 	Optional<UserAccount> loadUserAccountByIccAndMobileNumber(String icc, String mobileNumber);
 
 	Optional<UserAccount> loadUserAccountByEmail(String email);
+	
+	Optional<UserAccount> loadUserAccountByIccAndMobileNumberAndPassword(String icc, String mobileNumber, String password);
+	
+	Optional<UserAccount> loadUserAccountByEmailAndPassword(String email, String password);
 }

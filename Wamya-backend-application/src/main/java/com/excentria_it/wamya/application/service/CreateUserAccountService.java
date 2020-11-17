@@ -78,12 +78,12 @@ public class CreateUserAccountService implements CreateUserAccountUseCase {
 
 		String mobileNumberValidationCode = codeGenerator.generateNumericCode();
 		String emailValidationCode = codeGenerator.generateUUID();
+		String encodedPassword = passwordEncoder.encode(command.getUserPassword());
 
 		OAuthUserAccount oauthUserAccount = OAuthUserAccount.builder().firstname(command.getFirstName())
 				.lastname(command.getLastName()).email(command.getEmail())
-				.phoneNumber(command.getIcc() + command.getMobileNumber())
-				.password(passwordEncoder.encode(command.getUserPassword())).isAccountNonExpired(true)
-				.isAccountNonLocked(true).isCredentialsNonExpired(true).isEnabled(true)
+				.phoneNumber(command.getIcc() + "_" + command.getMobileNumber()).password(encodedPassword)
+				.isAccountNonExpired(true).isAccountNonLocked(true).isCredentialsNonExpired(true).isEnabled(true)
 				.roles(List.of(new OAuthRole(command.getIsTransporter() ? "ROLE_TRANSPORTER" : "ROLE_CUSTOMER")))
 				.build();
 
@@ -95,8 +95,8 @@ public class CreateUserAccountService implements CreateUserAccountUseCase {
 				.emailValidationCode(emailValidationCode).isValidatedEmail(false)
 				.mobilePhoneNumber(new MobilePhoneNumber(command.getIcc(), command.getMobileNumber()))
 				.isValidatedMobileNumber(false).mobileNumberValidationCode(mobileNumberValidationCode)
-				.isValidatedMobileNumber(false).userPassword(passwordEncoder.encode(command.getUserPassword()))
-				.creationTimestamp(LocalDateTime.now()).receiveNewsletter(command.getReceiveNewsletter()).build();
+				.isValidatedMobileNumber(false).userPassword(encodedPassword).creationTimestamp(LocalDateTime.now())
+				.receiveNewsletter(command.getReceiveNewsletter()).build();
 
 		createUserAccountPort.createUserAccount(userAccount);
 

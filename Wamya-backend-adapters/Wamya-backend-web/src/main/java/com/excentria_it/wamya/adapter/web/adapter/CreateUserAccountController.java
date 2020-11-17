@@ -43,31 +43,30 @@ public class CreateUserAccountController {
 
 		JwtOAuth2AccessToken accessToken = createUserAccountUseCase.registerUserAccountCreationDemand(command, locale);
 
-		// Authenticate user and return access token
-
 		return accessToken;
 	}
 
 	@ExceptionHandler({ UserAccountAlreadyExistsException.class })
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	public ResponseEntity<Object> handleUserAccountAlreadyExistsException(UserAccountAlreadyExistsException exception) {
+	public ResponseEntity<ApiError> handleUserAccountAlreadyExistsException(
+			UserAccountAlreadyExistsException exception) {
 
 		log.error("Exception at " + exception.getClass() + ": ", exception);
 		final String error = "User account already exists.";
 		final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, error);
-		return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
+		return new ResponseEntity<ApiError>(apiError, new HttpHeaders(), apiError.getStatus());
 
 	}
 
 	@ExceptionHandler({ UnsupportedInternationalCallingCode.class })
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	public ResponseEntity<Object> handleUnsupportedInternationalCallingCode(
+	public ResponseEntity<ApiError> handleUnsupportedInternationalCallingCode(
 			UnsupportedInternationalCallingCode exception) {
 
 		log.error("Exception at " + exception.getClass() + ": ", exception);
 		final String error = "International calling code is not supported.";
 		final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, error);
-		return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
+		return new ResponseEntity<ApiError>(apiError, new HttpHeaders(), apiError.getStatus());
 
 	}
 

@@ -9,4 +9,7 @@ public class RegexPattern {
 	public static final String MOBILE_NUMBER_PATTERN = "\\A[0-9]{8}|[0-9]{10}\\z";
 	public static final String ICC_PATTERN = "\\A\\+[0-9]{2,3}\\z";
 	public static final String EMAIL_PATTERN = "^[A-Za-z0-9._-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$";
+	public static final String MOBILE_USERNAME_PATTERN = ICC_PATTERN + "_" + MOBILE_NUMBER_PATTERN;
+	public static final String USERNAME_PATTERN = EMAIL_PATTERN + "|" + MOBILE_USERNAME_PATTERN;
+
 }
