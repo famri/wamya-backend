@@ -7,6 +7,7 @@ import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.ResponseErrorHandler;
 
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.AllArgsConstructor;
@@ -17,6 +18,8 @@ public class RestTemplateResponseErrorHandler implements ResponseErrorHandler {
 
 	private ObjectMapper mapper;
 
+	private static final String INVALID_GRANT_ERROR = "invalid_grant";
+
 	@Override
 	public boolean hasError(ClientHttpResponse httpResponse) throws IOException {
 
@@ -26,10 +29,31 @@ public class RestTemplateResponseErrorHandler implements ResponseErrorHandler {
 
 	@Override
 	public void handleError(ClientHttpResponse httpResponse) throws IOException {
-		ApiError apiError = mapper.readValue(httpResponse.getBody(), ApiError.class);
-		if (apiError != null && apiError.getErrors() != null) {
-			throw new RuntimeException(apiError.getErrors().toString());
+		// A hack to avoid IOException on httpResponse.getBody()
+		httpResponse.getStatusCode();
+		
+		try {
+			ApiError apiError = mapper.readValue(httpResponse.getBody(), ApiError.class);
+			if (apiError.getErrors() != null) {
+				throw new RuntimeException(apiError.getErrors().toString());
+			}
+			throw new RuntimeException(httpResponse.getStatusText());
+
+		} catch (JsonMappingException e) {
+			try {
+				AuthServerError authServerError = mapper.readValue(httpResponse.getBody(), AuthServerError.class);
+				if (authServerError.getError() != null) {
+					if (INVALID_GRANT_ERROR.equals(authServerError.getError())) {
+						throw new AuthorizationException(authServerError.getErrorDescription());
+					}
+					throw new RuntimeException(authServerError.getErrorDescription());
+				}
+				throw new RuntimeException(httpResponse.getStatusText());
+			} catch (JsonMappingException e1) {
+				throw new RuntimeException(httpResponse.getStatusText());
+			}
 		}
-		throw new RuntimeException(httpResponse.getStatusText());
+
+
 	}
 }

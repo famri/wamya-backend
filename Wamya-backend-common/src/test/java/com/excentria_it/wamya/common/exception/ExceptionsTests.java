@@ -46,4 +46,11 @@ public class ExceptionsTests {
 
 	}
 
+	@Test
+	void testLoginOrPasswordNotFoundException() {
+		String message = "SOME MESSAGE";
+		AuthorizationException exception = new AuthorizationException(message);
+		assertEquals(exception.getMessage(), message);
+
+	}
 }

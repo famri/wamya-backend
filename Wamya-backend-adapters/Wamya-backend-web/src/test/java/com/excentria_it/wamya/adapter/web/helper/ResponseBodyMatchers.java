@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.test.web.servlet.ResultMatcher;
 
 import com.excentria_it.wamya.common.exception.ApiError;
+import com.excentria_it.wamya.common.exception.AuthServerError;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ResponseBodyMatchers {
@@ -20,7 +21,7 @@ public class ResponseBodyMatchers {
 		};
 	}
 
-	public ResultMatcher containsErrors(List<String> expectedErrors) {
+	public ResultMatcher containsApiErrors(List<String> expectedErrors) {
 		return mvcResult -> {
 			String json = mvcResult.getResponse().getContentAsString();
 			ApiError apiError = objectMapper.readValue(json, ApiError.class);
@@ -29,6 +30,17 @@ public class ResponseBodyMatchers {
 			assertThat(actualErrors.containsAll(expectedErrors) && actualErrors.size() == expectedErrors.size())
 					.isTrue().withFailMessage("expecting exactly %d error message but found %d.", expectedErrors.size(),
 							actualErrors.size());
+		};
+	}
+
+	public ResultMatcher containsAuthServerError(String expectedError) {
+		return mvcResult -> {
+			String json = mvcResult.getResponse().getContentAsString();
+			AuthServerError authServerError = objectMapper.readValue(json, AuthServerError.class);
+			String actualError = authServerError.getError();
+
+			assertThat(actualError != null && actualError.equals(expectedError)).isTrue()
+					.withFailMessage("expecting %s error message but found %s.", expectedError, actualError);
 		};
 	}
 

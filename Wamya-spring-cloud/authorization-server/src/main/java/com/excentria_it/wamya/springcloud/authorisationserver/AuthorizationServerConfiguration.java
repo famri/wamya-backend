@@ -39,6 +39,12 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
+import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
@@ -154,22 +160,19 @@ class UserConfig extends WebSecurityConfigurerAdapter {
 //	@Autowired
 //	private UserDetailsService userDetailsService;
 //
-//	@Bean
-//	public PasswordEncoder passwordEncoder() {
-//
-//		if (this.passwordEncoder == null) {
-//			String idForEncode = "bcrypt";
-//			Map<String, PasswordEncoder> encoders = new HashMap<>();
-//			encoders.put(idForEncode, new BCryptPasswordEncoder());
-//			encoders.put("noop", NoOpPasswordEncoder.getInstance());
-//			encoders.put("pbkdf2", new Pbkdf2PasswordEncoder());
-//			encoders.put("scrypt", new SCryptPasswordEncoder());
-//
-//			this.passwordEncoder = new DelegatingPasswordEncoder(idForEncode, encoders);
-//		}
-//
-//		return this.passwordEncoder;
-//	}
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+
+		String idForEncode = "bcrypt";
+		Map<String, PasswordEncoder> encoders = new HashMap<>();
+		encoders.put(idForEncode, new BCryptPasswordEncoder());
+		encoders.put("noop", NoOpPasswordEncoder.getInstance());
+		encoders.put("pbkdf2", new Pbkdf2PasswordEncoder());
+		encoders.put("scrypt", new SCryptPasswordEncoder());
+
+		return new DelegatingPasswordEncoder(idForEncode, encoders);
+
+	}
 
 //	@Bean
 //	@Override

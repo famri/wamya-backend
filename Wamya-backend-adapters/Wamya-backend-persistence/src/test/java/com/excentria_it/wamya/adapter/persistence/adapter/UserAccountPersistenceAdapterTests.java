@@ -69,7 +69,7 @@ public class UserAccountPersistenceAdapterTests {
 
 		given(userAccountMapper.mapToJpaEntity(userAccount, iccEntity.get())).willReturn(userAccountJpaEntity);
 		given(userAccountRepository.save(userAccountJpaEntity)).willReturn(userAccountJpaEntity);
-		
+
 		userAccountPersistenceAdapter.createUserAccount(userAccount);
 
 		then(userAccountRepository).should(times(1)).save(userAccountJpaEntity);
@@ -245,4 +245,5 @@ public class UserAccountPersistenceAdapterTests {
 		assertThat(result.isEmpty()).isTrue();
 
 	}
+
 }

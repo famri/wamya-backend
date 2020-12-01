@@ -16,15 +16,5 @@ public interface UserAccountRepository extends JpaRepository<UserAccountJpaEntit
 			@Param("internationalCallingCode") String internationalCallingCode,
 			@Param("mobileNumber") String mobileNumber);
 
-	
 	Optional<UserAccountJpaEntity> findByEmail(String email);
-
-	@Query("select u from UserAccountJpaEntity u " + "where u.icc.value = :internationalCallingCode "
-			+ "and u.mobileNumber = :mobileNumber "+" and u.password = :password")
-	Optional<UserAccountJpaEntity> findByMobilePhoneNumberAndPassword(
-			@Param("internationalCallingCode") String internationalCallingCode,
-			@Param("mobileNumber") String mobileNumber, @Param("password") String password);
-	
-	
-	Optional<UserAccountJpaEntity> findByEmailAndPassword(String email, String password);
 }

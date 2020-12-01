@@ -18,7 +18,7 @@ public class UserAccountJpaEntityTestData {
 				.mobileNumber(userAccount.getMobilePhoneNumber().getMobileNumber())
 				.mobileNumberValidationCode(userAccount.getMobileNumberValidationCode())
 				.isValidatedMobileNumber(userAccount.getIsValidatedMobileNumber())
-				.password(userAccount.getUserPassword()).receiveNewsletter(userAccount.getReceiveNewsletter())
+				.receiveNewsletter(userAccount.getReceiveNewsletter())
 				.creationTimestamp(userAccount.getCreationTimestamp()).id(1L).isTransporter(true).build();
 	}
 
@@ -33,7 +33,7 @@ public class UserAccountJpaEntityTestData {
 				.mobileNumber(userAccount.getMobilePhoneNumber().getMobileNumber())
 				.mobileNumberValidationCode(userAccount.getMobileNumberValidationCode())
 				.isValidatedMobileNumber(userAccount.getIsValidatedMobileNumber())
-				.password(userAccount.getUserPassword()).receiveNewsletter(userAccount.getReceiveNewsletter())
+				.receiveNewsletter(userAccount.getReceiveNewsletter())
 				.creationTimestamp(userAccount.getCreationTimestamp()).id(null).isTransporter(true).build();
 	}
 
@@ -47,7 +47,7 @@ public class UserAccountJpaEntityTestData {
 				.mobileNumber(userAccount.getMobilePhoneNumber().getMobileNumber())
 				.mobileNumberValidationCode(userAccount.getMobileNumberValidationCode())
 				.isValidatedMobileNumber(userAccount.getIsValidatedMobileNumber())
-				.password(userAccount.getUserPassword()).receiveNewsletter(userAccount.getReceiveNewsletter())
+				.receiveNewsletter(userAccount.getReceiveNewsletter())
 				.creationTimestamp(userAccount.getCreationTimestamp()).id(1L).isTransporter(false).build();
 	}
 
@@ -61,7 +61,7 @@ public class UserAccountJpaEntityTestData {
 				.mobileNumber(userAccount.getMobilePhoneNumber().getMobileNumber())
 				.mobileNumberValidationCode(userAccount.getMobileNumberValidationCode())
 				.isValidatedMobileNumber(userAccount.getIsValidatedMobileNumber())
-				.password(userAccount.getUserPassword()).receiveNewsletter(userAccount.getReceiveNewsletter())
+				.receiveNewsletter(userAccount.getReceiveNewsletter())
 				.creationTimestamp(userAccount.getCreationTimestamp()).id(null).isTransporter(false).build();
 	}
 }

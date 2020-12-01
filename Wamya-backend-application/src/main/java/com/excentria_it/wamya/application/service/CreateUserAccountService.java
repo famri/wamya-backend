@@ -82,7 +82,7 @@ public class CreateUserAccountService implements CreateUserAccountUseCase {
 
 		OAuthUserAccount oauthUserAccount = OAuthUserAccount.builder().firstname(command.getFirstName())
 				.lastname(command.getLastName()).email(command.getEmail())
-				.phoneNumber(command.getIcc() + "_" + command.getMobileNumber()).password(encodedPassword)
+				.phoneNumber(command.getIcc() + "_" + command.getMobileNumber()).password(command.getUserPassword())
 				.isAccountNonExpired(true).isAccountNonLocked(true).isCredentialsNonExpired(true).isEnabled(true)
 				.roles(List.of(new OAuthRole(command.getIsTransporter() ? "ROLE_TRANSPORTER" : "ROLE_CUSTOMER")))
 				.build();

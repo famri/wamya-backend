@@ -64,8 +64,8 @@ public class UserAccountJpaEntity {
 
 	@ManyToOne
 	private InternationalCallingCodeJpaEntity icc;
-	@Column
 
+	@Column
 	private String mobileNumber;
 
 	@Column
@@ -73,9 +73,6 @@ public class UserAccountJpaEntity {
 
 	@Column
 	private Boolean isValidatedMobileNumber;
-
-	@Column(length = 100)
-	private String password;
 
 	@Column
 	private Boolean receiveNewsletter;

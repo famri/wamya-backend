@@ -111,8 +111,9 @@ public class SendValidationCodeControllerTests {
 		String commandJson = objectMapper.writeValueAsString(command);
 
 		mockMvc.perform(post("/wamya-backend/validation-codes/sms/send").contentType(MediaType.APPLICATION_JSON)
-				.content(commandJson)).andExpect(status().isBadRequest()).andExpect(
-						responseBody().containsErrors(List.of("mobileNumber: The format of phone number is incorrect.",
+				.content(commandJson)).andExpect(status().isBadRequest())
+				.andExpect(responseBody()
+						.containsApiErrors(List.of("mobileNumber: The format of phone number is incorrect.",
 								"icc: The international calling code is incorrect.")));
 
 		then(sendValidationCodeUseCase).should(never()).sendSMSValidationCode(eq(command), any(Locale.class));
@@ -136,7 +137,7 @@ public class SendValidationCodeControllerTests {
 
 		mockMvc.perform(post("/wamya-backend/validation-codes/sms/send").contentType(MediaType.APPLICATION_JSON)
 				.content(commandJson)).andExpect(status().isBadRequest())
-				.andExpect(responseBody().containsErrors(List.of("User account not found.")));
+				.andExpect(responseBody().containsApiErrors(List.of("User account not found.")));
 
 	}
 
@@ -217,7 +218,7 @@ public class SendValidationCodeControllerTests {
 
 		mockMvc.perform(post("/wamya-backend/validation-codes/email/send").contentType(MediaType.APPLICATION_JSON)
 				.content(commandJson)).andExpect(status().isBadRequest())
-				.andExpect(responseBody().containsErrors(List.of("email: The format of email is incorrect.")));
+				.andExpect(responseBody().containsApiErrors(List.of("email: The format of email is incorrect.")));
 
 		then(sendValidationCodeUseCase).should(never()).sendEmailValidationLink(eq(command), any(Locale.class));
 

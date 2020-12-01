@@ -102,40 +102,4 @@ public class UserAccountPersistenceAdapter
 		return Optional.ofNullable(userAccount);
 	}
 
-	@Override
-	public Optional<UserAccount> loadUserAccountByIccAndMobileNumberAndPassword(String icc, String mobileNumber,
-			String password) {
-		if (mobileNumber == null || icc == null || password == null)
-			return Optional.ofNullable(null);
-
-		Optional<UserAccountJpaEntity> optionalEntity = userAccountRepository.findByMobilePhoneNumberAndPassword(icc,
-				mobileNumber, password);
-
-		if (optionalEntity.isEmpty())
-			return Optional.ofNullable(null);
-
-		UserAccountJpaEntity entity = optionalEntity.get();
-
-		UserAccount userAccount = userAccountMapper.mapToDomainEntity(entity);
-
-		return Optional.ofNullable(userAccount);
-	}
-
-	@Override
-	public Optional<UserAccount> loadUserAccountByEmailAndPassword(String email, String password) {
-		if (email == null || password == null)
-			return Optional.ofNullable(null);
-
-		Optional<UserAccountJpaEntity> optionalEntity = userAccountRepository.findByEmailAndPassword(email, password);
-
-		if (optionalEntity.isEmpty())
-			return Optional.ofNullable(null);
-
-		UserAccountJpaEntity entity = optionalEntity.get();
-
-		UserAccount userAccount = userAccountMapper.mapToDomainEntity(entity);
-
-		return Optional.ofNullable(userAccount);
-	}
-
 }

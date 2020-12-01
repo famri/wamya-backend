@@ -18,7 +18,7 @@ import com.excentria_it.wamya.application.port.in.AuthenticateUserUseCase;
 import com.excentria_it.wamya.application.port.in.AuthenticateUserUseCase.LoginUserCommand;
 import com.excentria_it.wamya.common.annotation.WebAdapter;
 import com.excentria_it.wamya.common.exception.ApiError;
-import com.excentria_it.wamya.common.exception.LoginOrPasswordNotFoundException;
+import com.excentria_it.wamya.common.exception.AuthorizationException;
 import com.excentria_it.wamya.domain.JwtOAuth2AccessToken;
 
 import lombok.RequiredArgsConstructor;
@@ -35,7 +35,6 @@ public class AuthenticationController {
 	private final AuthenticateUserUseCase authenticateUserUseCase;
 
 	@PostMapping(path = "/login", consumes = MediaType.APPLICATION_JSON_VALUE)
-	@ResponseStatus(HttpStatus.OK)
 	public JwtOAuth2AccessToken loginUser(@Valid @RequestBody LoginUserCommand command) {
 
 		JwtOAuth2AccessToken accessToken = authenticateUserUseCase.loginUser(command);
@@ -43,13 +42,13 @@ public class AuthenticationController {
 		return accessToken;
 	}
 
-	@ExceptionHandler({ LoginOrPasswordNotFoundException.class })
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	public ResponseEntity<ApiError> handleLoginOrPasswordNotFoundException(LoginOrPasswordNotFoundException exception) {
+	@ExceptionHandler({ AuthorizationException.class })
+	@ResponseStatus(HttpStatus.UNAUTHORIZED)
+	public ResponseEntity<ApiError> handleAuthorizationException(AuthorizationException exception) {
 
-		log.error("Exception at " + exception.getClass() + ": ", exception);
-		final String error = "User login or password not found.";
-		final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, error);
+		log.warn("Exception at " + exception.getClass() + ": ", exception);
+		final String error = exception.getMessage();
+		final ApiError apiError = new ApiError(HttpStatus.UNAUTHORIZED, error);
 		return new ResponseEntity<ApiError>(apiError, new HttpHeaders(), apiError.getStatus());
 
 	}

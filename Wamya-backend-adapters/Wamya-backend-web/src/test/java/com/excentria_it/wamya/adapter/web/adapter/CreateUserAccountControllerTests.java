@@ -32,9 +32,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Import(value = { CreateUserAccountController.class, RestApiExceptionHandler.class })
 @WebMvcTest(controllers = CreateUserAccountController.class, excludeAutoConfiguration = SecurityAutoConfiguration.class)
-public class CreateUserAccountControllerTest {
+public class CreateUserAccountControllerTests {
 
 	private static final String ACCESS_TOKEN = "SOME_ACCESS_TOKEN";
+
 	@Autowired
 	private MockMvc mockMvc;
 
@@ -45,7 +46,7 @@ public class CreateUserAccountControllerTest {
 	private ObjectMapper objectMapper;
 
 	@Test
-	void givenValidInput_WhenCreateUserAccount_ThenReturnCreatedUserAccount() throws Exception {
+	void givenValidInput_WhenCreateUserAccount_ThenReturnJwtToken() throws Exception {
 
 		CreateUserAccountCommand command = UserAccountTestData.defaultCreateUserAccountCommandBuilder().build();
 
@@ -86,7 +87,7 @@ public class CreateUserAccountControllerTest {
 	}
 
 	@Test
-	void givenExistentUserAccoun_WhenCreateUserAccount_ThenThrowUserAccountAlreadyExistsException() throws Exception {
+	void givenExistentUserAccount_WhenCreateUserAccount_ThenReturnExistentUserAccountError() throws Exception {
 
 		CreateUserAccountCommand command = UserAccountTestData.defaultCreateUserAccountCommandBuilder().build();
 
@@ -97,12 +98,12 @@ public class CreateUserAccountControllerTest {
 
 		mockMvc.perform(post("/wamya-backend/accounts").contentType(MediaType.APPLICATION_JSON_VALUE)
 				.content(createUserAccountJson)).andExpect(status().isBadRequest())
-				.andExpect(responseBody().containsErrors(List.of("User account already exists.")));
+				.andExpect(responseBody().containsApiErrors(List.of("User account already exists.")));
 
 	}
 
 	@Test
-	void givenExistentUserAccoun_WhenCreateUserAccount_ThenThrowUnsupportedInternationalCallingCodeException()
+	void givenNonExistentInternationalCallingCode_WhenCreateUserAccount_ThenReturnUnsupportedInternationalCallingCodeError()
 			throws Exception {
 
 		CreateUserAccountCommand command = UserAccountTestData.defaultCreateUserAccountCommandBuilder().build();
@@ -114,7 +115,7 @@ public class CreateUserAccountControllerTest {
 
 		mockMvc.perform(post("/wamya-backend/accounts").contentType(MediaType.APPLICATION_JSON_VALUE)
 				.content(createUserAccountJson)).andExpect(status().isBadRequest())
-				.andExpect(responseBody().containsErrors(List.of("International calling code is not supported.")));
+				.andExpect(responseBody().containsApiErrors(List.of("International calling code is not supported.")));
 
 	}
 

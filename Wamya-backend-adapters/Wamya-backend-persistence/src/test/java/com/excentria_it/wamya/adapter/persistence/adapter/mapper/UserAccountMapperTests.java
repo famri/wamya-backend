@@ -52,8 +52,6 @@ public class UserAccountMapperTests {
 
 		assertEquals(userAccount.getIsValidatedMobileNumber(), userAccountJpaEntity.getIsValidatedMobileNumber());
 
-		assertEquals(userAccount.getUserPassword(), userAccountJpaEntity.getPassword());
-
 		assertEquals(userAccount.getReceiveNewsletter(), userAccountJpaEntity.getReceiveNewsletter());
 
 		assertEquals(userAccount.getCreationTimestamp(), userAccountJpaEntity.getCreationTimestamp());
@@ -94,8 +92,6 @@ public class UserAccountMapperTests {
 		assertEquals(userAccount.getMobileNumberValidationCode(), userAccountJpaEntity.getMobileNumberValidationCode());
 
 		assertEquals(userAccount.getIsValidatedMobileNumber(), userAccountJpaEntity.getIsValidatedMobileNumber());
-
-		assertEquals(userAccount.getUserPassword(), userAccountJpaEntity.getPassword());
 
 		assertEquals(userAccount.getReceiveNewsletter(), userAccountJpaEntity.getReceiveNewsletter());
 

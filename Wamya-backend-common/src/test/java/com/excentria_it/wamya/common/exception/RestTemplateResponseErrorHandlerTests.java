@@ -17,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
 
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @ExtendWith(MockitoExtension.class)
@@ -98,13 +99,19 @@ public class RestTemplateResponseErrorHandlerTests {
 	}
 
 	@Test
-	public void givenNotApiErrorClientHttpResponse_WhenHandleError_ThenThrowRuntimeException() throws IOException {
+	public void givenNotApiErrorNorAuthServerErrorClientHttpResponse_WhenHandleError_ThenThrowRuntimeException()
+			throws IOException {
 
 		ClientHttpResponse clientHttpResponse = Mockito.mock(ClientHttpResponse.class);
 		when(clientHttpResponse.getBody())
 				.thenReturn(new ByteArrayInputStream(mapper.writeValueAsString("SOME STRING").getBytes()));
 		when(clientHttpResponse.getStatusText()).thenReturn("SOME SATUS TEXT");
-		when(objectMapper.readValue(clientHttpResponse.getBody(), ApiError.class)).thenReturn(null);
+
+		when(objectMapper.readValue(clientHttpResponse.getBody(), ApiError.class))
+				.thenThrow(JsonMappingException.class);
+
+		when(objectMapper.readValue(clientHttpResponse.getBody(), AuthServerError.class))
+				.thenThrow(JsonMappingException.class);
 
 		try {
 			restTemplateResponseErrorHandler.handleError(clientHttpResponse);
@@ -117,4 +124,108 @@ public class RestTemplateResponseErrorHandlerTests {
 
 	}
 
+	@Test
+	public void givenAuthServerErrorClientHttpResponse_WhenHandleError_ThenThrowRuntimeException() throws IOException {
+
+		AuthServerError authError = new AuthServerError();
+		authError.setError("invalid_grant");
+		authError.setErrorDescription("SOME ERROR DESCRIPTION");
+
+		ClientHttpResponse clientHttpResponse = Mockito.mock(ClientHttpResponse.class);
+		when(clientHttpResponse.getBody())
+				.thenReturn(new ByteArrayInputStream(mapper.writeValueAsString(authError).getBytes()));
+
+		when(objectMapper.readValue(clientHttpResponse.getBody(), ApiError.class))
+				.thenThrow(JsonMappingException.class);
+
+		when(objectMapper.readValue(clientHttpResponse.getBody(), AuthServerError.class)).thenReturn(authError);
+
+		try {
+			restTemplateResponseErrorHandler.handleError(clientHttpResponse);
+			fail("No Exception thrown!");
+		} catch (Exception e) {
+			assertTrue(e instanceof AuthorizationException);
+			assertEquals("SOME ERROR DESCRIPTION", e.getMessage());
+
+		}
+
+	}
+	@Test
+	public void givenAuthServerErrorButNotInvalidGrantErrorClientHttpResponse_WhenHandleError_ThenThrowRuntimeException() throws IOException {
+
+		AuthServerError authError = new AuthServerError();
+		authError.setError("SOME ERROR");
+		authError.setErrorDescription("SOME ERROR DESCRIPTION");
+
+		ClientHttpResponse clientHttpResponse = Mockito.mock(ClientHttpResponse.class);
+		when(clientHttpResponse.getBody())
+				.thenReturn(new ByteArrayInputStream(mapper.writeValueAsString(authError).getBytes()));
+
+		when(objectMapper.readValue(clientHttpResponse.getBody(), ApiError.class))
+				.thenThrow(JsonMappingException.class);
+
+		when(objectMapper.readValue(clientHttpResponse.getBody(), AuthServerError.class)).thenReturn(authError);
+
+		try {
+			restTemplateResponseErrorHandler.handleError(clientHttpResponse);
+			fail("No Exception thrown!");
+		} catch (Exception e) {
+			assertTrue(e instanceof RuntimeException);
+			assertEquals("SOME ERROR DESCRIPTION", e.getMessage());
+
+		}
+
+	}
+	
+	@Test
+	public void givenAuthServerErrorWithNullErrorClientHttpResponse_WhenHandleError_ThenThrowRuntimeException() throws IOException {
+
+		AuthServerError authError = new AuthServerError();
+
+		authError.setErrorDescription("SOME ERROR DESCRIPTION");
+
+		ClientHttpResponse clientHttpResponse = Mockito.mock(ClientHttpResponse.class);
+		when(clientHttpResponse.getBody())
+				.thenReturn(new ByteArrayInputStream(mapper.writeValueAsString(authError).getBytes()));
+		when(clientHttpResponse.getStatusText()).thenReturn("SOME STATUS TEXT");
+		when(objectMapper.readValue(clientHttpResponse.getBody(), ApiError.class))
+				.thenThrow(JsonMappingException.class);
+
+		when(objectMapper.readValue(clientHttpResponse.getBody(), AuthServerError.class)).thenReturn(authError);
+
+		try {
+			restTemplateResponseErrorHandler.handleError(clientHttpResponse);
+			fail("No Exception thrown!");
+		} catch (Exception e) {
+			assertTrue(e instanceof RuntimeException);
+			assertEquals("SOME STATUS TEXT", e.getMessage());
+
+		}
+
+	}
+	
+	@Test
+	public void givenApiErrorWithNullErrorsClientHttpResponse_WhenHandleError_ThenThrowRuntimeException() throws IOException {
+
+
+		ApiError apiError = new ApiError();
+		apiError.setStatus(HttpStatus.BAD_REQUEST);
+		
+		ClientHttpResponse clientHttpResponse = Mockito.mock(ClientHttpResponse.class);
+		when(clientHttpResponse.getBody())
+				.thenReturn(new ByteArrayInputStream(mapper.writeValueAsString(apiError).getBytes()));
+		when(clientHttpResponse.getStatusText()).thenReturn("SOME STATUS TEXT");
+		
+		when(objectMapper.readValue(clientHttpResponse.getBody(), ApiError.class)).thenReturn(apiError);
+	
+		
+		try {
+			restTemplateResponseErrorHandler.handleError(clientHttpResponse);
+			fail("No Exception thrown!");
+		} catch (Exception e) {
+			assertTrue(e instanceof RuntimeException);
+			assertEquals("SOME STATUS TEXT", e.getMessage());
+		}
+
+	}
 }

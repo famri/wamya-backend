@@ -20,7 +20,7 @@ public class UserAccountMapper {
 				.mobileNumber(userAccount.getMobilePhoneNumber().getMobileNumber())
 				.mobileNumberValidationCode(userAccount.getMobileNumberValidationCode())
 				.isValidatedMobileNumber(userAccount.getIsValidatedMobileNumber())
-				.password(userAccount.getUserPassword()).receiveNewsletter(userAccount.getReceiveNewsletter())
+				.receiveNewsletter(userAccount.getReceiveNewsletter())
 				.creationTimestamp(userAccount.getCreationTimestamp()).build();
 	}
 
@@ -38,7 +38,6 @@ public class UserAccountMapper {
 						userAccountJpaEntity.getMobileNumber()))
 				.mobileNumberValidationCode(userAccountJpaEntity.getMobileNumberValidationCode())
 				.isValidatedMobileNumber(userAccountJpaEntity.getIsValidatedMobileNumber())
-				.userPassword(userAccountJpaEntity.getPassword())
 				.receiveNewsletter(userAccountJpaEntity.getReceiveNewsletter())
 				.creationTimestamp(userAccountJpaEntity.getCreationTimestamp()).build();
 	}
