@@ -38,5 +38,5 @@ public class InternationalCallingCodeJpaEntity {
 	private String flagPath;
 
 	@Column
-	private boolean enabled;
+	private Boolean enabled;
 }

@@ -1,5 +1,8 @@
 package com.excentria_it.wamya.adapter.persistence.mapper;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+
 import org.springframework.stereotype.Component;
 
 import com.excentria_it.wamya.adapter.persistence.entity.InternationalCallingCodeJpaEntity;
@@ -11,9 +14,11 @@ import com.excentria_it.wamya.domain.UserAccount.MobilePhoneNumber;
 public class UserAccountMapper {
 
 	public UserAccountJpaEntity mapToJpaEntity(UserAccount userAccount, InternationalCallingCodeJpaEntity icc) {
+		userAccount.getDateOfBirth();
+
 		return UserAccountJpaEntity.builder().id(userAccount.getId()).oauthId(userAccount.getOauthId())
 				.isTransporter(userAccount.getIsTransporter()).gender(userAccount.getGender())
-				.firstName(userAccount.getFirstName()).lastName(userAccount.getLastName())
+				.firstname(userAccount.getFirstname()).lastname(userAccount.getLastname())
 				.dateOfBirth(userAccount.getDateOfBirth()).email(userAccount.getEmail())
 				.emailValidationCode(userAccount.getEmailValidationCode())
 				.isValidatedEmail(userAccount.getIsValidatedEmail()).icc(icc)
@@ -21,7 +26,9 @@ public class UserAccountMapper {
 				.mobileNumberValidationCode(userAccount.getMobileNumberValidationCode())
 				.isValidatedMobileNumber(userAccount.getIsValidatedMobileNumber())
 				.receiveNewsletter(userAccount.getReceiveNewsletter())
-				.creationTimestamp(userAccount.getCreationTimestamp()).build();
+				.creationDateTime(userAccount.getCreationDateTime() != null ? userAccount.getCreationDateTime()
+						: LocalDateTime.now(ZoneOffset.UTC))
+				.photoUrl(userAccount.getPhotoUrl()).build();
 	}
 
 	public UserAccount mapToDomainEntity(UserAccountJpaEntity userAccountJpaEntity) {
@@ -30,7 +37,7 @@ public class UserAccountMapper {
 
 		return UserAccount.builder().id(userAccountJpaEntity.getId())
 				.isTransporter(userAccountJpaEntity.getIsTransporter()).gender(userAccountJpaEntity.getGender())
-				.firstName(userAccountJpaEntity.getFirstName()).lastName(userAccountJpaEntity.getLastName())
+				.firstname(userAccountJpaEntity.getFirstname()).lastname(userAccountJpaEntity.getLastname())
 				.dateOfBirth(userAccountJpaEntity.getDateOfBirth()).email(userAccountJpaEntity.getEmail())
 				.emailValidationCode(userAccountJpaEntity.getEmailValidationCode())
 				.isValidatedEmail(userAccountJpaEntity.getIsValidatedEmail())
@@ -39,6 +46,7 @@ public class UserAccountMapper {
 				.mobileNumberValidationCode(userAccountJpaEntity.getMobileNumberValidationCode())
 				.isValidatedMobileNumber(userAccountJpaEntity.getIsValidatedMobileNumber())
 				.receiveNewsletter(userAccountJpaEntity.getReceiveNewsletter())
-				.creationTimestamp(userAccountJpaEntity.getCreationTimestamp()).build();
+				.creationDateTime(userAccountJpaEntity.getCreationDateTime())
+				.photoUrl(userAccountJpaEntity.getPhotoUrl()).build();
 	}
 }

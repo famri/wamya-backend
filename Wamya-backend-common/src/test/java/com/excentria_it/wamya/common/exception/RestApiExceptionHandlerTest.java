@@ -220,7 +220,7 @@ public class RestApiExceptionHandlerTest {
 
 		// Then
 		List<String> expectedErrors = new ArrayList<>();
-		expectedErrors.add(SomeObject.class.getName() + " " + SOME_PATH + ": " + SOME_MESSAGE);
+		expectedErrors.add(SOME_PATH + ": " + SOME_MESSAGE);
 
 		then(responseEntity.getBody() instanceof ApiError);
 		then(((ApiError) responseEntity.getBody()).getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -360,7 +360,7 @@ public class RestApiExceptionHandlerTest {
 
 		ConstraintViolation<SomeObject> constraintViolation = Mockito.mock(ConstraintViolation.class);
 
-		given(constraintViolation.getRootBeanClass()).willReturn(SomeObject.class);
+		//given(constraintViolation.getRootBeanClass()).willReturn(SomeObject.class);
 
 		Path path = Mockito.mock(Path.class);
 

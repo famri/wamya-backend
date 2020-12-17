@@ -5,7 +5,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
-@ActiveProfiles(value = { "web-local" })
+@ActiveProfiles(value = { "web-local", "persistence-local" })
 public class WebModuleTest {
 
 	@Test

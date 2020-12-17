@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Import;
 
 @SpringBootConfiguration
 @EnableAutoConfiguration
-@Import(value = { WebConfiguration.class, WebSecurityConfiguration.class })
+@Import(value = { WebConfiguration.class, TestSecurityConfig.class })
 public class WebTestConfiguration {
 
 }

@@ -3,10 +3,6 @@ server:
 
 
 spring.application.name: auth-server
-#spring:
-#  security:
-#   oauth2:#     resourceserver:#       jwt:
-#         jwk-set-uri: http://localhost:9999/.well-known/jwks.json
 
 app:
   eureka-username: u

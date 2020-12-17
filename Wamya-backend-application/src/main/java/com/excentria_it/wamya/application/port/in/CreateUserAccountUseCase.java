@@ -1,6 +1,6 @@
 package com.excentria_it.wamya.application.port.in;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Locale;
 
 import javax.validation.constraints.NotNull;
@@ -39,13 +39,13 @@ public interface CreateUserAccountUseCase {
 		Gender gender;
 
 		@NotNull
-		String firstName;
+		String firstname;
 
 		@NotNull
-		String lastName;
+		String lastname;
 
 		@NotNull
-		Date dateOfBirth;
+		LocalDate dateOfBirth;
 
 		@NotNull
 		@Pattern(regexp = RegexPattern.EMAIL_PATTERN, message = "{com.excentria_it.wamya.domain.user.email.message}")

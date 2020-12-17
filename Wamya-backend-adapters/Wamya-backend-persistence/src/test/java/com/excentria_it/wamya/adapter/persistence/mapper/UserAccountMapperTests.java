@@ -1,4 +1,4 @@
-package com.excentria_it.wamya.adapter.persistence.adapter.mapper;
+package com.excentria_it.wamya.adapter.persistence.mapper;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 
 import com.excentria_it.wamya.adapter.persistence.entity.InternationalCallingCodeJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.UserAccountJpaEntity;
-import com.excentria_it.wamya.adapter.persistence.mapper.UserAccountMapper;
 import com.excentria_it.wamya.domain.UserAccount;
 import com.excentria_it.wamya.test.data.common.InternationalCallingCodeJpaEntityTestData;
 import com.excentria_it.wamya.test.data.common.UserAccountJpaEntityTestData;
@@ -30,9 +29,9 @@ public class UserAccountMapperTests {
 
 		assertEquals(userAccount.getGender(), userAccountJpaEntity.getGender());
 
-		assertEquals(userAccount.getFirstName(), userAccountJpaEntity.getFirstName());
+		assertEquals(userAccount.getFirstname(), userAccountJpaEntity.getFirstname());
 
-		assertEquals(userAccount.getLastName(), userAccountJpaEntity.getLastName());
+		assertEquals(userAccount.getLastname(), userAccountJpaEntity.getLastname());
 
 		assertEquals(userAccount.getDateOfBirth(), userAccountJpaEntity.getDateOfBirth());
 
@@ -54,7 +53,19 @@ public class UserAccountMapperTests {
 
 		assertEquals(userAccount.getReceiveNewsletter(), userAccountJpaEntity.getReceiveNewsletter());
 
-		assertEquals(userAccount.getCreationTimestamp(), userAccountJpaEntity.getCreationTimestamp());
+		assertEquals(userAccount.getCreationDateTime(), userAccountJpaEntity.getCreationDateTime());
+
+	}
+
+	@Test
+	void testMapToJpaEntityWithNullUserAccountCreationDateTime() {
+
+		UserAccount userAccount = UserAccountTestData.defaultUserAccountBuilder().creationDateTime(null).build();
+		InternationalCallingCodeJpaEntity iccEntity = InternationalCallingCodeJpaEntityTestData
+				.defaultInternationalCallingCodeJpaEntity();
+		UserAccountJpaEntity userAccountJpaEntity = userAccountMapper.mapToJpaEntity(userAccount, iccEntity);
+
+		assertNotNull(userAccountJpaEntity.getCreationDateTime());
 
 	}
 
@@ -72,9 +83,9 @@ public class UserAccountMapperTests {
 
 		assertEquals(userAccount.getGender(), userAccountJpaEntity.getGender());
 
-		assertEquals(userAccount.getFirstName(), userAccountJpaEntity.getFirstName());
+		assertEquals(userAccount.getFirstname(), userAccountJpaEntity.getFirstname());
 
-		assertEquals(userAccount.getLastName(), userAccountJpaEntity.getLastName());
+		assertEquals(userAccount.getLastname(), userAccountJpaEntity.getLastname());
 
 		assertEquals(userAccount.getDateOfBirth(), userAccountJpaEntity.getDateOfBirth());
 
@@ -95,7 +106,7 @@ public class UserAccountMapperTests {
 
 		assertEquals(userAccount.getReceiveNewsletter(), userAccountJpaEntity.getReceiveNewsletter());
 
-		assertEquals(userAccount.getCreationTimestamp(), userAccountJpaEntity.getCreationTimestamp());
+		assertEquals(userAccount.getCreationDateTime(), userAccountJpaEntity.getCreationDateTime());
 
 	}
 

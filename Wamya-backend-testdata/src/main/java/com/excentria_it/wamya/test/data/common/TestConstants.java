@@ -2,9 +2,8 @@ package com.excentria_it.wamya.test.data.common;
 
 import java.io.File;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Map;
 
 import com.excentria_it.wamya.common.domain.EmailTemplate;
@@ -44,15 +43,9 @@ public class TestConstants {
 
 	public static final String DEFAULT_TEMPLATE_BODY = "<h1>This is an email template test</h1>";
 
-	public static Date DEFAULT_DATE_OF_BIRTH;
+	public static LocalDate DEFAULT_DATE_OF_BIRTH = LocalDate.of(1988, 10, 17);
 
 	static {
-
-		try {
-			DEFAULT_DATE_OF_BIRTH = DateFormatter.parse("1988/10/17");
-		} catch (ParseException e) {
-			DEFAULT_DATE_OF_BIRTH = new Date();
-		}
 
 		String attachementName = "dummy_email_attachement.txt";
 		ClassLoader classLoader = EmailMessageTestData.class.getClassLoader();

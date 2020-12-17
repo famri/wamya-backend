@@ -10,8 +10,8 @@ public class UserAccountJpaEntityTestData {
 	public static final UserAccountJpaEntity defaultExistingTransporterUserAccountJpaEntity() {
 
 		return UserAccountJpaEntity.builder().id(1L).isTransporter(userAccount.getIsTransporter())
-				.gender(userAccount.getGender()).firstName(userAccount.getFirstName())
-				.lastName(userAccount.getLastName()).dateOfBirth(userAccount.getDateOfBirth())
+				.gender(userAccount.getGender()).firstname(userAccount.getFirstname())
+				.lastname(userAccount.getLastname()).dateOfBirth(userAccount.getDateOfBirth())
 				.email(userAccount.getEmail()).emailValidationCode(userAccount.getEmailValidationCode())
 				.isValidatedEmail(userAccount.getIsValidatedEmail())
 				.icc(InternationalCallingCodeJpaEntityTestData.defaultInternationalCallingCodeJpaEntity())
@@ -19,14 +19,14 @@ public class UserAccountJpaEntityTestData {
 				.mobileNumberValidationCode(userAccount.getMobileNumberValidationCode())
 				.isValidatedMobileNumber(userAccount.getIsValidatedMobileNumber())
 				.receiveNewsletter(userAccount.getReceiveNewsletter())
-				.creationTimestamp(userAccount.getCreationTimestamp()).id(1L).isTransporter(true).build();
+				.creationDateTime(userAccount.getCreationDateTime()).id(1L).isTransporter(true).build();
 	}
 
 	public static final UserAccountJpaEntity defaultNewTransporterUserAccountJpaEntity() {
 
 		return UserAccountJpaEntity.builder().id(1L).isTransporter(userAccount.getIsTransporter())
-				.gender(userAccount.getGender()).firstName(userAccount.getFirstName())
-				.lastName(userAccount.getLastName()).dateOfBirth(userAccount.getDateOfBirth())
+				.gender(userAccount.getGender()).firstname(userAccount.getFirstname())
+				.lastname(userAccount.getLastname()).dateOfBirth(userAccount.getDateOfBirth())
 				.email(userAccount.getEmail()).emailValidationCode(userAccount.getEmailValidationCode())
 				.isValidatedEmail(userAccount.getIsValidatedEmail())
 				.icc(InternationalCallingCodeJpaEntityTestData.defaultInternationalCallingCodeJpaEntity())
@@ -34,13 +34,13 @@ public class UserAccountJpaEntityTestData {
 				.mobileNumberValidationCode(userAccount.getMobileNumberValidationCode())
 				.isValidatedMobileNumber(userAccount.getIsValidatedMobileNumber())
 				.receiveNewsletter(userAccount.getReceiveNewsletter())
-				.creationTimestamp(userAccount.getCreationTimestamp()).id(null).isTransporter(true).build();
+				.creationDateTime(userAccount.getCreationDateTime()).id(null).isTransporter(true).build();
 	}
 
 	public static final UserAccountJpaEntity defaultExistingNotTransporterUserAccountJpaEntity() {
 		return UserAccountJpaEntity.builder().id(1L).isTransporter(userAccount.getIsTransporter())
-				.gender(userAccount.getGender()).firstName(userAccount.getFirstName())
-				.lastName(userAccount.getLastName()).dateOfBirth(userAccount.getDateOfBirth())
+				.gender(userAccount.getGender()).firstname(userAccount.getFirstname())
+				.lastname(userAccount.getLastname()).dateOfBirth(userAccount.getDateOfBirth())
 				.email(userAccount.getEmail()).emailValidationCode(userAccount.getEmailValidationCode())
 				.isValidatedEmail(userAccount.getIsValidatedEmail())
 				.icc(InternationalCallingCodeJpaEntityTestData.defaultInternationalCallingCodeJpaEntity())
@@ -48,13 +48,13 @@ public class UserAccountJpaEntityTestData {
 				.mobileNumberValidationCode(userAccount.getMobileNumberValidationCode())
 				.isValidatedMobileNumber(userAccount.getIsValidatedMobileNumber())
 				.receiveNewsletter(userAccount.getReceiveNewsletter())
-				.creationTimestamp(userAccount.getCreationTimestamp()).id(1L).isTransporter(false).build();
+				.creationDateTime(userAccount.getCreationDateTime()).id(1L).isTransporter(false).build();
 	}
 
 	public static final UserAccountJpaEntity defaultNewNotTransporterUserAccountJpaEntity() {
 		return UserAccountJpaEntity.builder().id(1L).isTransporter(userAccount.getIsTransporter())
-				.gender(userAccount.getGender()).firstName(userAccount.getFirstName())
-				.lastName(userAccount.getLastName()).dateOfBirth(userAccount.getDateOfBirth())
+				.gender(userAccount.getGender()).firstname(userAccount.getFirstname())
+				.lastname(userAccount.getLastname()).dateOfBirth(userAccount.getDateOfBirth())
 				.email(userAccount.getEmail()).emailValidationCode(userAccount.getEmailValidationCode())
 				.isValidatedEmail(userAccount.getIsValidatedEmail())
 				.icc(InternationalCallingCodeJpaEntityTestData.defaultInternationalCallingCodeJpaEntity())
@@ -62,6 +62,6 @@ public class UserAccountJpaEntityTestData {
 				.mobileNumberValidationCode(userAccount.getMobileNumberValidationCode())
 				.isValidatedMobileNumber(userAccount.getIsValidatedMobileNumber())
 				.receiveNewsletter(userAccount.getReceiveNewsletter())
-				.creationTimestamp(userAccount.getCreationTimestamp()).id(null).isTransporter(false).build();
+				.creationDateTime(userAccount.getCreationDateTime()).id(null).isTransporter(false).build();
 	}
 }

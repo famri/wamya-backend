@@ -8,7 +8,9 @@ dependencies {
     implementation (project(':Wamya-backend-adapters:Wamya-backend-persistence')){
      transitive = false
     }
-
+    
+    implementation "org.springframework.data:spring-data-jpa:${springBootVersion}"
+   
     implementation 'com.fasterxml.jackson.core:jackson-databind'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'    

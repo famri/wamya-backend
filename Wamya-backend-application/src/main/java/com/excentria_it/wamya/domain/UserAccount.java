@@ -1,8 +1,7 @@
 package com.excentria_it.wamya.domain;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.UUID;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -18,16 +17,16 @@ public class UserAccount {
 	private Long id;
 
 	private Long oauthId;
-	
+
 	private Boolean isTransporter;
 
 	private Gender gender;
 
-	private String firstName;
+	private String firstname;
 
-	private String lastName;
+	private String lastname;
 
-	private Date dateOfBirth;
+	private LocalDate dateOfBirth;
 
 	private String email;
 
@@ -45,7 +44,9 @@ public class UserAccount {
 
 	private Boolean receiveNewsletter;
 
-	private LocalDateTime creationTimestamp;
+	private LocalDateTime creationDateTime;
+
+	private String photoUrl;
 
 	@NoArgsConstructor
 	@AllArgsConstructor

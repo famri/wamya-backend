@@ -13,7 +13,6 @@ import java.util.Locale;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
@@ -31,7 +30,9 @@ import com.excentria_it.wamya.test.data.common.UserAccountTestData;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Import(value = { CreateUserAccountController.class, RestApiExceptionHandler.class })
-@WebMvcTest(controllers = CreateUserAccountController.class, excludeAutoConfiguration = SecurityAutoConfiguration.class)
+@WebMvcTest(controllers = CreateUserAccountController.class// , excludeAutoConfiguration =
+															// SecurityAutoConfiguration.class
+)
 public class CreateUserAccountControllerTests {
 
 	private static final String ACCESS_TOKEN = "SOME_ACCESS_TOKEN";
@@ -48,7 +49,7 @@ public class CreateUserAccountControllerTests {
 	@Test
 	void givenValidInput_WhenCreateUserAccount_ThenReturnJwtToken() throws Exception {
 
-		CreateUserAccountCommand command = UserAccountTestData.defaultCreateUserAccountCommandBuilder().build();
+		CreateUserAccountCommand command = UserAccountTestData.defaultCustomerUserAccountCommandBuilder().build();
 
 		JwtOAuth2AccessToken oAuth2AccessToken = new JwtOAuth2AccessToken();
 		oAuth2AccessToken.setAccessToken(ACCESS_TOKEN);
@@ -57,8 +58,8 @@ public class CreateUserAccountControllerTests {
 
 		String createUserAccountJson = objectMapper.writeValueAsString(command);
 
-		MvcResult mvcResult = mockMvc.perform(post("/wamya-backend/accounts")
-				.contentType(MediaType.APPLICATION_JSON_VALUE).content(createUserAccountJson))
+		MvcResult mvcResult = mockMvc
+				.perform(post("/accounts").contentType(MediaType.APPLICATION_JSON_VALUE).content(createUserAccountJson))
 				.andExpect(status().isCreated()).andReturn();
 
 		then(createUserAccountUseCase).should(times(1)).registerUserAccountCreationDemand(eq(command),
@@ -73,13 +74,13 @@ public class CreateUserAccountControllerTests {
 	@Test
 	void givenInvalidInput_WhenCreateUserAccount_ThenReturnBadRequest() throws Exception {
 
-		CreateUserAccountCommand createUserAccountCommand = UserAccountTestData.defaultCreateUserAccountCommandBuilder()
-				.email("invalid email@test.com").build();
+		CreateUserAccountCommand createUserAccountCommand = UserAccountTestData
+				.defaultCustomerUserAccountCommandBuilder().email("invalid email@test.com").build();
 
 		String createUserAccountJson = objectMapper.writeValueAsString(createUserAccountCommand);
 
-		mockMvc.perform(post("/wamya-backend/accounts").contentType(MediaType.APPLICATION_JSON_VALUE)
-				.content(createUserAccountJson)).andExpect(status().isBadRequest());
+		mockMvc.perform(post("/accounts").contentType(MediaType.APPLICATION_JSON_VALUE).content(createUserAccountJson))
+				.andExpect(status().isBadRequest());
 
 		then(createUserAccountUseCase).should(never()).registerUserAccountCreationDemand(eq(createUserAccountCommand),
 				any(Locale.class));
@@ -89,15 +90,15 @@ public class CreateUserAccountControllerTests {
 	@Test
 	void givenExistentUserAccount_WhenCreateUserAccount_ThenReturnExistentUserAccountError() throws Exception {
 
-		CreateUserAccountCommand command = UserAccountTestData.defaultCreateUserAccountCommandBuilder().build();
+		CreateUserAccountCommand command = UserAccountTestData.defaultCustomerUserAccountCommandBuilder().build();
 
 		doThrow(UserAccountAlreadyExistsException.class).when(createUserAccountUseCase)
 				.registerUserAccountCreationDemand(eq(command), any(Locale.class));
 
 		String createUserAccountJson = objectMapper.writeValueAsString(command);
 
-		mockMvc.perform(post("/wamya-backend/accounts").contentType(MediaType.APPLICATION_JSON_VALUE)
-				.content(createUserAccountJson)).andExpect(status().isBadRequest())
+		mockMvc.perform(post("/accounts").contentType(MediaType.APPLICATION_JSON_VALUE).content(createUserAccountJson))
+				.andExpect(status().isBadRequest())
 				.andExpect(responseBody().containsApiErrors(List.of("User account already exists.")));
 
 	}
@@ -106,15 +107,15 @@ public class CreateUserAccountControllerTests {
 	void givenNonExistentInternationalCallingCode_WhenCreateUserAccount_ThenReturnUnsupportedInternationalCallingCodeError()
 			throws Exception {
 
-		CreateUserAccountCommand command = UserAccountTestData.defaultCreateUserAccountCommandBuilder().build();
+		CreateUserAccountCommand command = UserAccountTestData.defaultCustomerUserAccountCommandBuilder().build();
 
 		doThrow(UnsupportedInternationalCallingCode.class).when(createUserAccountUseCase)
 				.registerUserAccountCreationDemand(eq(command), any(Locale.class));
 
 		String createUserAccountJson = objectMapper.writeValueAsString(command);
 
-		mockMvc.perform(post("/wamya-backend/accounts").contentType(MediaType.APPLICATION_JSON_VALUE)
-				.content(createUserAccountJson)).andExpect(status().isBadRequest())
+		mockMvc.perform(post("/accounts").contentType(MediaType.APPLICATION_JSON_VALUE).content(createUserAccountJson))
+				.andExpect(status().isBadRequest())
 				.andExpect(responseBody().containsApiErrors(List.of("International calling code is not supported.")));
 
 	}

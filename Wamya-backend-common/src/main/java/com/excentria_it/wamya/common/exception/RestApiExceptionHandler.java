@@ -36,7 +36,7 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 	@Override
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(final MethodArgumentNotValidException ex,
 			final HttpHeaders headers, final HttpStatus status, final WebRequest request) {
-		log.error("Exception at " + ex.getClass().getName() + ": ", ex);
+		log.warn("Exception at " + ex.getClass().getName() + ": ", ex);
 
 		//
 		final List<String> errors = new ArrayList<String>();
@@ -54,7 +54,7 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 	@Override
 	protected ResponseEntity<Object> handleBindException(final BindException ex, final HttpHeaders headers,
 			final HttpStatus status, final WebRequest request) {
-		log.error("Exception at " + ex.getClass().getName() + ": ", ex);
+		log.warn("Exception at " + ex.getClass().getName() + ": ", ex);
 
 		final List<String> errors = new ArrayList<String>();
 		for (final FieldError error : ex.getBindingResult().getFieldErrors()) {
@@ -70,7 +70,7 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 	@ExceptionHandler({ MethodArgumentTypeMismatchException.class })
 	public ResponseEntity<Object> handleMethodArgumentTypeMismatch(final MethodArgumentTypeMismatchException ex,
 			final WebRequest request) {
-		log.error("Exception at " + ex.getClass().getName() + ": ", ex);
+		log.warn("Exception at " + ex.getClass().getName() + ": ", ex);
 
 		final String error = ex.getName() + " should be of type " + ex.getRequiredType().getName();
 
@@ -81,7 +81,7 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 	@Override
 	protected ResponseEntity<Object> handleTypeMismatch(final TypeMismatchException ex, final HttpHeaders headers,
 			final HttpStatus status, final WebRequest request) {
-		log.error("Exception at " + ex.getClass().getName() + ": ", ex);
+		log.warn("Exception at " + ex.getClass().getName() + ": ", ex);
 
 		final String error = ex.getValue() + " value for " + ex.getPropertyName() + " should be of type "
 				+ ex.getRequiredType();
@@ -93,7 +93,7 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 	@Override
 	protected ResponseEntity<Object> handleMissingServletRequestPart(final MissingServletRequestPartException ex,
 			final HttpHeaders headers, final HttpStatus status, final WebRequest request) {
-		log.error("Exception at " + ex.getClass().getName() + ": ", ex);
+		log.warn("Exception at " + ex.getClass().getName() + ": ", ex);
 
 		final String error = ex.getRequestPartName() + " part is missing";
 		final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, error);
@@ -104,7 +104,7 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 	protected ResponseEntity<Object> handleMissingServletRequestParameter(
 			final MissingServletRequestParameterException ex, final HttpHeaders headers, final HttpStatus status,
 			final WebRequest request) {
-		log.error("Exception at " + ex.getClass().getName() + ": ", ex);
+		log.warn("Exception at " + ex.getClass().getName() + ": ", ex);
 
 		final String error = ex.getParameterName() + " parameter is missing";
 		final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, error);
@@ -116,11 +116,11 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 	@ExceptionHandler({ ConstraintViolationException.class })
 	public ResponseEntity<Object> handleConstraintViolation(final ConstraintViolationException ex,
 			final WebRequest request) {
-		log.error("Exception at " + ex.getClass().getName() + ": ", ex);
+		log.warn("Exception at " + ex.getClass().getName() + ": ", ex);
 
 		final List<String> errors = new ArrayList<String>();
 		for (final ConstraintViolation<?> violation : ex.getConstraintViolations()) {
-			errors.add(violation.getRootBeanClass().getName() + " " + violation.getPropertyPath() + ": "
+			errors.add(violation.getPropertyPath() + ": "
 					+ violation.getMessage());
 		}
 
@@ -133,7 +133,7 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 	@Override
 	protected ResponseEntity<Object> handleNoHandlerFoundException(final NoHandlerFoundException ex,
 			final HttpHeaders headers, final HttpStatus status, final WebRequest request) {
-		log.error("Exception at " + ex.getClass().getName() + ": ", ex);
+		log.warn("Exception at " + ex.getClass().getName() + ": ", ex);
 
 		final String error = "No handler found for " + ex.getHttpMethod() + " " + ex.getRequestURL();
 
@@ -147,7 +147,7 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 	protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(
 			final HttpRequestMethodNotSupportedException ex, final HttpHeaders headers, final HttpStatus status,
 			final WebRequest request) {
-		log.error("Exception at " + ex.getClass().getName() + ": ", ex);
+		log.warn("Exception at " + ex.getClass().getName() + ": ", ex);
 
 		final StringBuilder builder = new StringBuilder();
 		builder.append(ex.getMethod());
@@ -163,7 +163,7 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 	@Override
 	protected ResponseEntity<Object> handleHttpMediaTypeNotSupported(final HttpMediaTypeNotSupportedException ex,
 			final HttpHeaders headers, final HttpStatus status, final WebRequest request) {
-		log.error("Exception at " + ex.getClass().getName() + ": ", ex);
+		log.warn("Exception at " + ex.getClass().getName() + ": ", ex);
 
 		final StringBuilder builder = new StringBuilder();
 		builder.append(ex.getContentType());

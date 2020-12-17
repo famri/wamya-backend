@@ -34,13 +34,13 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
-@RequestMapping(path = "/wamya-backend/validation-codes")
+@RequestMapping(path = "/validation-codes")
 @Slf4j
 public class SendValidationCodeController {
 
 	private final SendValidationCodeUseCase sendValidationCodeUseCase;
 
-	@PostMapping(path = "/sms/send", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(path = "/sms/send", consumes = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	public ValidationCodeRequest sendSMSValidationCode(@Valid @RequestBody SendSMSValidationCodeCommand command,
 			Locale locale) {
@@ -58,7 +58,7 @@ public class SendValidationCodeController {
 
 	}
 
-	@PostMapping(path = "/email/send", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(path = "/email/send", consumes = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	public ValidationCodeRequest sendEmailValidationLink(@Valid @RequestBody SendEmailValidationLinkCommand command,
 			Locale locale) {

@@ -1,4 +1,4 @@
-package com.excentria_it.wamya.adapter.persistence.adapter.persistence.repository;
+package com.excentria_it.wamya.adapter.persistence.repository;
 
 import static com.excentria_it.wamya.test.data.common.UserAccountJpaEntityTestData.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -13,8 +13,6 @@ import org.springframework.test.context.ActiveProfiles;
 
 import com.excentria_it.wamya.adapter.persistence.entity.InternationalCallingCodeJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.UserAccountJpaEntity;
-import com.excentria_it.wamya.adapter.persistence.repository.InternationalCallingCodeRepository;
-import com.excentria_it.wamya.adapter.persistence.repository.UserAccountRepository;
 import com.excentria_it.wamya.test.data.common.InternationalCallingCodeJpaEntityTestData;
 import com.excentria_it.wamya.test.data.common.TestConstants;
 

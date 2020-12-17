@@ -1,20 +1,30 @@
+server.port: 8080
+
 spring:
   jpa:
     hibernate:
       ddl-auto: update
     generate-ddl: true
-    show-sql: true
     database: H2
     database-platform: org.hibernate.dialect.H2Dialect
-  
+    open-in-view: false
+    properties:
+      hibernate:
+        order_inserts: true
+        order_updates: true
+        jdbc:
+          batch_size: 20
+          fetch_size: 20
+          batch_versioned_data: true 
+          time_zone: UTC
+            
   datasource:
     platform: h2    
     driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:wamya_db
+    url: jdbc:h2:mem:wamya_db;DB_CLOSE_ON_EXIT=FALSE
     username: sa
     password: password
-    initialization-mode: always
-  
+
   h2:
     console:
       enabled: true
@@ -22,3 +32,22 @@ spring:
       settings:
         trace: false
         web-allow-others: false
+
+log4jdbc:
+  trim:
+    sql:
+      extrablanklines: false
+  dump:
+    sql:
+      addsemicolon: true
+      maxlinelength: 0
+             
+logging:
+  level:
+    jdbc:
+      sqlonly: fatal
+      resultsettable: info
+      sqltiming: info
+      audit: fatal
+      resultset: fatal
+      connection: fatal

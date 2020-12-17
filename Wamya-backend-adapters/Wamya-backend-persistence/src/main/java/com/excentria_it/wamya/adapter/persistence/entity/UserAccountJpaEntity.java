@@ -1,7 +1,8 @@
 package com.excentria_it.wamya.adapter.persistence.entity;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,7 +11,9 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -31,6 +34,7 @@ import lombok.NoArgsConstructor;
 public class UserAccountJpaEntity {
 
 	public static final String USER_SEQ = "user_seq";
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = USER_SEQ)
 	private Long id;
@@ -45,13 +49,13 @@ public class UserAccountJpaEntity {
 	private Gender gender;
 
 	@Column
-	private String firstName;
+	private String firstname;
 
 	@Column
-	private String lastName;
+	private String lastname;
 
 	@Column
-	private Date dateOfBirth;
+	private LocalDate dateOfBirth;
 
 	@Column
 	private String email;
@@ -78,6 +82,21 @@ public class UserAccountJpaEntity {
 	private Boolean receiveNewsletter;
 
 	@Column
-	private LocalDateTime creationTimestamp;
+	private LocalDateTime creationDateTime;
+
+	@Column
+	private String photoUrl;
+
+	@OneToMany(orphanRemoval = true)
+	@JoinColumn(name = "owner_id")
+	private Set<VehiculeJpaEntity> vehicules;
+
+	@OneToMany(orphanRemoval = true)
+	@JoinColumn(name = "transporter_id")
+	private Set<RatingJpaEntity> ratings;
+
+	@OneToMany(orphanRemoval = true)
+	@JoinColumn(name = "transporter_id")
+	private Set<CommentJpaEntity> comments;
 
 }

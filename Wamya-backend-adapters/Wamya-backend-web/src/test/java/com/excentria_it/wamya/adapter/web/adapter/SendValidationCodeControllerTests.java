@@ -12,7 +12,6 @@ import java.util.Locale;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.MessageSource;
@@ -36,7 +35,9 @@ import com.excentria_it.wamya.test.data.common.TestConstants;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Import(value = { SendValidationCodeController.class, RestApiExceptionHandler.class })
-@WebMvcTest(controllers = SendValidationCodeController.class, excludeAutoConfiguration = SecurityAutoConfiguration.class)
+@WebMvcTest(controllers = SendValidationCodeController.class// , excludeAutoConfiguration =
+															// SecurityAutoConfiguration.class
+)
 public class SendValidationCodeControllerTests {
 	@Autowired
 	private MockMvc mockMvc;
@@ -66,7 +67,7 @@ public class SendValidationCodeControllerTests {
 		String commandJson = objectMapper.writeValueAsString(command);
 		ValidationCodeRequest expectedResponse = new ValidationCodeRequest(ValidationCodeRequestStatus.REGISTRED);
 
-		mockMvc.perform(post("/wamya-backend/validation-codes/sms/send").contentType(MediaType.APPLICATION_JSON)
+		mockMvc.perform(post("/validation-codes/sms/send").contentType(MediaType.APPLICATION_JSON)
 				.content(commandJson)).andExpect(status().isAccepted())
 				.andExpect(responseBody().containsObjectAsJson(expectedResponse, ValidationCodeRequest.class));
 
@@ -92,7 +93,7 @@ public class SendValidationCodeControllerTests {
 
 		ApiError expectedApiError = new ApiError(HttpStatus.BAD_REQUEST, "User mobile number already validated.");
 
-		mockMvc.perform(post("/wamya-backend/validation-codes/sms/send").contentType(MediaType.APPLICATION_JSON)
+		mockMvc.perform(post("/validation-codes/sms/send").contentType(MediaType.APPLICATION_JSON)
 				.content(commandJson)).andExpect(status().isBadRequest())
 				.andExpect(responseBody().containsObjectAsJson(expectedApiError, ApiError.class));
 
@@ -110,7 +111,7 @@ public class SendValidationCodeControllerTests {
 
 		String commandJson = objectMapper.writeValueAsString(command);
 
-		mockMvc.perform(post("/wamya-backend/validation-codes/sms/send").contentType(MediaType.APPLICATION_JSON)
+		mockMvc.perform(post("/validation-codes/sms/send").contentType(MediaType.APPLICATION_JSON)
 				.content(commandJson)).andExpect(status().isBadRequest())
 				.andExpect(responseBody()
 						.containsApiErrors(List.of("mobileNumber: The format of phone number is incorrect.",
@@ -135,7 +136,7 @@ public class SendValidationCodeControllerTests {
 		// When, Then
 		String commandJson = objectMapper.writeValueAsString(command);
 
-		mockMvc.perform(post("/wamya-backend/validation-codes/sms/send").contentType(MediaType.APPLICATION_JSON)
+		mockMvc.perform(post("/validation-codes/sms/send").contentType(MediaType.APPLICATION_JSON)
 				.content(commandJson)).andExpect(status().isBadRequest())
 				.andExpect(responseBody().containsApiErrors(List.of("User account not found.")));
 
@@ -156,7 +157,7 @@ public class SendValidationCodeControllerTests {
 		String commandJson = objectMapper.writeValueAsString(command);
 
 		ValidationCodeRequest expectedResponse = new ValidationCodeRequest(ValidationCodeRequestStatus.REJECTED);
-		mockMvc.perform(post("/wamya-backend/validation-codes/sms/send").contentType(MediaType.APPLICATION_JSON)
+		mockMvc.perform(post("/validation-codes/sms/send").contentType(MediaType.APPLICATION_JSON)
 				.content(commandJson)).andExpect(status().isAccepted())
 				.andExpect(responseBody().containsObjectAsJson(expectedResponse, ValidationCodeRequest.class));
 
@@ -177,7 +178,7 @@ public class SendValidationCodeControllerTests {
 		String commandJson = objectMapper.writeValueAsString(command);
 		ValidationCodeRequest expectedResponse = new ValidationCodeRequest(ValidationCodeRequestStatus.REGISTRED);
 
-		mockMvc.perform(post("/wamya-backend/validation-codes/email/send").contentType(MediaType.APPLICATION_JSON)
+		mockMvc.perform(post("/validation-codes/email/send").contentType(MediaType.APPLICATION_JSON)
 				.content(commandJson)).andExpect(status().isAccepted())
 				.andExpect(responseBody().containsObjectAsJson(expectedResponse, ValidationCodeRequest.class));
 
@@ -202,7 +203,7 @@ public class SendValidationCodeControllerTests {
 
 		ApiError expectedApiError = new ApiError(HttpStatus.BAD_REQUEST, "User email already validated.");
 
-		mockMvc.perform(post("/wamya-backend/validation-codes/email/send").contentType(MediaType.APPLICATION_JSON)
+		mockMvc.perform(post("/validation-codes/email/send").contentType(MediaType.APPLICATION_JSON)
 				.content(commandJson)).andExpect(status().isBadRequest())
 				.andExpect(responseBody().containsObjectAsJson(expectedApiError, ApiError.class));
 
@@ -216,7 +217,7 @@ public class SendValidationCodeControllerTests {
 
 		String commandJson = objectMapper.writeValueAsString(command);
 
-		mockMvc.perform(post("/wamya-backend/validation-codes/email/send").contentType(MediaType.APPLICATION_JSON)
+		mockMvc.perform(post("/validation-codes/email/send").contentType(MediaType.APPLICATION_JSON)
 				.content(commandJson)).andExpect(status().isBadRequest())
 				.andExpect(responseBody().containsApiErrors(List.of("email: The format of email is incorrect.")));
 
@@ -239,7 +240,7 @@ public class SendValidationCodeControllerTests {
 
 		ValidationCodeRequest expectedResponse = new ValidationCodeRequest(ValidationCodeRequestStatus.REJECTED);
 
-		mockMvc.perform(post("/wamya-backend/validation-codes/email/send").contentType(MediaType.APPLICATION_JSON)
+		mockMvc.perform(post("/validation-codes/email/send").contentType(MediaType.APPLICATION_JSON)
 				.content(commandJson)).andExpect(status().isAccepted())
 				.andExpect(responseBody().containsObjectAsJson(expectedResponse, ValidationCodeRequest.class));
 

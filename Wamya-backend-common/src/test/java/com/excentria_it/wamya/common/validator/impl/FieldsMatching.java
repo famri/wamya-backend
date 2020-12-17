@@ -1,4 +1,4 @@
-package com.excentria_it.wamya.common.impl;
+package com.excentria_it.wamya.common.validator.impl;
 
 public class FieldsMatching {
 

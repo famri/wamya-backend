@@ -79,7 +79,7 @@ public class CreateUserAccountServiceTest {
 
 		givenAnExistingMobilePhoneNumber();
 
-		CreateUserAccountCommandBuilder commandBuilder = defaultCreateUserAccountCommandBuilder();
+		CreateUserAccountCommandBuilder commandBuilder = defaultCustomerUserAccountCommandBuilder();
 
 		assertThrows(UserAccountAlreadyExistsException.class,
 				() -> createUserAccountService.registerUserAccountCreationDemand(commandBuilder.build(), locale));
@@ -92,7 +92,7 @@ public class CreateUserAccountServiceTest {
 		givenAnExistingEmail();
 		givenNonExistingMobilePhoneNumber();
 
-		CreateUserAccountCommandBuilder commandBuilder = defaultCreateUserAccountCommandBuilder();
+		CreateUserAccountCommandBuilder commandBuilder = defaultCustomerUserAccountCommandBuilder();
 
 		assertThrows(UserAccountAlreadyExistsException.class,
 				() -> createUserAccountService.registerUserAccountCreationDemand(commandBuilder.build(), locale));
@@ -100,7 +100,7 @@ public class CreateUserAccountServiceTest {
 	}
 
 	@Test
-	void givenNonExistingMobilePhoneNumberAndNonExistingEmail_whenRegisterUserAccountCreationDemand_thenSucceed() {
+	void givenNonExistentMobilePhoneNumberAndNonExistentEmail_whenRegisterCustomerUserAccountCreationDemand_thenSucceed() {
 
 		givenNonExistingMobilePhoneNumber();
 		givenNonExistingEmail();
@@ -110,7 +110,7 @@ public class CreateUserAccountServiceTest {
 		String uuid = givenDefaultGeneratedUUID();
 		String encodedPassword = givenDefaultEncodedPassword();
 
-		CreateUserAccountCommandBuilder commandBuilder = defaultCreateUserAccountCommandBuilder();
+		CreateUserAccountCommandBuilder commandBuilder = defaultCustomerUserAccountCommandBuilder();
 		CreateUserAccountCommand command = commandBuilder.build();
 
 		String emailValidationLink = givenPatchUrl(command.getEmail(), validationCode);
@@ -175,13 +175,90 @@ public class CreateUserAccountServiceTest {
 	}
 
 	@Test
+	void givenNonExistentMobilePhoneNumberAndNonExistentEmail_whenRegisterTransporterUserAccountCreationDemand_thenSucceed() {
+
+		givenNonExistingMobilePhoneNumber();
+		givenNonExistingEmail();
+		givenServerUrlProperties();
+
+		String validationCode = givenDefaultGeneratedCode();
+		String uuid = givenDefaultGeneratedUUID();
+		String encodedPassword = givenDefaultEncodedPassword();
+
+		CreateUserAccountCommandBuilder commandBuilder = defaultTransporterUserAccountCommandBuilder();
+		CreateUserAccountCommand command = commandBuilder.build();
+
+		String emailValidationLink = givenPatchUrl(command.getEmail(), validationCode);
+
+		assertDoesNotThrow(() -> createUserAccountService.registerUserAccountCreationDemand(command, locale));
+
+		ArgumentCaptor<UserAccount> userAccountCaptor = ArgumentCaptor.forClass(UserAccount.class);
+
+		then(createUserAccountPort).should(times(1)).createUserAccount(userAccountCaptor.capture());
+
+		assertThat(userAccountCaptor.getValue().getMobilePhoneNumber().getInternationalCallingCode())
+				.isEqualTo(command.getIcc());
+
+		assertThat(userAccountCaptor.getValue().getMobilePhoneNumber().getMobileNumber())
+				.isEqualTo(command.getMobileNumber());
+
+		assertThat(userAccountCaptor.getValue().getEmail()).isEqualTo(command.getEmail());
+
+		assertThat(userAccountCaptor.getValue().getUserPassword()).isEqualTo(encodedPassword);
+
+		assertThat(userAccountCaptor.getValue().getEmailValidationCode()).isEqualTo(uuid);
+
+		assertThat(userAccountCaptor.getValue().getMobileNumberValidationCode()).isEqualTo(validationCode);
+		
+		assertThat(userAccountCaptor.getValue().getIsTransporter()).isEqualTo(command.getIsTransporter());
+
+		then(codeGenerator).should(times(1)).generateNumericCode();
+		then(codeGenerator).should(times(1)).generateUUID();
+
+		// Testing mobile phone number validation SMS
+		ArgumentCaptor<SMSMessage> smsMessageCaptor = ArgumentCaptor.forClass(SMSMessage.class);
+
+		then(messagingPort).should(times(1)).sendSMSMessage(smsMessageCaptor.capture());
+
+		assertThat(smsMessageCaptor.getValue().getTo())
+				.isEqualTo(userAccountCaptor.getValue().getMobilePhoneNumber().toCallable());
+
+		assertThat(smsMessageCaptor.getValue().getTemplate()).isEqualTo(SMSTemplate.PHONE_VALIDATION);
+
+		assertThat(not(smsMessageCaptor.getValue().getParams().isEmpty()));
+
+		assertNotNull(
+				smsMessageCaptor.getValue().getParams().get(SMSTemplate.PHONE_VALIDATION.getTemplateParams().get(0)));
+
+		assertThat(smsMessageCaptor.getValue().getParams().get(SMSTemplate.PHONE_VALIDATION.getTemplateParams().get(0)))
+				.isEqualTo(validationCode);
+
+		// Testing email validation
+		ArgumentCaptor<EmailMessage> emailMessageCaptor = ArgumentCaptor.forClass(EmailMessage.class);
+
+		then(messagingPort).should(times(1)).sendEmailMessage(emailMessageCaptor.capture());
+
+		assertThat(emailMessageCaptor.getValue().getTo()).isEqualTo(userAccountCaptor.getValue().getEmail());
+
+		assertThat(emailMessageCaptor.getValue().getTemplate()).isEqualTo(EmailTemplate.EMAIL_VALIDATION);
+
+		assertThat(not(emailMessageCaptor.getValue().getParams().isEmpty()));
+
+		assertNotNull(emailMessageCaptor.getValue().getParams()
+				.get(EmailTemplate.EMAIL_VALIDATION.getTemplateParams().get(0)));
+
+		assertThat(emailMessageCaptor.getValue().getParams()
+				.get(EmailTemplate.EMAIL_VALIDATION.getTemplateParams().get(0))).isEqualTo(emailValidationLink);
+	}
+
+	@Test
 	void givenSendingSMSValidationCodeFailed_whenRegisterUserAccountCreationDemand_thenReturnAccessToken() {
 
 		givenNonExistingMobilePhoneNumber();
 		givenNonExistingEmail();
 		givenDefaultGeneratedCode();
 		givenDefaultGeneratedUUID();
-		CreateUserAccountCommand command = defaultCreateUserAccountCommandBuilder().build();
+		CreateUserAccountCommand command = defaultCustomerUserAccountCommandBuilder().build();
 		givenRequestSendingEmailValidationLinkReturns(true);
 		givenRequestSendingSMSValidationCodeReturns(false);
 		// given(createUserAccountPort.createUserAccount(any(UserAccount.class))).willReturn(1L);
@@ -205,11 +282,11 @@ public class CreateUserAccountServiceTest {
 		givenNonExistingEmail();
 		givenDefaultGeneratedCode();
 		givenDefaultGeneratedUUID();
-		CreateUserAccountCommand command = defaultCreateUserAccountCommandBuilder().build();
+		CreateUserAccountCommand command = defaultCustomerUserAccountCommandBuilder().build();
 		givenRequestSendingEmailValidationLinkReturns(false);
 
-		JwtOAuth2AccessToken oAuth2AccessToken = new JwtOAuth2AccessToken(DEFAULT_ACCESS_TOKEN, "Bearer", null, 36000L,"read write", UUID.randomUUID().toString()); 
-		
+		JwtOAuth2AccessToken oAuth2AccessToken = new JwtOAuth2AccessToken(DEFAULT_ACCESS_TOKEN, "Bearer", null, 36000L,
+				"read write", UUID.randomUUID().toString());
 
 		given(oAuthUserAccountPort.fetchJwtTokenForUser(command.getEmail(), command.getUserPassword()))
 				.willReturn(oAuth2AccessToken);
@@ -224,7 +301,7 @@ public class CreateUserAccountServiceTest {
 	void givenSendMailMessageThrowsInvalidEmailMessageException_whenRequestSendingEmailValidationLink_thenReturnFalse() {
 		givenSendMailMessageThrowsIllegalArgumentException();
 
-		CreateUserAccountCommand command = defaultCreateUserAccountCommandBuilder().build();
+		CreateUserAccountCommand command = defaultCustomerUserAccountCommandBuilder().build();
 
 		boolean result = createUserAccountService.requestSendingEmailValidationLink(command.getEmail(),
 				"SOME VALIDATION CODE", locale);
@@ -235,7 +312,7 @@ public class CreateUserAccountServiceTest {
 	void givenSendSMSMessageThrowsInvalidSMSMessageException_whenRequestSendingSMSValidationCode_thenReturnFalse() {
 		givenSendSMSMessageThrowsIllegalArgumentException();
 
-		CreateUserAccountCommand command = defaultCreateUserAccountCommandBuilder().build();
+		CreateUserAccountCommand command = defaultCustomerUserAccountCommandBuilder().build();
 
 		boolean result = createUserAccountService.requestSendingSMSValidationCode(
 				new MobilePhoneNumber(command.getIcc(), command.getMobileNumber()), "SOME VALIDATION CODE", locale);

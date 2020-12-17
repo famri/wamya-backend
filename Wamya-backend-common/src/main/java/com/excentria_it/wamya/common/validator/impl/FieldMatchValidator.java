@@ -1,4 +1,4 @@
-package com.excentria_it.wamya.common.impl;
+package com.excentria_it.wamya.common.validator.impl;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

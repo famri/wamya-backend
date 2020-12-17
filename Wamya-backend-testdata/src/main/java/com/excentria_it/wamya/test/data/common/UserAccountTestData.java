@@ -15,12 +15,12 @@ public class UserAccountTestData {
 
 	public static UserAccountBuilder defaultUserAccountBuilder() {
 
-		return UserAccount.builder().id(1L).isTransporter(false).gender(Gender.MAN).firstName(DEFAULT_FIRSTNAME)
-				.lastName(DEFAULT_LASTNAME).dateOfBirth(DEFAULT_DATE_OF_BIRTH).email(DEFAULT_EMAIL)
+		return UserAccount.builder().id(1L).isTransporter(false).gender(Gender.MAN).firstname(DEFAULT_FIRSTNAME)
+				.lastname(DEFAULT_LASTNAME).dateOfBirth(DEFAULT_DATE_OF_BIRTH).email(DEFAULT_EMAIL)
 				.emailValidationCode(DEFAULT_VALIDATION_CODE).isValidatedEmail(true)
 				.mobilePhoneNumber(defaultMobilePhoneNumber()).mobileNumberValidationCode(DEFAULT_VALIDATION_CODE)
 				.isValidatedMobileNumber(true).userPassword(DEFAULT_ENCODED_PASSWORD).receiveNewsletter(true)
-				.creationTimestamp(LocalDateTime.now());
+				.creationDateTime(LocalDateTime.now());
 
 	}
 
@@ -55,11 +55,17 @@ public class UserAccountTestData {
 		return DEFAULT_RAW_PASSWORD;
 	}
 
-	public static CreateUserAccountCommandBuilder defaultCreateUserAccountCommandBuilder() {
-		return CreateUserAccountCommand.builder().isTransporter(false).gender(Gender.MAN).firstName(DEFAULT_FIRSTNAME)
-				.lastName(DEFAULT_LASTNAME).dateOfBirth(DEFAULT_DATE_OF_BIRTH).email(DEFAULT_EMAIL)
+	public static CreateUserAccountCommandBuilder defaultTransporterUserAccountCommandBuilder() {
+		return CreateUserAccountCommand.builder().isTransporter(true).gender(Gender.MAN).firstname(DEFAULT_FIRSTNAME)
+				.lastname(DEFAULT_LASTNAME).dateOfBirth(DEFAULT_DATE_OF_BIRTH).email(DEFAULT_EMAIL)
 				.icc(DEFAULT_INTERNATIONAL_CALLING_CODE).mobileNumber(DEFAULT_MOBILE_NUMBER)
 				.userPassword(DEFAULT_RAW_PASSWORD).receiveNewsletter(true);
 	}
 
+	public static CreateUserAccountCommandBuilder defaultCustomerUserAccountCommandBuilder() {
+		return CreateUserAccountCommand.builder().isTransporter(false).gender(Gender.MAN).firstname(DEFAULT_FIRSTNAME)
+				.lastname(DEFAULT_LASTNAME).dateOfBirth(DEFAULT_DATE_OF_BIRTH).email(DEFAULT_EMAIL)
+				.icc(DEFAULT_INTERNATIONAL_CALLING_CODE).mobileNumber(DEFAULT_MOBILE_NUMBER)
+				.userPassword(DEFAULT_RAW_PASSWORD).receiveNewsletter(true);
+	}
 }

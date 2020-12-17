@@ -1,4 +1,4 @@
-package com.excentria_it.wamya.adapter.persistence.adapter.persistence.repository;
+package com.excentria_it.wamya.adapter.persistence.repository;
 
 import static org.junit.jupiter.api.Assertions.*;
 

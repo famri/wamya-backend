@@ -29,7 +29,8 @@ import com.excentria_it.wamya.test.data.common.UserLoginTestData;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Import(value = { AuthenticationController.class, RestApiExceptionHandler.class })
-@WebMvcTest(controllers = AuthenticationController.class, excludeAutoConfiguration = SecurityAutoConfiguration.class)
+@WebMvcTest(controllers = AuthenticationController.class//, excludeAutoConfiguration = SecurityAutoConfiguration.class
+)
 public class AuthenticationControllerTests {
 
 	private static final String ACCESS_TOKEN = "SOME_ACCESS_TOKEN";
@@ -54,7 +55,7 @@ public class AuthenticationControllerTests {
 
 		String loginUserCommandJson = objectMapper.writeValueAsString(command);
 
-		MvcResult mvcResult = mockMvc.perform(post("/wamya-backend/login").contentType(MediaType.APPLICATION_JSON_VALUE)
+		MvcResult mvcResult = mockMvc.perform(post("/login").contentType(MediaType.APPLICATION_JSON_VALUE)
 				.content(loginUserCommandJson)).andExpect(status().isOk()).andReturn();
 
 		then(authenticateUserUseCase).should(times(1)).loginUser(eq(command));
@@ -72,7 +73,7 @@ public class AuthenticationControllerTests {
 
 		String loginUserCommandJson = objectMapper.writeValueAsString(command);
 
-		mockMvc.perform(post("/wamya-backend/login").contentType(MediaType.APPLICATION_JSON_VALUE)
+		mockMvc.perform(post("/login").contentType(MediaType.APPLICATION_JSON_VALUE)
 				.content(loginUserCommandJson)).andExpect(status().isBadRequest())
 				.andExpect(responseBody().containsApiErrors(List.of("username: Login or password not found.")));
 
@@ -87,7 +88,7 @@ public class AuthenticationControllerTests {
 
 		String loginUserCommandJson = objectMapper.writeValueAsString(command);
 
-		mockMvc.perform(post("/wamya-backend/login").contentType(MediaType.APPLICATION_JSON_VALUE)
+		mockMvc.perform(post("/login").contentType(MediaType.APPLICATION_JSON_VALUE)
 				.content(loginUserCommandJson)).andExpect(status().isBadRequest())
 				.andExpect(responseBody().containsApiErrors(List.of("username: Login or password not found.")));
 
@@ -104,7 +105,7 @@ public class AuthenticationControllerTests {
 
 		String loginUserCommandJson = objectMapper.writeValueAsString(command);
 
-		mockMvc.perform(post("/wamya-backend/login").contentType(MediaType.APPLICATION_JSON_VALUE)
+		mockMvc.perform(post("/login").contentType(MediaType.APPLICATION_JSON_VALUE)
 				.content(loginUserCommandJson)).andExpect(status().isUnauthorized())
 				.andExpect(responseBody().containsApiErrors(List.of("SOME ERROR DESCRIPTION")));
 
