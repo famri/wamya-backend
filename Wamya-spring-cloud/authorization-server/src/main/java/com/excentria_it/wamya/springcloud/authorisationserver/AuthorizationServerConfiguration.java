@@ -62,9 +62,12 @@ import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.excentria_it.wamya.springcloud.authorisationserver.dto.OAuthUserAccount;
+import com.excentria_it.wamya.springcloud.authorisationserver.service.UserService;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 
@@ -101,7 +104,7 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 
 	@Override
 	public void configure(AuthorizationServerSecurityConfigurer oauthServer) throws Exception {
-		oauthServer.checkTokenAccess("permitAll()");
+		oauthServer.tokenKeyAccess("isAuthenticated()").checkTokenAccess("isAuthenticated()");
 	}
 
 	@Override
@@ -146,12 +149,13 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 		converter.setKeyPair(this.keyPair);
 
 		DefaultAccessTokenConverter accessTokenConverter = new DefaultAccessTokenConverter();
-		accessTokenConverter.setUserTokenConverter(new SubjectAttributeUserTokenConverter());
+		accessTokenConverter.setUserTokenConverter(new SubjectAttributeUserTokenConverter());		
 
 		converter.setAccessTokenConverter(accessTokenConverter);
 
 		return converter;
 	}
+
 }
 
 /**
@@ -197,16 +201,19 @@ class UserConfig extends WebSecurityConfigurerAdapter {
 		http.authorizeRequests(authz -> authz
 
 				.antMatchers("/actuator/**").permitAll().antMatchers("/h2-console/**").permitAll()
-				.antMatchers(HttpMethod.POST, "/oauth/users").permitAll().mvcMatchers("/.well-known/jwks.json")
-				.permitAll().mvcMatchers("/favicon.ico").permitAll())
+				.antMatchers(HttpMethod.POST, "/oauth/users").permitAll()
+				.mvcMatchers("/.well-known/jwks.json").permitAll().mvcMatchers("/favicon.ico").permitAll())
 
-				.authorizeRequests().anyRequest().authenticated().and().headers().frameOptions().disable().and()
-				.csrf(csrf -> csrf.ignoringRequestMatchers(
-
-						request -> "/introspect".equals(request.getRequestURI()),
-						request -> "/oauth/users".equals(request.getRequestURI()))
-
-						.ignoringAntMatchers("/h2-console/**"));
+				.authorizeRequests().anyRequest().authenticated().and().headers().frameOptions().disable().and().csrf()
+				.disable().cors().disable();
+		/*
+		 * .csrf(csrf -> csrf.ignoringRequestMatchers(
+		 * 
+		 * request -> "/introspect".equals(request.getRequestURI()), request ->
+		 * "/oauth/users".equals(request.getRequestURI()))
+		 * 
+		 * .ignoringAntMatchers("/h2-console/**"));
+		 */
 
 		// @formatter:on
 	}
@@ -230,7 +237,7 @@ class IntrospectEndpoint {
 
 	@PostMapping("/introspect")
 	@ResponseBody
-	public Map<String, Object> introspect(@RequestParam("token") String token) {
+	public Map<String, Object> introspect(@RequestParam String token) {
 		OAuth2AccessToken accessToken = this.tokenStore.readAccessToken(token);
 		Map<String, Object> attributes = new HashMap<>();
 		if (accessToken == null || accessToken.isExpired()) {
@@ -275,6 +282,61 @@ class JwkSetEndpoint {
 }
 
 /**
+ * Legacy Authorization Server (spring-security-oauth2) does not support any
+ * user info endpoint.
+ *
+ * This class adds ad-hoc support in order to better support the other samples
+ * in the repo.
+ */
+//@FrameworkEndpoint
+//class UserInfoEndpoint {
+//
+//	TokenStore tokenStore;
+//	UserService userService;
+//
+//	public UserInfoEndpoint(TokenStore tokenStore, UserService userService) {
+//		this.tokenStore = tokenStore;
+//		this.userService = userService;
+//	}
+//
+//	@GetMapping("/oauth/user-info")
+//	@ResponseBody
+//	public Map<String, Object> loadUserInfo(@RequestHeader(name = "Authorization") String token) {
+//		// Remove Bearer String
+//		token = token.substring(7);
+//		OAuth2AccessToken accessToken = this.tokenStore.readAccessToken(token);
+//		Map<String, Object> userInfo = new HashMap<>();
+//		if (accessToken == null || accessToken.isExpired()) {
+//			userInfo.put("isActive", false);
+//			return userInfo;
+//		}
+//
+//		OAuth2Authentication authentication = this.tokenStore.readAuthentication(token);
+//		OAuthUserAccount account = userService.loadUserInfoByUsername(authentication.getName);
+//
+//		return oAuthUserAccountToUserInfoMap(account, authentication);
+//	}
+//
+//	private Map<String, Object> oAuthUserAccountToUserInfoMap(OAuthUserAccount account,
+//			OAuth2Authentication authentication) {
+//		Map<String, Object> userInfo = new HashMap<>();
+//		userInfo.put("oauthId", account.getOauthId());
+//		userInfo.put("firstname", account.getFirstname());
+//		userInfo.put("lastname", account.getLastname());
+//		userInfo.put("email", account.getEmail());
+//		userInfo.put("phoneNumber", account.getPhoneNumber());
+//		userInfo.put("isAccountNonExpired", account.isAccountNonExpired());
+//		userInfo.put("isAccountNonLocked", account.isAccountNonLocked());
+//		userInfo.put("isCredentialsNonExpired", account.isCredentialsNonExpired());
+//		userInfo.put("isEnabled", account.isEnabled());
+//		userInfo.put("authorities", AuthorityUtils.authorityListToSet(authentication.getAuthorities()));
+//
+//		return userInfo;
+//
+//	}
+//}
+
+/**
  * An Authorization Server will more typically have a key rotation strategy, and
  * the keys will not be hard-coded into the application code.
  *
@@ -313,6 +375,7 @@ class SubjectAttributeUserTokenConverter extends DefaultUserAuthenticationConver
 	public Map<String, ?> convertUserAuthentication(Authentication authentication) {
 		Map<String, Object> response = new LinkedHashMap<String, Object>();
 		response.put("sub", authentication.getName());
+
 		if (authentication.getAuthorities() != null && !authentication.getAuthorities().isEmpty()) {
 			response.put(AUTHORITIES, AuthorityUtils.authorityListToSet(authentication.getAuthorities()));
 		}

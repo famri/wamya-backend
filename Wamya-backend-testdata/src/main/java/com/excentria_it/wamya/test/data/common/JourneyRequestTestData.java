@@ -4,31 +4,28 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Function;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
-import org.springframework.data.domain.Sort.Order;
-
+import com.excentria_it.wamya.application.port.in.CreateJourneyRequestUseCase.CreateJourneyRequestCommand;
+import com.excentria_it.wamya.application.port.in.CreateJourneyRequestUseCase.CreateJourneyRequestCommand.CreateJourneyRequestCommandBuilder;
 import com.excentria_it.wamya.application.port.in.SearchJourneyRequestsUseCase.SearchJourneyRequestsCommand;
 import com.excentria_it.wamya.application.port.in.SearchJourneyRequestsUseCase.SearchJourneyRequestsCommand.SearchJourneyRequestsCommandBuilder;
 import com.excentria_it.wamya.common.SortingCriterion;
 import com.excentria_it.wamya.domain.ClientDto;
 import com.excentria_it.wamya.domain.EngineTypeDto;
+import com.excentria_it.wamya.domain.JourneyRequest;
 import com.excentria_it.wamya.domain.JourneyRequestSearchDto;
 import com.excentria_it.wamya.domain.JourneyRequestsSearchResult;
 import com.excentria_it.wamya.domain.PlaceDto;
 
-public class SearchJourneyRequestsTestData {
+public class JourneyRequestTestData {
 
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-	private static LocalDateTime startDate = LocalDateTime.now();
-	private static LocalDateTime endDate = addDays(startDate, 1);
+	private static LocalDateTime startDate = LocalDateTime
+			.parse(LocalDateTime.of(2020, 12, 10, 12, 0, 0, 0).format(DATE_TIME_FORMATTER), DATE_TIME_FORMATTER);
+	private static LocalDateTime endDate = LocalDateTime.parse(addDays(startDate, 1).format(DATE_TIME_FORMATTER),
+			DATE_TIME_FORMATTER);
 
 	private static List<JourneyRequestSearchDto> journeyRequestSearchDtos =
 
@@ -55,13 +52,13 @@ public class SearchJourneyRequestsTestData {
 				@Override
 				public EngineTypeDto getEngineType() {
 
-					return new EngineTypeDto(1L, "engineType1");
+					return new EngineTypeDto(1L, "engineType1", null);
 				}
 
 				@Override
-				public Integer getDistance() {
+				public Double getDistance() {
 
-					return 100;
+					return 100D;
 				}
 
 				@Override
@@ -89,7 +86,7 @@ public class SearchJourneyRequestsTestData {
 				@Override
 				public ClientDto getClient() {
 
-					return new ClientDto(1L, "ClientName1", "SOME PHOTO URL 1");
+					return new ClientDto(1L, "ClientUsername1", "ClientName1", "SOME PHOTO URL 1");
 				}
 
 				@Override
@@ -120,13 +117,13 @@ public class SearchJourneyRequestsTestData {
 				@Override
 				public EngineTypeDto getEngineType() {
 
-					return new EngineTypeDto(2L, "engineType2");
+					return new EngineTypeDto(2L, "engineType2", null);
 				}
 
 				@Override
-				public Integer getDistance() {
+				public Double getDistance() {
 
-					return 90;
+					return 90D;
 				}
 
 				@Override
@@ -154,7 +151,7 @@ public class SearchJourneyRequestsTestData {
 				@Override
 				public ClientDto getClient() {
 
-					return new ClientDto(1L, "ClientName2", "SOME PHOTO URL 2");
+					return new ClientDto(1L, "ClientUsername2", "ClientName2", "SOME PHOTO URL 2");
 				}
 
 				@Override
@@ -189,6 +186,25 @@ public class SearchJourneyRequestsTestData {
 
 	}
 
+	public static CreateJourneyRequestCommandBuilder defaultCreateJourneyRequestCommandBuilder() {
+
+		return CreateJourneyRequestCommand.builder().departurePlaceId("departurePlaceId")
+				.departurePlaceRegionId("departurePlaceRegionId").departurePlaceName("departurePlaceName")
+				.arrivalPlaceId("arrivalPlaceId").arrivalPlaceRegionId("arrivalPlaceRegionId")
+				.arrivalPlaceName("arrivalPlaceName").dateTime(startDate).endDateTime(endDate).engineTypeId(1L)
+				.distance(270.8).workers(2).description("Need a transporter URGENT!!!");
+
+	}
+
+	public static JourneyRequest defaultJourneyRequest() {
+		return JourneyRequest.builder().id(1L)
+				.departurePlace(new PlaceDto("departurePlaceId", "departurePlaceRegionId", "departurePlaceName"))
+				.arrivalPlace(new PlaceDto("arrivalPlaceId", "arrivalPlaceRegionId", "arrivalPlaceName"))
+				.dateTime(startDate).endDateTime(endDate).engineType(new EngineTypeDto(1L, "EngineType1", null))
+				.client(new ClientDto(1L, "ClientUsername", "ClientFirstname", "ClientLastname")).distance(270.8)
+				.workers(2).description("Need a transporter URGENT!!!").build();
+	}
+
 	private static LocalDateTime addDays(LocalDateTime dateTime, int days) {
 
 		ZonedDateTime zonedDateTime = ZonedDateTime.of(dateTime, ZoneOffset.UTC);
@@ -198,108 +214,10 @@ public class SearchJourneyRequestsTestData {
 		return dateAfter;
 	}
 
-	public static Page<JourneyRequestSearchDto> defaultJourneyRequestSearchDtoPage() {
-
-		return new Page<JourneyRequestSearchDto>() {
-
-			@Override
-			public int getNumber() {
-
-				return 0;
-			}
-
-			@Override
-			public int getSize() {
-
-				return 2;
-			}
-
-			@Override
-			public int getNumberOfElements() {
-
-				return 2;
-			}
-
-			@Override
-			public List<JourneyRequestSearchDto> getContent() {
-
-				return journeyRequestSearchDtos;
-			}
-
-			@Override
-			public boolean hasContent() {
-
-				return true;
-			}
-
-			@Override
-			public Sort getSort() {
-
-				return Sort.by(List.of(new Order(Direction.DESC, "min-price")));
-			}
-
-			@Override
-			public boolean isFirst() {
-
-				return true;
-			}
-
-			@Override
-			public boolean isLast() {
-
-				return false;
-			}
-
-			@Override
-			public boolean hasNext() {
-
-				return true;
-			}
-
-			@Override
-			public boolean hasPrevious() {
-
-				return false;
-			}
-
-			@Override
-			public Pageable nextPageable() {
-
-				return null;
-			}
-
-			@Override
-			public Pageable previousPageable() {
-
-				return null;
-			}
-
-			@Override
-			public Iterator<JourneyRequestSearchDto> iterator() {
-
-				return journeyRequestSearchDtos.iterator();
-			}
-
-			@Override
-			public int getTotalPages() {
-
-				return 5;
-			}
-
-			@Override
-			public long getTotalElements() {
-
-				return 10;
-			}
-
-			@Override
-			public <U> Page<U> map(Function<? super JourneyRequestSearchDto, ? extends U> converter) {
-
-				return null;
-			}
-		};
-
+	public static List<JourneyRequestSearchDto> defaultJourneyRequestSearchDtoList() {
+		return journeyRequestSearchDtos;
 	}
+	
 
 	public static JourneyRequestsSearchResult defaultJourneyRequestsSearchResult() {
 

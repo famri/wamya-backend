@@ -1,6 +1,6 @@
 package com.excentria_it.wamya.application.service;
 
-import static com.excentria_it.wamya.test.data.common.SearchJourneyRequestsTestData.*;
+import static com.excentria_it.wamya.test.data.common.JourneyRequestTestData.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
@@ -43,7 +43,7 @@ public class SearchJourneyRequestsServiceTests {
 
 		JourneyRequestsSearchResult expectedResult = givenSearchJourneyRequestsByDeparturePlaceRegionIdAndEngineTypesAndDateBetween_WillReturnJourneyRequestsSearchResult();
 		// when
-		JourneyRequestsSearchResult result = searchJourneyRequestsService.searchJourneyRequests(command);
+		JourneyRequestsSearchResult result = searchJourneyRequestsService.searchJourneyRequests(command, "en");
 		// then
 
 		ArgumentCaptor<String> departurePlaceRegionIdCaptor = ArgumentCaptor.forClass(String.class);
@@ -53,12 +53,13 @@ public class SearchJourneyRequestsServiceTests {
 		ArgumentCaptor<Integer> pageNumberCaptor = ArgumentCaptor.forClass(Integer.class);
 		ArgumentCaptor<Integer> pageSizeCaptor = ArgumentCaptor.forClass(Integer.class);
 		ArgumentCaptor<SortingCriterion> sortingCriteriaCaptor = ArgumentCaptor.forClass(SortingCriterion.class);
+		ArgumentCaptor<String> localeCaptor = ArgumentCaptor.forClass(String.class);
 
 		then(searchJourneyRequestsPort).should(times(1))
 				.searchJourneyRequestsByDeparturePlaceRegionIdAndEngineTypesAndDateBetween(
 						departurePlaceRegionIdCaptor.capture(), engineTypesCaptor.capture(), startDateCaptor.capture(),
-						endDateCaptor.capture(), pageNumberCaptor.capture(), pageSizeCaptor.capture(),
-						sortingCriteriaCaptor.capture());
+						endDateCaptor.capture(), localeCaptor.capture(), pageNumberCaptor.capture(),
+						pageSizeCaptor.capture(), sortingCriteriaCaptor.capture());
 
 		assertEquals(command.getDeparturePlaceRegionId(), departurePlaceRegionIdCaptor.getValue());
 
@@ -68,6 +69,7 @@ public class SearchJourneyRequestsServiceTests {
 		assertEquals(command.getPageNumber(), pageNumberCaptor.getValue());
 		assertEquals(command.getPageSize(), pageSizeCaptor.getValue());
 		assertEquals(command.getSortingCriterion(), sortingCriteriaCaptor.getValue());
+		assertEquals("en", localeCaptor.getValue());
 
 		assertEquals(expectedResult.getTotalPages(), result.getTotalPages());
 		assertEquals(expectedResult.getTotalElements(), result.getTotalElements());
@@ -87,7 +89,7 @@ public class SearchJourneyRequestsServiceTests {
 		SearchJourneyRequestsCommand command = commandBuilder.build();
 		JourneyRequestsSearchResult expectedResult = givenSearchJourneyRequestsByDeparturePlaceRegionIdAndArrivalPlaceRegionIdAndEngineTypesAndDateBetween_WillReturnJourneyRequestsSearchResult();
 		// when
-		JourneyRequestsSearchResult result = searchJourneyRequestsService.searchJourneyRequests(command);
+		JourneyRequestsSearchResult result = searchJourneyRequestsService.searchJourneyRequests(command, "en");
 		// then
 
 		ArgumentCaptor<String> departurePlaceRegionIdCaptor = ArgumentCaptor.forClass(String.class);
@@ -98,12 +100,14 @@ public class SearchJourneyRequestsServiceTests {
 		ArgumentCaptor<Integer> pageSizeCaptor = ArgumentCaptor.forClass(Integer.class);
 		ArgumentCaptor<SortingCriterion> sortingCriteriaCaptor = ArgumentCaptor.forClass(SortingCriterion.class);
 		ArgumentCaptor<Set<String>> arrivalPlaceRegionIdCaptor = ArgumentCaptor.forClass(Set.class);
+		ArgumentCaptor<String> localeCaptor = ArgumentCaptor.forClass(String.class);
 
 		then(searchJourneyRequestsPort).should(times(1))
 				.searchJourneyRequestsByDeparturePlaceRegionIdAndArrivalPlaceRegionIdAndEngineTypesAndDateBetween(
 						departurePlaceRegionIdCaptor.capture(), arrivalPlaceRegionIdCaptor.capture(),
 						engineTypesCaptor.capture(), startDateCaptor.capture(), endDateCaptor.capture(),
-						pageNumberCaptor.capture(), pageSizeCaptor.capture(), sortingCriteriaCaptor.capture());
+						localeCaptor.capture(), pageNumberCaptor.capture(), pageSizeCaptor.capture(),
+						sortingCriteriaCaptor.capture());
 
 		assertEquals(command.getDeparturePlaceRegionId(), departurePlaceRegionIdCaptor.getValue());
 		assertEquals(command.getArrivalPlaceRegionIds(), arrivalPlaceRegionIdCaptor.getValue());
@@ -113,6 +117,7 @@ public class SearchJourneyRequestsServiceTests {
 		assertEquals(command.getPageNumber(), pageNumberCaptor.getValue());
 		assertEquals(command.getPageSize(), pageSizeCaptor.getValue());
 		assertEquals(command.getSortingCriterion(), sortingCriteriaCaptor.getValue());
+		assertEquals("en", localeCaptor.getValue());
 
 		assertEquals(expectedResult.getTotalPages(), result.getTotalPages());
 		assertEquals(expectedResult.getTotalElements(), result.getTotalElements());
@@ -129,8 +134,8 @@ public class SearchJourneyRequestsServiceTests {
 		given(searchJourneyRequestsPort
 				.searchJourneyRequestsByDeparturePlaceRegionIdAndArrivalPlaceRegionIdAndEngineTypesAndDateBetween(
 						any(String.class), any(Set.class), any(Set.class), any(LocalDateTime.class),
-						any(LocalDateTime.class), any(Integer.class), any(Integer.class), any(SortingCriterion.class)))
-								.willReturn(result);
+						any(LocalDateTime.class), any(String.class), any(Integer.class), any(Integer.class),
+						any(SortingCriterion.class))).willReturn(result);
 		return result;
 	}
 
@@ -139,7 +144,8 @@ public class SearchJourneyRequestsServiceTests {
 
 		given(searchJourneyRequestsPort.searchJourneyRequestsByDeparturePlaceRegionIdAndEngineTypesAndDateBetween(
 				any(String.class), any(Set.class), any(LocalDateTime.class), any(LocalDateTime.class),
-				any(Integer.class), any(Integer.class), any(SortingCriterion.class))).willReturn(result);
+				any(String.class), any(Integer.class), any(Integer.class), any(SortingCriterion.class)))
+						.willReturn(result);
 		return result;
 
 	}

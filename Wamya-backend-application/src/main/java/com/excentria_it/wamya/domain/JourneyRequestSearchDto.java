@@ -17,7 +17,7 @@ public interface JourneyRequestSearchDto {
 	@Value("#{T(com.excentria_it.wamya.application.utils.MapperUtility).buildEngineTypeDto(target.engineTypeId, target.engineTypeName)}")
 	EngineTypeDto getEngineType();
 
-	Integer getDistance();
+	Double getDistance();
 
 	LocalDateTime getDateTime();
 

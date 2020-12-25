@@ -17,6 +17,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -28,7 +29,7 @@ import com.excentria_it.wamya.common.exception.UserAccountAlreadyExistsException
 import com.excentria_it.wamya.domain.JwtOAuth2AccessToken;
 import com.excentria_it.wamya.test.data.common.UserAccountTestData;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
+@ActiveProfiles(profiles = { "web-local" })
 @Import(value = { CreateUserAccountController.class, RestApiExceptionHandler.class })
 @WebMvcTest(controllers = CreateUserAccountController.class// , excludeAutoConfiguration =
 															// SecurityAutoConfiguration.class

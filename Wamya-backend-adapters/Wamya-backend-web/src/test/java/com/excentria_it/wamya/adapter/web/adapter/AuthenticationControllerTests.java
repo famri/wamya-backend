@@ -12,11 +12,11 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -28,9 +28,9 @@ import com.excentria_it.wamya.domain.JwtOAuth2AccessToken;
 import com.excentria_it.wamya.test.data.common.UserLoginTestData;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+@ActiveProfiles(profiles = { "web-local" })
 @Import(value = { AuthenticationController.class, RestApiExceptionHandler.class })
-@WebMvcTest(controllers = AuthenticationController.class//, excludeAutoConfiguration = SecurityAutoConfiguration.class
-)
+@WebMvcTest(controllers = AuthenticationController.class)
 public class AuthenticationControllerTests {
 
 	private static final String ACCESS_TOKEN = "SOME_ACCESS_TOKEN";
@@ -55,8 +55,9 @@ public class AuthenticationControllerTests {
 
 		String loginUserCommandJson = objectMapper.writeValueAsString(command);
 
-		MvcResult mvcResult = mockMvc.perform(post("/login").contentType(MediaType.APPLICATION_JSON_VALUE)
-				.content(loginUserCommandJson)).andExpect(status().isOk()).andReturn();
+		MvcResult mvcResult = mockMvc
+				.perform(post("/login").contentType(MediaType.APPLICATION_JSON_VALUE).content(loginUserCommandJson))
+				.andExpect(status().isOk()).andReturn();
 
 		then(authenticateUserUseCase).should(times(1)).loginUser(eq(command));
 
@@ -73,8 +74,8 @@ public class AuthenticationControllerTests {
 
 		String loginUserCommandJson = objectMapper.writeValueAsString(command);
 
-		mockMvc.perform(post("/login").contentType(MediaType.APPLICATION_JSON_VALUE)
-				.content(loginUserCommandJson)).andExpect(status().isBadRequest())
+		mockMvc.perform(post("/login").contentType(MediaType.APPLICATION_JSON_VALUE).content(loginUserCommandJson))
+				.andExpect(status().isBadRequest())
 				.andExpect(responseBody().containsApiErrors(List.of("username: Login or password not found.")));
 
 		then(authenticateUserUseCase).should(never()).loginUser(eq(command));
@@ -88,8 +89,8 @@ public class AuthenticationControllerTests {
 
 		String loginUserCommandJson = objectMapper.writeValueAsString(command);
 
-		mockMvc.perform(post("/login").contentType(MediaType.APPLICATION_JSON_VALUE)
-				.content(loginUserCommandJson)).andExpect(status().isBadRequest())
+		mockMvc.perform(post("/login").contentType(MediaType.APPLICATION_JSON_VALUE).content(loginUserCommandJson))
+				.andExpect(status().isBadRequest())
 				.andExpect(responseBody().containsApiErrors(List.of("username: Login or password not found.")));
 
 		then(authenticateUserUseCase).should(never()).loginUser(eq(command));
@@ -101,12 +102,13 @@ public class AuthenticationControllerTests {
 
 		LoginUserCommand command = UserLoginTestData.defaultLoginUserCommand().build();
 
-		doThrow(new AuthorizationException("SOME ERROR DESCRIPTION")).when(authenticateUserUseCase).loginUser(eq(command));
+		doThrow(new AuthorizationException("SOME ERROR DESCRIPTION")).when(authenticateUserUseCase)
+				.loginUser(eq(command));
 
 		String loginUserCommandJson = objectMapper.writeValueAsString(command);
 
-		mockMvc.perform(post("/login").contentType(MediaType.APPLICATION_JSON_VALUE)
-				.content(loginUserCommandJson)).andExpect(status().isUnauthorized())
+		mockMvc.perform(post("/login").contentType(MediaType.APPLICATION_JSON_VALUE).content(loginUserCommandJson))
+				.andExpect(status().isUnauthorized())
 				.andExpect(responseBody().containsApiErrors(List.of("SOME ERROR DESCRIPTION")));
 
 		then(authenticateUserUseCase).should(times(1)).loginUser(eq(command));

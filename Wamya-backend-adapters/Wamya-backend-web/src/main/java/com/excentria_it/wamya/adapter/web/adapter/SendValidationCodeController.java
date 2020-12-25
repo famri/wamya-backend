@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.excentria_it.wamya.adapter.web.domain.ValidationCodeRequest;
 import com.excentria_it.wamya.adapter.web.domain.ValidationCodeRequestStatus;
+import com.excentria_it.wamya.adapter.web.utils.LocaleUtils;
 import com.excentria_it.wamya.application.port.in.SendValidationCodeUseCase;
 import com.excentria_it.wamya.application.port.in.SendValidationCodeUseCase.SendEmailValidationLinkCommand;
 import com.excentria_it.wamya.application.port.in.SendValidationCodeUseCase.SendSMSValidationCodeCommand;
@@ -45,7 +46,8 @@ public class SendValidationCodeController {
 	public ValidationCodeRequest sendSMSValidationCode(@Valid @RequestBody SendSMSValidationCodeCommand command,
 			Locale locale) {
 
-		boolean success = sendValidationCodeUseCase.sendSMSValidationCode(command, locale);
+		boolean success = sendValidationCodeUseCase.sendSMSValidationCode(command,
+				LocaleUtils.getSupporedLocale(locale));
 
 		ValidationCodeRequest result = new ValidationCodeRequest();
 

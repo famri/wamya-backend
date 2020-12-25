@@ -1,7 +1,7 @@
 apply plugin: 'jacoco'
 
 jacoco {
-	toolVersion = "0.8.2"
+	toolVersion = "0.8.6"
 }
 	
 jacocoTestCoverageVerification {
@@ -24,20 +24,27 @@ check.dependsOn jacocoTestCoverageVerification
 
 dependencies {
 
-   	implementation (project(':Wamya-backend-common'))
+   	implementation (project(':Wamya-backend-common')){
+    	 transitive = false
+    }
+    
     implementation (project(':Wamya-backend-application')){
     	 transitive = false
     }
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation ('org.springframework.boot:spring-boot-starter-validation')
     implementation 'org.springframework.boot:spring-boot-starter-web'
 	
-  	implementation ('org.springframework.boot:spring-boot-starter-security');
+  	//implementation ('org.springframework.boot:spring-boot-starter-security');
     //implementation "org.springframework.security:spring-security-oauth2-core:${springSecurityVersion}"
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+    
     
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
+
+	testCompile 'org.springframework.security:spring-security-test'
+	
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'junit' // excluding junit 4
     }
@@ -50,14 +57,14 @@ dependencies {
     testImplementation 	'org.mockito:mockito-junit-jupiter'
     testImplementation 	'com.tngtech.archunit:archunit:0.9.3'
     testImplementation 	'de.adesso:junit-insights:1.1.0'
-    testImplementation (project (':Wamya-backend-testdata'))
-    /*{
+    testImplementation (project (':Wamya-backend-testdata')){
     	 transitive = false
-    }*/
+    }
 
-
-
-    
+	//testImplementation "com.c4-soft.springaddons:spring-security-oauth2-addons:${springaddonsVersion}"
+	//testImplementation "com.c4-soft.springaddons:spring-security-oauth2-test-addons:${springaddonsVersion}"
+	testImplementation "com.c4-soft.springaddons:spring-security-oauth2-test-webmvc-addons:${springaddonsVersion}"
+		
     
     
 }

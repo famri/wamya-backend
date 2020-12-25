@@ -1,22 +1,24 @@
 package com.excentria_it.wamya.adapter.persistence.repository;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.*;
 
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.excentria_it.wamya.adapter.persistence.entity.InternationalCallingCodeJpaEntity;
-import com.excentria_it.wamya.adapter.persistence.repository.InternationalCallingCodeRepository;
 import com.excentria_it.wamya.test.data.common.InternationalCallingCodeJpaEntityTestData;
 import com.excentria_it.wamya.test.data.common.TestConstants;
 
 @DataJpaTest
 @ActiveProfiles(profiles = { "persistence-local" })
+@AutoConfigureTestDatabase(replace = NONE)
 public class InternationalCallingCodeRepositoryTests {
 	@Autowired
 	private InternationalCallingCodeRepository iccRepository;
@@ -43,8 +45,7 @@ public class InternationalCallingCodeRepositoryTests {
 
 	private void givenAnInternationalCallingCode() {
 		InternationalCallingCodeJpaEntity iccEntity = InternationalCallingCodeJpaEntityTestData
-				.defaultInternationalCallingCodeJpaEntity();
-		iccEntity.setId(null);
+				.defaultNewInternationalCallingCodeJpaEntity();
 
 		iccEntity = iccRepository.save(iccEntity);
 

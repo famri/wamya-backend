@@ -106,4 +106,17 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 		return filteredRoles;
 
 	}
+
+	@Override
+	public OAuthUserAccount loadUserInfoByUsername(String username) {
+		Optional<UserEntity> userEntityOptional = userRepository.findByEmail(username);
+		if (!userEntityOptional.isPresent()) {
+			userEntityOptional = userRepository.findByPhoneNumber(username);
+			if (!userEntityOptional.isPresent()) {
+				throw new UsernameNotFoundException(username);
+			}
+
+		}
+		return mapper.entityToApi(userEntityOptional.get());
+	}
 }

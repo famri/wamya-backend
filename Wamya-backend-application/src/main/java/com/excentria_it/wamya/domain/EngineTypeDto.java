@@ -12,4 +12,6 @@ public class EngineTypeDto {
 	private Long id;
 
 	private String name;
+
+	private String description;
 }

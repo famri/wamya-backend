@@ -1,9 +1,9 @@
 /*##########################################
 # INSERTING ROLES
 ##########################################*/
-INSERT INTO role(id, name) VALUES(1, 'ROLE_ADMIN') ON CONFLICT DO NOTHING;
-INSERT INTO role(id, name) VALUES(2, 'ROLE_TRANSPORTER') ON CONFLICT DO NOTHING;
-INSERT INTO role(id, name) VALUES(3, 'ROLE_CUSTOMER') ON CONFLICT DO NOTHING;
+INSERT INTO role(id, name) VALUES(1, 'ADMIN') ON CONFLICT DO NOTHING;
+INSERT INTO role(id, name) VALUES(2, 'TRANSPORTER') ON CONFLICT DO NOTHING;
+INSERT INTO role(id, name) VALUES(3, 'CLIENT') ON CONFLICT DO NOTHING;
 
 
 
@@ -42,7 +42,7 @@ INSERT INTO oauth_client_details(
 VALUES(
 	'wamya-mobile-app', 
 	'{noop}S3CR3T', 
-	'profile:read,profile:write,journery:read,journery:write,offer:read,offer:write',
+	'profile:read,profile:write,journey:read,journey:write,offer:read,offer:write',
 	'client_credentials,password,authorization_code,refresh_token', 
 	'http://anywhere.com', 
 	'ROLE_USER', 
@@ -52,4 +52,6 @@ VALUES(
 	true)
 
 ON CONFLICT DO NOTHING;
+
+INSERT INTO oauth_client_details(client_id, client_secret) VALUES('wamya-backend-resource-server', '{noop}S3CR3T') ON CONFLICT DO NOTHING;
 

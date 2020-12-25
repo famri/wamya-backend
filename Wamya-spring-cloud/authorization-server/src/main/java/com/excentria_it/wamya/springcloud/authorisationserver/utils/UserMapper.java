@@ -9,7 +9,8 @@ import com.excentria_it.wamya.springcloud.authorisationserver.model.UserEntity;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
-
+	
+	@Mappings({ @Mapping(target = "password", ignore = true) })
 	OAuthUserAccount entityToApi(UserEntity entity);
 
 	@Mappings({ @Mapping(target = "version", ignore = true) })

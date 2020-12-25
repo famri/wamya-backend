@@ -69,7 +69,7 @@ public class OAuth2AuthorizationServerApplicationTests {
 		user.setCredentialsNonExpired(true);
 		user.setEnabled(true);
 
-		Optional<RoleEntity> roleOptional = roleRepo.findByName("ROLE_ADMIN");
+		Optional<RoleEntity> roleOptional = roleRepo.findByName("ADMIN");
 
 		user.setRoles(Collections.singleton(roleOptional.get()));
 

@@ -43,7 +43,7 @@ import lombok.extern.slf4j.Slf4j;
 @UseCase
 @Transactional
 @Slf4j
-public class CreateUserAccountService implements CreateUserAccountUseCase {
+public class UserAccountService implements CreateUserAccountUseCase {
 
 	@Autowired
 	private LoadUserAccountPort loadUserAccountPort;
@@ -85,7 +85,7 @@ public class CreateUserAccountService implements CreateUserAccountUseCase {
 				.lastname(command.getLastname()).email(command.getEmail())
 				.phoneNumber(command.getIcc() + "_" + command.getMobileNumber()).password(command.getUserPassword())
 				.isAccountNonExpired(true).isAccountNonLocked(true).isCredentialsNonExpired(true).isEnabled(true)
-				.roles(List.of(new OAuthRole(command.getIsTransporter() ? "ROLE_TRANSPORTER" : "ROLE_CUSTOMER")))
+				.roles(List.of(new OAuthRole(command.getIsTransporter() ? "TRANSPORTER" : "CLIENT")))
 				.build();
 
 		Long oauthId = oAuthUserAccountPort.createOAuthUserAccount(oauthUserAccount);

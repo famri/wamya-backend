@@ -20,6 +20,7 @@ subprojects {
 		set('springBootVersion', '2.3.1.RELEASE')
 		set('springCloudVersion', 'Hoxton.SR6')		
 		set('springSecurityVersion','5.3.3.RELEASE')
+		set('springaddonsVersion','2.4.1')
 	}
 
     dependencyManagement {

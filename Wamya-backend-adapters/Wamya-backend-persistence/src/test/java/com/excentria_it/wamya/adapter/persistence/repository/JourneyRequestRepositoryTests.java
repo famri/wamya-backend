@@ -1,6 +1,7 @@
 package com.excentria_it.wamya.adapter.persistence.repository;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,12 +27,15 @@ import org.springframework.test.context.ActiveProfiles;
 import com.excentria_it.wamya.adapter.persistence.entity.EngineTypeJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.JourneyProposalJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.JourneyRequestJpaEntity;
+import com.excentria_it.wamya.adapter.persistence.entity.LocalizedEngineTypeJpaEntity;
+import com.excentria_it.wamya.adapter.persistence.entity.LocalizedId;
 import com.excentria_it.wamya.adapter.persistence.entity.PlaceJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.UserAccountJpaEntity;
 import com.excentria_it.wamya.domain.JourneyRequestSearchDto;
 
 @DataJpaTest
 @ActiveProfiles(profiles = { "persistence-local" })
+@AutoConfigureTestDatabase(replace = NONE)
 public class JourneyRequestRepositoryTests {
 
 	@Autowired
@@ -61,14 +66,14 @@ public class JourneyRequestRepositoryTests {
 		List<UserAccountJpaEntity> clients = givenClients();
 		List<LocalDateTime> dates = givenLocalDateTimes();
 		List<LocalDateTime> endDates = givenEndDates();
-
+		List<Double> distances = givenDistances();
 		List<UserAccountJpaEntity> transporters = givenTransporters();
 		List<String> descriptions = givenDescriptions();
 
 		Map<Integer, Set<JourneyProposalJpaEntity>> proposalsMap = givenProposals(transporters);
 
-		givenJourneyRequests(departurePlaces, arrivalPlaces, engineTypes, List.of(100, 200, 300), dates, endDates,
-				List.of(2, 2, 2), descriptions, clients, proposalsMap);
+		givenJourneyRequests(departurePlaces, arrivalPlaces, engineTypes, distances, dates, endDates, List.of(2, 2, 2),
+				descriptions, clients, proposalsMap);
 
 		List<LocalDateTime> searchStartAndEndDates = getDateBeforeAndDateAfter(dates.get(0).toLocalDate());
 
@@ -79,7 +84,7 @@ public class JourneyRequestRepositoryTests {
 						departurePlaces.get(0).getRegionId(),
 						Set.of(arrivalPlaces.get(0).getRegionId(), arrivalPlaces.get(1).getRegionId()),
 						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()), searchStartAndEndDates.get(0),
-						searchStartAndEndDates.get(1), PageRequest.of(0, 1000,
+						searchStartAndEndDates.get(1), "en", PageRequest.of(0, 1000,
 								// Sort.by(List.of(new Order(Direction.DESC, "(minPrice)")))
 								JpaSort.unsafe(Direction.DESC, "(minPrice)")));
 
@@ -122,14 +127,14 @@ public class JourneyRequestRepositoryTests {
 		List<UserAccountJpaEntity> clients = givenClients();
 		List<LocalDateTime> dates = givenLocalDateTimes();
 		List<LocalDateTime> endDates = givenEndDates();
-
+		List<Double> distances = givenDistances();
 		List<UserAccountJpaEntity> transporters = givenTransporters();
 		List<String> descriptions = givenDescriptions();
 
 		Map<Integer, Set<JourneyProposalJpaEntity>> proposalsMap = givenProposals(transporters);
 
-		givenJourneyRequests(departurePlaces, arrivalPlaces, engineTypes, List.of(100, 200, 300), dates, endDates,
-				List.of(2, 2, 2), descriptions, clients, proposalsMap);
+		givenJourneyRequests(departurePlaces, arrivalPlaces, engineTypes, distances, dates, endDates, List.of(2, 2, 2),
+				descriptions, clients, proposalsMap);
 
 		List<LocalDateTime> searchStartAndEndDates = getDateBeforeAndDateAfter(dates.get(0).toLocalDate());
 
@@ -138,7 +143,7 @@ public class JourneyRequestRepositoryTests {
 		Page<JourneyRequestSearchDto> journeyRequests = journeyRequestRepository
 				.findByDeparturePlace_RegionIdAndEngineType_IdInAndDateBetween(departurePlaces.get(0).getRegionId(),
 						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()), searchStartAndEndDates.get(0),
-						searchStartAndEndDates.get(1), PageRequest.of(0, 1000,
+						searchStartAndEndDates.get(1), "en", PageRequest.of(0, 1000,
 								// Sort.by(List.of(new Order(Direction.DESC, "(minPrice)")))
 								JpaSort.unsafe(Direction.DESC, "(minPrice)")));
 
@@ -181,14 +186,14 @@ public class JourneyRequestRepositoryTests {
 		List<UserAccountJpaEntity> clients = givenClients();
 		List<LocalDateTime> dates = givenLocalDateTimes();
 		List<LocalDateTime> endDates = givenEndDates();
-
+		List<Double> distances = givenDistances();
 		List<UserAccountJpaEntity> transporters = givenTransporters();
 		List<String> descriptions = givenDescriptions();
 
 		Map<Integer, Set<JourneyProposalJpaEntity>> proposalsMap = givenProposals(transporters);
 
-		givenJourneyRequests(departurePlaces, arrivalPlaces, engineTypes, List.of(100, 200, 300), dates, endDates,
-				List.of(2, 2, 2), descriptions, clients, proposalsMap);
+		givenJourneyRequests(departurePlaces, arrivalPlaces, engineTypes, distances, dates, endDates, List.of(2, 2, 2),
+				descriptions, clients, proposalsMap);
 
 		List<LocalDateTime> searchStartAndEndDates = getDateBeforeAndDateAfter(dates.get(0).toLocalDate());
 
@@ -199,7 +204,7 @@ public class JourneyRequestRepositoryTests {
 						departurePlaces.get(0).getRegionId(),
 						Set.of(arrivalPlaces.get(0).getRegionId(), arrivalPlaces.get(1).getRegionId()),
 						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()), searchStartAndEndDates.get(0),
-						searchStartAndEndDates.get(1), PageRequest.of(1, 1,
+						searchStartAndEndDates.get(1), "en", PageRequest.of(1, 1,
 								// Sort.by(List.of(new Order(Direction.DESC, "(minPrice)")))
 								JpaSort.unsafe(Direction.ASC, "(minPrice)")));
 
@@ -210,9 +215,6 @@ public class JourneyRequestRepositoryTests {
 
 		assertEquals(departurePlaces.get(0).getRegionId(),
 				journeyRequests.getContent().get(0).getDeparturePlace().getPlaceRegionId());
-
-		assertEquals(departurePlaces.get(0).getRegionId(),
-				journeyRequests.getContent().get(1).getDeparturePlace().getPlaceRegionId());
 
 		assertTrue(Set.of(arrivalPlaces.get(0).getRegionId(), arrivalPlaces.get(1).getRegionId())
 				.containsAll(journeyRequests.getContent().stream().map(jr -> jr.getArrivalPlace().getPlaceRegionId())
@@ -238,14 +240,14 @@ public class JourneyRequestRepositoryTests {
 		List<UserAccountJpaEntity> clients = givenClients();
 		List<LocalDateTime> dates = givenLocalDateTimes();
 		List<LocalDateTime> endDates = givenEndDates();
-
+		List<Double> distances = givenDistances();
 		List<UserAccountJpaEntity> transporters = givenTransporters();
 		List<String> descriptions = givenDescriptions();
 
 		Map<Integer, Set<JourneyProposalJpaEntity>> proposalsMap = givenProposals(transporters);
 
-		givenJourneyRequests(departurePlaces, arrivalPlaces, engineTypes, List.of(100, 200, 300), dates, endDates,
-				List.of(2, 2, 2), descriptions, clients, proposalsMap);
+		givenJourneyRequests(departurePlaces, arrivalPlaces, engineTypes, distances, dates, endDates, List.of(2, 2, 2),
+				descriptions, clients, proposalsMap);
 
 		List<LocalDateTime> searchStartAndEndDates = getDateBeforeAndDateAfter(dates.get(0).toLocalDate());
 
@@ -254,7 +256,7 @@ public class JourneyRequestRepositoryTests {
 		Page<JourneyRequestSearchDto> journeyRequests = journeyRequestRepository
 				.findByDeparturePlace_RegionIdAndEngineType_IdInAndDateBetween(departurePlaces.get(0).getRegionId(),
 						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()), searchStartAndEndDates.get(0),
-						searchStartAndEndDates.get(1), PageRequest.of(1, 1,
+						searchStartAndEndDates.get(1), "en", PageRequest.of(1, 1,
 								// Sort.by(List.of(new Order(Direction.DESC, "(minPrice)")))
 								JpaSort.unsafe(Direction.ASC, "(minPrice)")));
 
@@ -267,7 +269,7 @@ public class JourneyRequestRepositoryTests {
 				journeyRequests.getContent().get(0).getDeparturePlace().getPlaceRegionId());
 
 		assertEquals(departurePlaces.get(0).getRegionId(),
-				journeyRequests.getContent().get(1).getDeparturePlace().getPlaceRegionId());
+				journeyRequests.getContent().get(0).getDeparturePlace().getPlaceRegionId());
 
 		assertTrue(Set.of(arrivalPlaces.get(0).getRegionId(), arrivalPlaces.get(1).getRegionId())
 				.containsAll(journeyRequests.getContent().stream().map(jr -> jr.getArrivalPlace().getPlaceRegionId())
@@ -293,14 +295,14 @@ public class JourneyRequestRepositoryTests {
 		List<UserAccountJpaEntity> clients = givenClients();
 		List<LocalDateTime> dates = givenLocalDateTimes();
 		List<LocalDateTime> endDates = givenEndDates();
-
+		List<Double> distances = givenDistances();
 		List<UserAccountJpaEntity> transporters = givenTransporters();
 		List<String> descriptions = givenDescriptions();
 
 		Map<Integer, Set<JourneyProposalJpaEntity>> proposalsMap = givenProposals(transporters);
 
-		givenJourneyRequests(departurePlaces, arrivalPlaces, engineTypes, List.of(100, 200, 300), dates, endDates,
-				List.of(2, 2, 2), descriptions, clients, proposalsMap);
+		givenJourneyRequests(departurePlaces, arrivalPlaces, engineTypes, distances, dates, endDates, List.of(2, 2, 2),
+				descriptions, clients, proposalsMap);
 
 		List<LocalDateTime> searchStartAndEndDates = getDateBeforeAndDateAfter(dates.get(0).toLocalDate());
 
@@ -311,7 +313,7 @@ public class JourneyRequestRepositoryTests {
 						departurePlaces.get(0).getRegionId(),
 						Set.of(arrivalPlaces.get(0).getRegionId(), arrivalPlaces.get(1).getRegionId()),
 						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()), searchStartAndEndDates.get(0),
-						searchStartAndEndDates.get(1), PageRequest.of(0, 1000,
+						searchStartAndEndDates.get(1), "en", PageRequest.of(0, 1000,
 
 								Sort.by(Direction.DESC, "dateTime")));
 
@@ -352,13 +354,15 @@ public class JourneyRequestRepositoryTests {
 		List<LocalDateTime> dates = givenLocalDateTimes();
 		List<LocalDateTime> endDates = givenEndDates();
 
+		List<Double> distances = givenDistances();
+
 		List<UserAccountJpaEntity> transporters = givenTransporters();
 		List<String> descriptions = givenDescriptions();
 
 		Map<Integer, Set<JourneyProposalJpaEntity>> proposalsMap = givenProposals(transporters);
 
-		givenJourneyRequests(departurePlaces, arrivalPlaces, engineTypes, List.of(100, 200, 300), dates, endDates,
-				List.of(2, 2, 2), descriptions, clients, proposalsMap);
+		givenJourneyRequests(departurePlaces, arrivalPlaces, engineTypes, distances, dates, endDates, List.of(2, 2, 2),
+				descriptions, clients, proposalsMap);
 
 		List<LocalDateTime> searchStartAndEndDates = getDateBeforeAndDateAfter(dates.get(0).toLocalDate());
 
@@ -367,7 +371,7 @@ public class JourneyRequestRepositoryTests {
 		Page<JourneyRequestSearchDto> journeyRequests = journeyRequestRepository
 				.findByDeparturePlace_RegionIdAndEngineType_IdInAndDateBetween(departurePlaces.get(0).getRegionId(),
 						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()), searchStartAndEndDates.get(0),
-						searchStartAndEndDates.get(1), PageRequest.of(0, 1000,
+						searchStartAndEndDates.get(1), "en", PageRequest.of(0, 1000,
 
 								Sort.by(Direction.DESC, "dateTime")));
 
@@ -397,6 +401,11 @@ public class JourneyRequestRepositoryTests {
 
 	}
 
+	private List<Double> givenDistances() {
+
+		return List.of(112.7D, 205.5, 308.2);
+	}
+
 	@Test
 	public void testFindByDeparturePlace_RegionIdAndArrivalPlace_RegionIdInAndEngineType_IdInAndDateBetween_OrderByDistanceDesc() {
 
@@ -413,8 +422,8 @@ public class JourneyRequestRepositoryTests {
 
 		Map<Integer, Set<JourneyProposalJpaEntity>> proposalsMap = givenProposals(transporters);
 
-		givenJourneyRequests(departurePlaces, arrivalPlaces, engineTypes, List.of(100, 200, 300), dates, endDates,
-				List.of(2, 2, 2), descriptions, clients, proposalsMap);
+		givenJourneyRequests(departurePlaces, arrivalPlaces, engineTypes, List.of(112.7D, 205.5, 308.2), dates,
+				endDates, List.of(2, 2, 2), descriptions, clients, proposalsMap);
 
 		List<LocalDateTime> searchStartAndEndDates = getDateBeforeAndDateAfter(dates.get(0).toLocalDate());
 
@@ -425,7 +434,7 @@ public class JourneyRequestRepositoryTests {
 						departurePlaces.get(0).getRegionId(),
 						Set.of(arrivalPlaces.get(0).getRegionId(), arrivalPlaces.get(1).getRegionId()),
 						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()), searchStartAndEndDates.get(0),
-						searchStartAndEndDates.get(1), PageRequest.of(0, 1000,
+						searchStartAndEndDates.get(1), "en", PageRequest.of(0, 1000,
 
 								Sort.by(Direction.DESC, "distance")));
 
@@ -471,8 +480,8 @@ public class JourneyRequestRepositoryTests {
 
 		Map<Integer, Set<JourneyProposalJpaEntity>> proposalsMap = givenProposals(transporters);
 
-		givenJourneyRequests(departurePlaces, arrivalPlaces, engineTypes, List.of(100, 200, 300), dates, endDates,
-				List.of(2, 2, 2), descriptions, clients, proposalsMap);
+		givenJourneyRequests(departurePlaces, arrivalPlaces, engineTypes, List.of(112.7D, 205.5, 308.2), dates,
+				endDates, List.of(2, 2, 2), descriptions, clients, proposalsMap);
 
 		List<LocalDateTime> searchStartAndEndDates = getDateBeforeAndDateAfter(dates.get(0).toLocalDate());
 
@@ -481,7 +490,7 @@ public class JourneyRequestRepositoryTests {
 		Page<JourneyRequestSearchDto> journeyRequests = journeyRequestRepository
 				.findByDeparturePlace_RegionIdAndEngineType_IdInAndDateBetween(departurePlaces.get(0).getRegionId(),
 						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()), searchStartAndEndDates.get(0),
-						searchStartAndEndDates.get(1), PageRequest.of(0, 1000,
+						searchStartAndEndDates.get(1), "en", PageRequest.of(0, 1000,
 
 								Sort.by(Direction.DESC, "distance")));
 
@@ -573,9 +582,61 @@ public class JourneyRequestRepositoryTests {
 	}
 
 	private List<EngineTypeJpaEntity> givenEngineTypes() {
-		List<EngineTypeJpaEntity> engineTypes = List.of(new EngineTypeJpaEntity(null, "EngineType1"),
-				new EngineTypeJpaEntity(null, "EngineType2"), new EngineTypeJpaEntity(null, "EngineType3"));
-		return engineTypeRepository.saveAll(engineTypes);
+		// Engine type 1
+		EngineTypeJpaEntity et1 = new EngineTypeJpaEntity();
+		et1.setCode("EngineType1Code");
+
+		LocalizedEngineTypeJpaEntity let1en = new LocalizedEngineTypeJpaEntity();
+		let1en.setLocalizedId(new LocalizedId("en"));
+		let1en.setEngineType(et1);
+		let1en.setName("EngineType1");
+		let1en.setDescription("EngineTypeDescription1");
+		et1.getLocalizations().put("en", let1en);
+
+		LocalizedEngineTypeJpaEntity let1fr = new LocalizedEngineTypeJpaEntity();
+		let1fr.setLocalizedId(new LocalizedId("fr"));
+		let1fr.setEngineType(et1);
+		let1fr.setName("TypeVehicule1");
+		let1fr.setDescription("DescriptionTypeVehicule1");
+		et1.getLocalizations().put("fr", let1fr);
+
+		// Engine type 2
+		EngineTypeJpaEntity et2 = new EngineTypeJpaEntity();
+		et2.setCode("EngineType2Code");
+
+		LocalizedEngineTypeJpaEntity let2en = new LocalizedEngineTypeJpaEntity();
+		let2en.setLocalizedId(new LocalizedId("en"));
+		let2en.setEngineType(et2);
+		let2en.setName("EngineType2");
+		let2en.setDescription("EngineTypeDescription2");
+		et2.getLocalizations().put("en", let2en);
+
+		LocalizedEngineTypeJpaEntity let2fr = new LocalizedEngineTypeJpaEntity();
+		let2fr.setLocalizedId(new LocalizedId("fr"));
+		let2fr.setEngineType(et2);
+		let2fr.setName("TypeVehicule2");
+		let2fr.setDescription("DescriptionTypeVehicule2");
+		et2.getLocalizations().put("fr", let2fr);
+
+		// Engine type 3
+		EngineTypeJpaEntity et3 = new EngineTypeJpaEntity();
+		et3.setCode("EngineType3Code");
+
+		LocalizedEngineTypeJpaEntity let3en = new LocalizedEngineTypeJpaEntity();
+		let3en.setLocalizedId(new LocalizedId("en"));
+		let3en.setEngineType(et3);
+		let3en.setName("EngineType3");
+		let3en.setDescription("EngineTypeDescription3");
+		et3.getLocalizations().put("en", let3en);
+
+		LocalizedEngineTypeJpaEntity let3fr = new LocalizedEngineTypeJpaEntity();
+		let3fr.setLocalizedId(new LocalizedId("fr"));
+		let3fr.setEngineType(et3);
+		let3fr.setName("TypeVehicule3");
+		let3fr.setDescription("DescriptionTypeVehicule3");
+		et3.getLocalizations().put("fr", let3fr);
+
+		return engineTypeRepository.saveAll(List.of(et1, et2, et3));
 	}
 
 	private List<UserAccountJpaEntity> givenClients() {
@@ -612,7 +673,7 @@ public class JourneyRequestRepositoryTests {
 	}
 
 	private void givenJourneyRequests(List<PlaceJpaEntity> departurePlaces, List<PlaceJpaEntity> arrivalPlaces,
-			List<EngineTypeJpaEntity> engineTypes, List<Integer> distances, List<LocalDateTime> dates,
+			List<EngineTypeJpaEntity> engineTypes, List<Double> distances, List<LocalDateTime> dates,
 			List<LocalDateTime> endDates, List<Integer> workers, List<String> descriptions,
 			List<UserAccountJpaEntity> clients, Map<Integer, Set<JourneyProposalJpaEntity>> proposalsMap) {
 

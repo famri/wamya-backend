@@ -1,9 +1,9 @@
 /*******************************************
 * INSERTING ROLES
 *******************************************/
-INSERT INTO role(id, name) VALUES(1, 'ROLE_ADMIN');
-INSERT INTO role(id, name) VALUES(2, 'ROLE_TRANSPORTER') ;
-INSERT INTO role(id, name) VALUES(3, 'ROLE_CUSTOMER') ;
+INSERT INTO role(id, name) VALUES(1, 'ADMIN');
+INSERT INTO role(id, name) VALUES(2, 'TRANSPORTER') ;
+INSERT INTO role(id, name) VALUES(3, 'CLIENT') ;
 
 /*******************************************
 * CREATE OAUTH_CLIENT_DETAILS TABLE
@@ -40,7 +40,7 @@ INSERT INTO oauth_client_details(
 VALUES(
 	'wamya-mobile-app', 
 	'{noop}S3CR3T', 
-	'profile:read,profile:write,journery:read,journery:write,offer:read,offer:write',
+	'profile:read,profile:write,journey:read,journey:write,offer:read,offer:write',
 	'client_credentials,password,authorization_code,refresh_token', 
 	'http://anywhere.com', 
 	'ROLE_USER', 
@@ -49,6 +49,7 @@ VALUES(
 	'{"type":"Mobile App Client"}', 
 	true);
 
+INSERT INTO oauth_client_details(client_id, client_secret) VALUES('wamya-backend-resource-server', '{noop}S3CR3T');
 
 
 

@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.excentria_it.wamya.adapter.web.utils.LocaleUtils;
 import com.excentria_it.wamya.application.port.in.CreateUserAccountUseCase;
 import com.excentria_it.wamya.application.port.in.CreateUserAccountUseCase.CreateUserAccountCommand;
 import com.excentria_it.wamya.common.annotation.WebAdapter;
@@ -41,7 +41,9 @@ public class CreateUserAccountController {
 	@ResponseStatus(HttpStatus.CREATED)
 	public JwtOAuth2AccessToken createUserAccount(@Valid @RequestBody CreateUserAccountCommand command, Locale locale) {
 
-		JwtOAuth2AccessToken accessToken = createUserAccountUseCase.registerUserAccountCreationDemand(command, locale);
+		Locale supportedLocale = LocaleUtils.getSupporedLocale(locale);
+		JwtOAuth2AccessToken accessToken = createUserAccountUseCase.registerUserAccountCreationDemand(command,
+				supportedLocale);
 
 		return accessToken;
 	}

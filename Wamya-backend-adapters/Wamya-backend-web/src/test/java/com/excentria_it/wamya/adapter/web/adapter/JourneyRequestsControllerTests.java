@@ -1,5 +1,6 @@
 package com.excentria_it.wamya.adapter.web.adapter;
 
+import static com.c4_soft.springaddons.security.oauth2.test.mockmvc.MockAuthenticationRequestPostProcessor.*;
 import static com.excentria_it.wamya.adapter.web.helper.ResponseBodyMatchers.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -17,27 +18,39 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.http.MediaType;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MvcResult;
 
+import com.c4_soft.springaddons.security.oauth2.test.mockmvc.MockMvcSupport;
+import com.excentria_it.wamya.application.port.in.CreateJourneyRequestUseCase;
+import com.excentria_it.wamya.application.port.in.CreateJourneyRequestUseCase.CreateJourneyRequestCommand;
 import com.excentria_it.wamya.application.port.in.SearchJourneyRequestsUseCase;
 import com.excentria_it.wamya.application.port.in.SearchJourneyRequestsUseCase.SearchJourneyRequestsCommand;
 import com.excentria_it.wamya.common.SortingCriterion;
 import com.excentria_it.wamya.common.exception.RestApiExceptionHandler;
+import com.excentria_it.wamya.domain.JourneyRequest;
 import com.excentria_it.wamya.domain.JourneyRequestsSearchResult;
-import com.excentria_it.wamya.test.data.common.SearchJourneyRequestsTestData;
+import com.excentria_it.wamya.test.data.common.JourneyRequestTestData;
+import com.excentria_it.wamya.test.data.common.TestConstants;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@Import(value = { JourneyRequestsController.class, RestApiExceptionHandler.class })
+@ActiveProfiles(value = { "web-local" })
+@Import(value = { JourneyRequestsController.class, RestApiExceptionHandler.class, MockMvcSupport.class })
 @WebMvcTest(controllers = JourneyRequestsController.class)
 public class JourneyRequestsControllerTests {
 
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+
 	@Autowired
-	private MockMvc mockMvc;
+	private MockMvcSupport api;
 
 	@MockBean
 	private SearchJourneyRequestsUseCase searchJourneyRequestsUseCase;
+
+	@MockBean
+	private CreateJourneyRequestUseCase createJourneyRequestUseCase;
 
 	@Autowired
 	private ObjectMapper objectMapper;
@@ -45,21 +58,24 @@ public class JourneyRequestsControllerTests {
 	@Test
 	void givenValidInput_WhenSearch_ThenReturnSearchResult() throws Exception {
 
-		SearchJourneyRequestsCommand command = SearchJourneyRequestsTestData
-				.defaultSearchJourneyRequestsCommandBuilder().build();
+		SearchJourneyRequestsCommand command = JourneyRequestTestData.defaultSearchJourneyRequestsCommandBuilder()
+				.build();
 
-		JourneyRequestsSearchResult expectedResult = SearchJourneyRequestsTestData.defaultJourneyRequestsSearchResult();
+		JourneyRequestsSearchResult expectedResult = JourneyRequestTestData.defaultJourneyRequestsSearchResult();
 
-		given(searchJourneyRequestsUseCase.searchJourneyRequests(any(SearchJourneyRequestsCommand.class)))
-				.willReturn(expectedResult);
+		given(searchJourneyRequestsUseCase.searchJourneyRequests(any(SearchJourneyRequestsCommand.class),
+				any(String.class))).willReturn(expectedResult);
 
-		MvcResult mvcResult = mockMvc
+		MvcResult mvcResult = api
+				.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
+						.authorities("SCOPE_journey:read"))
 				.perform(get("/journey-requests").param("departure", command.getDeparturePlaceRegionId())
 						.param("arrival",
 								command.getArrivalPlaceRegionIds()
 										.toArray(new String[command.getArrivalPlaceRegionIds().size()]))
 						.param("fromDate", command.getStartDateTime().format(DATE_TIME_FORMATTER))
 						.param("toDate", command.getEndDateTime().format(DATE_TIME_FORMATTER))
+						.param("lang", "fr_FR")
 						.param("engine",
 								command.getEngineTypes().stream().map(e -> e.toString()).collect(Collectors.toSet())
 										.toArray(new String[command.getEngineTypes().size()]))
@@ -78,17 +94,54 @@ public class JourneyRequestsControllerTests {
 	}
 
 	@Test
+	void givenValidInputAndBadAuthority_WhenSearch_ThenReturnForbidden() throws Exception {
+
+		SearchJourneyRequestsCommand command = JourneyRequestTestData.defaultSearchJourneyRequestsCommandBuilder()
+				.build();
+
+		JourneyRequestsSearchResult expectedResult = JourneyRequestTestData.defaultJourneyRequestsSearchResult();
+
+		given(searchJourneyRequestsUseCase.searchJourneyRequests(any(SearchJourneyRequestsCommand.class),
+				any(String.class))).willReturn(expectedResult);
+
+		MvcResult mvcResult = api
+				.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
+						.authorities("SCOPE_journey:write"))
+				.perform(get("/journey-requests").param("departure", command.getDeparturePlaceRegionId())
+						.param("arrival",
+								command.getArrivalPlaceRegionIds()
+										.toArray(new String[command.getArrivalPlaceRegionIds().size()]))
+						.param("fromDate", command.getStartDateTime().format(DATE_TIME_FORMATTER))
+						.param("toDate", command.getEndDateTime().format(DATE_TIME_FORMATTER)).param("lang", "en")
+						.param("engine",
+								command.getEngineTypes().stream().map(e -> e.toString()).collect(Collectors.toSet())
+										.toArray(new String[command.getEngineTypes().size()]))
+						.param("page", command.getPageNumber().toString())
+						.param("size", command.getPageSize().toString()).param("sort",
+								command.getSortingCriterion().getField() + ","
+										+ command.getSortingCriterion().getDirection()))
+
+				.andExpect(status().isForbidden())
+
+				.andReturn();
+		then(searchJourneyRequestsUseCase).should(never()).searchJourneyRequests(eq(command), eq("en"));
+
+	}
+
+	@Test
 	void givenValidInputWithNoSortCriterion_WhenSearch_ThenReturnSearchResult() throws Exception {
 
-		SearchJourneyRequestsCommand command = SearchJourneyRequestsTestData
-				.defaultSearchJourneyRequestsCommandBuilder().sortingCriterion(null).build();
+		SearchJourneyRequestsCommand command = JourneyRequestTestData.defaultSearchJourneyRequestsCommandBuilder()
+				.sortingCriterion(null).build();
 
-		JourneyRequestsSearchResult expectedResult = SearchJourneyRequestsTestData.defaultJourneyRequestsSearchResult();
+		JourneyRequestsSearchResult expectedResult = JourneyRequestTestData.defaultJourneyRequestsSearchResult();
 
-		given(searchJourneyRequestsUseCase.searchJourneyRequests(any(SearchJourneyRequestsCommand.class)))
-				.willReturn(expectedResult);
+		given(searchJourneyRequestsUseCase.searchJourneyRequests(any(SearchJourneyRequestsCommand.class),
+				any(String.class))).willReturn(expectedResult);
 
-		MvcResult mvcResult = mockMvc
+		MvcResult mvcResult = api
+				.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
+						.authorities("SCOPE_journey:read"))
 				.perform(get("/journey-requests").param("departure", command.getDeparturePlaceRegionId())
 						.param("arrival",
 								command.getArrivalPlaceRegionIds()
@@ -113,15 +166,17 @@ public class JourneyRequestsControllerTests {
 	@Test
 	void givenValidInputWithNoSortCriterionDirection_WhenSearch_ThenReturnSearchResult() throws Exception {
 
-		SearchJourneyRequestsCommand command = SearchJourneyRequestsTestData
-				.defaultSearchJourneyRequestsCommandBuilder().build();
+		SearchJourneyRequestsCommand command = JourneyRequestTestData.defaultSearchJourneyRequestsCommandBuilder()
+				.build();
 
-		JourneyRequestsSearchResult expectedResult = SearchJourneyRequestsTestData.defaultJourneyRequestsSearchResult();
+		JourneyRequestsSearchResult expectedResult = JourneyRequestTestData.defaultJourneyRequestsSearchResult();
 
-		given(searchJourneyRequestsUseCase.searchJourneyRequests(any(SearchJourneyRequestsCommand.class)))
-				.willReturn(expectedResult);
+		given(searchJourneyRequestsUseCase.searchJourneyRequests(any(SearchJourneyRequestsCommand.class),
+				any(String.class))).willReturn(expectedResult);
 
-		MvcResult mvcResult = mockMvc
+		MvcResult mvcResult = api
+				.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
+						.authorities("SCOPE_journey:read"))
 				.perform(get("/journey-requests").param("departure", command.getDeparturePlaceRegionId())
 						.param("arrival",
 								command.getArrivalPlaceRegionIds()
@@ -147,22 +202,23 @@ public class JourneyRequestsControllerTests {
 	@Test
 	void givenInvalidInput_WhenSearch_ThenReturnBadRequest() throws Exception {
 
-		SearchJourneyRequestsCommand command = SearchJourneyRequestsTestData
-				.defaultSearchJourneyRequestsCommandBuilder()
+		SearchJourneyRequestsCommand command = JourneyRequestTestData.defaultSearchJourneyRequestsCommandBuilder()
 				.sortingCriterion(new SortingCriterion("dummy-field", "up")).build();
 
-		JourneyRequestsSearchResult expectedResult = SearchJourneyRequestsTestData.defaultJourneyRequestsSearchResult();
+		JourneyRequestsSearchResult expectedResult = JourneyRequestTestData.defaultJourneyRequestsSearchResult();
 
-		given(searchJourneyRequestsUseCase.searchJourneyRequests(any(SearchJourneyRequestsCommand.class)))
-				.willReturn(expectedResult);
+		given(searchJourneyRequestsUseCase.searchJourneyRequests(any(SearchJourneyRequestsCommand.class),
+				any(String.class))).willReturn(expectedResult);
 
-		MvcResult mvcResult = mockMvc
+		MvcResult mvcResult = api
+				.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
+						.authorities("SCOPE_journey:read"))
 				.perform(get("/journey-requests").param("departure", command.getDeparturePlaceRegionId())
 						.param("arrival",
 								command.getArrivalPlaceRegionIds()
 										.toArray(new String[command.getArrivalPlaceRegionIds().size()]))
 						.param("fromDate", command.getStartDateTime().format(DATE_TIME_FORMATTER))
-						.param("toDate", command.getEndDateTime().format(DATE_TIME_FORMATTER))
+						.param("toDate", command.getEndDateTime().format(DATE_TIME_FORMATTER)).param("lang", "en")
 						.param("engine",
 								command.getEngineTypes().stream().map(e -> e.toString()).collect(Collectors.toSet())
 										.toArray(new String[command.getEngineTypes().size()]))
@@ -177,7 +233,51 @@ public class JourneyRequestsControllerTests {
 
 				.andReturn();
 
-		then(searchJourneyRequestsUseCase).should(never()).searchJourneyRequests(eq(command));
+		then(searchJourneyRequestsUseCase).should(never()).searchJourneyRequests(eq(command), eq("en"));
+
+	}
+
+	@Test
+	void givenValidInput_WhenCreateJourneyRequest_ThenReturnCreatedJourneyRequest() throws Exception {
+		CreateJourneyRequestCommand command = JourneyRequestTestData.defaultCreateJourneyRequestCommandBuilder()
+				.build();
+		JourneyRequest journeyRequest = JourneyRequestTestData.defaultJourneyRequest();
+
+		given(createJourneyRequestUseCase.createJourneyRequest(any(CreateJourneyRequestCommand.class),
+				any(String.class))).willReturn(journeyRequest);
+
+		String createJourneyRequestJson = objectMapper.writeValueAsString(command);
+
+		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
+				.authorities("SCOPE_journey:write"))
+				.perform(post("/journey-requests").contentType(MediaType.APPLICATION_JSON_VALUE)
+						.content(createJourneyRequestJson))
+				.andExpect(status().isCreated()).andReturn();
+
+		then(createJourneyRequestUseCase).should(times(1)).createJourneyRequest(eq(command),
+				eq(TestConstants.DEFAULT_EMAIL));
+
+	}
+
+	@Test
+	void givenValidInputAndBadAuthority_WhenCreateJourneyRequest_ThenReturnUnauthorized() throws Exception {
+		CreateJourneyRequestCommand command = JourneyRequestTestData.defaultCreateJourneyRequestCommandBuilder()
+				.build();
+		JourneyRequest journeyRequest = JourneyRequestTestData.defaultJourneyRequest();
+
+		given(createJourneyRequestUseCase.createJourneyRequest(any(CreateJourneyRequestCommand.class),
+				any(String.class))).willReturn(journeyRequest);
+
+		String createJourneyRequestJson = objectMapper.writeValueAsString(command);
+
+		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
+				.authorities("SCOPE_journey:read"))
+				.perform(post("/journey-requests").contentType(MediaType.APPLICATION_JSON_VALUE)
+						.content(createJourneyRequestJson))
+				.andExpect(status().isForbidden()).andReturn();
+
+		then(createJourneyRequestUseCase).should(never()).createJourneyRequest(eq(command),
+				eq(TestConstants.DEFAULT_EMAIL));
 
 	}
 

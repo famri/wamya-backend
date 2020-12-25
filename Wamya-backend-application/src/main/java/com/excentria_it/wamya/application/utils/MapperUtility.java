@@ -10,8 +10,9 @@ public class MapperUtility {
 
 	}
 
-	public static ClientDto buildClientDto(Long clientId, String clientFirstname, String clientPhotoUrl) {
-		return new ClientDto(clientId, clientFirstname, clientPhotoUrl);
+	public static ClientDto buildClientDto(Long clientId, String clientUsername, String clientFirstname,
+			String clientPhotoUrl) {
+		return new ClientDto(clientId, clientUsername, clientFirstname, clientPhotoUrl);
 	}
 
 	public static PlaceDto buildPlaceDto(String placeId, String placeRegionId, String placeName) {
@@ -19,7 +20,7 @@ public class MapperUtility {
 	}
 
 	public static EngineTypeDto buildEngineTypeDto(Long engineTypeId, String engineTypeName) {
-		return new EngineTypeDto(engineTypeId, engineTypeName);
+		return new EngineTypeDto(engineTypeId, engineTypeName, null);
 	}
 
 }

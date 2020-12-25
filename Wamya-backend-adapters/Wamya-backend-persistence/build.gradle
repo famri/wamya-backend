@@ -1,7 +1,8 @@
 apply plugin: 'jacoco'
 
+
 jacoco {
-	toolVersion = "0.8.2"
+	toolVersion = "0.8.6"
 }
 	
 jacocoTestCoverageVerification {
@@ -23,19 +24,23 @@ jacocoTestCoverageVerification {
 check.dependsOn jacocoTestCoverageVerification
 
 dependencies {
-    implementation project(':Wamya-backend-common')
-    implementation project(':Wamya-backend-application')
+    implementation (project(':Wamya-backend-common')){
+    	transitive = false
+    }
+    
+    implementation (project(':Wamya-backend-application')){
+    	transitive = false
+    }
 
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
 	runtimeOnly  'org.postgresql:postgresql:42.2.14'
-    runtimeOnly 'com.h2database:h2'
     
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation ('org.springframework.boot:spring-boot-starter-validation')
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.apache.commons:commons-collections4:4.4'
-	implementation 'com.integralblue:log4jdbc-spring-boot-starter:2.0.0'
+	
 	
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'junit' // excluding junit 4
@@ -50,7 +55,12 @@ dependencies {
     testImplementation 	'de.adesso:junit-insights:1.1.0'
     
     testImplementation 'com.h2database:h2'
-    testImplementation project(':Wamya-backend-testdata')
+    testImplementation (project(':Wamya-backend-testdata')){
+    	 transitive = false
+    }
+    
+    testImplementation 'com.integralblue:log4jdbc-spring-boot-starter:2.0.0'
+    
 }
 
 test {

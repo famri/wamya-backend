@@ -4,6 +4,8 @@ server:
 
 spring.application.name: auth-server
 
+security.oauth2.authorizationserver.jwt.enabled: true
+
 app:
   eureka-username: u
   eureka-password: p
@@ -21,6 +23,7 @@ eureka:
 
 management.endpoint.health.show-details: "ALWAYS"
 management.endpoints.web.exposure.include: "*"
+
 
 # security.oauth2.authorizationserver.jwt.enabled: false
 

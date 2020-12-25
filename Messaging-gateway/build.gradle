@@ -13,7 +13,7 @@ repositories {
 apply plugin: 'jacoco'
 
 jacoco {
-	toolVersion = "0.8.2"
+	toolVersion = "0.8.6"
 }
 	
 jacocoTestCoverageVerification {
@@ -34,7 +34,7 @@ jacocoTestCoverageVerification {
 
 check.dependsOn jacocoTestCoverageVerification
 dependencies {
-	compile("org.springframework.boot:spring-boot-devtools")
+//	compile("org.springframework.boot:spring-boot-devtools")
 	
 	compile group: 'org.antlr', name: 'ST4', version: '4.3'
 	
@@ -43,7 +43,9 @@ dependencies {
     
     implementation 'org.springframework.boot:spring-boot-starter-actuator'    
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
-	implementation project(':Wamya-backend-common')
+	implementation (project(':Wamya-backend-common')){
+		transitive = false;
+	}
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-amqp'
 	implementation ('org.springframework.boot:spring-boot-starter-validation')
@@ -60,8 +62,10 @@ dependencies {
     testImplementation 	'org.mockito:mockito-junit-jupiter'
     testImplementation 	'com.tngtech.archunit:archunit:0.9.3'
     testImplementation 	'de.adesso:junit-insights:1.1.0'
-    testImplementation 	'com.h2database:h2'
-    testImplementation project(':Wamya-backend-testdata')
+//    testImplementation 	'com.h2database:h2'
+    testImplementation (project(':Wamya-backend-testdata')){
+    	transitive = false;
+    }
 
 }
 

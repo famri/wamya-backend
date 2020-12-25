@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.*;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
@@ -37,12 +38,14 @@ import com.excentria_it.wamya.common.domain.SMSMessage;
 import com.excentria_it.wamya.common.domain.SMSTemplate;
 import com.excentria_it.wamya.common.exception.UserAccountAlreadyExistsException;
 import com.excentria_it.wamya.domain.JwtOAuth2AccessToken;
+import com.excentria_it.wamya.domain.OAuthRole;
+import com.excentria_it.wamya.domain.OAuthUserAccount;
 import com.excentria_it.wamya.domain.UserAccount;
 import com.excentria_it.wamya.domain.UserAccount.MobilePhoneNumber;
 import com.excentria_it.wamya.test.data.common.TestConstants;
 
 @ExtendWith(MockitoExtension.class)
-public class CreateUserAccountServiceTest {
+public class UserAccountServiceTest {
 
 	@Mock
 	private LoadUserAccountPort loadUserAccountPort;
@@ -70,7 +73,7 @@ public class CreateUserAccountServiceTest {
 
 	@Spy
 	@InjectMocks
-	private CreateUserAccountService createUserAccountService;
+	private UserAccountService userAccountService;
 
 	private Locale locale = new Locale("fr");
 
@@ -82,7 +85,7 @@ public class CreateUserAccountServiceTest {
 		CreateUserAccountCommandBuilder commandBuilder = defaultCustomerUserAccountCommandBuilder();
 
 		assertThrows(UserAccountAlreadyExistsException.class,
-				() -> createUserAccountService.registerUserAccountCreationDemand(commandBuilder.build(), locale));
+				() -> userAccountService.registerUserAccountCreationDemand(commandBuilder.build(), locale));
 
 	}
 
@@ -95,7 +98,7 @@ public class CreateUserAccountServiceTest {
 		CreateUserAccountCommandBuilder commandBuilder = defaultCustomerUserAccountCommandBuilder();
 
 		assertThrows(UserAccountAlreadyExistsException.class,
-				() -> createUserAccountService.registerUserAccountCreationDemand(commandBuilder.build(), locale));
+				() -> userAccountService.registerUserAccountCreationDemand(commandBuilder.build(), locale));
 
 	}
 
@@ -115,7 +118,7 @@ public class CreateUserAccountServiceTest {
 
 		String emailValidationLink = givenPatchUrl(command.getEmail(), validationCode);
 
-		assertDoesNotThrow(() -> createUserAccountService.registerUserAccountCreationDemand(command, locale));
+		assertDoesNotThrow(() -> userAccountService.registerUserAccountCreationDemand(command, locale));
 
 		ArgumentCaptor<UserAccount> userAccountCaptor = ArgumentCaptor.forClass(UserAccount.class);
 
@@ -190,7 +193,7 @@ public class CreateUserAccountServiceTest {
 
 		String emailValidationLink = givenPatchUrl(command.getEmail(), validationCode);
 
-		assertDoesNotThrow(() -> createUserAccountService.registerUserAccountCreationDemand(command, locale));
+		assertDoesNotThrow(() -> userAccountService.registerUserAccountCreationDemand(command, locale));
 
 		ArgumentCaptor<UserAccount> userAccountCaptor = ArgumentCaptor.forClass(UserAccount.class);
 
@@ -209,7 +212,7 @@ public class CreateUserAccountServiceTest {
 		assertThat(userAccountCaptor.getValue().getEmailValidationCode()).isEqualTo(uuid);
 
 		assertThat(userAccountCaptor.getValue().getMobileNumberValidationCode()).isEqualTo(validationCode);
-		
+
 		assertThat(userAccountCaptor.getValue().getIsTransporter()).isEqualTo(command.getIsTransporter());
 
 		then(codeGenerator).should(times(1)).generateNumericCode();
@@ -249,6 +252,22 @@ public class CreateUserAccountServiceTest {
 
 		assertThat(emailMessageCaptor.getValue().getParams()
 				.get(EmailTemplate.EMAIL_VALIDATION.getTemplateParams().get(0))).isEqualTo(emailValidationLink);
+
+		ArgumentCaptor<OAuthUserAccount> oAuthUserAccount = ArgumentCaptor.forClass(OAuthUserAccount.class);
+
+		then(oAuthUserAccountPort).should(times(1)).createOAuthUserAccount(oAuthUserAccount.capture());
+		assertEquals(oAuthUserAccount.getValue().getFirstname(), command.getFirstname());
+		assertEquals(oAuthUserAccount.getValue().getLastname(), command.getLastname());
+		assertEquals(oAuthUserAccount.getValue().getEmail(), command.getEmail());
+		assertEquals(oAuthUserAccount.getValue().getPhoneNumber(), command.getIcc() + "_" + command.getMobileNumber());
+		assertEquals(oAuthUserAccount.getValue().getPassword(), command.getUserPassword());
+		assertEquals(oAuthUserAccount.getValue().isAccountNonExpired(), true);
+		assertEquals(oAuthUserAccount.getValue().isAccountNonLocked(), true);
+		assertEquals(oAuthUserAccount.getValue().isCredentialsNonExpired(), true);
+		assertEquals(oAuthUserAccount.getValue().isEnabled(), true);
+		assertEquals(oAuthUserAccount.getValue().getRoles(),
+				List.of(new OAuthRole(command.getIsTransporter() ? "TRANSPORTER" : "CLIENT")));
+
 	}
 
 	@Test
@@ -261,7 +280,6 @@ public class CreateUserAccountServiceTest {
 		CreateUserAccountCommand command = defaultCustomerUserAccountCommandBuilder().build();
 		givenRequestSendingEmailValidationLinkReturns(true);
 		givenRequestSendingSMSValidationCodeReturns(false);
-		// given(createUserAccountPort.createUserAccount(any(UserAccount.class))).willReturn(1L);
 
 		JwtOAuth2AccessToken oAuth2AccessToken = Mockito.mock(JwtOAuth2AccessToken.class);
 		given(oAuth2AccessToken.getAccessToken()).willReturn(TestConstants.DEFAULT_ACCESS_TOKEN);
@@ -269,7 +287,7 @@ public class CreateUserAccountServiceTest {
 		given(oAuthUserAccountPort.fetchJwtTokenForUser(command.getEmail(), command.getUserPassword()))
 				.willReturn(oAuth2AccessToken);
 
-		JwtOAuth2AccessToken accessToken = createUserAccountService.registerUserAccountCreationDemand(command, locale);
+		JwtOAuth2AccessToken accessToken = userAccountService.registerUserAccountCreationDemand(command, locale);
 
 		assertEquals(oAuth2AccessToken.getAccessToken(), accessToken.getAccessToken());
 
@@ -291,7 +309,7 @@ public class CreateUserAccountServiceTest {
 		given(oAuthUserAccountPort.fetchJwtTokenForUser(command.getEmail(), command.getUserPassword()))
 				.willReturn(oAuth2AccessToken);
 
-		JwtOAuth2AccessToken accessToken = createUserAccountService.registerUserAccountCreationDemand(command, locale);
+		JwtOAuth2AccessToken accessToken = userAccountService.registerUserAccountCreationDemand(command, locale);
 
 		assertEquals(oAuth2AccessToken.getAccessToken(), accessToken.getAccessToken());
 
@@ -303,7 +321,7 @@ public class CreateUserAccountServiceTest {
 
 		CreateUserAccountCommand command = defaultCustomerUserAccountCommandBuilder().build();
 
-		boolean result = createUserAccountService.requestSendingEmailValidationLink(command.getEmail(),
+		boolean result = userAccountService.requestSendingEmailValidationLink(command.getEmail(),
 				"SOME VALIDATION CODE", locale);
 		assertEquals(false, result);
 	}
@@ -314,7 +332,7 @@ public class CreateUserAccountServiceTest {
 
 		CreateUserAccountCommand command = defaultCustomerUserAccountCommandBuilder().build();
 
-		boolean result = createUserAccountService.requestSendingSMSValidationCode(
+		boolean result = userAccountService.requestSendingSMSValidationCode(
 				new MobilePhoneNumber(command.getIcc(), command.getMobileNumber()), "SOME VALIDATION CODE", locale);
 		assertEquals(false, result);
 	}
@@ -371,18 +389,18 @@ public class CreateUserAccountServiceTest {
 	private String givenPatchUrl(String email, String validationCode) {
 		String result = "SOME_EMAIL_VALIDATION_LINK";
 
-		doReturn(result).when(createUserAccountService).patchURL(any(String.class), any(String.class),
-				any(String.class), any(String.class), any(String.class), any(String.class));
+		doReturn(result).when(userAccountService).patchURL(any(String.class), any(String.class), any(String.class),
+				any(String.class), any(String.class), any(String.class));
 		return result;
 	}
 
 	private void givenRequestSendingSMSValidationCodeReturns(boolean result) {
-		doReturn(result).when(createUserAccountService).requestSendingSMSValidationCode(any(MobilePhoneNumber.class),
+		doReturn(result).when(userAccountService).requestSendingSMSValidationCode(any(MobilePhoneNumber.class),
 				any(String.class), any(Locale.class));
 	}
 
 	private void givenRequestSendingEmailValidationLinkReturns(boolean result) {
-		doReturn(result).when(createUserAccountService).requestSendingEmailValidationLink(any(String.class),
+		doReturn(result).when(userAccountService).requestSendingEmailValidationLink(any(String.class),
 				any(String.class), any(Locale.class));
 	}
 

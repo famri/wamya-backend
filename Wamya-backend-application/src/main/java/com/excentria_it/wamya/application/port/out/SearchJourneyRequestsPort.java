@@ -10,11 +10,11 @@ public interface SearchJourneyRequestsPort {
 
 	JourneyRequestsSearchResult searchJourneyRequestsByDeparturePlaceRegionIdAndArrivalPlaceRegionIdAndEngineTypesAndDateBetween(
 			String departurePlaceRegionId, Set<String> arrivalPlaceRegionId, Set<Long> engineTypes,
-			LocalDateTime startDate, LocalDateTime endDate, Integer pageNumber, Integer pageSize,
+			LocalDateTime startDate, LocalDateTime endDate, String locale, Integer pageNumber, Integer pageSize,
 			SortingCriterion sortingCriteria);
 
 	JourneyRequestsSearchResult searchJourneyRequestsByDeparturePlaceRegionIdAndEngineTypesAndDateBetween(
 			String departurePlaceRegionId, Set<Long> engineTypes, LocalDateTime startDate, LocalDateTime endDate,
-			Integer pageNumber, Integer pageSize, SortingCriterion sortingCriteria);
+			String locale, Integer pageNumber, Integer pageSize, SortingCriterion sortingCriteria);
 
 }

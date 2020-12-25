@@ -1,5 +1,6 @@
 package com.excentria_it.wamya.adapter.web.adapter;
 
+import static com.c4_soft.springaddons.security.oauth2.test.mockmvc.MockAuthenticationRequestPostProcessor.*;
 import static com.excentria_it.wamya.adapter.web.helper.ResponseBodyMatchers.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
@@ -18,8 +19,10 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import org.springframework.test.context.ActiveProfiles;
 
+import com.c4_soft.springaddons.security.oauth2.test.mockmvc.MockMvcSupport;
 import com.excentria_it.wamya.adapter.web.domain.ValidationCodeRequest;
 import com.excentria_it.wamya.adapter.web.domain.ValidationCodeRequestStatus;
 import com.excentria_it.wamya.application.port.in.SendValidationCodeUseCase;
@@ -34,13 +37,13 @@ import com.excentria_it.wamya.common.exception.UserMobileNumberValidationExcepti
 import com.excentria_it.wamya.test.data.common.TestConstants;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@Import(value = { SendValidationCodeController.class, RestApiExceptionHandler.class })
-@WebMvcTest(controllers = SendValidationCodeController.class// , excludeAutoConfiguration =
-															// SecurityAutoConfiguration.class
-)
+@ActiveProfiles(profiles = { "web-local" })
+@Import(value = { SendValidationCodeController.class, RestApiExceptionHandler.class, MockMvcSupport.class })
+@WebMvcTest(controllers = SendValidationCodeController.class)
 public class SendValidationCodeControllerTests {
+
 	@Autowired
-	private MockMvc mockMvc;
+	private MockMvcSupport api;
 
 	@MockBean
 	private SendValidationCodeUseCase sendValidationCodeUseCase;
@@ -67,12 +70,39 @@ public class SendValidationCodeControllerTests {
 		String commandJson = objectMapper.writeValueAsString(command);
 		ValidationCodeRequest expectedResponse = new ValidationCodeRequest(ValidationCodeRequestStatus.REGISTRED);
 
-		mockMvc.perform(post("/validation-codes/sms/send").contentType(MediaType.APPLICATION_JSON)
-				.content(commandJson)).andExpect(status().isAccepted())
+		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
+				.authorities("SCOPE_profile:write"))
+				.perform(
+						post("/validation-codes/sms/send").contentType(MediaType.APPLICATION_JSON).content(commandJson))
+				.andExpect(status().isAccepted())
 				.andExpect(responseBody().containsObjectAsJson(expectedResponse, ValidationCodeRequest.class));
 
 		// Then
 		then(sendValidationCodeUseCase).should(times(1)).sendSMSValidationCode(eq(command), any(Locale.class));
+
+	}
+
+	@Test
+	void givenValidInputAndBadAuthority_WhenSendSMSValidationCode_ThenReturnForbidden() throws Exception {
+
+		// Given
+		SendSMSValidationCodeCommand command = SendSMSValidationCodeCommand.builder()
+				.icc(TestConstants.DEFAULT_INTERNATIONAL_CALLING_CODE).mobileNumber(TestConstants.DEFAULT_MOBILE_NUMBER)
+				.build();
+
+		given(sendValidationCodeUseCase.sendSMSValidationCode(eq(command), any(Locale.class))).willReturn(true);
+
+		// When
+		String commandJson = objectMapper.writeValueAsString(command);
+
+		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
+				.authorities("SCOPE_profile:read"))
+				.perform(
+						post("/validation-codes/sms/send").contentType(MediaType.APPLICATION_JSON).content(commandJson))
+				.andExpect(status().isForbidden());
+
+		// Then
+		then(sendValidationCodeUseCase).should(never()).sendSMSValidationCode(eq(command), any(Locale.class));
 
 	}
 
@@ -93,8 +123,11 @@ public class SendValidationCodeControllerTests {
 
 		ApiError expectedApiError = new ApiError(HttpStatus.BAD_REQUEST, "User mobile number already validated.");
 
-		mockMvc.perform(post("/validation-codes/sms/send").contentType(MediaType.APPLICATION_JSON)
-				.content(commandJson)).andExpect(status().isBadRequest())
+		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
+				.authorities("SCOPE_profile:write"))
+				.perform(
+						post("/validation-codes/sms/send").contentType(MediaType.APPLICATION_JSON).content(commandJson))
+				.andExpect(status().isBadRequest())
 				.andExpect(responseBody().containsObjectAsJson(expectedApiError, ApiError.class));
 
 	}
@@ -111,8 +144,11 @@ public class SendValidationCodeControllerTests {
 
 		String commandJson = objectMapper.writeValueAsString(command);
 
-		mockMvc.perform(post("/validation-codes/sms/send").contentType(MediaType.APPLICATION_JSON)
-				.content(commandJson)).andExpect(status().isBadRequest())
+		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
+				.authorities("SCOPE_profile:write"))
+				.perform(
+						post("/validation-codes/sms/send").contentType(MediaType.APPLICATION_JSON).content(commandJson))
+				.andExpect(status().isBadRequest())
 				.andExpect(responseBody()
 						.containsApiErrors(List.of("mobileNumber: The format of phone number is incorrect.",
 								"icc: The international calling code is incorrect.")));
@@ -136,8 +172,11 @@ public class SendValidationCodeControllerTests {
 		// When, Then
 		String commandJson = objectMapper.writeValueAsString(command);
 
-		mockMvc.perform(post("/validation-codes/sms/send").contentType(MediaType.APPLICATION_JSON)
-				.content(commandJson)).andExpect(status().isBadRequest())
+		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
+				.authorities("SCOPE_profile:write"))
+				.perform(
+						post("/validation-codes/sms/send").contentType(MediaType.APPLICATION_JSON).content(commandJson))
+				.andExpect(status().isBadRequest())
 				.andExpect(responseBody().containsApiErrors(List.of("User account not found.")));
 
 	}
@@ -157,8 +196,11 @@ public class SendValidationCodeControllerTests {
 		String commandJson = objectMapper.writeValueAsString(command);
 
 		ValidationCodeRequest expectedResponse = new ValidationCodeRequest(ValidationCodeRequestStatus.REJECTED);
-		mockMvc.perform(post("/validation-codes/sms/send").contentType(MediaType.APPLICATION_JSON)
-				.content(commandJson)).andExpect(status().isAccepted())
+		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
+				.authorities("SCOPE_profile:write"))
+				.perform(
+						post("/validation-codes/sms/send").contentType(MediaType.APPLICATION_JSON).content(commandJson))
+				.andExpect(status().isAccepted())
 				.andExpect(responseBody().containsObjectAsJson(expectedResponse, ValidationCodeRequest.class));
 
 	}
@@ -178,12 +220,39 @@ public class SendValidationCodeControllerTests {
 		String commandJson = objectMapper.writeValueAsString(command);
 		ValidationCodeRequest expectedResponse = new ValidationCodeRequest(ValidationCodeRequestStatus.REGISTRED);
 
-		mockMvc.perform(post("/validation-codes/email/send").contentType(MediaType.APPLICATION_JSON)
-				.content(commandJson)).andExpect(status().isAccepted())
+		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
+				.authorities("SCOPE_profile:write"))
+				.perform(post("/validation-codes/email/send").contentType(MediaType.APPLICATION_JSON)
+						.content(commandJson))
+				.andExpect(status().isAccepted())
 				.andExpect(responseBody().containsObjectAsJson(expectedResponse, ValidationCodeRequest.class));
 
 		// Then
 		then(sendValidationCodeUseCase).should(times(1)).sendEmailValidationLink(eq(command), any(Locale.class));
+
+	}
+	
+	@Test
+	void givenValidInputAndBadAuthority_WhenSendEmailValidationLink_ThenReturnForbidden() throws Exception {
+
+		// Given
+		SendEmailValidationLinkCommand command = SendEmailValidationLinkCommand.builder()
+				.email(TestConstants.DEFAULT_EMAIL).build();
+
+		given(sendValidationCodeUseCase.sendEmailValidationLink(eq(command), any(Locale.class))).willReturn(true);
+
+		// When
+		String commandJson = objectMapper.writeValueAsString(command);
+		
+
+		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
+				.authorities("SCOPE_profile:read"))
+				.perform(post("/validation-codes/email/send").contentType(MediaType.APPLICATION_JSON)
+						.content(commandJson))
+				.andExpect(status().isForbidden());
+
+		// Then
+		then(sendValidationCodeUseCase).should(never()).sendEmailValidationLink(eq(command), any(Locale.class));
 
 	}
 
@@ -203,8 +272,11 @@ public class SendValidationCodeControllerTests {
 
 		ApiError expectedApiError = new ApiError(HttpStatus.BAD_REQUEST, "User email already validated.");
 
-		mockMvc.perform(post("/validation-codes/email/send").contentType(MediaType.APPLICATION_JSON)
-				.content(commandJson)).andExpect(status().isBadRequest())
+		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
+				.authorities("SCOPE_profile:write"))
+				.perform(post("/validation-codes/email/send").contentType(MediaType.APPLICATION_JSON)
+						.content(commandJson))
+				.andExpect(status().isBadRequest())
 				.andExpect(responseBody().containsObjectAsJson(expectedApiError, ApiError.class));
 
 	}
@@ -217,8 +289,11 @@ public class SendValidationCodeControllerTests {
 
 		String commandJson = objectMapper.writeValueAsString(command);
 
-		mockMvc.perform(post("/validation-codes/email/send").contentType(MediaType.APPLICATION_JSON)
-				.content(commandJson)).andExpect(status().isBadRequest())
+		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
+				.authorities("SCOPE_profile:write"))
+				.perform(post("/validation-codes/email/send").contentType(MediaType.APPLICATION_JSON)
+						.content(commandJson))
+				.andExpect(status().isBadRequest())
 				.andExpect(responseBody().containsApiErrors(List.of("email: The format of email is incorrect.")));
 
 		then(sendValidationCodeUseCase).should(never()).sendEmailValidationLink(eq(command), any(Locale.class));
@@ -240,8 +315,11 @@ public class SendValidationCodeControllerTests {
 
 		ValidationCodeRequest expectedResponse = new ValidationCodeRequest(ValidationCodeRequestStatus.REJECTED);
 
-		mockMvc.perform(post("/validation-codes/email/send").contentType(MediaType.APPLICATION_JSON)
-				.content(commandJson)).andExpect(status().isAccepted())
+		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
+				.authorities("SCOPE_profile:write"))
+				.perform(post("/validation-codes/email/send").contentType(MediaType.APPLICATION_JSON)
+						.content(commandJson))
+				.andExpect(status().isAccepted())
 				.andExpect(responseBody().containsObjectAsJson(expectedResponse, ValidationCodeRequest.class));
 
 	}

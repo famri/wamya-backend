@@ -1,7 +1,8 @@
 apply plugin: 'jacoco'
 
+
 jacoco {
-	toolVersion = "0.8.2"
+	toolVersion = "0.8.6"
 }
 	
 jacocoTestCoverageVerification {
@@ -24,7 +25,7 @@ check.dependsOn jacocoTestCoverageVerification
 
 dependencies {
     implementation 'org.springframework:spring-context'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation ('org.springframework.boot:spring-boot-starter-validation')
  	implementation 'commons-beanutils:commons-beanutils:1.9.4'
    	implementation 'org.springframework.boot:spring-boot-starter-web'
     

@@ -1,13 +1,20 @@
 package com.excentria_it.wamya.adapter.persistence.adapter;
 
-import static com.excentria_it.wamya.test.data.common.SearchJourneyRequestsTestData.*;
+import static com.excentria_it.wamya.test.data.common.JourneyRequestJpaTestData.*;
+import static com.excentria_it.wamya.test.data.common.JourneyRequestTestData.*;
+import static com.excentria_it.wamya.test.data.common.UserAccountJpaEntityTestData.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
+import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,17 +24,40 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.domain.Sort.Order;
 
+import com.excentria_it.wamya.adapter.persistence.entity.EngineTypeJpaEntity;
+import com.excentria_it.wamya.adapter.persistence.entity.JourneyRequestJpaEntity;
+import com.excentria_it.wamya.adapter.persistence.entity.PlaceJpaEntity;
+import com.excentria_it.wamya.adapter.persistence.entity.UserAccountJpaEntity;
+import com.excentria_it.wamya.adapter.persistence.mapper.JourneyRequestMapper;
+import com.excentria_it.wamya.adapter.persistence.mapper.PlaceMapper;
+import com.excentria_it.wamya.adapter.persistence.repository.EngineTypeRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.JourneyRequestRepository;
+import com.excentria_it.wamya.adapter.persistence.repository.PlaceRepository;
+import com.excentria_it.wamya.adapter.persistence.repository.UserAccountRepository;
 import com.excentria_it.wamya.application.port.in.SearchJourneyRequestsUseCase.SearchJourneyRequestsCommand;
 import com.excentria_it.wamya.common.SortingCriterion;
+import com.excentria_it.wamya.domain.JourneyRequest;
 import com.excentria_it.wamya.domain.JourneyRequestSearchDto;
 import com.excentria_it.wamya.domain.JourneyRequestsSearchResult;
+import com.excentria_it.wamya.test.data.common.TestConstants;
 
 @ExtendWith(MockitoExtension.class)
 public class JourneyRequestsPersistenceAdapterTests {
 	@Mock
 	private JourneyRequestRepository journeyRequestRepository;
+	@Mock
+	private EngineTypeRepository engineTypeRepository;
+	@Mock
+	private UserAccountRepository userAccountRepository;
+	@Mock
+	private PlaceRepository placeRepository;
+	@Mock
+	private JourneyRequestMapper journeyRequestMapper;
+	@Mock
+	private PlaceMapper placeMapper;
 
 	@InjectMocks
 	private JourneyRequestsPersistenceAdapter journeyRequestsPersistenceAdapter;
@@ -45,7 +75,7 @@ public class JourneyRequestsPersistenceAdapterTests {
 		JourneyRequestsSearchResult result = journeyRequestsPersistenceAdapter
 				.searchJourneyRequestsByDeparturePlaceRegionIdAndArrivalPlaceRegionIdAndEngineTypesAndDateBetween(
 						command.getDeparturePlaceRegionId(), command.getArrivalPlaceRegionIds(),
-						command.getEngineTypes(), command.getStartDateTime(), command.getEndDateTime(),
+						command.getEngineTypes(), command.getStartDateTime(), command.getEndDateTime(), "en",
 						command.getPageNumber(), command.getPageSize(), command.getSortingCriterion());
 		// then
 
@@ -71,7 +101,7 @@ public class JourneyRequestsPersistenceAdapterTests {
 		JourneyRequestsSearchResult result = journeyRequestsPersistenceAdapter
 				.searchJourneyRequestsByDeparturePlaceRegionIdAndArrivalPlaceRegionIdAndEngineTypesAndDateBetween(
 						command.getDeparturePlaceRegionId(), command.getArrivalPlaceRegionIds(),
-						command.getEngineTypes(), command.getStartDateTime(), command.getEndDateTime(),
+						command.getEngineTypes(), command.getStartDateTime(), command.getEndDateTime(), "en",
 						command.getPageNumber(), command.getPageSize(), command.getSortingCriterion());
 		// then
 
@@ -97,7 +127,7 @@ public class JourneyRequestsPersistenceAdapterTests {
 		JourneyRequestsSearchResult result = journeyRequestsPersistenceAdapter
 				.searchJourneyRequestsByDeparturePlaceRegionIdAndEngineTypesAndDateBetween(
 						command.getDeparturePlaceRegionId(), command.getEngineTypes(), command.getStartDateTime(),
-						command.getEndDateTime(), command.getPageNumber(), command.getPageSize(),
+						command.getEndDateTime(), "en", command.getPageNumber(), command.getPageSize(),
 						command.getSortingCriterion());
 		// then
 
@@ -123,7 +153,7 @@ public class JourneyRequestsPersistenceAdapterTests {
 		JourneyRequestsSearchResult result = journeyRequestsPersistenceAdapter
 				.searchJourneyRequestsByDeparturePlaceRegionIdAndEngineTypesAndDateBetween(
 						command.getDeparturePlaceRegionId(), command.getEngineTypes(), command.getStartDateTime(),
-						command.getEndDateTime(), command.getPageNumber(), command.getPageSize(),
+						command.getEndDateTime(), "en", command.getPageNumber(), command.getPageSize(),
 						command.getSortingCriterion());
 		// then
 
@@ -136,23 +166,141 @@ public class JourneyRequestsPersistenceAdapterTests {
 
 	}
 
+	@Test
+	void givenExistentDeparturePlaceAndExistentArrivalPlace_WhencreateJourneyRequest_ThenSaveJourneyRequestJpaEntity() {
+
+		// given
+		JourneyRequest journeyRequest = defaultJourneyRequest();
+
+		EngineTypeJpaEntity engineTypeJpaEntity = defaultEngineTypeJpaEntity();
+		given(engineTypeRepository.findById(journeyRequest.getEngineType().getId()))
+				.willReturn(Optional.of(engineTypeJpaEntity));
+
+		UserAccountJpaEntity userAccountJpaEntity = defaultExistingNotTransporterUserAccountJpaEntity();
+		given(userAccountRepository.findByEmail(TestConstants.DEFAULT_EMAIL))
+				.willReturn(Optional.of(userAccountJpaEntity));
+
+		PlaceJpaEntity departurePlaceJpaEntity = defaultDeparturePlaceJpaEntity();
+		given(placeRepository.findById(journeyRequest.getDeparturePlace().getPlaceId()))
+				.willReturn(Optional.of(departurePlaceJpaEntity));
+
+		PlaceJpaEntity arrivalPlaceJpaEntity = defaultArrivalPlaceJpaEntity();
+		given(placeRepository.findById(journeyRequest.getArrivalPlace().getPlaceId()))
+				.willReturn(Optional.of(arrivalPlaceJpaEntity));
+
+		JourneyRequestJpaEntity journeyRequestJpaEntity = defaultNewJourneyRequestJpaEntity();
+		given(journeyRequestMapper.mapToJpaEntity(journeyRequest, departurePlaceJpaEntity, arrivalPlaceJpaEntity,
+				engineTypeJpaEntity, userAccountJpaEntity, null)).willReturn(journeyRequestJpaEntity);
+
+		given(journeyRequestRepository.save(journeyRequestJpaEntity)).willReturn(journeyRequestJpaEntity);
+
+		// when
+		journeyRequestsPersistenceAdapter.createJourneyRequest(journeyRequest, TestConstants.DEFAULT_EMAIL);
+
+		// then
+		then(journeyRequestRepository).should(times(1)).save(journeyRequestJpaEntity);
+	}
+
+	@Test
+	void givenNonExistentDeparturePlaceAndNonExistentArrivalPlace_WhencreateJourneyRequest_ThenSaveJourneyRequestJpaEntity() {
+
+		// given
+		JourneyRequest journeyRequest = defaultJourneyRequest();
+
+		EngineTypeJpaEntity engineTypeJpaEntity = defaultEngineTypeJpaEntity();
+		given(engineTypeRepository.findById(journeyRequest.getEngineType().getId()))
+				.willReturn(Optional.of(engineTypeJpaEntity));
+
+		UserAccountJpaEntity userAccountJpaEntity = defaultExistingNotTransporterUserAccountJpaEntity();
+		given(userAccountRepository.findByEmail(TestConstants.DEFAULT_EMAIL))
+				.willReturn(Optional.of(userAccountJpaEntity));
+
+		PlaceJpaEntity departurePlaceJpaEntity = defaultDeparturePlaceJpaEntity();
+		given(placeRepository.findById(journeyRequest.getDeparturePlace().getPlaceId()))
+				.willReturn(Optional.ofNullable(null));
+		given(placeMapper.mapToJpaEntity(journeyRequest.getDeparturePlace())).willReturn(departurePlaceJpaEntity);
+		given(placeRepository.save(departurePlaceJpaEntity)).willReturn(departurePlaceJpaEntity);
+
+		PlaceJpaEntity arrivalPlaceJpaEntity = defaultArrivalPlaceJpaEntity();
+		given(placeRepository.findById(journeyRequest.getArrivalPlace().getPlaceId()))
+				.willReturn(Optional.ofNullable(null));
+		given(placeMapper.mapToJpaEntity(journeyRequest.getArrivalPlace())).willReturn(arrivalPlaceJpaEntity);
+		given(placeRepository.save(arrivalPlaceJpaEntity)).willReturn(arrivalPlaceJpaEntity);
+
+		JourneyRequestJpaEntity journeyRequestJpaEntity = defaultNewJourneyRequestJpaEntity();
+		given(journeyRequestMapper.mapToJpaEntity(journeyRequest, departurePlaceJpaEntity, arrivalPlaceJpaEntity,
+				engineTypeJpaEntity, userAccountJpaEntity, null)).willReturn(journeyRequestJpaEntity);
+
+		given(journeyRequestRepository.save(journeyRequestJpaEntity)).willReturn(journeyRequestJpaEntity);
+
+		// when
+		journeyRequestsPersistenceAdapter.createJourneyRequest(journeyRequest, TestConstants.DEFAULT_EMAIL);
+
+		// then
+		then(journeyRequestRepository).should(times(1)).save(journeyRequestJpaEntity);
+	}
+
+	@Test
+	void givenExistentUserAccountByPhoneNumber_WhencreateJourneyRequest_ThenSaveJourneyRequestJpaEntity() {
+
+		// given
+		JourneyRequest journeyRequest = defaultJourneyRequest();
+		journeyRequest.getClient().setUsername(TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME);
+
+		EngineTypeJpaEntity engineTypeJpaEntity = defaultEngineTypeJpaEntity();
+		given(engineTypeRepository.findById(journeyRequest.getEngineType().getId()))
+				.willReturn(Optional.of(engineTypeJpaEntity));
+
+		UserAccountJpaEntity userAccountJpaEntity = defaultExistingNotTransporterUserAccountJpaEntity();
+		given(userAccountRepository.findByEmail(TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME))
+				.willReturn(Optional.ofNullable(null));
+
+		given(userAccountRepository.findByMobilePhoneNumber(any(String.class), any(String.class)))
+				.willReturn(Optional.of(userAccountJpaEntity));
+
+		PlaceJpaEntity departurePlaceJpaEntity = defaultDeparturePlaceJpaEntity();
+		given(placeRepository.findById(journeyRequest.getDeparturePlace().getPlaceId()))
+				.willReturn(Optional.ofNullable(null));
+		given(placeMapper.mapToJpaEntity(journeyRequest.getDeparturePlace())).willReturn(departurePlaceJpaEntity);
+		given(placeRepository.save(departurePlaceJpaEntity)).willReturn(departurePlaceJpaEntity);
+
+		PlaceJpaEntity arrivalPlaceJpaEntity = defaultArrivalPlaceJpaEntity();
+		given(placeRepository.findById(journeyRequest.getArrivalPlace().getPlaceId()))
+				.willReturn(Optional.ofNullable(null));
+		given(placeMapper.mapToJpaEntity(journeyRequest.getArrivalPlace())).willReturn(arrivalPlaceJpaEntity);
+		given(placeRepository.save(arrivalPlaceJpaEntity)).willReturn(arrivalPlaceJpaEntity);
+
+		JourneyRequestJpaEntity journeyRequestJpaEntity = defaultNewJourneyRequestJpaEntity();
+		given(journeyRequestMapper.mapToJpaEntity(journeyRequest, departurePlaceJpaEntity, arrivalPlaceJpaEntity,
+				engineTypeJpaEntity, userAccountJpaEntity, null)).willReturn(journeyRequestJpaEntity);
+
+		given(journeyRequestRepository.save(journeyRequestJpaEntity)).willReturn(journeyRequestJpaEntity);
+
+		// when
+		journeyRequestsPersistenceAdapter.createJourneyRequest(journeyRequest,
+				TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME);
+
+		// then
+		then(journeyRequestRepository).should(times(1)).save(journeyRequestJpaEntity);
+	}
+
 	private Page<JourneyRequestSearchDto> givenNullJourneyRequestsPageByDeparturePlace_RegionIdAndArrivalPlace_RegionIdInAndEngineType_IdInAndDateBetween() {
 
 		given(journeyRequestRepository
 				.findByDeparturePlace_RegionIdAndArrivalPlace_RegionIdInAndEngineType_IdInAndDateBetween(
 						any(String.class), any(Set.class), any(Set.class), any(LocalDateTime.class),
-						any(LocalDateTime.class), any(Pageable.class))).willReturn(null);
+						any(LocalDateTime.class), any(String.class), any(Pageable.class))).willReturn(null);
 
 		return null;
 	}
 
 	private Page<JourneyRequestSearchDto> givenNotNullJourneyRequestsPageByDeparturePlace_RegionIdAndArrivalPlace_RegionIdInAndEngineType_IdInAndDateBetween() {
-		Page<JourneyRequestSearchDto> result = defaultJourneyRequestSearchDtoPage();
+		Page<JourneyRequestSearchDto> result = createPageFromJourneyRequestSearchDto(
+				defaultJourneyRequestSearchDtoList());
 		given(journeyRequestRepository
 				.findByDeparturePlace_RegionIdAndArrivalPlace_RegionIdInAndEngineType_IdInAndDateBetween(
 						any(String.class), any(Set.class), any(Set.class), any(LocalDateTime.class),
-						any(LocalDateTime.class), any(Pageable.class)))
-								.willReturn(defaultJourneyRequestSearchDtoPage());
+						any(LocalDateTime.class), any(String.class), any(Pageable.class))).willReturn(result);
 
 		return result;
 
@@ -161,17 +309,18 @@ public class JourneyRequestsPersistenceAdapterTests {
 	private Page<JourneyRequestSearchDto> givenNullJourneyRequestsPageByDeparturePlace_RegionIdAndEngineType_IdInAndDateBetween() {
 
 		given(journeyRequestRepository.findByDeparturePlace_RegionIdAndEngineType_IdInAndDateBetween(any(String.class),
-				any(Set.class), any(LocalDateTime.class), any(LocalDateTime.class), any(Pageable.class)))
-						.willReturn(null);
+				any(Set.class), any(LocalDateTime.class), any(LocalDateTime.class), any(String.class),
+				any(Pageable.class))).willReturn(null);
 
 		return null;
 	}
 
 	private Page<JourneyRequestSearchDto> givenNotNullJourneyRequestsPageByDeparturePlace_RegionIdAndEngineType_IdInAndDateBetween() {
-		Page<JourneyRequestSearchDto> result = defaultJourneyRequestSearchDtoPage();
+		Page<JourneyRequestSearchDto> result = createPageFromJourneyRequestSearchDto(
+				defaultJourneyRequestSearchDtoList());
 		given(journeyRequestRepository.findByDeparturePlace_RegionIdAndEngineType_IdInAndDateBetween(any(String.class),
-				any(Set.class), any(LocalDateTime.class), any(LocalDateTime.class), any(Pageable.class)))
-						.willReturn(defaultJourneyRequestSearchDtoPage());
+				any(Set.class), any(LocalDateTime.class), any(LocalDateTime.class), any(String.class),
+				any(Pageable.class))).willReturn(result);
 
 		return result;
 
@@ -213,5 +362,107 @@ public class JourneyRequestsPersistenceAdapterTests {
 
 		assertEquals(sort3.get().toArray().length, 1);
 		assertTrue(sort3.getOrderFor("distance") != null && sort3.getOrderFor("distance").getDirection().isAscending());
+	}
+
+	private Page<JourneyRequestSearchDto> createPageFromJourneyRequestSearchDto(
+			List<JourneyRequestSearchDto> journeyRequestSearchDtos) {
+		return new Page<JourneyRequestSearchDto>() {
+
+			@Override
+			public int getNumber() {
+
+				return 0;
+			}
+
+			@Override
+			public int getSize() {
+
+				return 2;
+			}
+
+			@Override
+			public int getNumberOfElements() {
+
+				return 2;
+			}
+
+			@Override
+			public List<JourneyRequestSearchDto> getContent() {
+
+				return journeyRequestSearchDtos;
+			}
+
+			@Override
+			public boolean hasContent() {
+
+				return true;
+			}
+
+			@Override
+			public Sort getSort() {
+
+				return Sort.by(List.of(new Order(Direction.DESC, "min-price")));
+			}
+
+			@Override
+			public boolean isFirst() {
+
+				return true;
+			}
+
+			@Override
+			public boolean isLast() {
+
+				return false;
+			}
+
+			@Override
+			public boolean hasNext() {
+
+				return true;
+			}
+
+			@Override
+			public boolean hasPrevious() {
+
+				return false;
+			}
+
+			@Override
+			public Pageable nextPageable() {
+
+				return null;
+			}
+
+			@Override
+			public Pageable previousPageable() {
+
+				return null;
+			}
+
+			@Override
+			public Iterator<JourneyRequestSearchDto> iterator() {
+
+				return journeyRequestSearchDtos.iterator();
+			}
+
+			@Override
+			public int getTotalPages() {
+
+				return 5;
+			}
+
+			@Override
+			public long getTotalElements() {
+
+				return 10;
+			}
+
+			@Override
+			public <U> Page<U> map(Function<? super JourneyRequestSearchDto, ? extends U> converter) {
+
+				return null;
+			}
+		};
 	}
 }

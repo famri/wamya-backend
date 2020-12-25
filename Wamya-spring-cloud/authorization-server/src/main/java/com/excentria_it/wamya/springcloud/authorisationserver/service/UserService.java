@@ -4,4 +4,6 @@ import com.excentria_it.wamya.springcloud.authorisationserver.dto.OAuthUserAccou
 
 public interface UserService {
 	OAuthUserAccount createUser(OAuthUserAccount user);
+	
+	OAuthUserAccount loadUserInfoByUsername(String username);
 }

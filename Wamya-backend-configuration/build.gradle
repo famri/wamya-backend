@@ -4,8 +4,9 @@ plugins {
 
 apply plugin: 'jacoco'
 
+
 jacoco {
-	toolVersion = "0.8.2"
+	toolVersion = "0.8.6"
 }
 	
 jacocoTestCoverageVerification {
@@ -33,12 +34,15 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     
-    implementation project(':Wamya-backend-common')
-    implementation project(':Wamya-backend-application')
+    implementation (project(':Wamya-backend-common'))
+    implementation (project(':Wamya-backend-application'))
+    
     implementation project(':Wamya-backend-adapters:Wamya-backend-persistence')
-    implementation project(':Wamya-backend-adapters:Wamya-backend-web')
-    implementation project(':Wamya-backend-adapters:Wamya-backend-messaging')
-    implementation project(':Wamya-backend-adapters:Wamya-backend-b2b-rest')
+    
+    implementation (project(':Wamya-backend-adapters:Wamya-backend-web'))
+    implementation (project(':Wamya-backend-adapters:Wamya-backend-messaging'))
+    implementation (project(':Wamya-backend-adapters:Wamya-backend-b2b-rest'))
+    
     implementation('org.springframework.cloud:spring-cloud-starter-netflix-eureka-client')
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
          

@@ -9,18 +9,19 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import com.excentria_it.wamya.common.annotation.Generated;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Generated
 @Entity
 @Table(name = "international_calling_code", uniqueConstraints = @UniqueConstraint(columnNames = { "id", "value",
 		"countryName", "flagPath" }))
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
-@Builder
 @SequenceGenerator(name = "icc_seq", initialValue = 3, allocationSize = 1)
 public class InternationalCallingCodeJpaEntity {
 	public static final String ICC_SEQ = "icc_seq";
@@ -28,15 +29,79 @@ public class InternationalCallingCodeJpaEntity {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = ICC_SEQ)
 	private Long id;
 
-	@Column
 	private String value;
 
-	@Column
 	private String countryName;
 
 	@Column(length = 255)
 	private String flagPath;
 
-	@Column
 	private Boolean enabled;
+
+	public String getValue() {
+		return value;
+	}
+
+	public void setValue(String value) {
+		this.value = value;
+	}
+
+	public String getCountryName() {
+		return countryName;
+	}
+
+	public void setCountryName(String countryName) {
+		this.countryName = countryName;
+	}
+
+	public String getFlagPath() {
+		return flagPath;
+	}
+
+	public void setFlagPath(String flagPath) {
+		this.flagPath = flagPath;
+	}
+
+	public Boolean getEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(Boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		InternationalCallingCodeJpaEntity other = (InternationalCallingCodeJpaEntity) obj;
+		if (id == null) {
+			return false;
+		} else if (!id.equals(other.id))
+			return false;
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "InternationalCallingCodeJpaEntity [id=" + id + ", value=" + value + ", countryName=" + countryName
+				+ ", flagPath=" + flagPath + ", enabled=" + enabled + "]";
+	}
+
 }

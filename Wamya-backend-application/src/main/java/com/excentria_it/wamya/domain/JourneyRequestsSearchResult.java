@@ -2,12 +2,27 @@ package com.excentria_it.wamya.domain;
 
 import java.util.List;
 
-public class JourneyRequestsSearchResult extends PagedData<JourneyRequestSearchDto> {
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-	public JourneyRequestsSearchResult(int totalPages, long totalElements, int pageNumber, int pageSize,
-			boolean hasNext, List<JourneyRequestSearchDto> content) {
-		super(totalPages, totalElements, pageNumber, pageSize, hasNext, content);
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
+@Builder
+public class JourneyRequestsSearchResult {
 
-	}
+	private int totalPages;
+
+	private long totalElements;
+
+	private int pageNumber;
+
+	private int pageSize;
+
+	private boolean hasNext;
+
+	private List<JourneyRequestSearchDto> content;
 
 }

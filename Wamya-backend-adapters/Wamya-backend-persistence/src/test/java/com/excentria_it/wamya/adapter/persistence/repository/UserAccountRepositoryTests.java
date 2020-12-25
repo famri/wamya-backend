@@ -2,12 +2,14 @@ package com.excentria_it.wamya.adapter.persistence.repository;
 
 import static com.excentria_it.wamya.test.data.common.UserAccountJpaEntityTestData.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.*;
 
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -18,6 +20,7 @@ import com.excentria_it.wamya.test.data.common.TestConstants;
 
 @DataJpaTest
 @ActiveProfiles(profiles = { "persistence-local" })
+@AutoConfigureTestDatabase(replace = NONE)
 public class UserAccountRepositoryTests {
 	@Autowired
 	private UserAccountRepository userAccountRepository;
@@ -39,7 +42,7 @@ public class UserAccountRepositoryTests {
 
 		// When
 		Optional<UserAccountJpaEntity> entityOptional = userAccountRepository.findByMobilePhoneNumber(
-				InternationalCallingCodeJpaEntityTestData.defaultInternationalCallingCodeJpaEntity().getValue(),
+				InternationalCallingCodeJpaEntityTestData.defaultExistentInternationalCallingCodeJpaEntity().getValue(),
 				TestConstants.DEFAULT_MOBILE_NUMBER);
 		// Then
 		assertTrue(entityOptional.isPresent());
@@ -63,8 +66,7 @@ public class UserAccountRepositoryTests {
 
 	private void givenAUserAccountWithEmailAndMobilePhoneAndPassword() {
 		InternationalCallingCodeJpaEntity iccEntity = InternationalCallingCodeJpaEntityTestData
-				.defaultInternationalCallingCodeJpaEntity();
-		iccEntity.setId(null);
+				.defaultNewInternationalCallingCodeJpaEntity();
 
 		iccEntity = iccRepository.save(iccEntity);
 

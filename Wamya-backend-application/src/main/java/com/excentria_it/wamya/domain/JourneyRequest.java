@@ -1,6 +1,6 @@
 package com.excentria_it.wamya.domain;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,20 +19,18 @@ public class JourneyRequest {
 
 	private PlaceDto arrivalPlace;
 
+	private Double distance;
+
+	private LocalDateTime dateTime;
+
+	private LocalDateTime endDateTime;
+
 	private EngineTypeDto engineType;
-
-	private Integer distance;
-
-	private Date date;
-
-	private Date endDate;
 
 	private Integer workers;
 
 	private String description;
 
 	private ClientDto client;
-
-	private Integer minPrice;
 
 }

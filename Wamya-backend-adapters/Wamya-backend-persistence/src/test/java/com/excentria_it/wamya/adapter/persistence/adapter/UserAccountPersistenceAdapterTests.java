@@ -60,7 +60,7 @@ public class UserAccountPersistenceAdapterTests {
 		UserAccountBuilder userAccountBuilder = UserAccountTestData.defaultUserAccountBuilder();
 		UserAccount userAccount = userAccountBuilder.build();
 		Optional<InternationalCallingCodeJpaEntity> iccEntity = Optional
-				.of(InternationalCallingCodeJpaEntityTestData.defaultInternationalCallingCodeJpaEntity());
+				.of(InternationalCallingCodeJpaEntityTestData.defaultExistentInternationalCallingCodeJpaEntity());
 		given(iccRepository.findByValue(userAccount.getMobilePhoneNumber().getInternationalCallingCode()))
 				.willReturn(iccEntity);
 
@@ -187,7 +187,7 @@ public class UserAccountPersistenceAdapterTests {
 		given(userAccountRepository.findById(userAccount.getId())).willReturn(userAccountJpaEntityOptional);
 
 		InternationalCallingCodeJpaEntity iccEntity = InternationalCallingCodeJpaEntityTestData
-				.defaultInternationalCallingCodeJpaEntity();
+				.defaultExistentInternationalCallingCodeJpaEntity();
 		Optional<InternationalCallingCodeJpaEntity> iccEntityOptional = Optional.ofNullable(iccEntity);
 
 		given(iccRepository.findByValue(userAccount.getMobilePhoneNumber().getInternationalCallingCode()))

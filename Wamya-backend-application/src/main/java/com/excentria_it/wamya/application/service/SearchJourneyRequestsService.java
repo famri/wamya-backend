@@ -17,19 +17,19 @@ public class SearchJourneyRequestsService implements SearchJourneyRequestsUseCas
 	private final SearchJourneyRequestsPort searchJourneyRequestsPort;
 
 	@Override
-	public JourneyRequestsSearchResult searchJourneyRequests(SearchJourneyRequestsCommand command) {
+	public JourneyRequestsSearchResult searchJourneyRequests(SearchJourneyRequestsCommand command, String locale) {
 
 		if (isArrivalPlaceRegionAgnostic(command)) {
 
 			return searchJourneyRequestsPort.searchJourneyRequestsByDeparturePlaceRegionIdAndEngineTypesAndDateBetween(
 					command.getDeparturePlaceRegionId(), command.getEngineTypes(), command.getStartDateTime(),
-					command.getEndDateTime(), command.getPageNumber(), command.getPageSize(),
+					command.getEndDateTime(), locale, command.getPageNumber(), command.getPageSize(),
 					command.getSortingCriterion());
 		} else {
 			return searchJourneyRequestsPort
 					.searchJourneyRequestsByDeparturePlaceRegionIdAndArrivalPlaceRegionIdAndEngineTypesAndDateBetween(
 							command.getDeparturePlaceRegionId(), command.getArrivalPlaceRegionIds(),
-							command.getEngineTypes(), command.getStartDateTime(), command.getEndDateTime(),
+							command.getEngineTypes(), command.getStartDateTime(), command.getEndDateTime(), locale,
 							command.getPageNumber(), command.getPageSize(), command.getSortingCriterion());
 		}
 

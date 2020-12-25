@@ -14,8 +14,9 @@ import com.excentria_it.wamya.domain.UserAccount.MobilePhoneNumber;
 public class UserAccountMapper {
 
 	public UserAccountJpaEntity mapToJpaEntity(UserAccount userAccount, InternationalCallingCodeJpaEntity icc) {
-		userAccount.getDateOfBirth();
-
+		if (userAccount == null)
+			return null;
+		
 		return UserAccountJpaEntity.builder().id(userAccount.getId()).oauthId(userAccount.getOauthId())
 				.isTransporter(userAccount.getIsTransporter()).gender(userAccount.getGender())
 				.firstname(userAccount.getFirstname()).lastname(userAccount.getLastname())

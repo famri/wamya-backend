@@ -4,9 +4,8 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-    generate-ddl: true
-    database: H2
-    database-platform: org.hibernate.dialect.H2Dialect
+    generate-ddl: true 
+    database-platform: H2
     open-in-view: false
     properties:
       hibernate:
@@ -51,3 +50,4 @@ logging:
       audit: fatal
       resultset: fatal
       connection: fatal
+      

@@ -20,7 +20,7 @@ public class UserAccountMapperTests {
 
 		UserAccount userAccount = UserAccountTestData.defaultUserAccountBuilder().build();
 		InternationalCallingCodeJpaEntity iccEntity = InternationalCallingCodeJpaEntityTestData
-				.defaultInternationalCallingCodeJpaEntity();
+				.defaultExistentInternationalCallingCodeJpaEntity();
 		UserAccountJpaEntity userAccountJpaEntity = userAccountMapper.mapToJpaEntity(userAccount, iccEntity);
 
 		assertEquals(userAccount.getId(), userAccountJpaEntity.getId());
@@ -62,10 +62,22 @@ public class UserAccountMapperTests {
 
 		UserAccount userAccount = UserAccountTestData.defaultUserAccountBuilder().creationDateTime(null).build();
 		InternationalCallingCodeJpaEntity iccEntity = InternationalCallingCodeJpaEntityTestData
-				.defaultInternationalCallingCodeJpaEntity();
+				.defaultExistentInternationalCallingCodeJpaEntity();
 		UserAccountJpaEntity userAccountJpaEntity = userAccountMapper.mapToJpaEntity(userAccount, iccEntity);
 
 		assertNotNull(userAccountJpaEntity.getCreationDateTime());
+
+	}
+
+	@Test
+	void testMapToJpaEntityWithNullUserAccount() {
+
+		UserAccount userAccount = null;
+		InternationalCallingCodeJpaEntity iccEntity = InternationalCallingCodeJpaEntityTestData
+				.defaultExistentInternationalCallingCodeJpaEntity();
+		UserAccountJpaEntity userAccountJpaEntity = userAccountMapper.mapToJpaEntity(userAccount, iccEntity);
+
+		assertNull(userAccountJpaEntity);
 
 	}
 

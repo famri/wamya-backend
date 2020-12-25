@@ -6,6 +6,7 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -15,17 +16,18 @@ import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import com.excentria_it.wamya.common.annotation.Generated;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Generated
 @Entity
 @Table(name = "journey_request")
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
-@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @SequenceGenerator(name = JourneyRequestJpaEntity.JOURNEY_REQUEST_SEQ, initialValue = 1, allocationSize = 5)
 public class JourneyRequestJpaEntity {
 
@@ -44,14 +46,12 @@ public class JourneyRequestJpaEntity {
 	@ManyToOne
 	private EngineTypeJpaEntity engineType;
 
-	@Column
-	private Integer distance;
+	private Double distance;
 
 	private LocalDateTime dateTime;
 
 	private LocalDateTime endDateTime;
 
-	@Column
 	private Integer workers;
 
 	@Column(length = 500)
@@ -60,8 +60,125 @@ public class JourneyRequestJpaEntity {
 	@ManyToOne
 	private UserAccountJpaEntity client;
 
-	@OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
+	@OneToMany(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST,
+			CascadeType.REFRESH }, orphanRemoval = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "journey_request_id")
 	private Set<JourneyProposalJpaEntity> proposals;
+
+	public PlaceJpaEntity getDeparturePlace() {
+		return departurePlace;
+	}
+
+	public void setDeparturePlace(PlaceJpaEntity departurePlace) {
+		this.departurePlace = departurePlace;
+	}
+
+	public PlaceJpaEntity getArrivalPlace() {
+		return arrivalPlace;
+	}
+
+	public void setArrivalPlace(PlaceJpaEntity arrivalPlace) {
+		this.arrivalPlace = arrivalPlace;
+	}
+
+	public EngineTypeJpaEntity getEngineType() {
+		return engineType;
+	}
+
+	public void setEngineType(EngineTypeJpaEntity engineType) {
+		this.engineType = engineType;
+	}
+
+	public Double getDistance() {
+		return distance;
+	}
+
+	public void setDistance(Double distance) {
+		this.distance = distance;
+	}
+
+	public LocalDateTime getDateTime() {
+		return dateTime;
+	}
+
+	public void setDateTime(LocalDateTime dateTime) {
+		this.dateTime = dateTime;
+	}
+
+	public LocalDateTime getEndDateTime() {
+		return endDateTime;
+	}
+
+	public void setEndDateTime(LocalDateTime endDateTime) {
+		this.endDateTime = endDateTime;
+	}
+
+	public Integer getWorkers() {
+		return workers;
+	}
+
+	public void setWorkers(Integer workers) {
+		this.workers = workers;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public UserAccountJpaEntity getClient() {
+		return client;
+	}
+
+	public void setClient(UserAccountJpaEntity client) {
+		this.client = client;
+	}
+
+	public Set<JourneyProposalJpaEntity> getProposals() {
+		return proposals;
+	}
+
+	public void setProposals(Set<JourneyProposalJpaEntity> proposals) {
+		this.proposals = proposals;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		JourneyRequestJpaEntity other = (JourneyRequestJpaEntity) obj;
+		if (id == null) {
+			return false;
+		} else if (!id.equals(other.id))
+			return false;
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "JourneyRequestJpaEntity [id=" + id + ", departurePlace=" + departurePlace + ", arrivalPlace="
+				+ arrivalPlace + ", engineType=" + engineType + ", distance=" + distance + ", dateTime=" + dateTime
+				+ ", endDateTime=" + endDateTime + ", workers=" + workers + ", description=" + description
+				+ ", client id=" + client.getId() + "]";
+	}
 
 }
