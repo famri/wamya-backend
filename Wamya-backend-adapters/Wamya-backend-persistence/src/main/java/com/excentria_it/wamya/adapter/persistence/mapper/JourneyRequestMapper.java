@@ -45,7 +45,6 @@ public class JourneyRequestMapper {
 				.endDateTime(journeyRequestJpaEntity.getEndDateTime()).workers(journeyRequestJpaEntity.getWorkers())
 				.description(journeyRequestJpaEntity.getDescription())
 				.client(MapperUtility.buildClientDto(journeyRequestJpaEntity.getClient().getId(),
-						journeyRequestJpaEntity.getClient().getEmail(),
 						journeyRequestJpaEntity.getClient().getFirstname(),
 						journeyRequestJpaEntity.getClient().getPhotoUrl()))
 				.build();

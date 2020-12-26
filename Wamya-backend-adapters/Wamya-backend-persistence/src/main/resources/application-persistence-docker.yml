@@ -22,22 +22,3 @@ spring:
     url: jdbc:postgresql://database:5432/${POSTGRES_DB}
     username: ${POSTGRES_USER}
     password: ${POSTGRES_PASSWORD}
-
-log4jdbc:
-  trim:
-    sql:
-      extrablanklines: false
-  dump:
-    sql:
-      addsemicolon: true
-      maxlinelength: 0
-             
-logging:
-  level:
-    jdbc:
-      sqlonly: fatal
-      resultsettable: info
-      sqltiming: info
-      audit: fatal
-      resultset: fatal
-      connection: fatal

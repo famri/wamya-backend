@@ -12,9 +12,8 @@ public class MapperUtilityTests {
 
 	@Test
 	void testBuildClientDto() {
-		ClientDto clientDto = MapperUtility.buildClientDto(1L, "someUsername", "someFirstname", "someUrl");
+		ClientDto clientDto = MapperUtility.buildClientDto(1L, "someFirstname", "someUrl");
 		assertEquals(1L, clientDto.getId());
-		assertEquals("someUsername", clientDto.getUsername());
 		assertEquals("someFirstname", clientDto.getFirstname());
 		assertEquals("someUrl", clientDto.getPhotoUrl());
 	}

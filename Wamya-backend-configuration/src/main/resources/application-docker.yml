@@ -8,6 +8,7 @@ app:
     
 eureka:
   client:
+    eureka-connection-idle-timeout-seconds: 4
     serviceUrl:
       defaultZone: "http://${app.eureka-username}:${app.eureka-password}@${app.eureka-server}:8761/eureka/"
     initialInstanceInfoReplicationIntervalSeconds: 5

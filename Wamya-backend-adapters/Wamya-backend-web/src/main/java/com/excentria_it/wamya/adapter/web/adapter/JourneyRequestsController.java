@@ -89,7 +89,7 @@ public class JourneyRequestsController {
 
 		validateInput(command);
 
-		return searchJourneyRequestsUseCase.searchJourneyRequests(command, supportedLocale.getLanguage());
+		return searchJourneyRequestsUseCase.searchJourneyRequests(command, supportedLocale.toString());
 
 	}
 

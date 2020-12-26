@@ -10,8 +10,7 @@ public class LocaleUtils {
 	}
 
 	public static final Locale defaultLocale = new Locale("en", "US");
-	public static final List<Locale> supportedLocales = List.of(defaultLocale, new Locale("fr", "FR"),
-			new Locale("ar", "TN"));
+	public static final List<Locale> supportedLocales = List.of(defaultLocale, new Locale("fr", "FR"));
 
 	public static Locale getSupporedLocale(Locale locale) {
 		for (Locale sl : supportedLocales) {

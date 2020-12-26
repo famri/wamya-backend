@@ -37,11 +37,11 @@ import com.excentria_it.wamya.adapter.persistence.repository.EngineTypeRepositor
 import com.excentria_it.wamya.adapter.persistence.repository.JourneyRequestRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.PlaceRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.UserAccountRepository;
-import com.excentria_it.wamya.application.port.in.SearchJourneyRequestsUseCase.SearchJourneyRequestsCommand;
 import com.excentria_it.wamya.common.SortingCriterion;
 import com.excentria_it.wamya.domain.JourneyRequest;
 import com.excentria_it.wamya.domain.JourneyRequestSearchDto;
 import com.excentria_it.wamya.domain.JourneyRequestsSearchResult;
+import com.excentria_it.wamya.domain.SearchJourneyRequestsCriteria;
 import com.excentria_it.wamya.test.data.common.TestConstants;
 
 @ExtendWith(MockitoExtension.class)
@@ -63,20 +63,16 @@ public class JourneyRequestsPersistenceAdapterTests {
 	private JourneyRequestsPersistenceAdapter journeyRequestsPersistenceAdapter;
 
 	@Test
-	void givenNotNullJourneyRequestsPage_WhenSearchJourneyRequestsByDeparturePlaceRegionIdAndArrivalPlaceRegionIdAndEngineTypesAndDateBetween_ThenReturnJourneyRequestsSearchResult() {
+	void givenNotNullJourneyRequestsPage_WhenSearchJourneyRequests_ThenReturnJourneyRequestsSearchResult() {
 
 		// given
-		SearchJourneyRequestsCommand command = defaultSearchJourneyRequestsCommandBuilder().build();
+		SearchJourneyRequestsCriteria command = defaultSearchJourneyRequestsCriteriaBuilder().build();
 
 		Page<JourneyRequestSearchDto> expectedResult = givenNotNullJourneyRequestsPageByDeparturePlace_RegionIdAndArrivalPlace_RegionIdInAndEngineType_IdInAndDateBetween();
 
 		// when
 
-		JourneyRequestsSearchResult result = journeyRequestsPersistenceAdapter
-				.searchJourneyRequestsByDeparturePlaceRegionIdAndArrivalPlaceRegionIdAndEngineTypesAndDateBetween(
-						command.getDeparturePlaceRegionId(), command.getArrivalPlaceRegionIds(),
-						command.getEngineTypes(), command.getStartDateTime(), command.getEndDateTime(), "en",
-						command.getPageNumber(), command.getPageSize(), command.getSortingCriterion());
+		JourneyRequestsSearchResult result = journeyRequestsPersistenceAdapter.searchJourneyRequests(command);
 		// then
 
 		assertEquals(expectedResult.getTotalPages(), result.getTotalPages());
@@ -89,21 +85,16 @@ public class JourneyRequestsPersistenceAdapterTests {
 	}
 
 	@Test
-	void givenNullJourneyRequestsPage_WhenSearchJourneyRequestsByDeparturePlaceRegionIdAndArrivalPlaceRegionIdAndEngineTypesAndDateBetween_ThenReturnEmptyJourneyRequestsSearchResult() {
+	void givenNullJourneyRequestsPage_WhenSearchJourneyRequests_ThenReturnEmptyJourneyRequestsSearchResult() {
 
 		// given
-		SearchJourneyRequestsCommand command = defaultSearchJourneyRequestsCommandBuilder().build();
+		SearchJourneyRequestsCriteria command = defaultSearchJourneyRequestsCriteriaBuilder().build();
 
 		givenNullJourneyRequestsPageByDeparturePlace_RegionIdAndArrivalPlace_RegionIdInAndEngineType_IdInAndDateBetween();
 
 		// when
 
-		JourneyRequestsSearchResult result = journeyRequestsPersistenceAdapter
-				.searchJourneyRequestsByDeparturePlaceRegionIdAndArrivalPlaceRegionIdAndEngineTypesAndDateBetween(
-						command.getDeparturePlaceRegionId(), command.getArrivalPlaceRegionIds(),
-						command.getEngineTypes(), command.getStartDateTime(), command.getEndDateTime(), "en",
-						command.getPageNumber(), command.getPageSize(), command.getSortingCriterion());
-		// then
+		JourneyRequestsSearchResult result = journeyRequestsPersistenceAdapter.searchJourneyRequests(command);
 
 		assertEquals(0, result.getTotalPages());
 		assertEquals(0, result.getTotalElements());
@@ -115,20 +106,18 @@ public class JourneyRequestsPersistenceAdapterTests {
 	}
 
 	@Test
-	void givenNotNullJourneyRequestsPage_WhenSearchJourneyRequestsByDeparturePlaceRegionIdAndEngineTypesAndDateBetween_ThenReturnJourneyRequestsSearchResult() {
+	void givenNotNullJourneyRequestsPage_WhenSearchJourneyRequestsByAnyArrivalPlace_ThenReturnJourneyRequestsSearchResult() {
 
 		// given
-		SearchJourneyRequestsCommand command = defaultSearchJourneyRequestsCommandBuilder().build();
+		SearchJourneyRequestsCriteria command = defaultSearchJourneyRequestsCriteriaBuilder().build();
+
+		command.setArrivalPlaceRegionIds(Set.of("ANY"));
 
 		Page<JourneyRequestSearchDto> expectedResult = givenNotNullJourneyRequestsPageByDeparturePlace_RegionIdAndEngineType_IdInAndDateBetween();
 
 		// when
 
-		JourneyRequestsSearchResult result = journeyRequestsPersistenceAdapter
-				.searchJourneyRequestsByDeparturePlaceRegionIdAndEngineTypesAndDateBetween(
-						command.getDeparturePlaceRegionId(), command.getEngineTypes(), command.getStartDateTime(),
-						command.getEndDateTime(), "en", command.getPageNumber(), command.getPageSize(),
-						command.getSortingCriterion());
+		JourneyRequestsSearchResult result = journeyRequestsPersistenceAdapter.searchJourneyRequests(command);
 		// then
 
 		assertEquals(expectedResult.getTotalPages(), result.getTotalPages());
@@ -141,20 +130,17 @@ public class JourneyRequestsPersistenceAdapterTests {
 	}
 
 	@Test
-	void givenNullJourneyRequestsPage_WhenSearchJourneyRequestsByDeparturePlaceRegionIdAndEngineTypesAndDateBetween_ThenReturnEmptyJourneyRequestsSearchResult() {
+	void givenNullJourneyRequestsPage_WhenSearchJourneyRequestsByAnyArrivalPlace_ThenReturnEmptyJourneyRequestsSearchResult() {
 
 		// given
-		SearchJourneyRequestsCommand command = defaultSearchJourneyRequestsCommandBuilder().build();
+		SearchJourneyRequestsCriteria command = defaultSearchJourneyRequestsCriteriaBuilder().build();
+		command.setArrivalPlaceRegionIds(Set.of("ANY"));
 
 		givenNullJourneyRequestsPageByDeparturePlace_RegionIdAndEngineType_IdInAndDateBetween();
 
 		// when
 
-		JourneyRequestsSearchResult result = journeyRequestsPersistenceAdapter
-				.searchJourneyRequestsByDeparturePlaceRegionIdAndEngineTypesAndDateBetween(
-						command.getDeparturePlaceRegionId(), command.getEngineTypes(), command.getStartDateTime(),
-						command.getEndDateTime(), "en", command.getPageNumber(), command.getPageSize(),
-						command.getSortingCriterion());
+		JourneyRequestsSearchResult result = journeyRequestsPersistenceAdapter.searchJourneyRequests(command);
 		// then
 
 		assertEquals(0, result.getTotalPages());
@@ -245,7 +231,7 @@ public class JourneyRequestsPersistenceAdapterTests {
 
 		// given
 		JourneyRequest journeyRequest = defaultJourneyRequest();
-		journeyRequest.getClient().setUsername(TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME);
+		
 
 		EngineTypeJpaEntity engineTypeJpaEntity = defaultEngineTypeJpaEntity();
 		given(engineTypeRepository.findById(journeyRequest.getEngineType().getId()))

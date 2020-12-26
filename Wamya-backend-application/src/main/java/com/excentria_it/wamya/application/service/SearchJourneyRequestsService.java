@@ -6,6 +6,7 @@ import com.excentria_it.wamya.application.port.in.SearchJourneyRequestsUseCase;
 import com.excentria_it.wamya.application.port.out.SearchJourneyRequestsPort;
 import com.excentria_it.wamya.common.annotation.UseCase;
 import com.excentria_it.wamya.domain.JourneyRequestsSearchResult;
+import com.excentria_it.wamya.domain.SearchJourneyRequestsCriteria;
 
 import lombok.RequiredArgsConstructor;
 
@@ -19,25 +20,13 @@ public class SearchJourneyRequestsService implements SearchJourneyRequestsUseCas
 	@Override
 	public JourneyRequestsSearchResult searchJourneyRequests(SearchJourneyRequestsCommand command, String locale) {
 
-		if (isArrivalPlaceRegionAgnostic(command)) {
+		SearchJourneyRequestsCriteria searchCriteria = new SearchJourneyRequestsCriteria(
+				command.getDeparturePlaceRegionId(), command.getArrivalPlaceRegionIds(), command.getStartDateTime(),
+				command.getEndDateTime(), command.getEngineTypes(), command.getPageNumber(), command.getPageSize(),
+				command.getSortingCriterion(), locale);
 
-			return searchJourneyRequestsPort.searchJourneyRequestsByDeparturePlaceRegionIdAndEngineTypesAndDateBetween(
-					command.getDeparturePlaceRegionId(), command.getEngineTypes(), command.getStartDateTime(),
-					command.getEndDateTime(), locale, command.getPageNumber(), command.getPageSize(),
-					command.getSortingCriterion());
-		} else {
-			return searchJourneyRequestsPort
-					.searchJourneyRequestsByDeparturePlaceRegionIdAndArrivalPlaceRegionIdAndEngineTypesAndDateBetween(
-							command.getDeparturePlaceRegionId(), command.getArrivalPlaceRegionIds(),
-							command.getEngineTypes(), command.getStartDateTime(), command.getEndDateTime(), locale,
-							command.getPageNumber(), command.getPageSize(), command.getSortingCriterion());
-		}
+		return searchJourneyRequestsPort.searchJourneyRequests(searchCriteria);
 
-	}
-
-	protected boolean isArrivalPlaceRegionAgnostic(SearchJourneyRequestsCommand command) {
-		return command.getArrivalPlaceRegionIds().stream()
-				.anyMatch(p -> SearchJourneyRequestsCommand.ANY_ARRIVAL_REGION.equals(p.toUpperCase()));
 	}
 
 }

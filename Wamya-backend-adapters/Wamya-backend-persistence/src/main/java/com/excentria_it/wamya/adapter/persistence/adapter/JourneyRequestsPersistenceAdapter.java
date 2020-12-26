@@ -1,9 +1,7 @@
 package com.excentria_it.wamya.adapter.persistence.adapter;
 
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Optional;
-import java.util.Set;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,6 +20,7 @@ import com.excentria_it.wamya.adapter.persistence.repository.EngineTypeRepositor
 import com.excentria_it.wamya.adapter.persistence.repository.JourneyRequestRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.PlaceRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.UserAccountRepository;
+import com.excentria_it.wamya.application.port.in.SearchJourneyRequestsUseCase.SearchJourneyRequestsCommand;
 import com.excentria_it.wamya.application.port.out.CreateJourneyRequestPort;
 import com.excentria_it.wamya.application.port.out.SearchJourneyRequestsPort;
 import com.excentria_it.wamya.common.SortingCriterion;
@@ -29,6 +28,7 @@ import com.excentria_it.wamya.common.annotation.PersistenceAdapter;
 import com.excentria_it.wamya.domain.JourneyRequest;
 import com.excentria_it.wamya.domain.JourneyRequestSearchDto;
 import com.excentria_it.wamya.domain.JourneyRequestsSearchResult;
+import com.excentria_it.wamya.domain.SearchJourneyRequestsCriteria;
 
 import lombok.RequiredArgsConstructor;
 
@@ -49,42 +49,26 @@ public class JourneyRequestsPersistenceAdapter implements SearchJourneyRequestsP
 	private final PlaceMapper placeMapper;
 
 	@Override
-	public JourneyRequestsSearchResult searchJourneyRequestsByDeparturePlaceRegionIdAndArrivalPlaceRegionIdAndEngineTypesAndDateBetween(
-			String departurePlaceRegionId, Set<String> arrivalPlaceRegionId, Set<Long> engineTypes,
-			LocalDateTime startDate, LocalDateTime endDate, String locale, Integer pageNumber, Integer pageSize,
-			SortingCriterion sortingCriterion) {
+	public JourneyRequestsSearchResult searchJourneyRequests(SearchJourneyRequestsCriteria command) {
 
-		Sort sort = convertToSort(sortingCriterion);
+		Sort sort = convertToSort(command.getSortingCriterion());
 
-		Pageable pagingSort = PageRequest.of(pageNumber, pageSize, sort);
+		Pageable pagingSort = PageRequest.of(command.getPageNumber(), command.getPageSize(), sort);
 
-		Page<JourneyRequestSearchDto> journeyRequestsPage = journeyRequestRepository
-				.findByDeparturePlace_RegionIdAndArrivalPlace_RegionIdInAndEngineType_IdInAndDateBetween(
-						departurePlaceRegionId, arrivalPlaceRegionId, engineTypes, startDate, endDate, locale,
-						pagingSort);
+		Page<JourneyRequestSearchDto> journeyRequestsPage = null;
 
-		if (journeyRequestsPage != null) {
-
-			return new JourneyRequestsSearchResult(journeyRequestsPage.getTotalPages(),
-					journeyRequestsPage.getTotalElements(), journeyRequestsPage.getNumber(),
-					journeyRequestsPage.getSize(), journeyRequestsPage.hasNext(), journeyRequestsPage.getContent());
+		if (isArrivalPlaceRegionAgnostic(command)) {
+			journeyRequestsPage = journeyRequestRepository
+					.findByDeparturePlace_RegionIdAndEngineType_IdInAndDateBetween(command.getDeparturePlaceRegionId(),
+							command.getEngineTypes(), command.getStartDateTime(), command.getEndDateTime(),
+							command.getLocale(), pagingSort);
+		} else {
+			journeyRequestsPage = journeyRequestRepository
+					.findByDeparturePlace_RegionIdAndArrivalPlace_RegionIdInAndEngineType_IdInAndDateBetween(
+							command.getDeparturePlaceRegionId(), command.getArrivalPlaceRegionIds(),
+							command.getEngineTypes(), command.getStartDateTime(), command.getEndDateTime(),
+							command.getLocale(), pagingSort);
 		}
-
-		return new JourneyRequestsSearchResult(0, 0, 0, 0, false, Collections.<JourneyRequestSearchDto>emptyList());
-	}
-
-	@Override
-	public JourneyRequestsSearchResult searchJourneyRequestsByDeparturePlaceRegionIdAndEngineTypesAndDateBetween(
-			String departurePlaceRegionId, Set<Long> engineTypes, LocalDateTime startDate, LocalDateTime endDate,
-			String locale, Integer pageNumber, Integer pageSize, SortingCriterion sortingCriterion) {
-
-		Sort sort = convertToSort(sortingCriterion);
-
-		Pageable pagingSort = PageRequest.of(pageNumber, pageSize, sort);
-
-		Page<JourneyRequestSearchDto> journeyRequestsPage = journeyRequestRepository
-				.findByDeparturePlace_RegionIdAndEngineType_IdInAndDateBetween(departurePlaceRegionId, engineTypes,
-						startDate, endDate, locale, pagingSort);
 
 		if (journeyRequestsPage != null) {
 
@@ -168,5 +152,10 @@ public class JourneyRequestsPersistenceAdapter implements SearchJourneyRequestsP
 		journeyRequest.setId(journeyRequestJpaEntity.getId());
 
 		return journeyRequest;
+	}
+
+	protected boolean isArrivalPlaceRegionAgnostic(SearchJourneyRequestsCriteria command) {
+		return command.getArrivalPlaceRegionIds().stream()
+				.anyMatch(p -> SearchJourneyRequestsCommand.ANY_ARRIVAL_REGION.equals(p.toUpperCase()));
 	}
 }

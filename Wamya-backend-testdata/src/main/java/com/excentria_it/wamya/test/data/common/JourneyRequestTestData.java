@@ -18,6 +18,8 @@ import com.excentria_it.wamya.domain.JourneyRequest;
 import com.excentria_it.wamya.domain.JourneyRequestSearchDto;
 import com.excentria_it.wamya.domain.JourneyRequestsSearchResult;
 import com.excentria_it.wamya.domain.PlaceDto;
+import com.excentria_it.wamya.domain.SearchJourneyRequestsCriteria;
+import com.excentria_it.wamya.domain.SearchJourneyRequestsCriteria.SearchJourneyRequestsCriteriaBuilder;
 
 public class JourneyRequestTestData {
 
@@ -86,7 +88,7 @@ public class JourneyRequestTestData {
 				@Override
 				public ClientDto getClient() {
 
-					return new ClientDto(1L, "ClientUsername1", "ClientName1", "SOME PHOTO URL 1");
+					return new ClientDto(1L, "ClientName1", "SOME PHOTO URL 1");
 				}
 
 				@Override
@@ -151,7 +153,7 @@ public class JourneyRequestTestData {
 				@Override
 				public ClientDto getClient() {
 
-					return new ClientDto(1L, "ClientUsername2", "ClientName2", "SOME PHOTO URL 2");
+					return new ClientDto(1L, "ClientName2", "SOME PHOTO URL 2");
 				}
 
 				@Override
@@ -170,6 +172,18 @@ public class JourneyRequestTestData {
 				.arrivalPlaceRegionIds(Set.of("arrivalPlaceRegionId1", "arrivalPlaceRegionId2"))
 				.startDateTime(startDate).endDateTime(endDate).engineTypes(Set.of(1L, 2L)).pageNumber(0).pageSize(2)
 				.sortingCriterion(new SortingCriterion("min-price", "desc"));
+
+	}
+
+	public static SearchJourneyRequestsCriteriaBuilder defaultSearchJourneyRequestsCriteriaBuilder() {
+		LocalDateTime startDate = LocalDateTime.parse(LocalDateTime.now().format(DATE_TIME_FORMATTER),
+				DATE_TIME_FORMATTER);
+		LocalDateTime endDate = LocalDateTime.parse(addDays(startDate, 1).format(DATE_TIME_FORMATTER),
+				DATE_TIME_FORMATTER);
+		return SearchJourneyRequestsCriteria.builder().departurePlaceRegionId("departurePlaceRegionId")
+				.arrivalPlaceRegionIds(Set.of("arrivalPlaceRegionId1", "arrivalPlaceRegionId2"))
+				.startDateTime(startDate).endDateTime(endDate).engineTypes(Set.of(1L, 2L)).pageNumber(0).pageSize(2)
+				.sortingCriterion(new SortingCriterion("min-price", "desc")).locale("en_US");
 
 	}
 
@@ -201,8 +215,8 @@ public class JourneyRequestTestData {
 				.departurePlace(new PlaceDto("departurePlaceId", "departurePlaceRegionId", "departurePlaceName"))
 				.arrivalPlace(new PlaceDto("arrivalPlaceId", "arrivalPlaceRegionId", "arrivalPlaceName"))
 				.dateTime(startDate).endDateTime(endDate).engineType(new EngineTypeDto(1L, "EngineType1", null))
-				.client(new ClientDto(1L, "ClientUsername", "ClientFirstname", "ClientLastname")).distance(270.8)
-				.workers(2).description("Need a transporter URGENT!!!").build();
+				.client(new ClientDto(1L, "ClientFirstname", "ClientLastname")).distance(270.8).workers(2)
+				.description("Need a transporter URGENT!!!").build();
 	}
 
 	private static LocalDateTime addDays(LocalDateTime dateTime, int days) {
@@ -217,7 +231,6 @@ public class JourneyRequestTestData {
 	public static List<JourneyRequestSearchDto> defaultJourneyRequestSearchDtoList() {
 		return journeyRequestSearchDtos;
 	}
-	
 
 	public static JourneyRequestsSearchResult defaultJourneyRequestsSearchResult() {
 

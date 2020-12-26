@@ -95,7 +95,6 @@ public class JourneyRequestMapperTests {
 
 		assertEquals(journeyRequestJpaEntity.getClient().getId(), journeyRequest.getClient().getId());
 		assertEquals(journeyRequestJpaEntity.getClient().getFirstname(), journeyRequest.getClient().getFirstname());
-		assertEquals(journeyRequestJpaEntity.getClient().getEmail(), journeyRequest.getClient().getUsername());
 		assertEquals(journeyRequestJpaEntity.getClient().getPhotoUrl(), journeyRequest.getClient().getPhotoUrl());
 
 	}
