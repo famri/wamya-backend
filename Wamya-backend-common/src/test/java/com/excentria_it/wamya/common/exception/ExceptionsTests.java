@@ -53,4 +53,28 @@ public class ExceptionsTests {
 		assertEquals(exception.getMessage(), message);
 
 	}
+
+	@Test
+	void testJourneyRequestExpiredException() {
+		String message = "SOME MESSAGE";
+		JourneyRequestExpiredException exception = new JourneyRequestExpiredException(message);
+		assertEquals(exception.getMessage(), message);
+
+	}
+
+	@Test
+	void testJourneyRequestNotFoundException() {
+		String message = "SOME MESSAGE";
+		JourneyRequestNotFoundException exception = new JourneyRequestNotFoundException(message);
+		assertEquals(exception.getMessage(), message);
+
+	}
+
+	@Test
+	void testInvalidTransporterVehiculeException() {
+		String message = "SOME MESSAGE";
+		InvalidTransporterVehiculeException exception = new InvalidTransporterVehiculeException(message);
+		assertEquals(exception.getMessage(), message);
+
+	}
 }

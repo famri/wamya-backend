@@ -41,7 +41,7 @@ dependencies {
     implementation 'javax.transaction:javax.transaction-api'
 	implementation 'org.apache.commons:commons-text:1.9'
 	implementation 'com.fasterxml.jackson.core:jackson-annotations'
-	 
+	implementation 'org.apache.commons:commons-collections4:4.4' 
 
 	
     testImplementation('org.springframework.boot:spring-boot-starter-test') {

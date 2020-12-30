@@ -78,33 +78,6 @@ public class SendValidationCodeController {
 
 	}
 
-	@ExceptionHandler({ UserAccountNotFoundException.class })
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	public ResponseEntity<Object> handleUserAccountNotFoundException(UserAccountNotFoundException exception) {
-		log.warn("Exception at " + exception.getClass() + ": ", exception);
-		final String error = "User account not found.";
-		final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, error);
-		return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
 
-	}
-
-	@ExceptionHandler({ UserMobileNumberValidationException.class })
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	public ResponseEntity<Object> handleUserMobileNumberValidationException(
-			UserMobileNumberValidationException exception) {
-		log.warn("Exception at " + exception.getClass() + ": ", exception);
-		final String error = "User mobile number already validated.";
-		final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, error);
-		return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
-	}
-
-	@ExceptionHandler({ UserEmailValidationException.class })
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	public ResponseEntity<Object> handleUserEmailValidationException(UserEmailValidationException exception) {
-		log.warn("Exception at " + exception.getClass() + ": ", exception);
-		final String error = "User email already validated.";
-		final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, error);
-		return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
-	}
 
 }

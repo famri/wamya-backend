@@ -17,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
 
+import com.excentria_it.wamya.common.exception.ApiError.ErrorCode;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -65,7 +66,8 @@ public class RestTemplateResponseErrorHandlerTests {
 
 	@Test
 	public void givenApiErrorClientHttpResponse_WhenHandleError_ThenThrowRuntimeException() throws IOException {
-		ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, List.of("Error1", "Error2"));
+		ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ErrorCode.MISSING_PARAMETER,
+				List.of("Error1", "Error2"));
 		ClientHttpResponse clientHttpResponse = Mockito.mock(ClientHttpResponse.class);
 		when(clientHttpResponse.getBody())
 				.thenReturn(new ByteArrayInputStream(mapper.writeValueAsString(apiError).getBytes()));
@@ -81,7 +83,7 @@ public class RestTemplateResponseErrorHandlerTests {
 			throws IOException {
 
 		List<String> errors = List.of("Error1", "Error2");
-		ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, errors);
+		ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ErrorCode.MISSING_PARAMETER, errors);
 		ClientHttpResponse clientHttpResponse = Mockito.mock(ClientHttpResponse.class);
 		when(clientHttpResponse.getBody())
 				.thenReturn(new ByteArrayInputStream(mapper.writeValueAsString(apiError).getBytes()));
@@ -150,8 +152,10 @@ public class RestTemplateResponseErrorHandlerTests {
 		}
 
 	}
+
 	@Test
-	public void givenAuthServerErrorButNotInvalidGrantErrorClientHttpResponse_WhenHandleError_ThenThrowRuntimeException() throws IOException {
+	public void givenAuthServerErrorButNotInvalidGrantErrorClientHttpResponse_WhenHandleError_ThenThrowRuntimeException()
+			throws IOException {
 
 		AuthServerError authError = new AuthServerError();
 		authError.setError("SOME ERROR");
@@ -176,9 +180,10 @@ public class RestTemplateResponseErrorHandlerTests {
 		}
 
 	}
-	
+
 	@Test
-	public void givenAuthServerErrorWithNullErrorClientHttpResponse_WhenHandleError_ThenThrowRuntimeException() throws IOException {
+	public void givenAuthServerErrorWithNullErrorClientHttpResponse_WhenHandleError_ThenThrowRuntimeException()
+			throws IOException {
 
 		AuthServerError authError = new AuthServerError();
 
@@ -203,22 +208,21 @@ public class RestTemplateResponseErrorHandlerTests {
 		}
 
 	}
-	
-	@Test
-	public void givenApiErrorWithNullErrorsClientHttpResponse_WhenHandleError_ThenThrowRuntimeException() throws IOException {
 
+	@Test
+	public void givenApiErrorWithNullErrorsClientHttpResponse_WhenHandleError_ThenThrowRuntimeException()
+			throws IOException {
 
 		ApiError apiError = new ApiError();
 		apiError.setStatus(HttpStatus.BAD_REQUEST);
-		
+
 		ClientHttpResponse clientHttpResponse = Mockito.mock(ClientHttpResponse.class);
 		when(clientHttpResponse.getBody())
 				.thenReturn(new ByteArrayInputStream(mapper.writeValueAsString(apiError).getBytes()));
 		when(clientHttpResponse.getStatusText()).thenReturn("SOME STATUS TEXT");
-		
+
 		when(objectMapper.readValue(clientHttpResponse.getBody(), ApiError.class)).thenReturn(apiError);
-	
-		
+
 		try {
 			restTemplateResponseErrorHandler.handleError(clientHttpResponse);
 			fail("No Exception thrown!");

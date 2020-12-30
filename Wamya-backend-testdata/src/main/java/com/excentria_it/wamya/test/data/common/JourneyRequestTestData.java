@@ -12,15 +12,12 @@ import com.excentria_it.wamya.application.port.in.CreateJourneyRequestUseCase.Cr
 import com.excentria_it.wamya.application.port.in.SearchJourneyRequestsUseCase.SearchJourneyRequestsCommand;
 import com.excentria_it.wamya.application.port.in.SearchJourneyRequestsUseCase.SearchJourneyRequestsCommand.SearchJourneyRequestsCommandBuilder;
 import com.excentria_it.wamya.common.SortingCriterion;
-import com.excentria_it.wamya.domain.ClientDto;
-import com.excentria_it.wamya.domain.EngineTypeDto;
-import com.excentria_it.wamya.domain.JourneyRequest;
+import com.excentria_it.wamya.domain.CreateJourneyRequestDto;
 import com.excentria_it.wamya.domain.JourneyRequestSearchDto;
 import com.excentria_it.wamya.domain.JourneyRequestsSearchResult;
-import com.excentria_it.wamya.domain.PlaceDto;
 import com.excentria_it.wamya.domain.SearchJourneyRequestsCriteria;
 import com.excentria_it.wamya.domain.SearchJourneyRequestsCriteria.SearchJourneyRequestsCriteriaBuilder;
-
+import com.excentria_it.wamya.domain.CreateJourneyRequestDto.CreateJourneyRequestDtoBuilder;
 public class JourneyRequestTestData {
 
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
@@ -54,7 +51,7 @@ public class JourneyRequestTestData {
 				@Override
 				public EngineTypeDto getEngineType() {
 
-					return new EngineTypeDto(1L, "engineType1", null);
+					return new EngineTypeDto(1L, "engineType1");
 				}
 
 				@Override
@@ -119,7 +116,7 @@ public class JourneyRequestTestData {
 				@Override
 				public EngineTypeDto getEngineType() {
 
-					return new EngineTypeDto(2L, "engineType2", null);
+					return new EngineTypeDto(2L, "engineType2");
 				}
 
 				@Override
@@ -210,13 +207,26 @@ public class JourneyRequestTestData {
 
 	}
 
-	public static JourneyRequest defaultJourneyRequest() {
-		return JourneyRequest.builder().id(1L)
-				.departurePlace(new PlaceDto("departurePlaceId", "departurePlaceRegionId", "departurePlaceName"))
-				.arrivalPlace(new PlaceDto("arrivalPlaceId", "arrivalPlaceRegionId", "arrivalPlaceName"))
-				.dateTime(startDate).endDateTime(endDate).engineType(new EngineTypeDto(1L, "EngineType1", null))
-				.client(new ClientDto(1L, "ClientFirstname", "ClientLastname")).distance(270.8).workers(2)
+	public static CreateJourneyRequestDto defaultCreateJourneyRequestDto() {
+		return CreateJourneyRequestDto.builder().id(1L)
+				.departurePlace(new CreateJourneyRequestDto.PlaceDto("departurePlaceId", "departurePlaceRegionId",
+						"departurePlaceName"))
+				.arrivalPlace(new CreateJourneyRequestDto.PlaceDto("arrivalPlaceId", "arrivalPlaceRegionId",
+						"arrivalPlaceName"))
+				.dateTime(startDate).endDateTime(endDate)
+				.engineType(new CreateJourneyRequestDto.EngineTypeDto(1L, "EngineType1")).distance(270.8).workers(2)
 				.description("Need a transporter URGENT!!!").build();
+	}
+
+	public static CreateJourneyRequestDtoBuilder defaultCreateJourneyRequestDtoBuilder() {
+		return CreateJourneyRequestDto.builder().id(1L)
+				.departurePlace(new CreateJourneyRequestDto.PlaceDto("departurePlaceId", "departurePlaceRegionId",
+						"departurePlaceName"))
+				.arrivalPlace(new CreateJourneyRequestDto.PlaceDto("arrivalPlaceId", "arrivalPlaceRegionId",
+						"arrivalPlaceName"))
+				.dateTime(startDate).endDateTime(endDate)
+				.engineType(new CreateJourneyRequestDto.EngineTypeDto(1L, "EngineType1")).distance(270.8).workers(2)
+				.description("Need a transporter URGENT!!!");
 	}
 
 	private static LocalDateTime addDays(LocalDateTime dateTime, int days) {

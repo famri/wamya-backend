@@ -37,11 +37,13 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
+import com.excentria_it.wamya.common.exception.ApiError.ErrorCode;
+
 @ExtendWith(MockitoExtension.class)
 public class RestApiExceptionHandlerTest {
 
 	@InjectMocks
-	private RestApiExceptionHandler RestApiExceptionHandler;
+	private RestApiExceptionHandler restApiExceptionHandler;
 
 	private static final String SOME_MESSAGE = "Some message";
 
@@ -75,7 +77,7 @@ public class RestApiExceptionHandlerTest {
 		WebRequest request = Mockito.mock(WebRequest.class);
 
 		// When
-		ResponseEntity<Object> responseEntity = RestApiExceptionHandler
+		ResponseEntity<Object> responseEntity = restApiExceptionHandler
 				.handleMethodArgumentNotValid(methodArgumentNotValidException, headers, status, request);
 
 		// Then
@@ -103,7 +105,7 @@ public class RestApiExceptionHandlerTest {
 		WebRequest request = Mockito.mock(WebRequest.class);
 
 		// When
-		ResponseEntity<Object> responseEntity = RestApiExceptionHandler.handleBindException(bindException, headers,
+		ResponseEntity<Object> responseEntity = restApiExceptionHandler.handleBindException(bindException, headers,
 				status, request);
 
 		// Then
@@ -130,7 +132,7 @@ public class RestApiExceptionHandlerTest {
 		WebRequest request = Mockito.mock(WebRequest.class);
 
 		// When
-		ResponseEntity<Object> responseEntity = RestApiExceptionHandler
+		ResponseEntity<Object> responseEntity = restApiExceptionHandler
 				.handleMethodArgumentTypeMismatch(methodArgumentTypeMismatch, request);
 
 		// Then
@@ -152,7 +154,7 @@ public class RestApiExceptionHandlerTest {
 		WebRequest request = Mockito.mock(WebRequest.class);
 
 		// When
-		ResponseEntity<Object> responseEntity = RestApiExceptionHandler.handleTypeMismatch(typeMismatchException,
+		ResponseEntity<Object> responseEntity = restApiExceptionHandler.handleTypeMismatch(typeMismatchException,
 				headers, status, request);
 
 		// Then
@@ -174,7 +176,7 @@ public class RestApiExceptionHandlerTest {
 		WebRequest request = Mockito.mock(WebRequest.class);
 
 		// When
-		ResponseEntity<Object> responseEntity = RestApiExceptionHandler
+		ResponseEntity<Object> responseEntity = restApiExceptionHandler
 				.handleMissingServletRequestPart(missingServletRequestPartException, headers, status, request);
 
 		// Then
@@ -195,7 +197,7 @@ public class RestApiExceptionHandlerTest {
 		WebRequest request = Mockito.mock(WebRequest.class);
 
 		// When
-		ResponseEntity<Object> responseEntity = RestApiExceptionHandler.handleMissingServletRequestParameter(
+		ResponseEntity<Object> responseEntity = restApiExceptionHandler.handleMissingServletRequestParameter(
 				missingServletRequestParameterException, headers, status, request);
 
 		// Then
@@ -215,7 +217,7 @@ public class RestApiExceptionHandlerTest {
 		WebRequest request = Mockito.mock(WebRequest.class);
 
 		// When
-		ResponseEntity<Object> responseEntity = RestApiExceptionHandler
+		ResponseEntity<Object> responseEntity = restApiExceptionHandler
 				.handleConstraintViolation(constraintViolationException, request);
 
 		// Then
@@ -239,7 +241,7 @@ public class RestApiExceptionHandlerTest {
 		WebRequest request = Mockito.mock(WebRequest.class);
 
 		// When
-		ResponseEntity<Object> responseEntity = RestApiExceptionHandler
+		ResponseEntity<Object> responseEntity = restApiExceptionHandler
 				.handleNoHandlerFoundException(noHandlerFoundException, headers, status, request);
 
 		// Then
@@ -261,7 +263,7 @@ public class RestApiExceptionHandlerTest {
 		WebRequest request = Mockito.mock(WebRequest.class);
 
 		// When
-		ResponseEntity<Object> responseEntity = RestApiExceptionHandler
+		ResponseEntity<Object> responseEntity = restApiExceptionHandler
 				.handleHttpRequestMethodNotSupported(httpRequestMethodNotSupportedException, headers, status, request);
 
 		final StringBuilder builder = new StringBuilder();
@@ -287,7 +289,7 @@ public class RestApiExceptionHandlerTest {
 		WebRequest request = Mockito.mock(WebRequest.class);
 
 		// When
-		ResponseEntity<Object> responseEntity = RestApiExceptionHandler
+		ResponseEntity<Object> responseEntity = restApiExceptionHandler
 				.handleHttpMediaTypeNotSupported(httpMediaTypeNotSupportedException, headers, status, request);
 
 		final StringBuilder builder = new StringBuilder();
@@ -304,6 +306,157 @@ public class RestApiExceptionHandlerTest {
 	}
 
 	@Test
+	void whenHandleUserAccountNotFoundException_ThenStatusIsBadRequest() {
+		// given
+		UserAccountNotFoundException exception = givenUserAccountNotFoundException();
+
+		// When
+		ResponseEntity<ApiError> responseEntity = restApiExceptionHandler.handleUserAccountNotFoundException(exception);
+
+		// Then
+		then(responseEntity.getBody() instanceof ApiError);
+		then(((ApiError) responseEntity.getBody()).getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
+		then(((ApiError) responseEntity.getBody()).getErrorCode()).isEqualTo(ErrorCode.OBJECT_NOT_FOUND);
+		then(((ApiError) responseEntity.getBody()).getErrors()).containsExactly(SOME_MESSAGE);
+		then(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+	}
+
+	@Test
+	void whenHandleUserMobileNumberValidationException_ThenStatusIsBadRequest() {
+		// given
+		UserMobileNumberValidationException exception = givenUserMobileNumberValidationException();
+
+		// When
+		ResponseEntity<ApiError> responseEntity = restApiExceptionHandler
+				.handleUserMobileNumberValidationException(exception);
+
+		// Then
+		then(responseEntity.getBody() instanceof ApiError);
+		then(((ApiError) responseEntity.getBody()).getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
+		then(((ApiError) responseEntity.getBody()).getErrorCode()).isEqualTo(ErrorCode.MOBILE_VALIDATION);
+		then(((ApiError) responseEntity.getBody()).getErrors()).containsExactly(SOME_MESSAGE);
+		then(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+	}
+
+	@Test
+	void whenHandleUserEmailValidationException_ThenStatusIsBadRequest() {
+		// given
+		UserEmailValidationException exception = givenUserEmailValidationException();
+
+		// When
+		ResponseEntity<ApiError> responseEntity = restApiExceptionHandler.handleUserEmailValidationException(exception);
+
+		// Then
+		then(responseEntity.getBody() instanceof ApiError);
+		then(((ApiError) responseEntity.getBody()).getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
+		then(((ApiError) responseEntity.getBody()).getErrorCode()).isEqualTo(ErrorCode.EMAIL_VALIDATION);
+		then(((ApiError) responseEntity.getBody()).getErrors()).containsExactly(SOME_MESSAGE);
+		then(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+	}
+
+	@Test
+	void whenHandleUserAccountAlreadyExistsException_ThenStatusIsBadRequest() {
+		// given
+		UserAccountAlreadyExistsException exception = givenUserAccountAlreadyExistsException();
+
+		// When
+		ResponseEntity<ApiError> responseEntity = restApiExceptionHandler
+				.handleUserAccountAlreadyExistsException(exception);
+
+		// Then
+		then(responseEntity.getBody() instanceof ApiError);
+		then(((ApiError) responseEntity.getBody()).getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
+		then(((ApiError) responseEntity.getBody()).getErrorCode()).isEqualTo(ErrorCode.ACCOUNT_EXISTS);
+		then(((ApiError) responseEntity.getBody()).getErrors()).containsExactly("User account already exists.");
+		then(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+	}
+
+	@Test
+	void whenHandleUnsupportedInternationalCallingCode_ThenStatusIsBadRequest() {
+		// given
+		UnsupportedInternationalCallingCode exception = givenUnsupportedInternationalCallingCode();
+
+		// When
+		ResponseEntity<ApiError> responseEntity = restApiExceptionHandler
+				.handleUnsupportedInternationalCallingCode(exception);
+
+		// Then
+		then(responseEntity.getBody() instanceof ApiError);
+		then(((ApiError) responseEntity.getBody()).getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
+		then(((ApiError) responseEntity.getBody()).getErrorCode()).isEqualTo(ErrorCode.VALIDATION_ERROR);
+		then(((ApiError) responseEntity.getBody()).getErrors())
+				.containsExactly("International calling code is not supported.");
+		then(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+	}
+
+	@Test
+	void whenHandleInvalidTransporterVehiculeException_ThenStatusIsBadRequest() {
+		// given
+		InvalidTransporterVehiculeException exception = givenInvalidTransporterVehiculeException();
+
+		// When
+		ResponseEntity<ApiError> responseEntity = restApiExceptionHandler
+				.handleInvalidTransporterVehiculeException(exception);
+
+		// Then
+		then(responseEntity.getBody() instanceof ApiError);
+		then(((ApiError) responseEntity.getBody()).getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
+		then(((ApiError) responseEntity.getBody()).getErrorCode()).isEqualTo(ErrorCode.VALIDATION_ERROR);
+		then(((ApiError) responseEntity.getBody()).getErrors()).containsExactly(SOME_MESSAGE);
+		then(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+	}
+
+	@Test
+	void whenHandleAuthorizationException_ThenStatusIsUnauthorized() {
+		// given
+		AuthorizationException exception = givenAuthorizationException();
+
+		// When
+		ResponseEntity<ApiError> responseEntity = restApiExceptionHandler.handleAuthorizationException(exception);
+
+		// Then
+		then(responseEntity.getBody() instanceof ApiError);
+		then(((ApiError) responseEntity.getBody()).getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED);
+		then(((ApiError) responseEntity.getBody()).getErrorCode()).isEqualTo(ErrorCode.AUTHORIZATION);
+		then(((ApiError) responseEntity.getBody()).getErrors()).containsExactly(SOME_MESSAGE);
+		then(responseEntity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+	}
+
+	@Test
+	void whenHandleJourneyRequestNotFoundException_ThenStatusIsBadRequest() {
+		// given
+		JourneyRequestNotFoundException exception = givenJourneyRequestNotFoundException();
+
+		// When
+		ResponseEntity<ApiError> responseEntity = restApiExceptionHandler
+				.handleJourneyRequestNotFoundException(exception);
+
+		// Then
+		then(responseEntity.getBody() instanceof ApiError);
+		then(((ApiError) responseEntity.getBody()).getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
+		then(((ApiError) responseEntity.getBody()).getErrorCode()).isEqualTo(ErrorCode.OBJECT_NOT_FOUND);
+		then(((ApiError) responseEntity.getBody()).getErrors()).containsExactly(SOME_MESSAGE);
+		then(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+	}
+
+	@Test
+	void whenHandleJourneyRequestExpiredException_ThenStatusIsBadRequest() {
+		// given
+		JourneyRequestExpiredException exception = givenJourneyRequestExpiredException();
+
+		// When
+		ResponseEntity<ApiError> responseEntity = restApiExceptionHandler
+				.handleJourneyRequestExpiredException(exception);
+
+		// Then
+		then(responseEntity.getBody() instanceof ApiError);
+		then(((ApiError) responseEntity.getBody()).getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
+		then(((ApiError) responseEntity.getBody()).getErrorCode()).isEqualTo(ErrorCode.VALIDATION_ERROR);
+		then(((ApiError) responseEntity.getBody()).getErrors()).containsExactly(SOME_MESSAGE);
+		then(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+	}
+
+	@Test
 	void whenHandleAll_thenStatusIsMethodNotAllowed() {
 		// given
 		Exception exception = givenAnyOtherException();
@@ -311,14 +464,81 @@ public class RestApiExceptionHandlerTest {
 		WebRequest request = Mockito.mock(WebRequest.class);
 
 		// When
-		ResponseEntity<Object> responseEntity = RestApiExceptionHandler.handleAll(exception, request);
+		ResponseEntity<Object> responseEntity = restApiExceptionHandler.handleAll(exception, request);
 
 		// Then
 		then(responseEntity.getBody() instanceof ApiError);
 		then(((ApiError) responseEntity.getBody()).getStatus()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+		then(((ApiError) responseEntity.getBody()).getErrorCode()).isEqualTo(ErrorCode.INTERNAL_SERVER_ERROR);
 		then(((ApiError) responseEntity.getBody()).getErrors()).containsExactly(ERROR_OCCURED);
 		then(responseEntity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
 
+	}
+
+	private UserAccountNotFoundException givenUserAccountNotFoundException() {
+		UserAccountNotFoundException exception = Mockito.mock(UserAccountNotFoundException.class);
+		given(exception.getMessage()).willReturn(SOME_MESSAGE);
+
+		return exception;
+	}
+
+	private InvalidTransporterVehiculeException givenInvalidTransporterVehiculeException() {
+		InvalidTransporterVehiculeException exception = Mockito.mock(InvalidTransporterVehiculeException.class);
+		given(exception.getMessage()).willReturn(SOME_MESSAGE);
+
+		return exception;
+	}
+
+	private UserMobileNumberValidationException givenUserMobileNumberValidationException() {
+
+		UserMobileNumberValidationException exception = Mockito.mock(UserMobileNumberValidationException.class);
+		given(exception.getMessage()).willReturn(SOME_MESSAGE);
+
+		return exception;
+	}
+
+	private UserEmailValidationException givenUserEmailValidationException() {
+
+		UserEmailValidationException exception = Mockito.mock(UserEmailValidationException.class);
+		given(exception.getMessage()).willReturn(SOME_MESSAGE);
+
+		return exception;
+	}
+
+	private UserAccountAlreadyExistsException givenUserAccountAlreadyExistsException() {
+
+		UserAccountAlreadyExistsException exception = Mockito.mock(UserAccountAlreadyExistsException.class);
+		given(exception.getMessage()).willReturn(SOME_MESSAGE);
+
+		return exception;
+	}
+
+	private UnsupportedInternationalCallingCode givenUnsupportedInternationalCallingCode() {
+		UnsupportedInternationalCallingCode exception = Mockito.mock(UnsupportedInternationalCallingCode.class);
+		given(exception.getMessage()).willReturn(SOME_MESSAGE);
+
+		return exception;
+	}
+
+	private AuthorizationException givenAuthorizationException() {
+		AuthorizationException exception = Mockito.mock(AuthorizationException.class);
+		given(exception.getMessage()).willReturn(SOME_MESSAGE);
+
+		return exception;
+	}
+
+	private JourneyRequestNotFoundException givenJourneyRequestNotFoundException() {
+		JourneyRequestNotFoundException exception = Mockito.mock(JourneyRequestNotFoundException.class);
+		given(exception.getMessage()).willReturn(SOME_MESSAGE);
+
+		return exception;
+	}
+
+	private JourneyRequestExpiredException givenJourneyRequestExpiredException() {
+		JourneyRequestExpiredException exception = Mockito.mock(JourneyRequestExpiredException.class);
+		given(exception.getMessage()).willReturn(SOME_MESSAGE);
+
+		return exception;
 	}
 
 	private Exception givenAnyOtherException() {
@@ -360,7 +580,7 @@ public class RestApiExceptionHandlerTest {
 
 		ConstraintViolation<SomeObject> constraintViolation = Mockito.mock(ConstraintViolation.class);
 
-		//given(constraintViolation.getRootBeanClass()).willReturn(SomeObject.class);
+		// given(constraintViolation.getRootBeanClass()).willReturn(SomeObject.class);
 
 		Path path = Mockito.mock(Path.class);
 

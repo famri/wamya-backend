@@ -30,6 +30,7 @@ import com.excentria_it.wamya.application.port.in.SendValidationCodeUseCase.Send
 import com.excentria_it.wamya.application.port.in.SendValidationCodeUseCase.SendSMSValidationCodeCommand;
 import com.excentria_it.wamya.common.annotation.ValidationMessageSource;
 import com.excentria_it.wamya.common.exception.ApiError;
+import com.excentria_it.wamya.common.exception.ApiError.ErrorCode;
 import com.excentria_it.wamya.common.exception.RestApiExceptionHandler;
 import com.excentria_it.wamya.common.exception.UserAccountNotFoundException;
 import com.excentria_it.wamya.common.exception.UserEmailValidationException;
@@ -116,12 +117,13 @@ public class SendValidationCodeControllerTests {
 				.build();
 
 		given(sendValidationCodeUseCase.sendSMSValidationCode(eq(command), any(Locale.class)))
-				.willThrow(UserMobileNumberValidationException.class);
+				.willThrow(new UserMobileNumberValidationException("Some error message."));
 
 		// When, Then
 		String commandJson = objectMapper.writeValueAsString(command);
 
-		ApiError expectedApiError = new ApiError(HttpStatus.BAD_REQUEST, "User mobile number already validated.");
+		ApiError expectedApiError = new ApiError(HttpStatus.BAD_REQUEST, ErrorCode.MOBILE_VALIDATION,
+				"Some error message.");
 
 		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
 				.authorities("SCOPE_profile:write"))
@@ -167,7 +169,7 @@ public class SendValidationCodeControllerTests {
 				.build();
 
 		given(sendValidationCodeUseCase.sendSMSValidationCode(eq(command), any(Locale.class)))
-				.willThrow(UserAccountNotFoundException.class);
+				.willThrow(new UserAccountNotFoundException("Some error message."));
 
 		// When, Then
 		String commandJson = objectMapper.writeValueAsString(command);
@@ -177,7 +179,7 @@ public class SendValidationCodeControllerTests {
 				.perform(
 						post("/validation-codes/sms/send").contentType(MediaType.APPLICATION_JSON).content(commandJson))
 				.andExpect(status().isBadRequest())
-				.andExpect(responseBody().containsApiErrors(List.of("User account not found.")));
+				.andExpect(responseBody().containsApiErrors(List.of("Some error message.")));
 
 	}
 
@@ -231,7 +233,7 @@ public class SendValidationCodeControllerTests {
 		then(sendValidationCodeUseCase).should(times(1)).sendEmailValidationLink(eq(command), any(Locale.class));
 
 	}
-	
+
 	@Test
 	void givenValidInputAndBadAuthority_WhenSendEmailValidationLink_ThenReturnForbidden() throws Exception {
 
@@ -243,7 +245,6 @@ public class SendValidationCodeControllerTests {
 
 		// When
 		String commandJson = objectMapper.writeValueAsString(command);
-		
 
 		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
 				.authorities("SCOPE_profile:read"))
@@ -265,12 +266,13 @@ public class SendValidationCodeControllerTests {
 				.email(TestConstants.DEFAULT_EMAIL).build();
 
 		given(sendValidationCodeUseCase.sendEmailValidationLink(eq(command), any(Locale.class)))
-				.willThrow(UserEmailValidationException.class);
+				.willThrow(new UserEmailValidationException("Some error message."));
 
 		// When, Then
 		String commandJson = objectMapper.writeValueAsString(command);
 
-		ApiError expectedApiError = new ApiError(HttpStatus.BAD_REQUEST, "User email already validated.");
+		ApiError expectedApiError = new ApiError(HttpStatus.BAD_REQUEST, ErrorCode.EMAIL_VALIDATION,
+				"Some error message.");
 
 		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
 				.authorities("SCOPE_profile:write"))

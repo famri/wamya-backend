@@ -4,8 +4,12 @@ import java.util.Optional;
 
 import com.excentria_it.wamya.adapter.persistence.entity.InternationalCallingCodeJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.UserAccountJpaEntity;
+import com.excentria_it.wamya.adapter.persistence.mapper.ClientMapper;
+import com.excentria_it.wamya.adapter.persistence.mapper.TransporterMapper;
 import com.excentria_it.wamya.adapter.persistence.mapper.UserAccountMapper;
+import com.excentria_it.wamya.adapter.persistence.repository.ClientRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.InternationalCallingCodeRepository;
+import com.excentria_it.wamya.adapter.persistence.repository.TransporterRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.UserAccountRepository;
 import com.excentria_it.wamya.application.port.out.CreateUserAccountPort;
 import com.excentria_it.wamya.application.port.out.LoadUserAccountPort;
@@ -24,19 +28,35 @@ public class UserAccountPersistenceAdapter
 
 	private final UserAccountRepository userAccountRepository;
 
+	private final TransporterRepository transporterRepository;
+
+	private final ClientRepository clientRepository;
+
 	private final InternationalCallingCodeRepository iccRepository;
 
 	private final UserAccountMapper userAccountMapper;
 
+	private final TransporterMapper transporterMapper;
+
+	private final ClientMapper clientMapper;
+
 	@Override
 	public Long createUserAccount(UserAccount userAccount) throws UnsupportedInternationalCallingCode {
+
 		Optional<InternationalCallingCodeJpaEntity> iccEntity = iccRepository
 				.findByValue(userAccount.getMobilePhoneNumber().getInternationalCallingCode());
+
 		if (iccEntity.isEmpty())
 			throw new UnsupportedInternationalCallingCode(String.format("Unsupported international calling code %s",
 					userAccount.getMobilePhoneNumber().getInternationalCallingCode()));
-		UserAccountJpaEntity result = userAccountRepository
-				.save(userAccountMapper.mapToJpaEntity(userAccount, iccEntity.get()));
+
+		UserAccountJpaEntity result;
+		if (userAccount.getIsTransporter()) {
+			result = transporterRepository.save(transporterMapper.mapToJpaEntity(userAccount, iccEntity.get()));
+		} else {
+			result = clientRepository.save(clientMapper.mapToJpaEntity(userAccount, iccEntity.get()));
+		}
+
 		return result.getId();
 	}
 

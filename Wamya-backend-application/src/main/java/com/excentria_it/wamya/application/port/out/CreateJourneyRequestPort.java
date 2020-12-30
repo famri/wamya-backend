@@ -1,9 +1,9 @@
 package com.excentria_it.wamya.application.port.out;
 
-import com.excentria_it.wamya.domain.JourneyRequest;
+import com.excentria_it.wamya.domain.CreateJourneyRequestDto;
 
 public interface CreateJourneyRequestPort {
 
-	JourneyRequest createJourneyRequest(JourneyRequest journeyRequest, String username);
+	CreateJourneyRequestDto createJourneyRequest(CreateJourneyRequestDto journeyRequest, String username);
 
 }

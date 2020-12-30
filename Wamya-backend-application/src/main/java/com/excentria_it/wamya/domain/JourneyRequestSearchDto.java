@@ -4,17 +4,20 @@ import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Value;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
 public interface JourneyRequestSearchDto {
 
 	Long getId();
 
-	@Value("#{T(com.excentria_it.wamya.application.utils.MapperUtility).buildPlaceDto(target.departurePlaceId, target.departurePlaceRegionId, target.departurePlaceName)}")
+	@Value("#{new  com.excentria_it.wamya.domain.JourneyRequestSearchDto.PlaceDto(target.departurePlaceId, target.departurePlaceRegionId, target.departurePlaceName)}")
 	PlaceDto getDeparturePlace();
 
-	@Value("#{T(com.excentria_it.wamya.application.utils.MapperUtility).buildPlaceDto(target.arrivalPlaceId, target.arrivalPlaceRegionId, target.arrivalPlaceName)}")
+	@Value("#{new com.excentria_it.wamya.domain.JourneyRequestSearchDto.PlaceDto(target.arrivalPlaceId, target.arrivalPlaceRegionId, target.arrivalPlaceName)}")
 	PlaceDto getArrivalPlace();
 
-	@Value("#{T(com.excentria_it.wamya.application.utils.MapperUtility).buildEngineTypeDto(target.engineTypeId, target.engineTypeName)}")
+	@Value("#{new com.excentria_it.wamya.domain.JourneyRequestSearchDto.EngineTypeDto(target.engineTypeId, target.engineTypeName)}")
 	EngineTypeDto getEngineType();
 
 	Double getDistance();
@@ -27,9 +30,41 @@ public interface JourneyRequestSearchDto {
 
 	String getDescription();
 
-	@Value("#{T(com.excentria_it.wamya.application.utils.MapperUtility).buildClientDto(target.clientId, target.clientFirstname, target.clientPhotoUrl)}")
+	@Value("#{new com.excentria_it.wamya.domain.JourneyRequestSearchDto.ClientDto(target.clientId, target.clientFirstname, target.clientPhotoUrl)}")
 	ClientDto getClient();
 
 	Integer getMinPrice();
+
+	@AllArgsConstructor
+	@Data
+	class EngineTypeDto {
+
+		private Long id;
+
+		private String name;
+
+	}
+
+	@AllArgsConstructor
+	@Data
+	class PlaceDto {
+
+		private String placeId;
+
+		private String placeRegionId;
+
+		private String placeName;
+	}
+
+	@AllArgsConstructor
+	@Data
+	class ClientDto {
+
+		private Long id;
+
+		private String firstname;
+
+		private String photoUrl;
+	}
 
 }

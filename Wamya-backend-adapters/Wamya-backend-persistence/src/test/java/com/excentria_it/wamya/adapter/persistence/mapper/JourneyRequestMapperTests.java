@@ -7,11 +7,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
+import com.excentria_it.wamya.adapter.persistence.entity.ClientJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.EngineTypeJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.JourneyRequestJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.PlaceJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.UserAccountJpaEntity;
-import com.excentria_it.wamya.domain.JourneyRequest;
+import com.excentria_it.wamya.domain.CreateJourneyRequestDto;
 
 public class JourneyRequestMapperTests {
 
@@ -19,15 +20,15 @@ public class JourneyRequestMapperTests {
 
 	@Test
 	void testMapToJpaEntity() {
-		JourneyRequest journeyRequest = defaultJourneyRequest();
+		CreateJourneyRequestDto journeyRequest = defaultCreateJourneyRequestDto();
 		PlaceJpaEntity departurePlaceJpaEntity = defaultDeparturePlaceJpaEntity();
 		PlaceJpaEntity arrivalPlaceJpaEntity = defaultArrivalPlaceJpaEntity();
 		EngineTypeJpaEntity engineTypeJpaEntity = defaultEngineTypeJpaEntity();
 
-		UserAccountJpaEntity userAccountJpaEntity = defaultNewNotTransporterUserAccountJpaEntity();
+		ClientJpaEntity clientJpaEntity = defaultExistentClientJpaEntity();
 
 		JourneyRequestJpaEntity journeyRequestJpaEntity = journeyRequestMapper.mapToJpaEntity(journeyRequest,
-				departurePlaceJpaEntity, arrivalPlaceJpaEntity, engineTypeJpaEntity, userAccountJpaEntity, null);
+				departurePlaceJpaEntity, arrivalPlaceJpaEntity, engineTypeJpaEntity, clientJpaEntity);
 
 		assertEquals(journeyRequest.getId(), journeyRequestJpaEntity.getId());
 
@@ -45,29 +46,29 @@ public class JourneyRequestMapperTests {
 
 		assertEquals(journeyRequest.getDescription(), journeyRequestJpaEntity.getDescription());
 
-		assertEquals(userAccountJpaEntity, journeyRequestJpaEntity.getClient());
+		assertEquals(clientJpaEntity, journeyRequestJpaEntity.getClient());
 
 	}
 
 	@Test
 	void testMapToJpaEntityFromNullDomainEntity() {
-		JourneyRequest journeyRequest = null;
+		CreateJourneyRequestDto journeyRequest = null;
 		PlaceJpaEntity departurePlaceJpaEntity = defaultDeparturePlaceJpaEntity();
 		PlaceJpaEntity arrivalPlaceJpaEntity = defaultArrivalPlaceJpaEntity();
 		EngineTypeJpaEntity engineTypeJpaEntity = defaultEngineTypeJpaEntity();
 
-		UserAccountJpaEntity userAccountJpaEntity = defaultNewNotTransporterUserAccountJpaEntity();
+		ClientJpaEntity clientJpaEntity = defaultExistentClientJpaEntity();
 
 		JourneyRequestJpaEntity journeyRequestJpaEntity = journeyRequestMapper.mapToJpaEntity(journeyRequest,
-				departurePlaceJpaEntity, arrivalPlaceJpaEntity, engineTypeJpaEntity, userAccountJpaEntity, null);
+				departurePlaceJpaEntity, arrivalPlaceJpaEntity, engineTypeJpaEntity, clientJpaEntity);
 
 		assertNull(journeyRequestJpaEntity);
 	}
 
 	@Test
 	void testMapToDoaminEntity() {
-		JourneyRequestJpaEntity journeyRequestJpaEntity = defaultNewJourneyRequestJpaEntity();
-		JourneyRequest journeyRequest = journeyRequestMapper.mapToDomainEntity(journeyRequestJpaEntity, "en");
+		JourneyRequestJpaEntity journeyRequestJpaEntity = defaultExistentJourneyRequestJpaEntity();
+		CreateJourneyRequestDto journeyRequest = journeyRequestMapper.mapToDomainEntity(journeyRequestJpaEntity, "en");
 
 		assertEquals(journeyRequestJpaEntity.getId(), journeyRequest.getId());
 
@@ -93,16 +94,12 @@ public class JourneyRequestMapperTests {
 
 		assertEquals(journeyRequestJpaEntity.getDescription(), journeyRequest.getDescription());
 
-		assertEquals(journeyRequestJpaEntity.getClient().getId(), journeyRequest.getClient().getId());
-		assertEquals(journeyRequestJpaEntity.getClient().getFirstname(), journeyRequest.getClient().getFirstname());
-		assertEquals(journeyRequestJpaEntity.getClient().getPhotoUrl(), journeyRequest.getClient().getPhotoUrl());
-
 	}
 
 	@Test
 	void testMapToDoaminEntityFromNullJpaEntity() {
 		JourneyRequestJpaEntity journeyRequestJpaEntity = null;
-		JourneyRequest journeyRequest = journeyRequestMapper.mapToDomainEntity(journeyRequestJpaEntity, "en");
+		CreateJourneyRequestDto journeyRequest = journeyRequestMapper.mapToDomainEntity(journeyRequestJpaEntity, "en");
 
 		assertNull(journeyRequest);
 

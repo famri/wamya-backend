@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 		if (!userEntity.isPresent()) {
 			userEntity = userRepository.findByPhoneNumber(username);
 			if (!userEntity.isPresent()) {
-				throw new UsernameNotFoundException(username);
+				throw new UsernameNotFoundException("Username " + username + " does not exist.");
 			}
 
 		}
@@ -113,7 +113,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 		if (!userEntityOptional.isPresent()) {
 			userEntityOptional = userRepository.findByPhoneNumber(username);
 			if (!userEntityOptional.isPresent()) {
-				throw new UsernameNotFoundException(username);
+				throw new UsernameNotFoundException("Username " + username + " does not exist.");
 			}
 
 		}

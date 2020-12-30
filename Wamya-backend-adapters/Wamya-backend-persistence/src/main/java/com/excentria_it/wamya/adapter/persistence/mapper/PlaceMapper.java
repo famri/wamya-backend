@@ -3,7 +3,7 @@ package com.excentria_it.wamya.adapter.persistence.mapper;
 import org.springframework.stereotype.Component;
 
 import com.excentria_it.wamya.adapter.persistence.entity.PlaceJpaEntity;
-import com.excentria_it.wamya.domain.PlaceDto;
+import com.excentria_it.wamya.domain.CreateJourneyRequestDto.PlaceDto;
 
 @Component
 public class PlaceMapper {

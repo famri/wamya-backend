@@ -1,6 +1,5 @@
 package com.excentria_it.wamya.adapter.web;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.convert.converter.Converter;
@@ -22,7 +21,7 @@ import com.excentria_it.wamya.common.annotation.Generated;
 @Generated
 public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-	//@Autowired
+	// @Autowired
 	Converter<Jwt, JwtAuthenticationToken> authenticationConverter;
 
 	@Override
@@ -31,21 +30,23 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 				.authorizeRequests(authz -> authz.antMatchers("/actuator/**").permitAll()
 						.antMatchers(HttpMethod.POST, "/login/**", "/accounts/**").permitAll()
-						.antMatchers(HttpMethod.GET, "/journey-requests/**").hasAuthority("SCOPE_journey:read")
-						// .antMatchers(HttpMethod.POST,
-						// "/journey-requests/**").hasAuthority("SCOPE_journery:write")
-						.antMatchers(HttpMethod.POST, "/journey-requests/**").hasAuthority("SCOPE_journey:write")
+
 						.antMatchers(HttpMethod.GET, "/profiles/**").hasAuthority("SCOPE_profile:read")
 						.antMatchers(HttpMethod.POST, "/profiles/**").hasAuthority("SCOPE_profile:write")
 						.antMatchers(HttpMethod.PATCH, "/profiles/**").hasAuthority("SCOPE_profile:write")
-						.antMatchers(HttpMethod.GET, "/journey-proposals/**").hasAuthority("SCOPE_offer:read")
+						.antMatchers(HttpMethod.GET, "/journey-requests/{\\d+}/proposals")
+						.hasAuthority("SCOPE_offer:read")
+						.antMatchers(HttpMethod.POST, "/journey-requests/{\\d+}/proposals")
+						.hasAuthority("SCOPE_offer:write").antMatchers(HttpMethod.GET, "/journey-requests/**")
+						.hasAuthority("SCOPE_journey:read").antMatchers(HttpMethod.POST, "/journey-requests/**")
+						.hasAuthority("SCOPE_journey:write")
 						.antMatchers(HttpMethod.POST, "/validation-codes/sms/send/**")
 						.hasAuthority("SCOPE_profile:write")
 						.antMatchers(HttpMethod.POST, "/validation-codes/email/send/**")
 						.hasAuthority("SCOPE_profile:write").anyRequest().authenticated())
 				.oauth2ResourceServer().jwt()
-				//.jwtAuthenticationConverter(authenticationConverter)
-				;
+		// .jwtAuthenticationConverter(authenticationConverter)
+		;
 	}
 
 }

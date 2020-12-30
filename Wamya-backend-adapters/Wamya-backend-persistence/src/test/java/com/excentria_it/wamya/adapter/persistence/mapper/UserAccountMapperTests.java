@@ -4,7 +4,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
+import com.excentria_it.wamya.adapter.persistence.entity.ClientJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.InternationalCallingCodeJpaEntity;
+import com.excentria_it.wamya.adapter.persistence.entity.TransporterJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.UserAccountJpaEntity;
 import com.excentria_it.wamya.domain.UserAccount;
 import com.excentria_it.wamya.test.data.common.InternationalCallingCodeJpaEntityTestData;
@@ -16,16 +18,17 @@ public class UserAccountMapperTests {
 	private UserAccountMapper userAccountMapper = new UserAccountMapper();
 
 	@Test
-	void testMapToJpaEntity() {
+	void testMapClientUserAccountToJpaEntity() {
 
-		UserAccount userAccount = UserAccountTestData.defaultUserAccountBuilder().build();
+		UserAccount userAccount = UserAccountTestData.defaultUserAccountBuilder().isTransporter(false).build();
 		InternationalCallingCodeJpaEntity iccEntity = InternationalCallingCodeJpaEntityTestData
 				.defaultExistentInternationalCallingCodeJpaEntity();
+
 		UserAccountJpaEntity userAccountJpaEntity = userAccountMapper.mapToJpaEntity(userAccount, iccEntity);
 
 		assertEquals(userAccount.getId(), userAccountJpaEntity.getId());
 
-		assertEquals(userAccount.getIsTransporter(), userAccountJpaEntity.getIsTransporter());
+		assertTrue(userAccountJpaEntity instanceof ClientJpaEntity);
 
 		assertEquals(userAccount.getGender(), userAccountJpaEntity.getGender());
 
@@ -58,9 +61,64 @@ public class UserAccountMapperTests {
 	}
 
 	@Test
-	void testMapToJpaEntityWithNullUserAccountCreationDateTime() {
+	void testMapTransporterUserAccountToJpaEntity() {
+
+		UserAccount userAccount = UserAccountTestData.defaultUserAccountBuilder().isTransporter(true).build();
+		InternationalCallingCodeJpaEntity iccEntity = InternationalCallingCodeJpaEntityTestData
+				.defaultExistentInternationalCallingCodeJpaEntity();
+
+		UserAccountJpaEntity userAccountJpaEntity = userAccountMapper.mapToJpaEntity(userAccount, iccEntity);
+
+		assertEquals(userAccount.getId(), userAccountJpaEntity.getId());
+
+		assertTrue(userAccountJpaEntity instanceof TransporterJpaEntity);
+
+		assertEquals(userAccount.getGender(), userAccountJpaEntity.getGender());
+
+		assertEquals(userAccount.getFirstname(), userAccountJpaEntity.getFirstname());
+
+		assertEquals(userAccount.getLastname(), userAccountJpaEntity.getLastname());
+
+		assertEquals(userAccount.getDateOfBirth(), userAccountJpaEntity.getDateOfBirth());
+
+		assertEquals(userAccount.getEmail(), userAccountJpaEntity.getEmail());
+
+		assertEquals(userAccount.getEmailValidationCode(), userAccountJpaEntity.getEmailValidationCode());
+
+		assertEquals(userAccount.getIsValidatedEmail(), userAccountJpaEntity.getIsValidatedEmail());
+
+		assertEquals(iccEntity.getId(), userAccountJpaEntity.getIcc().getId());
+
+		assertEquals(iccEntity.getValue(), userAccountJpaEntity.getIcc().getValue());
+
+		assertEquals(userAccount.getMobilePhoneNumber().getMobileNumber(), userAccountJpaEntity.getMobileNumber());
+
+		assertEquals(userAccount.getMobileNumberValidationCode(), userAccountJpaEntity.getMobileNumberValidationCode());
+
+		assertEquals(userAccount.getIsValidatedMobileNumber(), userAccountJpaEntity.getIsValidatedMobileNumber());
+
+		assertEquals(userAccount.getReceiveNewsletter(), userAccountJpaEntity.getReceiveNewsletter());
+
+		assertEquals(userAccount.getCreationDateTime(), userAccountJpaEntity.getCreationDateTime());
+
+	}
+
+	@Test
+	void testMapToJpaEntityWithNullClientAccountCreationDateTime() {
 
 		UserAccount userAccount = UserAccountTestData.defaultUserAccountBuilder().creationDateTime(null).build();
+		InternationalCallingCodeJpaEntity iccEntity = InternationalCallingCodeJpaEntityTestData
+				.defaultExistentInternationalCallingCodeJpaEntity();
+		UserAccountJpaEntity userAccountJpaEntity = userAccountMapper.mapToJpaEntity(userAccount, iccEntity);
+
+		assertNotNull(userAccountJpaEntity.getCreationDateTime());
+
+	}
+	
+	@Test
+	void testMapToJpaEntityWithNullTransporterAccountCreationDateTime() {
+
+		UserAccount userAccount = UserAccountTestData.defaultUserAccountBuilder().isTransporter(true).creationDateTime(null).build();
 		InternationalCallingCodeJpaEntity iccEntity = InternationalCallingCodeJpaEntityTestData
 				.defaultExistentInternationalCallingCodeJpaEntity();
 		UserAccountJpaEntity userAccountJpaEntity = userAccountMapper.mapToJpaEntity(userAccount, iccEntity);
@@ -84,14 +142,13 @@ public class UserAccountMapperTests {
 	@Test
 	void testMapToDomainEntity() {
 
-		UserAccountJpaEntity userAccountJpaEntity = UserAccountJpaEntityTestData
-				.defaultExistingNotTransporterUserAccountJpaEntity();
+		UserAccountJpaEntity userAccountJpaEntity = UserAccountJpaEntityTestData.defaultExistentClientJpaEntity();
 
 		UserAccount userAccount = userAccountMapper.mapToDomainEntity(userAccountJpaEntity);
 
 		assertEquals(userAccount.getId(), userAccountJpaEntity.getId());
 
-		assertEquals(userAccount.getIsTransporter(), userAccountJpaEntity.getIsTransporter());
+		assertEquals(userAccount.getIsTransporter(), userAccountJpaEntity instanceof TransporterJpaEntity);
 
 		assertEquals(userAccount.getGender(), userAccountJpaEntity.getGender());
 

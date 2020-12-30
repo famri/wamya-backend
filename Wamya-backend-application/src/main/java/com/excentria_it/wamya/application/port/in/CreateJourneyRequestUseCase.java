@@ -2,10 +2,9 @@ package com.excentria_it.wamya.application.port.in;
 
 import java.time.LocalDateTime;
 
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
-import com.excentria_it.wamya.domain.JourneyRequest;
+import com.excentria_it.wamya.domain.CreateJourneyRequestDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,7 +13,7 @@ import lombok.NoArgsConstructor;
 
 public interface CreateJourneyRequestUseCase {
 
-	JourneyRequest createJourneyRequest(CreateJourneyRequestCommand command, String username);
+	CreateJourneyRequestDto createJourneyRequest(CreateJourneyRequestCommand command, String username);
 
 	@Data
 	@NoArgsConstructor

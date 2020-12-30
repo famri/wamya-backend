@@ -24,13 +24,14 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.jpa.domain.JpaSort;
 import org.springframework.test.context.ActiveProfiles;
 
+import com.excentria_it.wamya.adapter.persistence.entity.ClientJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.EngineTypeJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.JourneyProposalJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.JourneyRequestJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.LocalizedEngineTypeJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.LocalizedId;
 import com.excentria_it.wamya.adapter.persistence.entity.PlaceJpaEntity;
-import com.excentria_it.wamya.adapter.persistence.entity.UserAccountJpaEntity;
+import com.excentria_it.wamya.adapter.persistence.entity.TransporterJpaEntity;
 import com.excentria_it.wamya.domain.JourneyRequestSearchDto;
 
 @DataJpaTest
@@ -42,7 +43,10 @@ public class JourneyRequestRepositoryTests {
 	private JourneyRequestRepository journeyRequestRepository;
 
 	@Autowired
-	private UserAccountRepository userAccountRepository;
+	private ClientRepository clientRepository;
+
+	@Autowired
+	private TransporterRepository transporterRepository;
 
 	@Autowired
 	private EngineTypeRepository engineTypeRepository;
@@ -63,11 +67,11 @@ public class JourneyRequestRepositoryTests {
 		List<PlaceJpaEntity> departurePlaces = givenDeparturePlaces();
 		List<PlaceJpaEntity> arrivalPlaces = givenArrivalPlaces();
 		List<EngineTypeJpaEntity> engineTypes = givenEngineTypes();
-		List<UserAccountJpaEntity> clients = givenClients();
+		List<ClientJpaEntity> clients = givenClients();
 		List<LocalDateTime> dates = givenLocalDateTimes();
 		List<LocalDateTime> endDates = givenEndDates();
 		List<Double> distances = givenDistances();
-		List<UserAccountJpaEntity> transporters = givenTransporters();
+		List<TransporterJpaEntity> transporters = givenTransporters();
 		List<String> descriptions = givenDescriptions();
 
 		Map<Integer, Set<JourneyProposalJpaEntity>> proposalsMap = givenProposals(transporters);
@@ -124,11 +128,11 @@ public class JourneyRequestRepositoryTests {
 		List<PlaceJpaEntity> departurePlaces = givenDeparturePlaces();
 		List<PlaceJpaEntity> arrivalPlaces = givenArrivalPlaces();
 		List<EngineTypeJpaEntity> engineTypes = givenEngineTypes();
-		List<UserAccountJpaEntity> clients = givenClients();
+		List<ClientJpaEntity> clients = givenClients();
 		List<LocalDateTime> dates = givenLocalDateTimes();
 		List<LocalDateTime> endDates = givenEndDates();
 		List<Double> distances = givenDistances();
-		List<UserAccountJpaEntity> transporters = givenTransporters();
+		List<TransporterJpaEntity> transporters = givenTransporters();
 		List<String> descriptions = givenDescriptions();
 
 		Map<Integer, Set<JourneyProposalJpaEntity>> proposalsMap = givenProposals(transporters);
@@ -183,11 +187,11 @@ public class JourneyRequestRepositoryTests {
 		List<PlaceJpaEntity> departurePlaces = givenDeparturePlaces();
 		List<PlaceJpaEntity> arrivalPlaces = givenArrivalPlaces();
 		List<EngineTypeJpaEntity> engineTypes = givenEngineTypes();
-		List<UserAccountJpaEntity> clients = givenClients();
+		List<ClientJpaEntity> clients = givenClients();
 		List<LocalDateTime> dates = givenLocalDateTimes();
 		List<LocalDateTime> endDates = givenEndDates();
 		List<Double> distances = givenDistances();
-		List<UserAccountJpaEntity> transporters = givenTransporters();
+		List<TransporterJpaEntity> transporters = givenTransporters();
 		List<String> descriptions = givenDescriptions();
 
 		Map<Integer, Set<JourneyProposalJpaEntity>> proposalsMap = givenProposals(transporters);
@@ -237,11 +241,11 @@ public class JourneyRequestRepositoryTests {
 		List<PlaceJpaEntity> departurePlaces = givenDeparturePlaces();
 		List<PlaceJpaEntity> arrivalPlaces = givenArrivalPlaces();
 		List<EngineTypeJpaEntity> engineTypes = givenEngineTypes();
-		List<UserAccountJpaEntity> clients = givenClients();
+		List<ClientJpaEntity> clients = givenClients();
 		List<LocalDateTime> dates = givenLocalDateTimes();
 		List<LocalDateTime> endDates = givenEndDates();
 		List<Double> distances = givenDistances();
-		List<UserAccountJpaEntity> transporters = givenTransporters();
+		List<TransporterJpaEntity> transporters = givenTransporters();
 		List<String> descriptions = givenDescriptions();
 
 		Map<Integer, Set<JourneyProposalJpaEntity>> proposalsMap = givenProposals(transporters);
@@ -292,11 +296,11 @@ public class JourneyRequestRepositoryTests {
 		List<PlaceJpaEntity> departurePlaces = givenDeparturePlaces();
 		List<PlaceJpaEntity> arrivalPlaces = givenArrivalPlaces();
 		List<EngineTypeJpaEntity> engineTypes = givenEngineTypes();
-		List<UserAccountJpaEntity> clients = givenClients();
+		List<ClientJpaEntity> clients = givenClients();
 		List<LocalDateTime> dates = givenLocalDateTimes();
 		List<LocalDateTime> endDates = givenEndDates();
 		List<Double> distances = givenDistances();
-		List<UserAccountJpaEntity> transporters = givenTransporters();
+		List<TransporterJpaEntity> transporters = givenTransporters();
 		List<String> descriptions = givenDescriptions();
 
 		Map<Integer, Set<JourneyProposalJpaEntity>> proposalsMap = givenProposals(transporters);
@@ -350,13 +354,13 @@ public class JourneyRequestRepositoryTests {
 		List<PlaceJpaEntity> departurePlaces = givenDeparturePlaces();
 		List<PlaceJpaEntity> arrivalPlaces = givenArrivalPlaces();
 		List<EngineTypeJpaEntity> engineTypes = givenEngineTypes();
-		List<UserAccountJpaEntity> clients = givenClients();
+		List<ClientJpaEntity> clients = givenClients();
 		List<LocalDateTime> dates = givenLocalDateTimes();
 		List<LocalDateTime> endDates = givenEndDates();
 
 		List<Double> distances = givenDistances();
 
-		List<UserAccountJpaEntity> transporters = givenTransporters();
+		List<TransporterJpaEntity> transporters = givenTransporters();
 		List<String> descriptions = givenDescriptions();
 
 		Map<Integer, Set<JourneyProposalJpaEntity>> proposalsMap = givenProposals(transporters);
@@ -413,11 +417,11 @@ public class JourneyRequestRepositoryTests {
 		List<PlaceJpaEntity> departurePlaces = givenDeparturePlaces();
 		List<PlaceJpaEntity> arrivalPlaces = givenArrivalPlaces();
 		List<EngineTypeJpaEntity> engineTypes = givenEngineTypes();
-		List<UserAccountJpaEntity> clients = givenClients();
+		List<ClientJpaEntity> clients = givenClients();
 		List<LocalDateTime> dates = givenLocalDateTimes();
 		List<LocalDateTime> endDates = givenEndDates();
 
-		List<UserAccountJpaEntity> transporters = givenTransporters();
+		List<TransporterJpaEntity> transporters = givenTransporters();
 		List<String> descriptions = givenDescriptions();
 
 		Map<Integer, Set<JourneyProposalJpaEntity>> proposalsMap = givenProposals(transporters);
@@ -471,11 +475,11 @@ public class JourneyRequestRepositoryTests {
 		List<PlaceJpaEntity> departurePlaces = givenDeparturePlaces();
 		List<PlaceJpaEntity> arrivalPlaces = givenArrivalPlaces();
 		List<EngineTypeJpaEntity> engineTypes = givenEngineTypes();
-		List<UserAccountJpaEntity> clients = givenClients();
+		List<ClientJpaEntity> clients = givenClients();
 		List<LocalDateTime> dates = givenLocalDateTimes();
 		List<LocalDateTime> endDates = givenEndDates();
 
-		List<UserAccountJpaEntity> transporters = givenTransporters();
+		List<TransporterJpaEntity> transporters = givenTransporters();
 		List<String> descriptions = givenDescriptions();
 
 		Map<Integer, Set<JourneyProposalJpaEntity>> proposalsMap = givenProposals(transporters);
@@ -639,35 +643,42 @@ public class JourneyRequestRepositoryTests {
 		return engineTypeRepository.saveAll(List.of(et1, et2, et3));
 	}
 
-	private List<UserAccountJpaEntity> givenClients() {
-		List<UserAccountJpaEntity> clients = List.of(
-				UserAccountJpaEntity.builder().firstname("Client1").photoUrl("https://path/to/client1/photo").build(),
-				UserAccountJpaEntity.builder().firstname("Client2").photoUrl("https://path/to/client2/photo").build(),
-				UserAccountJpaEntity.builder().firstname("Client3").photoUrl("https://path/to/client3/photo").build());
-		return userAccountRepository.saveAll(clients);
+	private List<ClientJpaEntity> givenClients() {
+		List<ClientJpaEntity> clients = List.of(
+				new ClientJpaEntity(null, null, null, "Client1", null, null, null, null, null, null, null, null, null,
+						null, null, "https://path/to/client1/photo", null),
+				new ClientJpaEntity(null, null, null, "Client2", null, null, null, null, null, null, null, null, null,
+						null, null, "https://path/to/client2/photo", null),
+				new ClientJpaEntity(null, null, null, "Client3", null, null, null, null, null, null, null, null, null,
+						null, null, "https://path/to/client3/photo", null));
+
+		return clientRepository.saveAll(clients);
 	}
 
-	private List<UserAccountJpaEntity> givenTransporters() {
-		List<UserAccountJpaEntity> transporters = List.of(
-				UserAccountJpaEntity.builder().firstname("Transporter1").build(),
-				UserAccountJpaEntity.builder().firstname("Transporter2").build(),
-				UserAccountJpaEntity.builder().firstname("Transporter3").build());
-		return userAccountRepository.saveAll(transporters);
+	private List<TransporterJpaEntity> givenTransporters() {
+		List<TransporterJpaEntity> transporters = List.of(
+				new TransporterJpaEntity(null, null, null, "Transporter1", null, null, null, null, null, null, null,
+						null, null, null, null, "https://path/to/transporter1/photo", null, null, null, null, null),
+				new TransporterJpaEntity(null, null, null, "Transporter2", null, null, null, null, null, null, null,
+						null, null, null, null, "https://path/to/transporter2/photo", null, null, null, null, null),
+				new TransporterJpaEntity(null, null, null, "Transporter3", null, null, null, null, null, null, null,
+						null, null, null, null, "https://path/to/transporter3/photo", null, null, null, null, null));
+		return transporterRepository.saveAll(transporters);
 	}
 
-	private Map<Integer, Set<JourneyProposalJpaEntity>> givenProposals(List<UserAccountJpaEntity> transporters) {
+	private Map<Integer, Set<JourneyProposalJpaEntity>> givenProposals(List<TransporterJpaEntity> transporters) {
 		Map<Integer, Set<JourneyProposalJpaEntity>> proposalsMap = Map.of(0,
-				Set.of(JourneyProposalJpaEntity.builder().price(150).transporter(transporters.get(0)).build(),
-						JourneyProposalJpaEntity.builder().price(160).transporter(transporters.get(1)).build(),
-						JourneyProposalJpaEntity.builder().price(140).transporter(transporters.get(2)).build()),
+				Set.of(JourneyProposalJpaEntity.builder().price(150.0).transporter(transporters.get(0)).build(),
+						JourneyProposalJpaEntity.builder().price(160.0).transporter(transporters.get(1)).build(),
+						JourneyProposalJpaEntity.builder().price(140.0).transporter(transporters.get(2)).build()),
 				1,
-				Set.of(JourneyProposalJpaEntity.builder().price(240).transporter(transporters.get(0)).build(),
-						JourneyProposalJpaEntity.builder().price(260).transporter(transporters.get(1)).build(),
-						JourneyProposalJpaEntity.builder().price(250).transporter(transporters.get(2)).build()),
+				Set.of(JourneyProposalJpaEntity.builder().price(240.0).transporter(transporters.get(0)).build(),
+						JourneyProposalJpaEntity.builder().price(260.0).transporter(transporters.get(1)).build(),
+						JourneyProposalJpaEntity.builder().price(250.0).transporter(transporters.get(2)).build()),
 				2,
-				Set.of(JourneyProposalJpaEntity.builder().price(340).transporter(transporters.get(0)).build(),
-						JourneyProposalJpaEntity.builder().price(350).transporter(transporters.get(1)).build(),
-						JourneyProposalJpaEntity.builder().price(360).transporter(transporters.get(2)).build()));
+				Set.of(JourneyProposalJpaEntity.builder().price(340.0).transporter(transporters.get(0)).build(),
+						JourneyProposalJpaEntity.builder().price(350.0).transporter(transporters.get(1)).build(),
+						JourneyProposalJpaEntity.builder().price(360.0).transporter(transporters.get(2)).build()));
 
 		return proposalsMap;
 	}
@@ -675,7 +686,7 @@ public class JourneyRequestRepositoryTests {
 	private void givenJourneyRequests(List<PlaceJpaEntity> departurePlaces, List<PlaceJpaEntity> arrivalPlaces,
 			List<EngineTypeJpaEntity> engineTypes, List<Double> distances, List<LocalDateTime> dates,
 			List<LocalDateTime> endDates, List<Integer> workers, List<String> descriptions,
-			List<UserAccountJpaEntity> clients, Map<Integer, Set<JourneyProposalJpaEntity>> proposalsMap) {
+			List<ClientJpaEntity> clients, Map<Integer, Set<JourneyProposalJpaEntity>> proposalsMap) {
 
 		JourneyRequestJpaEntity jrToday = JourneyRequestJpaEntity.builder().departurePlace(departurePlaces.get(0))
 				.arrivalPlace(arrivalPlaces.get(0)).engineType(engineTypes.get(0)).distance(distances.get(0))

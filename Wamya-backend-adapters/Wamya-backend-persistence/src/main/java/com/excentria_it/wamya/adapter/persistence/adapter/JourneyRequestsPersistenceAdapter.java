@@ -10,22 +10,22 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.jpa.domain.JpaSort;
 
+import com.excentria_it.wamya.adapter.persistence.entity.ClientJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.EngineTypeJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.JourneyRequestJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.PlaceJpaEntity;
-import com.excentria_it.wamya.adapter.persistence.entity.UserAccountJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.mapper.JourneyRequestMapper;
 import com.excentria_it.wamya.adapter.persistence.mapper.PlaceMapper;
+import com.excentria_it.wamya.adapter.persistence.repository.ClientRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.EngineTypeRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.JourneyRequestRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.PlaceRepository;
-import com.excentria_it.wamya.adapter.persistence.repository.UserAccountRepository;
 import com.excentria_it.wamya.application.port.in.SearchJourneyRequestsUseCase.SearchJourneyRequestsCommand;
 import com.excentria_it.wamya.application.port.out.CreateJourneyRequestPort;
 import com.excentria_it.wamya.application.port.out.SearchJourneyRequestsPort;
 import com.excentria_it.wamya.common.SortingCriterion;
 import com.excentria_it.wamya.common.annotation.PersistenceAdapter;
-import com.excentria_it.wamya.domain.JourneyRequest;
+import com.excentria_it.wamya.domain.CreateJourneyRequestDto;
 import com.excentria_it.wamya.domain.JourneyRequestSearchDto;
 import com.excentria_it.wamya.domain.JourneyRequestsSearchResult;
 import com.excentria_it.wamya.domain.SearchJourneyRequestsCriteria;
@@ -40,7 +40,7 @@ public class JourneyRequestsPersistenceAdapter implements SearchJourneyRequestsP
 
 	private final EngineTypeRepository engineTypeRepository;
 
-	private final UserAccountRepository userAccountRepository;
+	private final ClientRepository clientRepository;
 
 	private final PlaceRepository placeRepository;
 
@@ -103,23 +103,22 @@ public class JourneyRequestsPersistenceAdapter implements SearchJourneyRequestsP
 	}
 
 	@Override
-	public JourneyRequest createJourneyRequest(JourneyRequest journeyRequest, String username) {
+	public CreateJourneyRequestDto createJourneyRequest(CreateJourneyRequestDto journeyRequest, String username) {
 
 		EngineTypeJpaEntity engineTypeJpaEntity = engineTypeRepository.findById(journeyRequest.getEngineType().getId())
 				.get();
 
-		Optional<UserAccountJpaEntity> userAccountJpaEntityOptional = userAccountRepository.findByEmail(username);
+		Optional<ClientJpaEntity> clientJpaEntityOptional = clientRepository.findByEmail(username);
 
-		if (!userAccountJpaEntityOptional.isPresent()) {
+		if (!clientJpaEntityOptional.isPresent()) {
 
 			String[] userMobilePhone = username.split("_");
 
-			userAccountJpaEntityOptional = userAccountRepository.findByMobilePhoneNumber(userMobilePhone[0],
-					userMobilePhone[1]);
+			clientJpaEntityOptional = clientRepository.findByMobilePhoneNumber(userMobilePhone[0], userMobilePhone[1]);
 
 		}
 
-		UserAccountJpaEntity userAccountJpaEntity = userAccountJpaEntityOptional.get();
+		ClientJpaEntity clientJpaEntity = clientJpaEntityOptional.get();
 
 		Optional<PlaceJpaEntity> departurePlaceOptional = placeRepository
 				.findById(journeyRequest.getDeparturePlace().getPlaceId());
@@ -145,7 +144,7 @@ public class JourneyRequestsPersistenceAdapter implements SearchJourneyRequestsP
 		}
 
 		JourneyRequestJpaEntity journeyRequestJpaEntity = journeyRequestMapper.mapToJpaEntity(journeyRequest,
-				departurePlaceJpaEntity, arrivalPlaceJpaEntity, engineTypeJpaEntity, userAccountJpaEntity, null);
+				departurePlaceJpaEntity, arrivalPlaceJpaEntity, engineTypeJpaEntity, clientJpaEntity);
 
 		journeyRequestJpaEntity = journeyRequestRepository.save(journeyRequestJpaEntity);
 

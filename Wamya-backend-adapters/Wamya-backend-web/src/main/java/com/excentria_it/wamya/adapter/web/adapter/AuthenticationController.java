@@ -42,15 +42,6 @@ public class AuthenticationController {
 		return accessToken;
 	}
 
-	@ExceptionHandler({ AuthorizationException.class })
-	@ResponseStatus(HttpStatus.UNAUTHORIZED)
-	public ResponseEntity<ApiError> handleAuthorizationException(AuthorizationException exception) {
 
-		log.warn("Exception at " + exception.getClass() + ": ", exception);
-		final String error = exception.getMessage();
-		final ApiError apiError = new ApiError(HttpStatus.UNAUTHORIZED, error);
-		return new ResponseEntity<ApiError>(apiError, new HttpHeaders(), apiError.getStatus());
-
-	}
 
 }

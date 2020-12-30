@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -31,18 +32,23 @@ public class JourneyProposalJpaEntity {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = JOURNEY_PROPOSAL_SEQ)
 	private Long id;
 
-	private Integer price;
+	private Double price;
 
 	private LocalDateTime creationDateTime;
 
 	@ManyToOne
-	private UserAccountJpaEntity transporter;
+	@JoinColumn(name = "transporter_id")
+	private TransporterJpaEntity transporter;
 
-	public Integer getPrice() {
+	@ManyToOne
+	@JoinColumn(name = "vehicule_id")
+	private VehiculeJpaEntity vehicule;
+
+	public Double getPrice() {
 		return price;
 	}
 
-	public void setPrice(Integer price) {
+	public void setPrice(Double price) {
 		this.price = price;
 	}
 
@@ -54,11 +60,11 @@ public class JourneyProposalJpaEntity {
 		this.creationDateTime = creationDateTime;
 	}
 
-	public UserAccountJpaEntity getTransporter() {
+	public TransporterJpaEntity getTransporter() {
 		return transporter;
 	}
 
-	public void setTransporter(UserAccountJpaEntity transporter) {
+	public void setTransporter(TransporterJpaEntity transporter) {
 		this.transporter = transporter;
 	}
 
@@ -66,6 +72,14 @@ public class JourneyProposalJpaEntity {
 		return id;
 	}
 
+	public VehiculeJpaEntity getVehicule() {
+		return vehicule;
+	}
+
+	public void setVehicule(VehiculeJpaEntity vehicule) {
+		this.vehicule = vehicule;
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -93,7 +107,9 @@ public class JourneyProposalJpaEntity {
 	@Override
 	public String toString() {
 		return "JourneyProposalJpaEntity [id=" + id + ", price=" + price + ", creationDateTime=" + creationDateTime
-				+ ", transporter id=" + transporter.getId() + "]";
+				+ ", transporter firstname=" + transporter.getFirstname() + ", vehicule  =" + vehicule.toString()+ "]";
 	}
+
+
 
 }

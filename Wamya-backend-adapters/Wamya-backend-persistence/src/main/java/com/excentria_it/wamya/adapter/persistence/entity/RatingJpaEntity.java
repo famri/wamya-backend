@@ -4,6 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -30,9 +31,14 @@ public class RatingJpaEntity {
 	private Long id;
 
 	@ManyToOne
+	@JoinColumn(name = "rating_type_id")
 	private RatingTypeJpaEntity type;
 
 	private Double value;
+
+	@ManyToOne
+	@JoinColumn(name = "author_id")
+	private UserAccountJpaEntity user;
 
 	public RatingTypeJpaEntity getType() {
 		return type;

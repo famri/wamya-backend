@@ -1,67 +1,54 @@
 package com.excentria_it.wamya.test.data.common;
 
-import com.excentria_it.wamya.adapter.persistence.entity.UserAccountJpaEntity;
+import com.excentria_it.wamya.adapter.persistence.entity.ClientJpaEntity;
+import com.excentria_it.wamya.adapter.persistence.entity.TransporterJpaEntity;
 import com.excentria_it.wamya.domain.UserAccount;
 
 public class UserAccountJpaEntityTestData {
 
 	private static UserAccount userAccount = UserAccountTestData.defaultUserAccountBuilder().build();;
 
-	public static final UserAccountJpaEntity defaultExistingTransporterUserAccountJpaEntity() {
+	public static final TransporterJpaEntity defaultExistentTransporterJpaEntity() {
 
-		return UserAccountJpaEntity.builder().id(1L).isTransporter(userAccount.getIsTransporter())
-				.gender(userAccount.getGender()).firstname(userAccount.getFirstname())
-				.lastname(userAccount.getLastname()).dateOfBirth(userAccount.getDateOfBirth())
-				.email(userAccount.getEmail()).emailValidationCode(userAccount.getEmailValidationCode())
-				.isValidatedEmail(userAccount.getIsValidatedEmail())
-				.icc(InternationalCallingCodeJpaEntityTestData.defaultExistentInternationalCallingCodeJpaEntity())
-				.mobileNumber(userAccount.getMobilePhoneNumber().getMobileNumber())
-				.mobileNumberValidationCode(userAccount.getMobileNumberValidationCode())
-				.isValidatedMobileNumber(userAccount.getIsValidatedMobileNumber())
-				.receiveNewsletter(userAccount.getReceiveNewsletter())
-				.creationDateTime(userAccount.getCreationDateTime()).id(1L).isTransporter(true).build();
+		return new TransporterJpaEntity(1L, userAccount.getOauthId(), userAccount.getGender(),
+				userAccount.getFirstname(), userAccount.getLastname(), userAccount.getDateOfBirth(),
+				userAccount.getEmail(), userAccount.getEmailValidationCode(), userAccount.getIsValidatedEmail(),
+				InternationalCallingCodeJpaEntityTestData.defaultExistentInternationalCallingCodeJpaEntity(),
+				userAccount.getMobilePhoneNumber().getMobileNumber(), userAccount.getMobileNumberValidationCode(),
+				userAccount.getIsValidatedMobileNumber(), userAccount.getReceiveNewsletter(),
+				userAccount.getCreationDateTime(), userAccount.getPhotoUrl(), null, null, null, null, null);
 	}
 
-	public static final UserAccountJpaEntity defaultNewTransporterUserAccountJpaEntity() {
+	public static final TransporterJpaEntity defaultNewTransporterJpaEntity() {
 
-		return UserAccountJpaEntity.builder().id(1L).isTransporter(userAccount.getIsTransporter())
-				.gender(userAccount.getGender()).firstname(userAccount.getFirstname())
-				.lastname(userAccount.getLastname()).dateOfBirth(userAccount.getDateOfBirth())
-				.email(userAccount.getEmail()).emailValidationCode(userAccount.getEmailValidationCode())
-				.isValidatedEmail(userAccount.getIsValidatedEmail())
-				.icc(InternationalCallingCodeJpaEntityTestData.defaultExistentInternationalCallingCodeJpaEntity())
-				.mobileNumber(userAccount.getMobilePhoneNumber().getMobileNumber())
-				.mobileNumberValidationCode(userAccount.getMobileNumberValidationCode())
-				.isValidatedMobileNumber(userAccount.getIsValidatedMobileNumber())
-				.receiveNewsletter(userAccount.getReceiveNewsletter())
-				.creationDateTime(userAccount.getCreationDateTime()).id(null).isTransporter(true).build();
+		return new TransporterJpaEntity(null, userAccount.getOauthId(), userAccount.getGender(),
+				userAccount.getFirstname(), userAccount.getLastname(), userAccount.getDateOfBirth(),
+				userAccount.getEmail(), userAccount.getEmailValidationCode(), userAccount.getIsValidatedEmail(),
+				InternationalCallingCodeJpaEntityTestData.defaultExistentInternationalCallingCodeJpaEntity(),
+				userAccount.getMobilePhoneNumber().getMobileNumber(), userAccount.getMobileNumberValidationCode(),
+				userAccount.getIsValidatedMobileNumber(), userAccount.getReceiveNewsletter(),
+				userAccount.getCreationDateTime(), userAccount.getPhotoUrl(), null, null, null, null, null);
 	}
 
-	public static final UserAccountJpaEntity defaultExistingNotTransporterUserAccountJpaEntity() {
-		return UserAccountJpaEntity.builder().id(1L).isTransporter(userAccount.getIsTransporter())
-				.gender(userAccount.getGender()).firstname(userAccount.getFirstname())
-				.lastname(userAccount.getLastname()).dateOfBirth(userAccount.getDateOfBirth())
-				.email(userAccount.getEmail()).emailValidationCode(userAccount.getEmailValidationCode())
-				.isValidatedEmail(userAccount.getIsValidatedEmail())
-				.icc(InternationalCallingCodeJpaEntityTestData.defaultExistentInternationalCallingCodeJpaEntity())
-				.mobileNumber(userAccount.getMobilePhoneNumber().getMobileNumber())
-				.mobileNumberValidationCode(userAccount.getMobileNumberValidationCode())
-				.isValidatedMobileNumber(userAccount.getIsValidatedMobileNumber())
-				.receiveNewsletter(userAccount.getReceiveNewsletter())
-				.creationDateTime(userAccount.getCreationDateTime()).id(1L).isTransporter(false).build();
+	public static final ClientJpaEntity defaultExistentClientJpaEntity() {
+
+		return new ClientJpaEntity(1L, userAccount.getOauthId(), userAccount.getGender(), userAccount.getFirstname(),
+				userAccount.getLastname(), userAccount.getDateOfBirth(), userAccount.getEmail(),
+				userAccount.getEmailValidationCode(), userAccount.getIsValidatedEmail(),
+				InternationalCallingCodeJpaEntityTestData.defaultExistentInternationalCallingCodeJpaEntity(),
+				userAccount.getMobilePhoneNumber().getMobileNumber(), userAccount.getMobileNumberValidationCode(),
+				userAccount.getIsValidatedMobileNumber(), userAccount.getReceiveNewsletter(),
+				userAccount.getCreationDateTime(), userAccount.getPhotoUrl(), null);
+
 	}
 
-	public static final UserAccountJpaEntity defaultNewNotTransporterUserAccountJpaEntity() {
-		return UserAccountJpaEntity.builder().id(1L).isTransporter(userAccount.getIsTransporter())
-				.gender(userAccount.getGender()).firstname(userAccount.getFirstname())
-				.lastname(userAccount.getLastname()).dateOfBirth(userAccount.getDateOfBirth())
-				.email(userAccount.getEmail()).emailValidationCode(userAccount.getEmailValidationCode())
-				.isValidatedEmail(userAccount.getIsValidatedEmail())
-				.icc(InternationalCallingCodeJpaEntityTestData.defaultExistentInternationalCallingCodeJpaEntity())
-				.mobileNumber(userAccount.getMobilePhoneNumber().getMobileNumber())
-				.mobileNumberValidationCode(userAccount.getMobileNumberValidationCode())
-				.isValidatedMobileNumber(userAccount.getIsValidatedMobileNumber())
-				.receiveNewsletter(userAccount.getReceiveNewsletter())
-				.creationDateTime(userAccount.getCreationDateTime()).id(null).isTransporter(false).build();
+	public static final ClientJpaEntity defaultNewClientJpaEntity() {
+		return new ClientJpaEntity(null, userAccount.getOauthId(), userAccount.getGender(), userAccount.getFirstname(),
+				userAccount.getLastname(), userAccount.getDateOfBirth(), userAccount.getEmail(),
+				userAccount.getEmailValidationCode(), userAccount.getIsValidatedEmail(),
+				InternationalCallingCodeJpaEntityTestData.defaultExistentInternationalCallingCodeJpaEntity(),
+				userAccount.getMobilePhoneNumber().getMobileNumber(), userAccount.getMobileNumberValidationCode(),
+				userAccount.getIsValidatedMobileNumber(), userAccount.getReceiveNewsletter(),
+				userAccount.getCreationDateTime(), userAccount.getPhotoUrl(), null);
 	}
 }

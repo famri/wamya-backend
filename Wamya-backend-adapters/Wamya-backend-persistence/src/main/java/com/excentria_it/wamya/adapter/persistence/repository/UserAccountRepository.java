@@ -10,8 +10,7 @@ import com.excentria_it.wamya.adapter.persistence.entity.UserAccountJpaEntity;
 
 public interface UserAccountRepository extends JpaRepository<UserAccountJpaEntity, Long> {
 
-	@Query("select u from UserAccountJpaEntity u " + "where u.icc.value = :internationalCallingCode "
-			+ "and u.mobileNumber = :mobileNumber")
+	@Query("SELECT u FROM UserAccountJpaEntity u  WHERE u.icc.value = :internationalCallingCode AND u.mobileNumber = :mobileNumber")
 	Optional<UserAccountJpaEntity> findByMobilePhoneNumber(
 			@Param("internationalCallingCode") String internationalCallingCode,
 			@Param("mobileNumber") String mobileNumber);

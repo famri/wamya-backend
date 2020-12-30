@@ -28,15 +28,14 @@ public class JourneyRequestJpaTestData {
 		LocalizedId lten = new LocalizedId("en");
 		lten.setId(1L);
 		en.setLocalizedId(lten);
-		
-		
+
 		LocalizedEngineTypeJpaEntity fr = new LocalizedEngineTypeJpaEntity();
 		fr.setName("TypeVehicule1");
 		fr.setDescription("DescriptionVehicule1");
 		LocalizedId ltfr = new LocalizedId("fr");
 		ltfr.setId(1L);
 		en.setLocalizedId(ltfr);
-		
+
 		return EngineTypeJpaEntity.builder().id(1L).localizations(Map.of("en", en, "fr", fr)).build();
 	}
 
@@ -50,12 +49,12 @@ public class JourneyRequestJpaTestData {
 				.build();
 	}
 
-	public static JourneyRequestJpaEntity defaultNewJourneyRequestJpaEntity() {
+	public static JourneyRequestJpaEntity defaultExistentJourneyRequestJpaEntity() {
 		return JourneyRequestJpaEntity.builder().id(1L).departurePlace(defaultDeparturePlaceJpaEntity())
 				.arrivalPlace(defaultArrivalPlaceJpaEntity()).engineType(defaultEngineTypeJpaEntity())
 				.dateTime(startDate).endDateTime(endDate).distance(150.5).workers(2)
-				.description("Need transporter URGENT!").client(defaultExistingNotTransporterUserAccountJpaEntity())
-				.proposals(null).build();
+				.description("Need transporter URGENT!").client(defaultExistentClientJpaEntity()).proposals(null)
+				.build();
 	}
 
 	private static LocalDateTime addDays(LocalDateTime dateTime, int days) {

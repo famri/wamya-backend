@@ -41,6 +41,8 @@ public class VehiculeJpaEntity {
 
 	private String registration;
 
+	private String photoUrl;
+
 	public EngineTypeJpaEntity getType() {
 		return type;
 	}
@@ -75,6 +77,14 @@ public class VehiculeJpaEntity {
 
 	public Long getId() {
 		return id;
+	}
+
+	public String getPhotoUrl() {
+		return photoUrl;
+	}
+
+	public void setPhotoUrl(String photoUrl) {
+		this.photoUrl = photoUrl;
 	}
 
 	@Override

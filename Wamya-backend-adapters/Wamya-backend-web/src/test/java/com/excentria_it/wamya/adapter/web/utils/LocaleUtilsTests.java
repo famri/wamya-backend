@@ -20,8 +20,8 @@ public class LocaleUtilsTests {
 		Locale supportedLocaleAR = LocaleUtils.getSupporedLocale(givenLocaleAR);
 
 		assertEquals(givenLocaleFR, supportedLocaleFR);
-		assertEquals(givenLocaleEN, supportedLocaleEN);
-		assertEquals(givenLocaleAR, supportedLocaleAR);
+		assertEquals(LocaleUtils.defaultLocale, supportedLocaleEN);
+		assertEquals(LocaleUtils.defaultLocale, supportedLocaleAR);
 
 	}
 

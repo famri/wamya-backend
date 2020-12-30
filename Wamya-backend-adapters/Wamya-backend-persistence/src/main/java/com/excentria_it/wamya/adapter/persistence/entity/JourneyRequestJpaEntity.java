@@ -58,7 +58,8 @@ public class JourneyRequestJpaEntity {
 	private String description;
 
 	@ManyToOne
-	private UserAccountJpaEntity client;
+	@JoinColumn(name = "client_id")
+	private ClientJpaEntity client;
 
 	@OneToMany(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST,
 			CascadeType.REFRESH }, orphanRemoval = true, fetch = FetchType.LAZY)
@@ -129,11 +130,11 @@ public class JourneyRequestJpaEntity {
 		this.description = description;
 	}
 
-	public UserAccountJpaEntity getClient() {
+	public ClientJpaEntity getClient() {
 		return client;
 	}
 
-	public void setClient(UserAccountJpaEntity client) {
+	public void setClient(ClientJpaEntity client) {
 		this.client = client;
 	}
 

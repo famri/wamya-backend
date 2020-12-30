@@ -7,11 +7,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class EngineTypeDto {
-
+public class MakeProposalDto {
 	private Long id;
-
-	private String name;
-
-	private String description;
+	private Double price;
 }

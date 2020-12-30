@@ -29,11 +29,10 @@ import com.excentria_it.wamya.common.exception.UserAccountAlreadyExistsException
 import com.excentria_it.wamya.domain.JwtOAuth2AccessToken;
 import com.excentria_it.wamya.test.data.common.UserAccountTestData;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 @ActiveProfiles(profiles = { "web-local" })
 @Import(value = { CreateUserAccountController.class, RestApiExceptionHandler.class })
-@WebMvcTest(controllers = CreateUserAccountController.class// , excludeAutoConfiguration =
-															// SecurityAutoConfiguration.class
-)
+@WebMvcTest(controllers = CreateUserAccountController.class)
 public class CreateUserAccountControllerTests {
 
 	private static final String ACCESS_TOKEN = "SOME_ACCESS_TOKEN";

@@ -70,7 +70,7 @@ public class UserAccountRepositoryTests {
 
 		iccEntity = iccRepository.save(iccEntity);
 
-		UserAccountJpaEntity userAccountEntity = defaultNewTransporterUserAccountJpaEntity();
+		UserAccountJpaEntity userAccountEntity = defaultNewTransporterJpaEntity();
 		userAccountEntity.setIcc(iccEntity);
 
 		userAccountRepository.save(userAccountEntity);

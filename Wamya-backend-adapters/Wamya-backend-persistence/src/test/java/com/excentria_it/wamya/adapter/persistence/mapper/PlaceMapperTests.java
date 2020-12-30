@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 import com.excentria_it.wamya.adapter.persistence.entity.PlaceJpaEntity;
-import com.excentria_it.wamya.domain.PlaceDto;
+import com.excentria_it.wamya.domain.CreateJourneyRequestDto.PlaceDto;
 
 public class PlaceMapperTests {
 

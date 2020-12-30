@@ -27,18 +27,18 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
 
+import com.excentria_it.wamya.adapter.persistence.entity.ClientJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.EngineTypeJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.JourneyRequestJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.PlaceJpaEntity;
-import com.excentria_it.wamya.adapter.persistence.entity.UserAccountJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.mapper.JourneyRequestMapper;
 import com.excentria_it.wamya.adapter.persistence.mapper.PlaceMapper;
+import com.excentria_it.wamya.adapter.persistence.repository.ClientRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.EngineTypeRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.JourneyRequestRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.PlaceRepository;
-import com.excentria_it.wamya.adapter.persistence.repository.UserAccountRepository;
 import com.excentria_it.wamya.common.SortingCriterion;
-import com.excentria_it.wamya.domain.JourneyRequest;
+import com.excentria_it.wamya.domain.CreateJourneyRequestDto;
 import com.excentria_it.wamya.domain.JourneyRequestSearchDto;
 import com.excentria_it.wamya.domain.JourneyRequestsSearchResult;
 import com.excentria_it.wamya.domain.SearchJourneyRequestsCriteria;
@@ -51,7 +51,7 @@ public class JourneyRequestsPersistenceAdapterTests {
 	@Mock
 	private EngineTypeRepository engineTypeRepository;
 	@Mock
-	private UserAccountRepository userAccountRepository;
+	private ClientRepository clientRepository;
 	@Mock
 	private PlaceRepository placeRepository;
 	@Mock
@@ -153,18 +153,17 @@ public class JourneyRequestsPersistenceAdapterTests {
 	}
 
 	@Test
-	void givenExistentDeparturePlaceAndExistentArrivalPlace_WhencreateJourneyRequest_ThenSaveJourneyRequestJpaEntity() {
+	void givenExistentDeparturePlaceAndExistentArrivalPlace_WhenCreateJourneyRequest_ThenSaveJourneyRequestJpaEntity() {
 
 		// given
-		JourneyRequest journeyRequest = defaultJourneyRequest();
+		CreateJourneyRequestDto journeyRequest = defaultCreateJourneyRequestDto();
 
 		EngineTypeJpaEntity engineTypeJpaEntity = defaultEngineTypeJpaEntity();
 		given(engineTypeRepository.findById(journeyRequest.getEngineType().getId()))
 				.willReturn(Optional.of(engineTypeJpaEntity));
 
-		UserAccountJpaEntity userAccountJpaEntity = defaultExistingNotTransporterUserAccountJpaEntity();
-		given(userAccountRepository.findByEmail(TestConstants.DEFAULT_EMAIL))
-				.willReturn(Optional.of(userAccountJpaEntity));
+		ClientJpaEntity clientJpaEntity = defaultExistentClientJpaEntity();
+		given(clientRepository.findByEmail(TestConstants.DEFAULT_EMAIL)).willReturn(Optional.of(clientJpaEntity));
 
 		PlaceJpaEntity departurePlaceJpaEntity = defaultDeparturePlaceJpaEntity();
 		given(placeRepository.findById(journeyRequest.getDeparturePlace().getPlaceId()))
@@ -174,9 +173,9 @@ public class JourneyRequestsPersistenceAdapterTests {
 		given(placeRepository.findById(journeyRequest.getArrivalPlace().getPlaceId()))
 				.willReturn(Optional.of(arrivalPlaceJpaEntity));
 
-		JourneyRequestJpaEntity journeyRequestJpaEntity = defaultNewJourneyRequestJpaEntity();
+		JourneyRequestJpaEntity journeyRequestJpaEntity = defaultExistentJourneyRequestJpaEntity();
 		given(journeyRequestMapper.mapToJpaEntity(journeyRequest, departurePlaceJpaEntity, arrivalPlaceJpaEntity,
-				engineTypeJpaEntity, userAccountJpaEntity, null)).willReturn(journeyRequestJpaEntity);
+				engineTypeJpaEntity, clientJpaEntity)).willReturn(journeyRequestJpaEntity);
 
 		given(journeyRequestRepository.save(journeyRequestJpaEntity)).willReturn(journeyRequestJpaEntity);
 
@@ -188,18 +187,17 @@ public class JourneyRequestsPersistenceAdapterTests {
 	}
 
 	@Test
-	void givenNonExistentDeparturePlaceAndNonExistentArrivalPlace_WhencreateJourneyRequest_ThenSaveJourneyRequestJpaEntity() {
+	void givenNonExistentDeparturePlaceAndNonExistentArrivalPlace_WhenCreateJourneyRequest_ThenSaveJourneyRequestJpaEntity() {
 
 		// given
-		JourneyRequest journeyRequest = defaultJourneyRequest();
+		CreateJourneyRequestDto journeyRequest = defaultCreateJourneyRequestDto();
 
 		EngineTypeJpaEntity engineTypeJpaEntity = defaultEngineTypeJpaEntity();
 		given(engineTypeRepository.findById(journeyRequest.getEngineType().getId()))
 				.willReturn(Optional.of(engineTypeJpaEntity));
 
-		UserAccountJpaEntity userAccountJpaEntity = defaultExistingNotTransporterUserAccountJpaEntity();
-		given(userAccountRepository.findByEmail(TestConstants.DEFAULT_EMAIL))
-				.willReturn(Optional.of(userAccountJpaEntity));
+		ClientJpaEntity clientJpaEntity = defaultExistentClientJpaEntity();
+		given(clientRepository.findByEmail(TestConstants.DEFAULT_EMAIL)).willReturn(Optional.of(clientJpaEntity));
 
 		PlaceJpaEntity departurePlaceJpaEntity = defaultDeparturePlaceJpaEntity();
 		given(placeRepository.findById(journeyRequest.getDeparturePlace().getPlaceId()))
@@ -213,9 +211,9 @@ public class JourneyRequestsPersistenceAdapterTests {
 		given(placeMapper.mapToJpaEntity(journeyRequest.getArrivalPlace())).willReturn(arrivalPlaceJpaEntity);
 		given(placeRepository.save(arrivalPlaceJpaEntity)).willReturn(arrivalPlaceJpaEntity);
 
-		JourneyRequestJpaEntity journeyRequestJpaEntity = defaultNewJourneyRequestJpaEntity();
+		JourneyRequestJpaEntity journeyRequestJpaEntity = defaultExistentJourneyRequestJpaEntity();
 		given(journeyRequestMapper.mapToJpaEntity(journeyRequest, departurePlaceJpaEntity, arrivalPlaceJpaEntity,
-				engineTypeJpaEntity, userAccountJpaEntity, null)).willReturn(journeyRequestJpaEntity);
+				engineTypeJpaEntity, clientJpaEntity)).willReturn(journeyRequestJpaEntity);
 
 		given(journeyRequestRepository.save(journeyRequestJpaEntity)).willReturn(journeyRequestJpaEntity);
 
@@ -230,19 +228,18 @@ public class JourneyRequestsPersistenceAdapterTests {
 	void givenExistentUserAccountByPhoneNumber_WhencreateJourneyRequest_ThenSaveJourneyRequestJpaEntity() {
 
 		// given
-		JourneyRequest journeyRequest = defaultJourneyRequest();
-		
+		CreateJourneyRequestDto journeyRequest = defaultCreateJourneyRequestDto();
 
 		EngineTypeJpaEntity engineTypeJpaEntity = defaultEngineTypeJpaEntity();
 		given(engineTypeRepository.findById(journeyRequest.getEngineType().getId()))
 				.willReturn(Optional.of(engineTypeJpaEntity));
 
-		UserAccountJpaEntity userAccountJpaEntity = defaultExistingNotTransporterUserAccountJpaEntity();
-		given(userAccountRepository.findByEmail(TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME))
+		ClientJpaEntity clientJpaEntity = defaultExistentClientJpaEntity();
+		given(clientRepository.findByEmail(TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME))
 				.willReturn(Optional.ofNullable(null));
 
-		given(userAccountRepository.findByMobilePhoneNumber(any(String.class), any(String.class)))
-				.willReturn(Optional.of(userAccountJpaEntity));
+		given(clientRepository.findByMobilePhoneNumber(any(String.class), any(String.class)))
+				.willReturn(Optional.of(clientJpaEntity));
 
 		PlaceJpaEntity departurePlaceJpaEntity = defaultDeparturePlaceJpaEntity();
 		given(placeRepository.findById(journeyRequest.getDeparturePlace().getPlaceId()))
@@ -256,9 +253,9 @@ public class JourneyRequestsPersistenceAdapterTests {
 		given(placeMapper.mapToJpaEntity(journeyRequest.getArrivalPlace())).willReturn(arrivalPlaceJpaEntity);
 		given(placeRepository.save(arrivalPlaceJpaEntity)).willReturn(arrivalPlaceJpaEntity);
 
-		JourneyRequestJpaEntity journeyRequestJpaEntity = defaultNewJourneyRequestJpaEntity();
+		JourneyRequestJpaEntity journeyRequestJpaEntity = defaultExistentJourneyRequestJpaEntity();
 		given(journeyRequestMapper.mapToJpaEntity(journeyRequest, departurePlaceJpaEntity, arrivalPlaceJpaEntity,
-				engineTypeJpaEntity, userAccountJpaEntity, null)).willReturn(journeyRequestJpaEntity);
+				engineTypeJpaEntity, clientJpaEntity)).willReturn(journeyRequestJpaEntity);
 
 		given(journeyRequestRepository.save(journeyRequestJpaEntity)).willReturn(journeyRequestJpaEntity);
 

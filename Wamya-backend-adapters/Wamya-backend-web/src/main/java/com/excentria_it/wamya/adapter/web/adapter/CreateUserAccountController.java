@@ -48,28 +48,6 @@ public class CreateUserAccountController {
 		return accessToken;
 	}
 
-	@ExceptionHandler({ UserAccountAlreadyExistsException.class })
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	public ResponseEntity<ApiError> handleUserAccountAlreadyExistsException(
-			UserAccountAlreadyExistsException exception) {
 
-		log.warn("Exception at " + exception.getClass() + ": ", exception);
-		final String error = "User account already exists.";
-		final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, error);
-		return new ResponseEntity<ApiError>(apiError, new HttpHeaders(), apiError.getStatus());
-
-	}
-
-	@ExceptionHandler({ UnsupportedInternationalCallingCode.class })
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	public ResponseEntity<ApiError> handleUnsupportedInternationalCallingCode(
-			UnsupportedInternationalCallingCode exception) {
-
-		log.warn("Exception at " + exception.getClass() + ": ", exception);
-		final String error = "International calling code is not supported.";
-		final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, error);
-		return new ResponseEntity<ApiError>(apiError, new HttpHeaders(), apiError.getStatus());
-
-	}
 
 }

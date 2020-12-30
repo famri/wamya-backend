@@ -13,10 +13,16 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.excentria_it.wamya.adapter.persistence.entity.ClientJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.InternationalCallingCodeJpaEntity;
+import com.excentria_it.wamya.adapter.persistence.entity.TransporterJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.UserAccountJpaEntity;
+import com.excentria_it.wamya.adapter.persistence.mapper.ClientMapper;
+import com.excentria_it.wamya.adapter.persistence.mapper.TransporterMapper;
 import com.excentria_it.wamya.adapter.persistence.mapper.UserAccountMapper;
+import com.excentria_it.wamya.adapter.persistence.repository.ClientRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.InternationalCallingCodeRepository;
+import com.excentria_it.wamya.adapter.persistence.repository.TransporterRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.UserAccountRepository;
 import com.excentria_it.wamya.common.exception.UnsupportedInternationalCallingCode;
 import com.excentria_it.wamya.common.exception.UserAccountNotFoundException;
@@ -31,11 +37,20 @@ import com.excentria_it.wamya.test.data.common.UserAccountTestData;
 public class UserAccountPersistenceAdapterTests {
 
 	@Mock
+	private ClientRepository clientRepository;
+	@Mock
+	private TransporterRepository transporterRepository;
+	@Mock
 	private UserAccountRepository userAccountRepository;
 	@Mock
 	private InternationalCallingCodeRepository iccRepository;
 	@Mock
 	private UserAccountMapper userAccountMapper;
+	@Mock
+	private TransporterMapper transporterMapper;
+	@Mock
+	private ClientMapper clientMapper;
+
 	@InjectMocks
 	private UserAccountPersistenceAdapter userAccountPersistenceAdapter;
 
@@ -55,24 +70,45 @@ public class UserAccountPersistenceAdapterTests {
 	}
 
 	@Test
-	void givenFoundIcc_WhenCreateUserAccount_ThenSaveUserAccountJpaEntity() {
+	void givenFoundIcc_WhenCreateTransporterUserAccount_ThenSaveTransporterJpaEntity() {
 
 		UserAccountBuilder userAccountBuilder = UserAccountTestData.defaultUserAccountBuilder();
-		UserAccount userAccount = userAccountBuilder.build();
+		UserAccount userAccount = userAccountBuilder.isTransporter(true).build();
+
 		Optional<InternationalCallingCodeJpaEntity> iccEntity = Optional
 				.of(InternationalCallingCodeJpaEntityTestData.defaultExistentInternationalCallingCodeJpaEntity());
 		given(iccRepository.findByValue(userAccount.getMobilePhoneNumber().getInternationalCallingCode()))
 				.willReturn(iccEntity);
 
-		UserAccountJpaEntity userAccountJpaEntity = UserAccountJpaEntityTestData
-				.defaultNewTransporterUserAccountJpaEntity();
+		TransporterJpaEntity transporterJpaEntity = UserAccountJpaEntityTestData.defaultNewTransporterJpaEntity();
 
-		given(userAccountMapper.mapToJpaEntity(userAccount, iccEntity.get())).willReturn(userAccountJpaEntity);
-		given(userAccountRepository.save(userAccountJpaEntity)).willReturn(userAccountJpaEntity);
+		given(transporterMapper.mapToJpaEntity(userAccount, iccEntity.get())).willReturn(transporterJpaEntity);
+		given(transporterRepository.save(transporterJpaEntity)).willReturn(transporterJpaEntity);
 
 		userAccountPersistenceAdapter.createUserAccount(userAccount);
 
-		then(userAccountRepository).should(times(1)).save(userAccountJpaEntity);
+		then(transporterRepository).should(times(1)).save(transporterJpaEntity);
+	}
+
+	@Test
+	void givenFoundIcc_WhenCreateClientUserAccount_ThenSaveTransporterJpaEntity() {
+
+		UserAccountBuilder userAccountBuilder = UserAccountTestData.defaultUserAccountBuilder();
+		UserAccount userAccount = userAccountBuilder.isTransporter(false).build();
+
+		Optional<InternationalCallingCodeJpaEntity> iccEntity = Optional
+				.of(InternationalCallingCodeJpaEntityTestData.defaultExistentInternationalCallingCodeJpaEntity());
+		given(iccRepository.findByValue(userAccount.getMobilePhoneNumber().getInternationalCallingCode()))
+				.willReturn(iccEntity);
+
+		ClientJpaEntity clientJpaEntity = UserAccountJpaEntityTestData.defaultNewClientJpaEntity();
+
+		given(clientMapper.mapToJpaEntity(userAccount, iccEntity.get())).willReturn(clientJpaEntity);
+		given(clientRepository.save(clientJpaEntity)).willReturn(clientJpaEntity);
+
+		userAccountPersistenceAdapter.createUserAccount(userAccount);
+
+		then(clientRepository).should(times(1)).save(clientJpaEntity);
 	}
 
 	// Test loadUserAccountByIccAndMobileNumber
@@ -81,8 +117,7 @@ public class UserAccountPersistenceAdapterTests {
 	void givenExistentUserAccountByIccAndMobileNumber_WhenLoadUserAccountByIccAndMobileNumber_ThenReturnTheExistingUserAccount() {
 
 		// given
-		UserAccountJpaEntity userAccountEntity = UserAccountJpaEntityTestData
-				.defaultExistingNotTransporterUserAccountJpaEntity();
+		UserAccountJpaEntity userAccountEntity = UserAccountJpaEntityTestData.defaultExistentClientJpaEntity();
 
 		Optional<UserAccountJpaEntity> userAccountEntityOptional = Optional.ofNullable(userAccountEntity);
 
@@ -163,7 +198,7 @@ public class UserAccountPersistenceAdapterTests {
 		UserAccount userAccount = UserAccountTestData.defaultUserAccountBuilder().build();
 
 		Optional<UserAccountJpaEntity> userAccountJpaEntity = Optional
-				.ofNullable(UserAccountJpaEntityTestData.defaultExistingNotTransporterUserAccountJpaEntity());
+				.ofNullable(UserAccountJpaEntityTestData.defaultExistentClientJpaEntity());
 
 		given(userAccountRepository.findById(userAccount.getId())).willReturn(userAccountJpaEntity);
 
@@ -182,7 +217,7 @@ public class UserAccountPersistenceAdapterTests {
 		UserAccount userAccount = UserAccountTestData.defaultUserAccountBuilder().build();
 
 		Optional<UserAccountJpaEntity> userAccountJpaEntityOptional = Optional
-				.ofNullable(UserAccountJpaEntityTestData.defaultExistingNotTransporterUserAccountJpaEntity());
+				.ofNullable(UserAccountJpaEntityTestData.defaultExistentClientJpaEntity());
 
 		given(userAccountRepository.findById(userAccount.getId())).willReturn(userAccountJpaEntityOptional);
 
@@ -207,16 +242,15 @@ public class UserAccountPersistenceAdapterTests {
 	void givenExistentUserAccountByEmail_WhenLoadUserAccountByIccAndMobileNumber_ThenReturnTheExistingUserAccount() {
 
 		// given
-		UserAccountJpaEntity userAccountEntity = UserAccountJpaEntityTestData
-				.defaultExistingNotTransporterUserAccountJpaEntity();
+		UserAccountJpaEntity clientEntity = UserAccountJpaEntityTestData.defaultExistentClientJpaEntity();
 
-		Optional<UserAccountJpaEntity> userAccountEntityOptional = Optional.ofNullable(userAccountEntity);
+		Optional<UserAccountJpaEntity> clientEntityOptional = Optional.ofNullable(clientEntity);
 
-		given(userAccountRepository.findByEmail(TestConstants.DEFAULT_EMAIL)).willReturn(userAccountEntityOptional);
+		given(userAccountRepository.findByEmail(TestConstants.DEFAULT_EMAIL)).willReturn(clientEntityOptional);
 
 		UserAccount userAccount = UserAccountTestData.defaultUserAccountBuilder().build();
 
-		given(userAccountMapper.mapToDomainEntity(userAccountEntity)).willReturn(userAccount);
+		given(userAccountMapper.mapToDomainEntity(clientEntity)).willReturn(userAccount);
 
 		// when
 		Optional<UserAccount> result = userAccountPersistenceAdapter.loadUserAccountByEmail(userAccount.getEmail());

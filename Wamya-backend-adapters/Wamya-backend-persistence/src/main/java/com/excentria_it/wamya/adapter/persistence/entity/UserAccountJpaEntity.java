@@ -2,19 +2,17 @@ package com.excentria_it.wamya.adapter.persistence.entity;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -22,72 +20,63 @@ import com.excentria_it.wamya.common.annotation.Generated;
 import com.excentria_it.wamya.domain.Gender;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 @Generated
 @Entity
 @Table(name = "user_account")
-@Builder
-@AllArgsConstructor
+@Inheritance(strategy = InheritanceType.JOINED)
 @NoArgsConstructor
+@AllArgsConstructor
 @SequenceGenerator(name = UserAccountJpaEntity.USER_SEQ, initialValue = 1, allocationSize = 5)
-public class UserAccountJpaEntity {
+public abstract class UserAccountJpaEntity {
 
 	public static final String USER_SEQ = "user_seq";
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = USER_SEQ)
-	private Long id;
+	protected Long id;
 
-	private Long oauthId;
-
-	private Boolean isTransporter;
+	protected Long oauthId;
 
 	@Enumerated(EnumType.STRING)
-	private Gender gender;
+	protected Gender gender;
 
-	private String firstname;
+	protected String firstname;
 
-	private String lastname;
+	protected String lastname;
 
-	private LocalDate dateOfBirth;
+	protected LocalDate dateOfBirth;
 
-	private String email;
+	protected String email;
 
-	private String emailValidationCode;
+	protected String emailValidationCode;
 
-	private Boolean isValidatedEmail;
+	protected Boolean isValidatedEmail;
 
 	@ManyToOne
-	private InternationalCallingCodeJpaEntity icc;
+	@JoinColumn(name = "icc_id")
+	protected InternationalCallingCodeJpaEntity icc;
 
-	private String mobileNumber;
+	protected String mobileNumber;
 
-	private String mobileNumberValidationCode;
+	protected String mobileNumberValidationCode;
 
-	private Boolean isValidatedMobileNumber;
+	protected Boolean isValidatedMobileNumber;
 
-	private Boolean receiveNewsletter;
+	protected Boolean receiveNewsletter;
 
-	private LocalDateTime creationDateTime;
+	protected LocalDateTime creationDateTime;
 
-	private String photoUrl;
+	protected String photoUrl;
 
-	@OneToMany(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST,
-			CascadeType.REFRESH }, orphanRemoval = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "owner_id")
-	private Set<VehiculeJpaEntity> vehicules;
+	public Long getId() {
+		return id;
+	}
 
-	@OneToMany(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST,
-			CascadeType.REFRESH }, orphanRemoval = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "transporter_id")
-	private Set<RatingJpaEntity> ratings;
-
-	@OneToMany(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST,
-			CascadeType.REFRESH }, orphanRemoval = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "transporter_id")
-	private Set<CommentJpaEntity> comments;
+	public void setId(Long id) {
+		this.id = id;
+	}
 
 	public Long getOauthId() {
 		return oauthId;
@@ -95,14 +84,6 @@ public class UserAccountJpaEntity {
 
 	public void setOauthId(Long oauthId) {
 		this.oauthId = oauthId;
-	}
-
-	public Boolean getIsTransporter() {
-		return isTransporter;
-	}
-
-	public void setIsTransporter(Boolean isTransporter) {
-		this.isTransporter = isTransporter;
 	}
 
 	public Gender getGender() {
@@ -217,34 +198,6 @@ public class UserAccountJpaEntity {
 		this.photoUrl = photoUrl;
 	}
 
-	public Set<VehiculeJpaEntity> getVehicules() {
-		return vehicules;
-	}
-
-	public void setVehicules(Set<VehiculeJpaEntity> vehicules) {
-		this.vehicules = vehicules;
-	}
-
-	public Set<RatingJpaEntity> getRatings() {
-		return ratings;
-	}
-
-	public void setRatings(Set<RatingJpaEntity> ratings) {
-		this.ratings = ratings;
-	}
-
-	public Set<CommentJpaEntity> getComments() {
-		return comments;
-	}
-
-	public void setComments(Set<CommentJpaEntity> comments) {
-		this.comments = comments;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -271,13 +224,12 @@ public class UserAccountJpaEntity {
 
 	@Override
 	public String toString() {
-		return "UserAccountJpaEntity [id=" + id + ", oauthId=" + oauthId + ", isTransporter=" + isTransporter
-				+ ", gender=" + gender + ", firstname=" + firstname + ", lastname=" + lastname + ", dateOfBirth="
-				+ dateOfBirth + ", email=" + email + ", emailValidationCode=" + emailValidationCode
-				+ ", isValidatedEmail=" + isValidatedEmail + ", icc=" + icc + ", mobileNumber=" + mobileNumber
-				+ ", mobileNumberValidationCode=" + mobileNumberValidationCode + ", isValidatedMobileNumber="
-				+ isValidatedMobileNumber + ", receiveNewsletter=" + receiveNewsletter + ", creationDateTime="
-				+ creationDateTime + ", photoUrl=" + photoUrl + "]";
+		return "UserAccountJpaEntity [id=" + id + ", oauthId=" + oauthId + ", gender=" + gender + ", firstname="
+				+ firstname + ", lastname=" + lastname + ", dateOfBirth=" + dateOfBirth + ", email=" + email
+				+ ", emailValidationCode=" + emailValidationCode + ", isValidatedEmail=" + isValidatedEmail + ", icc="
+				+ icc + ", mobileNumber=" + mobileNumber + ", mobileNumberValidationCode=" + mobileNumberValidationCode
+				+ ", isValidatedMobileNumber=" + isValidatedMobileNumber + ", receiveNewsletter=" + receiveNewsletter
+				+ ", creationDateTime=" + creationDateTime + ", photoUrl=" + photoUrl + "]";
 	}
 
 }

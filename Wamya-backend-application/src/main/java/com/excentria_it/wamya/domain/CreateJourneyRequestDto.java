@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Builder
-public class JourneyRequest {
+public class CreateJourneyRequestDto {
 
 	private Long id;
 
@@ -31,6 +31,36 @@ public class JourneyRequest {
 
 	private String description;
 
-	private ClientDto client;
+	@AllArgsConstructor
+	@Data
+	public static class EngineTypeDto {
 
+		private Long id;
+
+		private String name;
+
+	}
+
+	@AllArgsConstructor
+	@Data
+
+	public static class PlaceDto {
+
+		private String placeId;
+
+		private String placeRegionId;
+
+		private String placeName;
+	}
+
+	@AllArgsConstructor
+	@Data
+	public static class ClientDto {
+
+		private Long id;
+
+		private String firstname;
+
+		private String photoUrl;
+	}
 }
