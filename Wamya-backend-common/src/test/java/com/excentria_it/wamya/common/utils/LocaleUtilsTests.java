@@ -1,4 +1,4 @@
-package com.excentria_it.wamya.adapter.web.utils;
+package com.excentria_it.wamya.common.utils;
 
 import static org.junit.jupiter.api.Assertions.*;
 

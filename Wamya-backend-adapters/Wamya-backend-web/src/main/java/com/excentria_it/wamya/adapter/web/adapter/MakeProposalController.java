@@ -30,10 +30,10 @@ public class MakeProposalController {
 
 	private final MakeProposalUseCase makeProposalUseCase;
 
-	@PostMapping(path = "/{id}/proposals", consumes = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(path = "/{journeyRequestId}/proposals", consumes = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
 	public MakeProposalDto makeProposal(@Valid @RequestBody MakeProposalCommand command,
-			@PathVariable("id") Long journeyRequestId,
+			@PathVariable("journeyRequestId") Long journeyRequestId,
 			final @AuthenticationPrincipal JwtAuthenticationToken principal) {
 
 		MakeProposalDto proposal = makeProposalUseCase.makeProposal(command, journeyRequestId, principal.getName());

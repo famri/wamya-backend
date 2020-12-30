@@ -4,12 +4,9 @@ import java.util.Locale;
 
 import javax.validation.Valid;
 
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,15 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.excentria_it.wamya.adapter.web.domain.ValidationCodeRequest;
 import com.excentria_it.wamya.adapter.web.domain.ValidationCodeRequestStatus;
-import com.excentria_it.wamya.adapter.web.utils.LocaleUtils;
 import com.excentria_it.wamya.application.port.in.SendValidationCodeUseCase;
 import com.excentria_it.wamya.application.port.in.SendValidationCodeUseCase.SendEmailValidationLinkCommand;
 import com.excentria_it.wamya.application.port.in.SendValidationCodeUseCase.SendSMSValidationCodeCommand;
 import com.excentria_it.wamya.common.annotation.WebAdapter;
-import com.excentria_it.wamya.common.exception.ApiError;
-import com.excentria_it.wamya.common.exception.UserAccountNotFoundException;
-import com.excentria_it.wamya.common.exception.UserEmailValidationException;
-import com.excentria_it.wamya.common.exception.UserMobileNumberValidationException;
+import com.excentria_it.wamya.common.utils.LocaleUtils;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -77,7 +70,5 @@ public class SendValidationCodeController {
 		return result;
 
 	}
-
-
 
 }

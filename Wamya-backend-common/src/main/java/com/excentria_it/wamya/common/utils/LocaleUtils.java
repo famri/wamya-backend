@@ -1,4 +1,4 @@
-package com.excentria_it.wamya.adapter.web.utils;
+package com.excentria_it.wamya.common.utils;
 
 import java.util.List;
 import java.util.Locale;
@@ -21,7 +21,5 @@ public class LocaleUtils {
 
 		return defaultLocale;
 	}
-	
-	
 
 }

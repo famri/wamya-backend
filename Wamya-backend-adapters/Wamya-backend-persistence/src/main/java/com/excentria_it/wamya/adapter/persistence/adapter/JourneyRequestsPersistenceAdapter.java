@@ -22,9 +22,11 @@ import com.excentria_it.wamya.adapter.persistence.repository.JourneyRequestRepos
 import com.excentria_it.wamya.adapter.persistence.repository.PlaceRepository;
 import com.excentria_it.wamya.application.port.in.SearchJourneyRequestsUseCase.SearchJourneyRequestsCommand;
 import com.excentria_it.wamya.application.port.out.CreateJourneyRequestPort;
+import com.excentria_it.wamya.application.port.out.LoadJourneyRequestPort;
 import com.excentria_it.wamya.application.port.out.SearchJourneyRequestsPort;
 import com.excentria_it.wamya.common.SortingCriterion;
 import com.excentria_it.wamya.common.annotation.PersistenceAdapter;
+import com.excentria_it.wamya.common.utils.LocaleUtils;
 import com.excentria_it.wamya.domain.CreateJourneyRequestDto;
 import com.excentria_it.wamya.domain.JourneyRequestSearchDto;
 import com.excentria_it.wamya.domain.JourneyRequestsSearchResult;
@@ -34,7 +36,8 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @PersistenceAdapter
-public class JourneyRequestsPersistenceAdapter implements SearchJourneyRequestsPort, CreateJourneyRequestPort {
+public class JourneyRequestsPersistenceAdapter
+		implements SearchJourneyRequestsPort, CreateJourneyRequestPort, LoadJourneyRequestPort {
 
 	private final JourneyRequestRepository journeyRequestRepository;
 
@@ -156,5 +159,16 @@ public class JourneyRequestsPersistenceAdapter implements SearchJourneyRequestsP
 	protected boolean isArrivalPlaceRegionAgnostic(SearchJourneyRequestsCriteria command) {
 		return command.getArrivalPlaceRegionIds().stream()
 				.anyMatch(p -> SearchJourneyRequestsCommand.ANY_ARRIVAL_REGION.equals(p.toUpperCase()));
+	}
+
+	@Override
+	public Optional<CreateJourneyRequestDto> loadJourneyRequestById(Long id) {
+		Optional<JourneyRequestJpaEntity> journeyRequestJpaEntityOptional = journeyRequestRepository.findById(id);
+		if (journeyRequestJpaEntityOptional.isEmpty())
+			return Optional.empty();
+
+		CreateJourneyRequestDto createJourneyRequestDto = journeyRequestMapper
+				.mapToDomainEntity(journeyRequestJpaEntityOptional.get(), LocaleUtils.defaultLocale.toString());
+		return Optional.ofNullable(createJourneyRequestDto);
 	}
 }

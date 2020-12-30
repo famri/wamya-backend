@@ -267,6 +267,79 @@ public class JourneyRequestsPersistenceAdapterTests {
 		then(journeyRequestRepository).should(times(1)).save(journeyRequestJpaEntity);
 	}
 
+	@Test
+	void testLoadJourneyRequestById() {
+
+		// given
+		JourneyRequestJpaEntity journeyRequestJpaEntity = defaultExistentJourneyRequestJpaEntity();
+		given(journeyRequestRepository.findById(any(Long.class))).willReturn(Optional.of(journeyRequestJpaEntity));
+
+		CreateJourneyRequestDto createJourneyRequestDto = defaultCreateJourneyRequestDto();
+		given(journeyRequestMapper.mapToDomainEntity(any(JourneyRequestJpaEntity.class), any(String.class)))
+				.willReturn(createJourneyRequestDto);
+		// when
+		Optional<CreateJourneyRequestDto> createJourneyRequestDtoOptional = journeyRequestsPersistenceAdapter
+				.loadJourneyRequestById(1L);
+		// then
+
+		assertEquals(createJourneyRequestDto, createJourneyRequestDtoOptional.get());
+
+	}
+
+	@Test
+	void testLoadInexistentJourneyRequestById() {
+
+		// given
+
+		given(journeyRequestRepository.findById(any(Long.class))).willReturn(Optional.ofNullable(null));
+
+		// when
+		Optional<CreateJourneyRequestDto> createJourneyRequestDtoOptional = journeyRequestsPersistenceAdapter
+				.loadJourneyRequestById(1L);
+		// then
+
+		assertTrue(createJourneyRequestDtoOptional.isEmpty());	
+
+	}
+
+	@Test
+	void testStripDashes() {
+		String str1 = "-minprice";
+		String res1 = journeyRequestsPersistenceAdapter.stripDashes(str1);
+		assertEquals("Minprice", res1);
+
+		String str2 = "minprice-";
+		String res2 = journeyRequestsPersistenceAdapter.stripDashes(str2);
+		assertEquals("minprice", res2);
+
+		String str3 = "min-price";
+		String res3 = journeyRequestsPersistenceAdapter.stripDashes(str3);
+		assertEquals("minPrice", res3);
+
+		String str4 = "-min-p-ric-e-";
+		String res4 = journeyRequestsPersistenceAdapter.stripDashes(str4);
+		assertEquals("MinPRicE", res4);
+
+	}
+
+	@Test
+	void testConvertToSort() {
+
+		Sort sort1 = journeyRequestsPersistenceAdapter.convertToSort(new SortingCriterion("min-price", "desc"));
+		Sort sort2 = journeyRequestsPersistenceAdapter.convertToSort(new SortingCriterion("date-time", "asc"));
+		Sort sort3 = journeyRequestsPersistenceAdapter.convertToSort(new SortingCriterion("distance", "asc"));
+
+		assertEquals(sort1.get().toArray().length, 1);
+		assertTrue(sort1.getOrderFor("(minPrice)") != null
+				&& sort1.getOrderFor("(minPrice)").getDirection().isDescending());
+
+		assertEquals(sort2.get().toArray().length, 1);
+		assertTrue(sort2.getOrderFor("dateTime") != null && sort2.getOrderFor("dateTime").getDirection().isAscending());
+
+		assertEquals(sort3.get().toArray().length, 1);
+		assertTrue(sort3.getOrderFor("distance") != null && sort3.getOrderFor("distance").getDirection().isAscending());
+	}
+
 	private Page<JourneyRequestSearchDto> givenNullJourneyRequestsPageByDeparturePlace_RegionIdAndArrivalPlace_RegionIdInAndEngineType_IdInAndDateBetween() {
 
 		given(journeyRequestRepository
@@ -307,44 +380,6 @@ public class JourneyRequestsPersistenceAdapterTests {
 
 		return result;
 
-	}
-
-	@Test
-	void testStripDashes() {
-		String str1 = "-minprice";
-		String res1 = journeyRequestsPersistenceAdapter.stripDashes(str1);
-		assertEquals("Minprice", res1);
-
-		String str2 = "minprice-";
-		String res2 = journeyRequestsPersistenceAdapter.stripDashes(str2);
-		assertEquals("minprice", res2);
-
-		String str3 = "min-price";
-		String res3 = journeyRequestsPersistenceAdapter.stripDashes(str3);
-		assertEquals("minPrice", res3);
-
-		String str4 = "-min-p-ric-e-";
-		String res4 = journeyRequestsPersistenceAdapter.stripDashes(str4);
-		assertEquals("MinPRicE", res4);
-
-	}
-
-	@Test
-	void testConvertToSort() {
-
-		Sort sort1 = journeyRequestsPersistenceAdapter.convertToSort(new SortingCriterion("min-price", "desc"));
-		Sort sort2 = journeyRequestsPersistenceAdapter.convertToSort(new SortingCriterion("date-time", "asc"));
-		Sort sort3 = journeyRequestsPersistenceAdapter.convertToSort(new SortingCriterion("distance", "asc"));
-
-		assertEquals(sort1.get().toArray().length, 1);
-		assertTrue(sort1.getOrderFor("(minPrice)") != null
-				&& sort1.getOrderFor("(minPrice)").getDirection().isDescending());
-
-		assertEquals(sort2.get().toArray().length, 1);
-		assertTrue(sort2.getOrderFor("dateTime") != null && sort2.getOrderFor("dateTime").getDirection().isAscending());
-
-		assertEquals(sort3.get().toArray().length, 1);
-		assertTrue(sort3.getOrderFor("distance") != null && sort3.getOrderFor("distance").getDirection().isAscending());
 	}
 
 	private Page<JourneyRequestSearchDto> createPageFromJourneyRequestSearchDto(

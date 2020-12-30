@@ -17,11 +17,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.excentria_it.wamya.adapter.web.utils.LocaleUtils;
 import com.excentria_it.wamya.application.port.in.SearchJourneyRequestsUseCase;
 import com.excentria_it.wamya.application.port.in.SearchJourneyRequestsUseCase.SearchJourneyRequestsCommand;
 import com.excentria_it.wamya.common.SortingCriterion;
 import com.excentria_it.wamya.common.annotation.WebAdapter;
+import com.excentria_it.wamya.common.utils.LocaleUtils;
 import com.excentria_it.wamya.domain.JourneyRequestsSearchResult;
 
 import lombok.RequiredArgsConstructor;
@@ -34,7 +34,7 @@ import lombok.RequiredArgsConstructor;
 public class SearchJourneyRequestsController {
 
 	private final SearchJourneyRequestsUseCase searchJourneyRequestsUseCase;
-	
+
 	private final LocalValidatorFactoryBean localValidatorFactoryBean;
 
 	@GetMapping
