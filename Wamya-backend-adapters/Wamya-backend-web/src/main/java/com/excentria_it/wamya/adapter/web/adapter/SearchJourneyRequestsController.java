@@ -19,9 +19,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.excentria_it.wamya.application.port.in.SearchJourneyRequestsUseCase;
 import com.excentria_it.wamya.application.port.in.SearchJourneyRequestsUseCase.SearchJourneyRequestsCommand;
-import com.excentria_it.wamya.common.SortingCriterion;
+import com.excentria_it.wamya.common.SortCriterion;
 import com.excentria_it.wamya.common.annotation.WebAdapter;
 import com.excentria_it.wamya.common.utils.LocaleUtils;
+import com.excentria_it.wamya.common.utils.ParameterUtils;
 import com.excentria_it.wamya.domain.JourneyRequestsSearchResult;
 
 import lombok.RequiredArgsConstructor;
@@ -43,30 +44,14 @@ public class SearchJourneyRequestsController {
 			@RequestParam(name = "arrival") Set<String> arrivalPlaceRegionIds,
 			@RequestParam(name = "fromDate") @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") LocalDateTime startDateTime,
 			@RequestParam(name = "toDate") @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") LocalDateTime endDateTime,
-			@RequestParam(name = "engine") Set<Long> engineTypeIds, @RequestParam(name = "page") Integer pageNumber,
-			@RequestParam(name = "size") Integer pageSize, @RequestParam(name = "sort") Optional<String> sort,
-			Locale locale) {
+			@RequestParam(name = "engine") Set<Long> engineTypeIds,
+			@RequestParam(name = "page", defaultValue = "0") Integer pageNumber,
+			@RequestParam(name = "size", defaultValue = "25") Integer pageSize,
+			@RequestParam(name = "sort") Optional<String> sort, Locale locale) {
 
 		Locale supportedLocale = LocaleUtils.getSupporedLocale(locale);
 
-		SortingCriterion sortingCriterion = null;
-		String sortStr = sort.orElse("min-price,desc");
-
-		String field, direction;
-
-		String[] sortFieldAndDirection = sortStr.split(",");
-
-		if (sortFieldAndDirection.length == 2) {
-			field = sortFieldAndDirection[0].trim();
-			direction = sortFieldAndDirection[1].trim();
-
-		} else {
-			field = sortFieldAndDirection[0].trim();
-			direction = "asc";
-
-		}
-
-		sortingCriterion = new SortingCriterion(field, direction);
+		SortCriterion sortingCriterion = ParameterUtils.parameterToSortCriterion(sort, "min-price,desc");
 
 		SearchJourneyRequestsCommand command = SearchJourneyRequestsCommand.builder()
 				.departurePlaceRegionId(departurePlaceRegionId).arrivalPlaceRegionIds(arrivalPlaceRegionIds)

@@ -72,15 +72,12 @@ public class MakeProposalControllerTests {
 	}
 
 	@Test
-	void givenInvalidInputAndEmailUsername_WhenMakeProposal_ThenReturnCreateProposal() throws Exception {
+	void givenInvalidInputAndEmailUsername_WhenMakeProposal_ThenReturnBadRequest() throws Exception {
 		// given
 		MakeProposalCommand command = JourneyProposalTestData.defaultMakeProposalCommandBuilder().price(-250.0).build();
 
 		String makeProposalJson = objectMapper.writeValueAsString(command);
-		MakeProposalDto makeProposalDto = new MakeProposalDto(1L, command.getPrice());
 
-		given(makeProposalUseCase.makeProposal(any(MakeProposalCommand.class), any(Long.class), any(String.class)))
-				.willReturn(makeProposalDto);
 		// when
 
 		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)

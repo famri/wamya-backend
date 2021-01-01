@@ -9,7 +9,7 @@ import org.springframework.util.CollectionUtils;
 import com.excentria_it.wamya.adapter.persistence.entity.TransporterJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.mapper.VehiculeMapper;
 import com.excentria_it.wamya.adapter.persistence.repository.TransporterRepository;
-import com.excentria_it.wamya.application.port.out.LoadTransporterPort;
+import com.excentria_it.wamya.application.port.out.LoadTransporterVehiculesPort;
 import com.excentria_it.wamya.common.annotation.PersistenceAdapter;
 import com.excentria_it.wamya.domain.JourneyProposalDto.VehiculeDto;
 
@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @PersistenceAdapter
-public class TransporterPersistenceAdapter implements LoadTransporterPort {
+public class TransporterPersistenceAdapter implements LoadTransporterVehiculesPort {
 
 	private final TransporterRepository transporterRepository;
 

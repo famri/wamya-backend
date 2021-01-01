@@ -1,6 +1,8 @@
 package com.excentria_it.wamya.adapter.persistence.entity;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -57,14 +59,25 @@ public class JourneyRequestJpaEntity {
 	@Column(length = 500)
 	private String description;
 
+	private LocalDateTime creationDateTime;
+
 	@ManyToOne
 	@JoinColumn(name = "client_id")
 	private ClientJpaEntity client;
 
-	@OneToMany(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST,
+	@OneToMany(mappedBy = "journeyRequest", cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST,
 			CascadeType.REFRESH }, orphanRemoval = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "journey_request_id")
-	private Set<JourneyProposalJpaEntity> proposals;
+	private Set<JourneyProposalJpaEntity> proposals = new HashSet<>();
+
+	public void addProposal(JourneyProposalJpaEntity proposal) {
+		proposals.add(proposal);
+		proposal.setJourneyRequest(this);
+	}
+
+	public void removeProposal(JourneyProposalJpaEntity proposal) {
+		proposals.remove(proposal);
+		proposal.setJourneyRequest(null);
+	}
 
 	public PlaceJpaEntity getDeparturePlace() {
 		return departurePlace;
@@ -130,6 +143,14 @@ public class JourneyRequestJpaEntity {
 		this.description = description;
 	}
 
+	public LocalDateTime getCreationDateTime() {
+		return creationDateTime;
+	}
+
+	public void setCreationDateTime(LocalDateTime creationDateTime) {
+		this.creationDateTime = creationDateTime;
+	}
+
 	public ClientJpaEntity getClient() {
 		return client;
 	}
@@ -139,11 +160,7 @@ public class JourneyRequestJpaEntity {
 	}
 
 	public Set<JourneyProposalJpaEntity> getProposals() {
-		return proposals;
-	}
-
-	public void setProposals(Set<JourneyProposalJpaEntity> proposals) {
-		this.proposals = proposals;
+		return Collections.unmodifiableSet(proposals);
 	}
 
 	public Long getId() {
@@ -179,7 +196,7 @@ public class JourneyRequestJpaEntity {
 		return "JourneyRequestJpaEntity [id=" + id + ", departurePlace=" + departurePlace + ", arrivalPlace="
 				+ arrivalPlace + ", engineType=" + engineType + ", distance=" + distance + ", dateTime=" + dateTime
 				+ ", endDateTime=" + endDateTime + ", workers=" + workers + ", description=" + description
-				+ ", client id=" + client.getId() + "]";
+				+ ", creationDateTime=" + creationDateTime + ", client id=" + client.getId() + "]";
 	}
 
 }

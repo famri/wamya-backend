@@ -11,7 +11,7 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import com.excentria_it.wamya.application.port.in.MakeProposalUseCase;
 import com.excentria_it.wamya.application.port.out.LoadJourneyRequestPort;
-import com.excentria_it.wamya.application.port.out.LoadTransporterPort;
+import com.excentria_it.wamya.application.port.out.LoadTransporterVehiculesPort;
 import com.excentria_it.wamya.application.port.out.MakeProposalPort;
 import com.excentria_it.wamya.common.annotation.UseCase;
 import com.excentria_it.wamya.common.exception.InvalidTransporterVehiculeException;
@@ -30,7 +30,7 @@ public class MakeProposalService implements MakeProposalUseCase {
 
 	private final MakeProposalPort makeProposalPort;
 
-	private final LoadTransporterPort loadTransporterPort;
+	private final LoadTransporterVehiculesPort loadTransporterPort;
 
 	private final LoadJourneyRequestPort loadJourneyRequestPort;
 

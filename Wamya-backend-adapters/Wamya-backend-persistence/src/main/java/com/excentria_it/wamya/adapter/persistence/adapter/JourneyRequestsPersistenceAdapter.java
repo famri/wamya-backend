@@ -22,22 +22,27 @@ import com.excentria_it.wamya.adapter.persistence.repository.JourneyRequestRepos
 import com.excentria_it.wamya.adapter.persistence.repository.PlaceRepository;
 import com.excentria_it.wamya.application.port.in.SearchJourneyRequestsUseCase.SearchJourneyRequestsCommand;
 import com.excentria_it.wamya.application.port.out.CreateJourneyRequestPort;
+import com.excentria_it.wamya.application.port.out.LoadClientJourneyRequestsPort;
 import com.excentria_it.wamya.application.port.out.LoadJourneyRequestPort;
 import com.excentria_it.wamya.application.port.out.SearchJourneyRequestsPort;
-import com.excentria_it.wamya.common.SortingCriterion;
+import com.excentria_it.wamya.common.SortCriterion;
 import com.excentria_it.wamya.common.annotation.PersistenceAdapter;
 import com.excentria_it.wamya.common.utils.LocaleUtils;
+import com.excentria_it.wamya.common.utils.ParameterUtils;
+import com.excentria_it.wamya.domain.ClientJourneyRequestDto;
+import com.excentria_it.wamya.domain.ClientJourneyRequests;
 import com.excentria_it.wamya.domain.CreateJourneyRequestDto;
 import com.excentria_it.wamya.domain.JourneyRequestSearchDto;
 import com.excentria_it.wamya.domain.JourneyRequestsSearchResult;
+import com.excentria_it.wamya.domain.LoadClientJourneyRequestsCriteria;
 import com.excentria_it.wamya.domain.SearchJourneyRequestsCriteria;
 
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @PersistenceAdapter
-public class JourneyRequestsPersistenceAdapter
-		implements SearchJourneyRequestsPort, CreateJourneyRequestPort, LoadJourneyRequestPort {
+public class JourneyRequestsPersistenceAdapter implements SearchJourneyRequestsPort, CreateJourneyRequestPort,
+		LoadJourneyRequestPort, LoadClientJourneyRequestsPort {
 
 	private final JourneyRequestRepository journeyRequestRepository;
 
@@ -83,26 +88,13 @@ public class JourneyRequestsPersistenceAdapter
 		return new JourneyRequestsSearchResult(0, 0, 0, 0, false, Collections.<JourneyRequestSearchDto>emptyList());
 	}
 
-	protected Sort convertToSort(SortingCriterion sortingCriterion) {
+	protected Sort convertToSort(SortCriterion sortingCriterion) {
 		if ("min-price".equals(sortingCriterion.getField())) {
 			return (JpaSort.unsafe(Direction.valueOf(sortingCriterion.getDirection().toUpperCase()),
-					stripDashes("(" + sortingCriterion.getField() + ")")));
+					ParameterUtils.kebabToCamelCase("(" + sortingCriterion.getField() + ")")));
 		}
 		return Sort.by(Direction.valueOf(sortingCriterion.getDirection().toUpperCase()),
-				stripDashes(sortingCriterion.getField()));
-	}
-
-	protected String stripDashes(String str) {
-		int idx;
-		while ((idx = str.indexOf("-")) != -1) {
-			if (idx < str.length() - 1) {
-				String charToUpper = str.substring(idx + 1, idx + 2).toUpperCase();
-				str = str.substring(0, idx) + charToUpper + str.substring(idx + 2);
-			} else {
-				str = str.substring(0, idx);
-			}
-		}
-		return str;
+				ParameterUtils.kebabToCamelCase(sortingCriterion.getField()));
 	}
 
 	@Override
@@ -170,5 +162,34 @@ public class JourneyRequestsPersistenceAdapter
 		CreateJourneyRequestDto createJourneyRequestDto = journeyRequestMapper
 				.mapToDomainEntity(journeyRequestJpaEntityOptional.get(), LocaleUtils.defaultLocale.toString());
 		return Optional.ofNullable(createJourneyRequestDto);
+	}
+
+	@Override
+	public ClientJourneyRequests loadClientJourneyRequests(LoadClientJourneyRequestsCriteria criteria) {
+		Sort sort = convertToSort(criteria.getSortingCriterion());
+
+		Pageable pagingSort = PageRequest.of(criteria.getPageNumber(), criteria.getPageSize(), sort);
+		Page<ClientJourneyRequestDto> journeyRequestsPage = null;
+		if (criteria.getClientUsername().contains("@")) {
+			journeyRequestsPage = journeyRequestRepository.findByCreationDateTimeBetweenAndClient_Email(
+					criteria.getPeriodCriterion().getLowerEdge(), criteria.getPeriodCriterion().getHigherEdge(),
+					criteria.getClientUsername(), pagingSort);
+		} else {
+
+			String[] mobileNumber = criteria.getClientUsername().split("_");
+			journeyRequestsPage = journeyRequestRepository
+					.findByCreationDateTimeBetweenAndClient_MobileNumberAndClient_IccValue(
+							criteria.getPeriodCriterion().getLowerEdge(), criteria.getPeriodCriterion().getHigherEdge(),
+							mobileNumber[0], mobileNumber[1], pagingSort);
+		}
+
+		if (journeyRequestsPage != null) {
+
+			return new ClientJourneyRequests(journeyRequestsPage.getTotalPages(),
+					journeyRequestsPage.getTotalElements(), journeyRequestsPage.getNumber(),
+					journeyRequestsPage.getSize(), journeyRequestsPage.hasNext(), journeyRequestsPage.getContent());
+		}
+
+		return new ClientJourneyRequests(0, 0, 0, 0, false, Collections.<ClientJourneyRequestDto>emptyList());
 	}
 }

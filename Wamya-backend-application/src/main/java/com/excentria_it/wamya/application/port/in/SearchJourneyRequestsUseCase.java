@@ -6,8 +6,8 @@ import java.util.Set;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
-import com.excentria_it.wamya.common.SortingCriterion;
-import com.excentria_it.wamya.common.annotation.SortCriterion;
+import com.excentria_it.wamya.common.SortCriterion;
+import com.excentria_it.wamya.common.annotation.Sort;
 import com.excentria_it.wamya.domain.JourneyRequestsSearchResult;
 
 import lombok.AllArgsConstructor;
@@ -49,8 +49,8 @@ public interface SearchJourneyRequestsUseCase {
 		@NotNull
 		private Integer pageSize;
 
-		@SortCriterion(fields = { "min-price", "distance", "date-time" })
-		private SortingCriterion sortingCriterion;
+		@Sort(fields = { "min-price", "distance", "date-time" })
+		private SortCriterion sortingCriterion;
 
 	}
 

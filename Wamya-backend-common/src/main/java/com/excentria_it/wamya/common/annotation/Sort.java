@@ -15,7 +15,7 @@ import com.excentria_it.wamya.common.validator.impl.SortCriterionValidator;
 @Constraint(validatedBy = SortCriterionValidator.class)
 @Target({ ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface SortCriterion {
+public @interface Sort {
 	String message() default "{com.excentria_it.wamya.common.sort_criterion.message}";
 
 	Class<?>[] groups() default {};
@@ -23,12 +23,12 @@ public @interface SortCriterion {
 	Class<? extends Payload>[] payload() default {};
 
 	/**
-	 * @return The first field
+	 * @return The fields
 	 */
 	String[] fields();
 
 	/**
-	 * @return The second field
+	 * @return The directions
 	 */
 	String[] directions() default { "asc", "desc" };
 }

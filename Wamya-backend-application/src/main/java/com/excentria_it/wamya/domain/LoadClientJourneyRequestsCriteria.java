@@ -1,8 +1,6 @@
 package com.excentria_it.wamya.domain;
 
-import java.time.LocalDateTime;
-import java.util.Set;
-
+import com.excentria_it.wamya.common.PeriodCriterion;
 import com.excentria_it.wamya.common.SortCriterion;
 
 import lombok.AllArgsConstructor;
@@ -14,17 +12,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Builder
-public class SearchJourneyRequestsCriteria {
+public class LoadClientJourneyRequestsCriteria {
 
-	private String departurePlaceRegionId;
-
-	private Set<String> arrivalPlaceRegionIds;
-
-	private LocalDateTime startDateTime;
-
-	private LocalDateTime endDateTime;
-
-	private Set<Long> engineTypes;
+	private String clientUsername;
 
 	private Integer pageNumber;
 
@@ -32,5 +22,5 @@ public class SearchJourneyRequestsCriteria {
 
 	private SortCriterion sortingCriterion;
 
-	private String locale;
+	private PeriodCriterion periodCriterion;
 }

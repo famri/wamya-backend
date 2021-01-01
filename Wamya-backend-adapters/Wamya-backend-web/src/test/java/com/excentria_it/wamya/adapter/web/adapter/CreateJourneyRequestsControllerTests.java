@@ -7,8 +7,6 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import java.time.format.DateTimeFormatter;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -31,8 +29,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Import(value = { CreateJourneyRequestsController.class, RestApiExceptionHandler.class, MockMvcSupport.class })
 @WebMvcTest(controllers = CreateJourneyRequestsController.class)
 public class CreateJourneyRequestsControllerTests {
-
-	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
 	@Autowired
 	private MockMvcSupport api;

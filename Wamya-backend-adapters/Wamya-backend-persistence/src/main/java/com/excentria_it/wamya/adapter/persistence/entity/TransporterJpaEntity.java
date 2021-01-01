@@ -2,6 +2,8 @@ package com.excentria_it.wamya.adapter.persistence.entity;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -41,7 +43,17 @@ public class TransporterJpaEntity extends UserAccountJpaEntity {
 
 	@OneToMany(mappedBy = "transporter", cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST,
 			CascadeType.REFRESH }, orphanRemoval = true, fetch = FetchType.LAZY)
-	private Set<JourneyProposalJpaEntity> proposals;
+	private Set<JourneyProposalJpaEntity> proposals = new HashSet<>();
+
+	public void addProposal(JourneyProposalJpaEntity proposal) {
+		proposals.add(proposal);
+		proposal.setTransporter(this);
+	}
+
+	public void removeProposal(JourneyProposalJpaEntity proposal) {
+		proposals.remove(proposal);
+		proposal.setTransporter(null);
+	}
 
 	public TransporterJpaEntity(Long id, Long oauthId, Gender gender, String firstname, String lastname,
 			LocalDate dateOfBirth, String email, String emailValidationCode, Boolean isValidatedEmail,
@@ -94,11 +106,14 @@ public class TransporterJpaEntity extends UserAccountJpaEntity {
 		this.globalRating = globalRating;
 	}
 
+	public Set<JourneyProposalJpaEntity> getProposals() {
+		return Collections.unmodifiableSet(proposals);
+	}
+
 	@Override
 	public int hashCode() {
-		final int prime = 31;
+
 		int result = super.hashCode();
-		result = prime * result + ((globalRating == null) ? 0 : globalRating.hashCode());
 		return result;
 	}
 

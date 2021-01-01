@@ -1,0 +1,39 @@
+package com.excentria_it.wamya.application.port.in;
+
+import javax.validation.constraints.NotNull;
+
+import com.excentria_it.wamya.common.PeriodCriterion;
+import com.excentria_it.wamya.common.SortCriterion;
+import com.excentria_it.wamya.common.annotation.Period;
+import com.excentria_it.wamya.common.annotation.Sort;
+import com.excentria_it.wamya.domain.ClientJourneyRequests;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+public interface LoadClientJourneyRequestsUseCase {
+
+	ClientJourneyRequests loadJourneyRequests(LoadJourneyRequestsCommand command);
+
+	@Data
+	@Builder
+	@AllArgsConstructor
+	@NoArgsConstructor
+	class LoadJourneyRequestsCommand {
+		@NotNull
+		private String clientUsername;
+		@NotNull
+		private Integer pageNumber;
+		@NotNull
+		private Integer pageSize;
+
+		@Sort(fields = { "creation-date-time", "date-time", "end-date-time" })
+		private SortCriterion sortingCriterion;
+
+		@Period(value = { "y1", "m6", "m3", "m1", "w2", "w1" })
+		private PeriodCriterion periodCriterion;
+	}
+
+}

@@ -9,8 +9,8 @@ import javax.validation.Payload;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import com.excentria_it.wamya.common.SortingCriterion;
-import com.excentria_it.wamya.common.annotation.SortCriterion;
+import com.excentria_it.wamya.common.SortCriterion;
+import com.excentria_it.wamya.common.annotation.Sort;
 
 public class SortCriterionValidatorTests {
 
@@ -19,7 +19,7 @@ public class SortCriterionValidatorTests {
 	@BeforeAll
 	static void init() {
 
-		validator.initialize(new SortCriterion() {
+		validator.initialize(new Sort() {
 
 			@Override
 			public Class<? extends Annotation> annotationType() {
@@ -63,7 +63,7 @@ public class SortCriterionValidatorTests {
 	@Test
 	void givenValidSortingCriterion_WhenIsValid_ThenReturnTrue() {
 
-		boolean validationResult = validator.isValid(new SortingCriterion("field1", "asc"), null);
+		boolean validationResult = validator.isValid(new SortCriterion("field1", "asc"), null);
 
 		assertTrue(validationResult);
 	}
@@ -71,7 +71,7 @@ public class SortCriterionValidatorTests {
 	@Test
 	void givenInvalidSortingCriterionField_WhenIsValid_ThenReturnTrue() {
 
-		boolean validationResult = validator.isValid(new SortingCriterion("field4", "desc"), null);
+		boolean validationResult = validator.isValid(new SortCriterion("field4", "desc"), null);
 
 		assertFalse(validationResult);
 	}
@@ -79,7 +79,7 @@ public class SortCriterionValidatorTests {
 	@Test
 	void givenInvalidSortingCriterionDirection_WhenIsValid_ThenReturnTrue() {
 
-		boolean validationResult = validator.isValid(new SortingCriterion("field2", "up"), null);
+		boolean validationResult = validator.isValid(new SortCriterion("field2", "up"), null);
 
 		assertFalse(validationResult);
 	}
@@ -87,7 +87,7 @@ public class SortCriterionValidatorTests {
 	@Test
 	void givenInvalidSortingCriterionFieldAndDirection_WhenIsValid_ThenReturnTrue() {
 
-		boolean validationResult = validator.isValid(new SortingCriterion("field4", "up"), null);
+		boolean validationResult = validator.isValid(new SortCriterion("field4", "up"), null);
 
 		assertFalse(validationResult);
 	}

@@ -6,10 +6,10 @@ import java.util.Set;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-import com.excentria_it.wamya.common.SortingCriterion;
+import com.excentria_it.wamya.common.SortCriterion;
 import com.excentria_it.wamya.common.annotation.SortCriteria;
 
-public class SortCriteriaValidator implements ConstraintValidator<SortCriteria, List<SortingCriterion>> {
+public class SortCriteriaValidator implements ConstraintValidator<SortCriteria, List<SortCriterion>> {
 
 	private Set<String> validFieldNames;
 
@@ -22,12 +22,12 @@ public class SortCriteriaValidator implements ConstraintValidator<SortCriteria, 
 	}
 
 	@Override
-	public boolean isValid(List<SortingCriterion> sortingCriteria, ConstraintValidatorContext context) {
+	public boolean isValid(List<SortCriterion> sortingCriteria, ConstraintValidatorContext context) {
 
 		if (sortingCriteria.isEmpty())
 			return true;
 
-		for (SortingCriterion sc : sortingCriteria) {
+		for (SortCriterion sc : sortingCriteria) {
 			if (!validFieldNames.contains(sc.getField()) || !validSortingDirections.contains(sc.getDirection()))
 				return false;
 		}

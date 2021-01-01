@@ -19,7 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.excentria_it.wamya.application.port.in.MakeProposalUseCase.MakeProposalCommand;
 import com.excentria_it.wamya.application.port.out.LoadJourneyRequestPort;
-import com.excentria_it.wamya.application.port.out.LoadTransporterPort;
+import com.excentria_it.wamya.application.port.out.LoadTransporterVehiculesPort;
 import com.excentria_it.wamya.application.port.out.MakeProposalPort;
 import com.excentria_it.wamya.common.exception.InvalidTransporterVehiculeException;
 import com.excentria_it.wamya.common.exception.JourneyRequestExpiredException;
@@ -34,7 +34,7 @@ public class MakeProposalServiceTests {
 	@Mock
 	private MakeProposalPort makeProposalPort;
 	@Mock
-	private LoadTransporterPort loadTransporterPort;
+	private LoadTransporterVehiculesPort loadTransporterPort;
 	@Mock
 	private LoadJourneyRequestPort loadJourneyRequestPort;
 	@InjectMocks

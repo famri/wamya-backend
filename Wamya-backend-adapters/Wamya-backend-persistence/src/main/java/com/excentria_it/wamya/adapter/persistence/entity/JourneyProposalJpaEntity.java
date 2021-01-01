@@ -44,6 +44,10 @@ public class JourneyProposalJpaEntity {
 	@JoinColumn(name = "vehicule_id")
 	private VehiculeJpaEntity vehicule;
 
+	@ManyToOne
+	@JoinColumn(name = "journey_request_id")
+	private JourneyRequestJpaEntity journeyRequest;
+
 	public Double getPrice() {
 		return price;
 	}
@@ -79,7 +83,15 @@ public class JourneyProposalJpaEntity {
 	public void setVehicule(VehiculeJpaEntity vehicule) {
 		this.vehicule = vehicule;
 	}
-	
+
+	public JourneyRequestJpaEntity getJourneyRequest() {
+		return journeyRequest;
+	}
+
+	public void setJourneyRequest(JourneyRequestJpaEntity journeyRequest) {
+		this.journeyRequest = journeyRequest;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -107,9 +119,8 @@ public class JourneyProposalJpaEntity {
 	@Override
 	public String toString() {
 		return "JourneyProposalJpaEntity [id=" + id + ", price=" + price + ", creationDateTime=" + creationDateTime
-				+ ", transporter firstname=" + transporter.getFirstname() + ", vehicule  =" + vehicule.toString()+ "]";
+				+ ", transporter firstname=" + transporter.getFirstname() + ", vehicule  =" + vehicule.toString()
+				+ ", journeyRequest=" + journeyRequest.toString() + "]";
 	}
-
-
 
 }

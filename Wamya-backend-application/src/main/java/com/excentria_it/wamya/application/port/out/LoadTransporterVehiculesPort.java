@@ -4,7 +4,7 @@ import java.util.Set;
 
 import com.excentria_it.wamya.domain.JourneyProposalDto.VehiculeDto;
 
-public interface LoadTransporterPort {
+public interface LoadTransporterVehiculesPort {
 
 	Set<VehiculeDto> loadTransporterVehicules(String transporterEmail);
 

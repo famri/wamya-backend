@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SortingCriterion {
+public class SortCriterion {
 
 	private String field;
 

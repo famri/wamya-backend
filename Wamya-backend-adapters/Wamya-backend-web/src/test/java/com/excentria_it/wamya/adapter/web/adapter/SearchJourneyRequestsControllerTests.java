@@ -25,7 +25,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import com.c4_soft.springaddons.security.oauth2.test.mockmvc.MockMvcSupport;
 import com.excentria_it.wamya.application.port.in.SearchJourneyRequestsUseCase;
 import com.excentria_it.wamya.application.port.in.SearchJourneyRequestsUseCase.SearchJourneyRequestsCommand;
-import com.excentria_it.wamya.common.SortingCriterion;
+import com.excentria_it.wamya.common.SortCriterion;
 import com.excentria_it.wamya.common.exception.RestApiExceptionHandler;
 import com.excentria_it.wamya.domain.JourneyRequestsSearchResult;
 import com.excentria_it.wamya.test.data.common.JourneyRequestTestData;
@@ -195,7 +195,7 @@ public class SearchJourneyRequestsControllerTests {
 	void givenInvalidInput_WhenSearch_ThenReturnBadRequest() throws Exception {
 
 		SearchJourneyRequestsCommand command = JourneyRequestTestData.defaultSearchJourneyRequestsCommandBuilder()
-				.sortingCriterion(new SortingCriterion("dummy-field", "up")).build();
+				.sortingCriterion(new SortCriterion("dummy-field", "up")).build();
 
 		JourneyRequestsSearchResult expectedResult = JourneyRequestTestData.defaultJourneyRequestsSearchResult();
 

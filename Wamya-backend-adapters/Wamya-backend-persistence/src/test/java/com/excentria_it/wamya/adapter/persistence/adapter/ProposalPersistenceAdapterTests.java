@@ -55,7 +55,7 @@ public class ProposalPersistenceAdapterTests {
 		JourneyProposalJpaEntity journeyProposalJpaEntity = defaultJourneyProposalJpaEntity();
 
 		JourneyRequestJpaEntity journeyRequestJpaEntity = defaultExistentJourneyRequestJpaEntity();
-		journeyRequestJpaEntity.setProposals(new HashSet<>());
+		
 
 		given(transporterRepository.findByEmail(any(String.class))).willReturn(Optional.of(transporterJpaEntity));
 		given(vehiculeRepository.findById(any(Long.class))).willReturn(Optional.of(vehiculeJpaEntity));
@@ -85,7 +85,7 @@ public class ProposalPersistenceAdapterTests {
 		JourneyProposalJpaEntity journeyProposalJpaEntity = defaultJourneyProposalJpaEntity();
 
 		JourneyRequestJpaEntity journeyRequestJpaEntity = defaultExistentJourneyRequestJpaEntity();
-		journeyRequestJpaEntity.setProposals(new HashSet<>());
+	
 
 		given(transporterRepository.findByMobilePhoneNumber(any(String.class), any(String.class)))
 				.willReturn(Optional.of(transporterJpaEntity));

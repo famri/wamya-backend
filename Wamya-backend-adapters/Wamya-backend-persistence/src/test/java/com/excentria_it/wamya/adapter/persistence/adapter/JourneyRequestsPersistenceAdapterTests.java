@@ -37,7 +37,7 @@ import com.excentria_it.wamya.adapter.persistence.repository.ClientRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.EngineTypeRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.JourneyRequestRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.PlaceRepository;
-import com.excentria_it.wamya.common.SortingCriterion;
+import com.excentria_it.wamya.common.SortCriterion;
 import com.excentria_it.wamya.domain.CreateJourneyRequestDto;
 import com.excentria_it.wamya.domain.JourneyRequestSearchDto;
 import com.excentria_it.wamya.domain.JourneyRequestsSearchResult;
@@ -302,32 +302,13 @@ public class JourneyRequestsPersistenceAdapterTests {
 
 	}
 
-	@Test
-	void testStripDashes() {
-		String str1 = "-minprice";
-		String res1 = journeyRequestsPersistenceAdapter.stripDashes(str1);
-		assertEquals("Minprice", res1);
-
-		String str2 = "minprice-";
-		String res2 = journeyRequestsPersistenceAdapter.stripDashes(str2);
-		assertEquals("minprice", res2);
-
-		String str3 = "min-price";
-		String res3 = journeyRequestsPersistenceAdapter.stripDashes(str3);
-		assertEquals("minPrice", res3);
-
-		String str4 = "-min-p-ric-e-";
-		String res4 = journeyRequestsPersistenceAdapter.stripDashes(str4);
-		assertEquals("MinPRicE", res4);
-
-	}
 
 	@Test
 	void testConvertToSort() {
 
-		Sort sort1 = journeyRequestsPersistenceAdapter.convertToSort(new SortingCriterion("min-price", "desc"));
-		Sort sort2 = journeyRequestsPersistenceAdapter.convertToSort(new SortingCriterion("date-time", "asc"));
-		Sort sort3 = journeyRequestsPersistenceAdapter.convertToSort(new SortingCriterion("distance", "asc"));
+		Sort sort1 = journeyRequestsPersistenceAdapter.convertToSort(new SortCriterion("min-price", "desc"));
+		Sort sort2 = journeyRequestsPersistenceAdapter.convertToSort(new SortCriterion("date-time", "asc"));
+		Sort sort3 = journeyRequestsPersistenceAdapter.convertToSort(new SortCriterion("distance", "asc"));
 
 		assertEquals(sort1.get().toArray().length, 1);
 		assertTrue(sort1.getOrderFor("(minPrice)") != null
