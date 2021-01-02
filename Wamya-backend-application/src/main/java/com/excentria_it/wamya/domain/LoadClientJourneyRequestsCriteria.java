@@ -23,4 +23,6 @@ public class LoadClientJourneyRequestsCriteria {
 	private SortCriterion sortingCriterion;
 
 	private PeriodCriterion periodCriterion;
+
+	private String locale;
 }

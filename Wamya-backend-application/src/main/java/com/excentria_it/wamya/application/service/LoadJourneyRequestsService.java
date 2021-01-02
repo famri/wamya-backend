@@ -18,12 +18,12 @@ public class LoadJourneyRequestsService implements LoadClientJourneyRequestsUseC
 	private final LoadClientJourneyRequestsPort loadClientJourneyRequestsPort;
 
 	@Override
-	public ClientJourneyRequests loadJourneyRequests(LoadJourneyRequestsCommand command) {
+	public ClientJourneyRequests loadJourneyRequests(LoadJourneyRequestsCommand command, String locale) {
 
 		LoadClientJourneyRequestsCriteria loadingCriteria = LoadClientJourneyRequestsCriteria.builder()
 				.clientUsername(command.getClientUsername()).periodCriterion(command.getPeriodCriterion())
 				.sortingCriterion(command.getSortingCriterion()).pageNumber(command.getPageNumber())
-				.pageSize(command.getPageSize()).build();
+				.pageSize(command.getPageSize()).locale(locale).build();
 
 		return loadClientJourneyRequestsPort.loadClientJourneyRequests(loadingCriteria);
 

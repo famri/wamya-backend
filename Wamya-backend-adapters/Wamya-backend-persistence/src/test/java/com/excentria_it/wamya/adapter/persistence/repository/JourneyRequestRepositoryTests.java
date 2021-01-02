@@ -122,7 +122,7 @@ public class JourneyRequestRepositoryTests {
 						departurePlaces.get(0).getRegionId(),
 						Set.of(arrivalPlaces.get(0).getRegionId(), arrivalPlaces.get(1).getRegionId()),
 						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()), searchStartAndEndDates.get(0),
-						searchStartAndEndDates.get(1), "en", PageRequest.of(0, 1000,
+						searchStartAndEndDates.get(1), "en_US", PageRequest.of(0, 1000,
 								// Sort.by(List.of(new Order(Direction.DESC, "(minPrice)")))
 								JpaSort.unsafe(Direction.DESC, "(minPrice)")));
 
@@ -190,7 +190,7 @@ public class JourneyRequestRepositoryTests {
 		Page<JourneyRequestSearchDto> journeyRequests = journeyRequestRepository
 				.findByDeparturePlace_RegionIdAndEngineType_IdInAndDateBetween(departurePlaces.get(0).getRegionId(),
 						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()), searchStartAndEndDates.get(0),
-						searchStartAndEndDates.get(1), "en", PageRequest.of(0, 1000,
+						searchStartAndEndDates.get(1), "en_US", PageRequest.of(0, 1000,
 								// Sort.by(List.of(new Order(Direction.DESC, "(minPrice)")))
 								JpaSort.unsafe(Direction.DESC, "(minPrice)")));
 
@@ -260,7 +260,7 @@ public class JourneyRequestRepositoryTests {
 						departurePlaces.get(0).getRegionId(),
 						Set.of(arrivalPlaces.get(0).getRegionId(), arrivalPlaces.get(1).getRegionId()),
 						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()), searchStartAndEndDates.get(0),
-						searchStartAndEndDates.get(1), "en", PageRequest.of(1, 1,
+						searchStartAndEndDates.get(1), "en_US", PageRequest.of(1, 1,
 								// Sort.by(List.of(new Order(Direction.DESC, "(minPrice)")))
 								JpaSort.unsafe(Direction.ASC, "(minPrice)")));
 
@@ -321,7 +321,7 @@ public class JourneyRequestRepositoryTests {
 		Page<JourneyRequestSearchDto> journeyRequests = journeyRequestRepository
 				.findByDeparturePlace_RegionIdAndEngineType_IdInAndDateBetween(departurePlaces.get(0).getRegionId(),
 						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()), searchStartAndEndDates.get(0),
-						searchStartAndEndDates.get(1), "en", PageRequest.of(1, 1,
+						searchStartAndEndDates.get(1), "en_US", PageRequest.of(1, 1,
 								// Sort.by(List.of(new Order(Direction.DESC, "(minPrice)")))
 								JpaSort.unsafe(Direction.ASC, "(minPrice)")));
 
@@ -387,7 +387,7 @@ public class JourneyRequestRepositoryTests {
 						departurePlaces.get(0).getRegionId(),
 						Set.of(arrivalPlaces.get(0).getRegionId(), arrivalPlaces.get(1).getRegionId()),
 						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()), searchStartAndEndDates.get(0),
-						searchStartAndEndDates.get(1), "en", PageRequest.of(0, 1000,
+						searchStartAndEndDates.get(1), "en_US", PageRequest.of(0, 1000,
 
 								Sort.by(Direction.DESC, "dateTime")));
 
@@ -454,7 +454,7 @@ public class JourneyRequestRepositoryTests {
 		Page<JourneyRequestSearchDto> journeyRequests = journeyRequestRepository
 				.findByDeparturePlace_RegionIdAndEngineType_IdInAndDateBetween(departurePlaces.get(0).getRegionId(),
 						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()), searchStartAndEndDates.get(0),
-						searchStartAndEndDates.get(1), "en", PageRequest.of(0, 1000,
+						searchStartAndEndDates.get(1), "en_US", PageRequest.of(0, 1000,
 
 								Sort.by(Direction.DESC, "dateTime")));
 
@@ -521,7 +521,7 @@ public class JourneyRequestRepositoryTests {
 						departurePlaces.get(0).getRegionId(),
 						Set.of(arrivalPlaces.get(0).getRegionId(), arrivalPlaces.get(1).getRegionId()),
 						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()), searchStartAndEndDates.get(0),
-						searchStartAndEndDates.get(1), "en", PageRequest.of(0, 1000,
+						searchStartAndEndDates.get(1), "en_US", PageRequest.of(0, 1000,
 
 								Sort.by(Direction.DESC, "distance")));
 
@@ -586,7 +586,7 @@ public class JourneyRequestRepositoryTests {
 		Page<JourneyRequestSearchDto> journeyRequests = journeyRequestRepository
 				.findByDeparturePlace_RegionIdAndEngineType_IdInAndDateBetween(departurePlaces.get(0).getRegionId(),
 						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()), searchStartAndEndDates.get(0),
-						searchStartAndEndDates.get(1), "en", PageRequest.of(0, 1000,
+						searchStartAndEndDates.get(1), "en_US", PageRequest.of(0, 1000,
 
 								Sort.by(Direction.DESC, "distance")));
 
@@ -649,7 +649,7 @@ public class JourneyRequestRepositoryTests {
 		LocalDateTime lowerEdge = endDates.get(0).minusDays(1);
 
 		Page<ClientJourneyRequestDto> journeyRequests = journeyRequestRepository
-				.findByCreationDateTimeBetweenAndClient_Email(lowerEdge, higherEdge, clients.get(0).getEmail(),
+				.findByCreationDateTimeBetweenAndClient_Email(lowerEdge, higherEdge, clients.get(0).getEmail(), "en_US",
 						PageRequest.of(0, 25,
 
 								Sort.by(Direction.DESC, "creationDateTime")));
@@ -657,7 +657,8 @@ public class JourneyRequestRepositoryTests {
 		// Then
 		assertNotNull(journeyRequests);
 		assertEquals(1, journeyRequests.getNumberOfElements());
-
+		assertEquals(3, journeyRequests.getContent().get(0).getProposalsCount());
+		
 		JourneyRequestJpaEntity clientJourneyRequest = journeyRequestRepository
 				.findById(journeyRequests.getContent().get(0).getId()).get();
 
@@ -704,20 +705,21 @@ public class JourneyRequestRepositoryTests {
 
 		Page<ClientJourneyRequestDto> journeyRequests = journeyRequestRepository
 				.findByCreationDateTimeBetweenAndClient_MobileNumberAndClient_IccValue(lowerEdge, higherEdge,
-						clients.get(0).getMobileNumber(), clients.get(0).getIcc().getValue(), PageRequest.of(0, 25,
+						clients.get(0).getMobileNumber(), clients.get(0).getIcc().getValue(), "en_US", PageRequest.of(0, 25,
 
 								Sort.by(Direction.DESC, "creationDateTime")));
 
 		// Then
 		assertNotNull(journeyRequests);
 		assertEquals(1, journeyRequests.getNumberOfElements());
+		assertEquals(3, journeyRequests.getContent().get(0).getProposalsCount());
 
 		JourneyRequestJpaEntity clientJourneyRequest = journeyRequestRepository
 				.findById(journeyRequests.getContent().get(0).getId()).get();
 
 		assertEquals(clients.get(0).getMobileNumber(), clientJourneyRequest.getClient().getMobileNumber());
 		assertEquals(clients.get(0).getIcc().getValue(), clientJourneyRequest.getClient().getIcc().getValue());
-		
+
 		assertTrue(journeyRequests.getContent().get(0).getCreationDateTime().isAfter(lowerEdge)
 				|| journeyRequests.getContent().get(0).getCreationDateTime().isEqual(lowerEdge));
 
@@ -794,162 +796,162 @@ public class JourneyRequestRepositoryTests {
 		et11.setCode("EngineType11Code");
 
 		LocalizedEngineTypeJpaEntity let11en = new LocalizedEngineTypeJpaEntity();
-		let11en.setLocalizedId(new LocalizedId("en"));
+		let11en.setLocalizedId(new LocalizedId("en_US"));
 		let11en.setEngineType(et11);
 		let11en.setName("EngineType11");
 		let11en.setDescription("EngineTypeDescription11");
-		et11.getLocalizations().put("en", let11en);
+		et11.getLocalizations().put("en_US", let11en);
 
 		LocalizedEngineTypeJpaEntity let11fr = new LocalizedEngineTypeJpaEntity();
-		let11fr.setLocalizedId(new LocalizedId("fr"));
+		let11fr.setLocalizedId(new LocalizedId("fr_FR"));
 		let11fr.setEngineType(et11);
 		let11fr.setName("TypeVehicule11");
 		let11fr.setDescription("DescriptionTypeVehicule11");
-		et11.getLocalizations().put("fr", let11fr);
+		et11.getLocalizations().put("fr_FR", let11fr);
 
 		// Engine type 12
 		EngineTypeJpaEntity et12 = new EngineTypeJpaEntity();
 		et12.setCode("EngineType12Code");
 
 		LocalizedEngineTypeJpaEntity let12en = new LocalizedEngineTypeJpaEntity();
-		let12en.setLocalizedId(new LocalizedId("en"));
+		let12en.setLocalizedId(new LocalizedId("en_US"));
 		let12en.setEngineType(et12);
 		let12en.setName("EngineType12");
 		let12en.setDescription("EngineTypeDescription12");
-		et12.getLocalizations().put("en", let12en);
+		et12.getLocalizations().put("en_US", let12en);
 
 		LocalizedEngineTypeJpaEntity let12fr = new LocalizedEngineTypeJpaEntity();
-		let12fr.setLocalizedId(new LocalizedId("fr"));
+		let12fr.setLocalizedId(new LocalizedId("fr_FR"));
 		let12fr.setEngineType(et12);
 		let12fr.setName("TypeVehicule12");
 		let12fr.setDescription("DescriptionTypeVehicule12");
-		et12.getLocalizations().put("fr", let12fr);
+		et12.getLocalizations().put("fr_FR", let12fr);
 
 		// Engine type 13
 		EngineTypeJpaEntity et13 = new EngineTypeJpaEntity();
 		et13.setCode("EngineType13Code");
 
 		LocalizedEngineTypeJpaEntity let13en = new LocalizedEngineTypeJpaEntity();
-		let13en.setLocalizedId(new LocalizedId("en"));
+		let13en.setLocalizedId(new LocalizedId("en_US"));
 		let13en.setEngineType(et13);
 		let13en.setName("EngineType13");
 		let13en.setDescription("EngineTypeDescription13");
-		et13.getLocalizations().put("en", let13en);
+		et13.getLocalizations().put("en_US", let13en);
 
 		LocalizedEngineTypeJpaEntity let13fr = new LocalizedEngineTypeJpaEntity();
-		let13fr.setLocalizedId(new LocalizedId("fr"));
+		let13fr.setLocalizedId(new LocalizedId("fr_FR"));
 		let13fr.setEngineType(et13);
 		let13fr.setName("TypeVehicule13");
 		let13fr.setDescription("DescriptionTypeVehicule3");
-		et13.getLocalizations().put("fr", let13fr);
+		et13.getLocalizations().put("fr_FR", let13fr);
 
 		// Engine type 21
 		EngineTypeJpaEntity et21 = new EngineTypeJpaEntity();
 		et21.setCode("EngineType21Code");
 
 		LocalizedEngineTypeJpaEntity let21en = new LocalizedEngineTypeJpaEntity();
-		let21en.setLocalizedId(new LocalizedId("en"));
+		let21en.setLocalizedId(new LocalizedId("en_US"));
 		let21en.setEngineType(et21);
 		let21en.setName("EngineType21");
 		let21en.setDescription("EngineTypeDescription21");
-		et21.getLocalizations().put("en", let21en);
+		et21.getLocalizations().put("en_US", let21en);
 
 		LocalizedEngineTypeJpaEntity let21fr = new LocalizedEngineTypeJpaEntity();
-		let21fr.setLocalizedId(new LocalizedId("fr"));
+		let21fr.setLocalizedId(new LocalizedId("fr_FR"));
 		let21fr.setEngineType(et21);
 		let21fr.setName("TypeVehicule21");
 		let21fr.setDescription("DescriptionTypeVehicule21");
-		et21.getLocalizations().put("fr", let21fr);
+		et21.getLocalizations().put("fr_FR", let21fr);
 
 		// Engine type 22
 		EngineTypeJpaEntity et22 = new EngineTypeJpaEntity();
 		et22.setCode("EngineType22Code");
 
 		LocalizedEngineTypeJpaEntity let22en = new LocalizedEngineTypeJpaEntity();
-		let22en.setLocalizedId(new LocalizedId("en"));
+		let22en.setLocalizedId(new LocalizedId("en_US"));
 		let22en.setEngineType(et22);
 		let22en.setName("EngineType22");
 		let22en.setDescription("EngineTypeDescription22");
-		et22.getLocalizations().put("en", let22en);
+		et22.getLocalizations().put("en_US", let22en);
 
 		LocalizedEngineTypeJpaEntity let22fr = new LocalizedEngineTypeJpaEntity();
-		let22fr.setLocalizedId(new LocalizedId("fr"));
+		let22fr.setLocalizedId(new LocalizedId("fr_FR"));
 		let22fr.setEngineType(et22);
 		let22fr.setName("TypeVehicule22");
 		let22fr.setDescription("DescriptionTypeVehicule22");
-		et22.getLocalizations().put("fr", let22fr);
+		et22.getLocalizations().put("fr_FR", let22fr);
 
 		// Engine type 23
 		EngineTypeJpaEntity et23 = new EngineTypeJpaEntity();
 		et23.setCode("EngineType23Code");
 
 		LocalizedEngineTypeJpaEntity let23en = new LocalizedEngineTypeJpaEntity();
-		let23en.setLocalizedId(new LocalizedId("en"));
+		let23en.setLocalizedId(new LocalizedId("en_US"));
 		let23en.setEngineType(et23);
 		let23en.setName("EngineType23");
 		let23en.setDescription("EngineTypeDescription23");
-		et23.getLocalizations().put("en", let23en);
+		et23.getLocalizations().put("en_US", let23en);
 
 		LocalizedEngineTypeJpaEntity let23fr = new LocalizedEngineTypeJpaEntity();
-		let23fr.setLocalizedId(new LocalizedId("fr"));
+		let23fr.setLocalizedId(new LocalizedId("fr_FR"));
 		let23fr.setEngineType(et23);
 		let23fr.setName("TypeVehicule23");
 		let23fr.setDescription("DescriptionTypeVehicule23");
-		et23.getLocalizations().put("fr", let23fr);
+		et23.getLocalizations().put("fr_FR", let23fr);
 
 		// Engine type 31
 		EngineTypeJpaEntity et31 = new EngineTypeJpaEntity();
 		et31.setCode("EngineType31Code");
 
 		LocalizedEngineTypeJpaEntity let31en = new LocalizedEngineTypeJpaEntity();
-		let31en.setLocalizedId(new LocalizedId("en"));
+		let31en.setLocalizedId(new LocalizedId("en_US"));
 		let31en.setEngineType(et31);
 		let31en.setName("EngineType31");
 		let31en.setDescription("EngineTypeDescription31");
-		et31.getLocalizations().put("en", let31en);
+		et31.getLocalizations().put("en_US", let31en);
 
 		LocalizedEngineTypeJpaEntity let31fr = new LocalizedEngineTypeJpaEntity();
-		let31fr.setLocalizedId(new LocalizedId("fr"));
+		let31fr.setLocalizedId(new LocalizedId("fr_FR"));
 		let31fr.setEngineType(et31);
 		let31fr.setName("TypeVehicule31");
 		let31fr.setDescription("DescriptionTypeVehicule31");
-		et31.getLocalizations().put("fr", let31fr);
+		et31.getLocalizations().put("fr_FR", let31fr);
 
 		// Engine type 32
 		EngineTypeJpaEntity et32 = new EngineTypeJpaEntity();
 		et32.setCode("EngineType32Code");
 
 		LocalizedEngineTypeJpaEntity let32en = new LocalizedEngineTypeJpaEntity();
-		let32en.setLocalizedId(new LocalizedId("en"));
+		let32en.setLocalizedId(new LocalizedId("en_US"));
 		let32en.setEngineType(et32);
 		let32en.setName("EngineType32");
 		let32en.setDescription("EngineTypeDescription32");
-		et32.getLocalizations().put("en", let32en);
+		et32.getLocalizations().put("en_US", let32en);
 
 		LocalizedEngineTypeJpaEntity let32fr = new LocalizedEngineTypeJpaEntity();
-		let32fr.setLocalizedId(new LocalizedId("fr"));
+		let32fr.setLocalizedId(new LocalizedId("fr_FR"));
 		let32fr.setEngineType(et32);
 		let32fr.setName("TypeVehicule32");
 		let32fr.setDescription("DescriptionTypeVehicule32");
-		et32.getLocalizations().put("fr", let32fr);
+		et32.getLocalizations().put("fr_FR", let32fr);
 
 		// Engine type 33
 		EngineTypeJpaEntity et33 = new EngineTypeJpaEntity();
 		et33.setCode("EngineType33Code");
 
 		LocalizedEngineTypeJpaEntity let33en = new LocalizedEngineTypeJpaEntity();
-		let33en.setLocalizedId(new LocalizedId("en"));
+		let33en.setLocalizedId(new LocalizedId("en_US"));
 		let33en.setEngineType(et33);
 		let33en.setName("EngineType33");
 		let33en.setDescription("EngineTypeDescription33");
-		et33.getLocalizations().put("en", let33en);
+		et33.getLocalizations().put("en_US", let33en);
 
 		LocalizedEngineTypeJpaEntity let33fr = new LocalizedEngineTypeJpaEntity();
-		let33fr.setLocalizedId(new LocalizedId("fr"));
+		let33fr.setLocalizedId(new LocalizedId("fr_FR"));
 		let33fr.setEngineType(et33);
 		let33fr.setName("TypeVehicule33");
 		let33fr.setDescription("DescriptionTypeVehicule3");
-		et33.getLocalizations().put("fr", let33fr);
+		et33.getLocalizations().put("fr_FR", let33fr);
 
 		List<EngineTypeJpaEntity> engineTypes1 = List.of(et11, et12, et13);
 		List<EngineTypeJpaEntity> engineTypes2 = List.of(et21, et22, et23);

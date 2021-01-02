@@ -173,14 +173,14 @@ public class JourneyRequestsPersistenceAdapter implements SearchJourneyRequestsP
 		if (criteria.getClientUsername().contains("@")) {
 			journeyRequestsPage = journeyRequestRepository.findByCreationDateTimeBetweenAndClient_Email(
 					criteria.getPeriodCriterion().getLowerEdge(), criteria.getPeriodCriterion().getHigherEdge(),
-					criteria.getClientUsername(), pagingSort);
+					criteria.getClientUsername(), criteria.getLocale(), pagingSort);
 		} else {
 
 			String[] mobileNumber = criteria.getClientUsername().split("_");
 			journeyRequestsPage = journeyRequestRepository
 					.findByCreationDateTimeBetweenAndClient_MobileNumberAndClient_IccValue(
 							criteria.getPeriodCriterion().getLowerEdge(), criteria.getPeriodCriterion().getHigherEdge(),
-							mobileNumber[0], mobileNumber[1], pagingSort);
+							mobileNumber[0], mobileNumber[1], criteria.getLocale(), pagingSort);
 		}
 
 		if (journeyRequestsPage != null) {

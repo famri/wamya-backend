@@ -32,6 +32,8 @@ public interface ClientJourneyRequestDto {
 
 	String getDescription();
 
+	Integer getProposalsCount();
+
 	@AllArgsConstructor
 	@Data
 	class EngineTypeDto {

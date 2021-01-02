@@ -90,6 +90,12 @@ public class JourneyRequestTestData {
 			return "Journey description 1";
 		}
 
+		@Override
+		public Integer getProposalsCount() {
+			
+			return 3;
+		}
+
 	}, new ClientJourneyRequestDto() {
 
 		@Override
@@ -143,6 +149,12 @@ public class JourneyRequestTestData {
 		public String getDescription() {
 
 			return "Journey description 1";
+		}
+
+		@Override
+		public Integer getProposalsCount() {
+			
+			return 3;
 		}
 
 	});

@@ -52,8 +52,8 @@ public class LoadClientJourneyRequestsControllerTests {
 
 		ClientJourneyRequests expectedResult = JourneyRequestTestData.defaultClientJourneyRequests();
 
-		given(loadClientJourneyRequestsUseCase.loadJourneyRequests(any(LoadJourneyRequestsCommand.class)))
-				.willReturn(expectedResult);
+		given(loadClientJourneyRequestsUseCase.loadJourneyRequests(any(LoadJourneyRequestsCommand.class),
+				any(String.class))).willReturn(expectedResult);
 		// when
 
 		MvcResult mvcResult = api
@@ -61,7 +61,8 @@ public class LoadClientJourneyRequestsControllerTests {
 						.authorities("SCOPE_journey:write"))
 				.perform(get("/users/me/journey-requests").param("period", command.getPeriodCriterion().getValue())
 						.param("page", command.getPageNumber().toString())
-						.param("size", command.getPageSize().toString()).param("sort", "creation-date-time,desc"))
+						.param("size", command.getPageSize().toString()).param("sort", "creation-date-time,desc")
+						.param("lang", "fr_FR"))
 
 				.andExpect(status().isOk()).andReturn();
 
@@ -69,7 +70,8 @@ public class LoadClientJourneyRequestsControllerTests {
 		ArgumentCaptor<LoadJourneyRequestsCommand> commandCaptor = ArgumentCaptor
 				.forClass(LoadJourneyRequestsCommand.class);
 
-		then(loadClientJourneyRequestsUseCase).should(times(1)).loadJourneyRequests(commandCaptor.capture());
+		then(loadClientJourneyRequestsUseCase).should(times(1)).loadJourneyRequests(commandCaptor.capture(),
+				eq("fr_FR"));
 		assertEquals(command.getClientUsername(), commandCaptor.getValue().getClientUsername());
 		assertEquals(command.getPageNumber(), commandCaptor.getValue().getPageNumber());
 		assertEquals(command.getPageSize(), commandCaptor.getValue().getPageSize());
@@ -108,7 +110,7 @@ public class LoadClientJourneyRequestsControllerTests {
 
 		// then
 		then(loadClientJourneyRequestsUseCase).should(never())
-				.loadJourneyRequests(any(LoadJourneyRequestsCommand.class));
+				.loadJourneyRequests(any(LoadJourneyRequestsCommand.class), any(String.class));
 
 	}
 }

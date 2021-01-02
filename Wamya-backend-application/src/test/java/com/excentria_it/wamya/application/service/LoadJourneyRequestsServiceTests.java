@@ -41,7 +41,7 @@ public class LoadJourneyRequestsServiceTests {
 		given(loadClientJourneyRequestsPort.loadClientJourneyRequests(any(LoadClientJourneyRequestsCriteria.class)))
 				.willReturn(clientJourneyRequests);
 		// when
-		loadJourneyRequestsService.loadJourneyRequests(command);
+		loadJourneyRequestsService.loadJourneyRequests(command, "en_US");
 
 		// then
 		then(loadClientJourneyRequestsPort).should(times(1)).loadClientJourneyRequests(criteriaCaptor.capture());
@@ -51,5 +51,6 @@ public class LoadJourneyRequestsServiceTests {
 		assertThat(criteriaCaptor.getValue().getSortingCriterion()).isEqualTo(command.getSortingCriterion());
 		assertThat(criteriaCaptor.getValue().getPageNumber()).isEqualTo(command.getPageNumber());
 		assertThat(criteriaCaptor.getValue().getPageSize()).isEqualTo(command.getPageSize());
+		assertThat(criteriaCaptor.getValue().getLocale()).isEqualTo("en_US");
 	}
 }

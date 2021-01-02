@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 
 public interface LoadClientJourneyRequestsUseCase {
 
-	ClientJourneyRequests loadJourneyRequests(LoadJourneyRequestsCommand command);
+	ClientJourneyRequests loadJourneyRequests(LoadJourneyRequestsCommand command, String locale);
 
 	@Data
 	@Builder
