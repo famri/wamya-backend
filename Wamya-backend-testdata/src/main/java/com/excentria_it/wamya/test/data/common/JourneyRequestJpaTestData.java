@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashSet;
 import java.util.Map;
 
 import com.excentria_it.wamya.adapter.persistence.entity.EngineTypeJpaEntity;
@@ -52,9 +53,8 @@ public class JourneyRequestJpaTestData {
 	public static JourneyRequestJpaEntity defaultExistentJourneyRequestJpaEntity() {
 		return JourneyRequestJpaEntity.builder().id(1L).departurePlace(defaultDeparturePlaceJpaEntity())
 				.arrivalPlace(defaultArrivalPlaceJpaEntity()).engineType(defaultEngineTypeJpaEntity())
-				.dateTime(startDate).endDateTime(endDate).distance(150.5).workers(2)
-				.description("Need transporter URGENT!").client(defaultExistentClientJpaEntity()).proposals(null)
-				.build();
+				.dateTime(startDate).endDateTime(endDate).distance(150.5).workers(2).proposals(new HashSet<>())
+				.description("Need transporter URGENT!").client(defaultExistentClientJpaEntity()).build();
 	}
 
 	private static LocalDateTime addDays(LocalDateTime dateTime, int days) {

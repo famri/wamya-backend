@@ -85,7 +85,7 @@ public class JourneyRequestsPersistenceAdapter implements SearchJourneyRequestsP
 					journeyRequestsPage.getSize(), journeyRequestsPage.hasNext(), journeyRequestsPage.getContent());
 		}
 
-		return new JourneyRequestsSearchResult(0, 0, 0, 0, false, Collections.<JourneyRequestSearchDto>emptyList());
+		return new JourneyRequestsSearchResult(0, 0, command.getPageNumber(), command.getPageSize(), false, Collections.<JourneyRequestSearchDto>emptyList());
 	}
 
 	protected Sort convertToSort(SortCriterion sortingCriterion) {
@@ -190,6 +190,18 @@ public class JourneyRequestsPersistenceAdapter implements SearchJourneyRequestsP
 					journeyRequestsPage.getSize(), journeyRequestsPage.hasNext(), journeyRequestsPage.getContent());
 		}
 
-		return new ClientJourneyRequests(0, 0, 0, 0, false, Collections.<ClientJourneyRequestDto>emptyList());
+		return new ClientJourneyRequests(0, 0, criteria.getPageNumber(), criteria.getPageSize(), false, Collections.<ClientJourneyRequestDto>emptyList());
+	}
+
+	@Override
+	public Optional<ClientJourneyRequestDto> loadJourneyRequestByIdAndClientEmail(Long id, String email) {
+
+		return journeyRequestRepository.findByIdAndClient_Email(id, email);
+	}
+
+	@Override
+	public Optional<ClientJourneyRequestDto> loadJourneyRequestByIdAndClientMobileNumberAndIcc(Long id,
+			String mobileNumber, String icc) {
+		return journeyRequestRepository.findByIdAndClient_MobileNumberAndClient_IccValue(id, mobileNumber, icc);
 	}
 }

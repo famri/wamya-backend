@@ -202,9 +202,8 @@ public class SearchJourneyRequestsControllerTests {
 		given(searchJourneyRequestsUseCase.searchJourneyRequests(any(SearchJourneyRequestsCommand.class),
 				any(String.class))).willReturn(expectedResult);
 
-		MvcResult mvcResult = api
-				.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
-						.authorities("SCOPE_journey:read"))
+		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
+				.authorities("SCOPE_journey:read"))
 				.perform(get("/journey-requests").param("departure", command.getDeparturePlaceRegionId())
 						.param("arrival",
 								command.getArrivalPlaceRegionIds()
@@ -221,7 +220,7 @@ public class SearchJourneyRequestsControllerTests {
 
 				.andExpect(status().isBadRequest())
 				.andExpect(responseBody().containsApiErrors(List.of(
-						"sortingCriterion: Wrong sort criterion: 'SortingCriterion(field=dummy-field, direction=up)'. Valid sort fields are:[min-price, distance, date-time]. Valid sort directions are:[asc, desc].")))
+						"sortingCriterion: Wrong sort criterion: 'SortCriterion(field=dummy-field, direction=up)'. Valid sort fields are:[min-price, distance, date-time]. Valid sort directions are:[asc, desc].")))
 
 				.andReturn();
 

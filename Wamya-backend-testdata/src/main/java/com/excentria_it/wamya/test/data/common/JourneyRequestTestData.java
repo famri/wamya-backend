@@ -14,13 +14,17 @@ import com.excentria_it.wamya.application.port.in.LoadClientJourneyRequestsUseCa
 import com.excentria_it.wamya.application.port.in.SearchJourneyRequestsUseCase.SearchJourneyRequestsCommand;
 import com.excentria_it.wamya.application.port.in.SearchJourneyRequestsUseCase.SearchJourneyRequestsCommand.SearchJourneyRequestsCommandBuilder;
 import com.excentria_it.wamya.common.PeriodCriterion;
+import com.excentria_it.wamya.common.PeriodCriterion.PeriodValue;
 import com.excentria_it.wamya.common.SortCriterion;
 import com.excentria_it.wamya.domain.ClientJourneyRequestDto;
 import com.excentria_it.wamya.domain.ClientJourneyRequests;
 import com.excentria_it.wamya.domain.CreateJourneyRequestDto;
 import com.excentria_it.wamya.domain.CreateJourneyRequestDto.CreateJourneyRequestDtoBuilder;
+import com.excentria_it.wamya.domain.JourneyRequestProposals;
 import com.excentria_it.wamya.domain.JourneyRequestSearchDto;
 import com.excentria_it.wamya.domain.JourneyRequestsSearchResult;
+import com.excentria_it.wamya.domain.LoadClientJourneyRequestsCriteria;
+import com.excentria_it.wamya.domain.LoadClientJourneyRequestsCriteria.LoadClientJourneyRequestsCriteriaBuilder;
 import com.excentria_it.wamya.domain.SearchJourneyRequestsCriteria;
 import com.excentria_it.wamya.domain.SearchJourneyRequestsCriteria.SearchJourneyRequestsCriteriaBuilder;
 
@@ -92,7 +96,7 @@ public class JourneyRequestTestData {
 
 		@Override
 		public Integer getProposalsCount() {
-			
+
 			return 3;
 		}
 
@@ -153,7 +157,7 @@ public class JourneyRequestTestData {
 
 		@Override
 		public Integer getProposalsCount() {
-			
+
 			return 3;
 		}
 
@@ -361,6 +365,14 @@ public class JourneyRequestTestData {
 				.description("Need a transporter URGENT!!!");
 	}
 
+	public static LoadClientJourneyRequestsCriteriaBuilder defaultLoadClientJourneyRequestsCriteriaBuilder() {
+		LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
+		return LoadClientJourneyRequestsCriteria.builder().clientUsername(TestConstants.DEFAULT_EMAIL).locale("en_US")
+				.pageNumber(0).pageSize(25).sortingCriterion(new SortCriterion("creation-date-time", "desc"))
+				.periodCriterion(new PeriodCriterion("m1", PeriodValue.M1.calculateLowerEdge(now), now));
+
+	}
+
 	private static LocalDateTime addDays(LocalDateTime dateTime, int days) {
 
 		ZonedDateTime zonedDateTime = ZonedDateTime.of(dateTime, ZoneOffset.UTC);
@@ -390,4 +402,14 @@ public class JourneyRequestTestData {
 	public static ClientJourneyRequests defaultClientJourneyRequests() {
 		return new ClientJourneyRequests(5, 10, 0, 2, true, clientJourneyRequestDtos);
 	}
+
+	public static ClientJourneyRequestDto defaultClientJourneyRequestDto() {
+		return clientJourneyRequestDtos.get(0);
+	}
+
+	public static List<ClientJourneyRequestDto> defaultClientJourneyRequestDtoList() {
+		return clientJourneyRequestDtos;
+	}
+
+
 }

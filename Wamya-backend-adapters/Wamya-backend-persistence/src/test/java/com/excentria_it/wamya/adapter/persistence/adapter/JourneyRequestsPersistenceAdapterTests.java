@@ -38,9 +38,12 @@ import com.excentria_it.wamya.adapter.persistence.repository.EngineTypeRepositor
 import com.excentria_it.wamya.adapter.persistence.repository.JourneyRequestRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.PlaceRepository;
 import com.excentria_it.wamya.common.SortCriterion;
+import com.excentria_it.wamya.domain.ClientJourneyRequestDto;
+import com.excentria_it.wamya.domain.ClientJourneyRequests;
 import com.excentria_it.wamya.domain.CreateJourneyRequestDto;
 import com.excentria_it.wamya.domain.JourneyRequestSearchDto;
 import com.excentria_it.wamya.domain.JourneyRequestsSearchResult;
+import com.excentria_it.wamya.domain.LoadClientJourneyRequestsCriteria;
 import com.excentria_it.wamya.domain.SearchJourneyRequestsCriteria;
 import com.excentria_it.wamya.test.data.common.TestConstants;
 
@@ -98,8 +101,8 @@ public class JourneyRequestsPersistenceAdapterTests {
 
 		assertEquals(0, result.getTotalPages());
 		assertEquals(0, result.getTotalElements());
-		assertEquals(0, result.getPageNumber());
-		assertEquals(0, result.getPageSize());
+		assertEquals(command.getPageNumber(), result.getPageNumber());
+		assertEquals(command.getPageSize(), result.getPageSize());
 		assertEquals(false, result.isHasNext());
 		assertEquals(Collections.<JourneyRequestSearchDto>emptyList(), result.getContent());
 
@@ -145,8 +148,8 @@ public class JourneyRequestsPersistenceAdapterTests {
 
 		assertEquals(0, result.getTotalPages());
 		assertEquals(0, result.getTotalElements());
-		assertEquals(0, result.getPageNumber());
-		assertEquals(0, result.getPageSize());
+		assertEquals(command.getPageNumber(), result.getPageNumber());
+		assertEquals(command.getPageSize(), result.getPageSize());
 		assertEquals(false, result.isHasNext());
 		assertEquals(Collections.<JourneyRequestSearchDto>emptyList(), result.getContent());
 
@@ -287,6 +290,130 @@ public class JourneyRequestsPersistenceAdapterTests {
 	}
 
 	@Test
+	void givenNotNullJourneyRequestsPageAnClientEmail_WhenLoadClientJourneyRequests_ThenReturnClientJourneyRequests() {
+
+		// given
+
+		Page<ClientJourneyRequestDto> page = createPageFromClientJourneyRequestDto(
+				defaultClientJourneyRequestDtoList());
+		given(journeyRequestRepository.findByCreationDateTimeBetweenAndClient_Email(any(LocalDateTime.class),
+				any(LocalDateTime.class), any(String.class), any(String.class), any(Pageable.class))).willReturn(page);
+		LoadClientJourneyRequestsCriteria criteria = defaultLoadClientJourneyRequestsCriteriaBuilder().build();
+		// when
+		ClientJourneyRequests result = journeyRequestsPersistenceAdapter.loadClientJourneyRequests(criteria);
+		// then
+		assertEquals(page.getTotalPages(), result.getTotalPages());
+		assertEquals(page.hasNext(), result.isHasNext());
+		assertEquals(page.getSize(), result.getPageSize());
+		assertEquals(page.getTotalElements(), result.getTotalElements());
+		assertEquals(page.getNumber(), result.getPageNumber());
+		assertEquals(page.getContent(), result.getContent());
+	}
+
+	@Test
+	void givenNullJourneyRequestsPageAndClientEmail_WhenLoadClientJourneyRequests_ThenReturnClientJourneyRequests() {
+
+		// given
+
+		given(journeyRequestRepository.findByCreationDateTimeBetweenAndClient_Email(any(LocalDateTime.class),
+				any(LocalDateTime.class), any(String.class), any(String.class), any(Pageable.class))).willReturn(null);
+		LoadClientJourneyRequestsCriteria criteria = defaultLoadClientJourneyRequestsCriteriaBuilder().build();
+		// when
+		ClientJourneyRequests result = journeyRequestsPersistenceAdapter.loadClientJourneyRequests(criteria);
+		// then
+		assertEquals(0, result.getTotalPages());
+		assertEquals(criteria.getPageSize(), result.getPageSize());
+		assertEquals(0, result.getTotalElements());
+		assertEquals(criteria.getPageNumber(), result.getPageNumber());
+		assertEquals(false, result.isHasNext());
+		assertEquals(Collections.<ClientJourneyRequestDto>emptyList(), result.getContent());
+	}
+
+	@Test
+	void givenNotNullJourneyRequestsPageAnClientMobileNumber_WhenLoadClientJourneyRequests_ThenReturnClientJourneyRequests() {
+
+		// given
+
+		Page<ClientJourneyRequestDto> page = createPageFromClientJourneyRequestDto(
+				defaultClientJourneyRequestDtoList());
+		given(journeyRequestRepository.findByCreationDateTimeBetweenAndClient_MobileNumberAndClient_IccValue(
+				any(LocalDateTime.class), any(LocalDateTime.class), any(String.class), any(String.class),
+				any(String.class), any(Pageable.class))).willReturn(page);
+
+		LoadClientJourneyRequestsCriteria criteria = defaultLoadClientJourneyRequestsCriteriaBuilder()
+				.clientUsername(TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME).build();
+		// when
+		ClientJourneyRequests result = journeyRequestsPersistenceAdapter.loadClientJourneyRequests(criteria);
+		// then
+		assertEquals(page.getTotalPages(), result.getTotalPages());
+		assertEquals(page.hasNext(), result.isHasNext());
+		assertEquals(page.getSize(), result.getPageSize());
+		assertEquals(page.getTotalElements(), result.getTotalElements());
+		assertEquals(page.getNumber(), result.getPageNumber());
+		assertEquals(page.getContent(), result.getContent());
+	}
+
+	@Test
+	void givenNullJourneyRequestsPageAndClientMobileNumber_WhenLoadClientJourneyRequests_ThenReturnClientJourneyRequests() {
+
+		// given
+
+		given(journeyRequestRepository.findByCreationDateTimeBetweenAndClient_MobileNumberAndClient_IccValue(
+				any(LocalDateTime.class), any(LocalDateTime.class), any(String.class), any(String.class),
+				any(String.class), any(Pageable.class))).willReturn(null);
+		LoadClientJourneyRequestsCriteria criteria = defaultLoadClientJourneyRequestsCriteriaBuilder()
+				.clientUsername(TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME).build();
+		// when
+		ClientJourneyRequests result = journeyRequestsPersistenceAdapter.loadClientJourneyRequests(criteria);
+		// then
+
+		assertEquals(criteria.getPageSize(), result.getPageSize());
+		assertEquals(criteria.getPageNumber(), result.getPageNumber());
+		assertEquals(0, result.getTotalPages());
+		assertEquals(0, result.getTotalElements());
+
+		assertEquals(false, result.isHasNext());
+		assertEquals(Collections.<ClientJourneyRequestDto>emptyList(), result.getContent());
+	}
+
+	@Test
+	void testLoadJourneyRequestByIdAndClientEmail() {
+
+		// given
+
+		ClientJourneyRequestDto clientJourneyRequestDto = defaultClientJourneyRequestDto();
+		given(journeyRequestRepository.findByIdAndClient_Email(eq(1L), eq(TestConstants.DEFAULT_EMAIL)))
+				.willReturn(Optional.of(clientJourneyRequestDto));
+		// when
+		Optional<ClientJourneyRequestDto> result = journeyRequestsPersistenceAdapter
+				.loadJourneyRequestByIdAndClientEmail(1L, TestConstants.DEFAULT_EMAIL);
+
+		// then
+		then(journeyRequestRepository).should(times(1)).findByIdAndClient_Email(eq(1L),
+				eq(TestConstants.DEFAULT_EMAIL));
+		assertEquals(clientJourneyRequestDto.getId(), result.get().getId());
+	}
+
+	@Test
+	void testLoadJourneyRequestByIdAndClientMobileNumberAndIcc() {
+		// given
+
+		String[] clientMobileNumber = TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME.split("_");
+		ClientJourneyRequestDto clientJourneyRequestDto = defaultClientJourneyRequestDto();
+		given(journeyRequestRepository.findByIdAndClient_MobileNumberAndClient_IccValue(eq(1L),
+				eq(clientMobileNumber[1]), eq(clientMobileNumber[0]))).willReturn(Optional.of(clientJourneyRequestDto));
+		// when
+		Optional<ClientJourneyRequestDto> result = journeyRequestsPersistenceAdapter
+				.loadJourneyRequestByIdAndClientMobileNumberAndIcc(1L, clientMobileNumber[1], clientMobileNumber[0]);
+
+		// then
+		then(journeyRequestRepository).should(times(1)).findByIdAndClient_MobileNumberAndClient_IccValue(eq(1L),
+				eq(clientMobileNumber[1]), eq(clientMobileNumber[0]));
+		assertEquals(clientJourneyRequestDto.getId(), result.get().getId());
+
+	}
+
+	@Test
 	void testLoadInexistentJourneyRequestById() {
 
 		// given
@@ -298,10 +425,9 @@ public class JourneyRequestsPersistenceAdapterTests {
 				.loadJourneyRequestById(1L);
 		// then
 
-		assertTrue(createJourneyRequestDtoOptional.isEmpty());	
+		assertTrue(createJourneyRequestDtoOptional.isEmpty());
 
 	}
-
 
 	@Test
 	void testConvertToSort() {
@@ -462,6 +588,109 @@ public class JourneyRequestsPersistenceAdapterTests {
 
 				return null;
 			}
+		};
+	}
+
+	private Page<ClientJourneyRequestDto> createPageFromClientJourneyRequestDto(
+			List<ClientJourneyRequestDto> clientJourneyRequestDto) {
+		return new Page<ClientJourneyRequestDto>() {
+
+			@Override
+			public int getNumber() {
+
+				return 0;
+			}
+
+			@Override
+			public int getSize() {
+
+				return 25;
+			}
+
+			@Override
+			public int getNumberOfElements() {
+
+				return 2;
+			}
+
+			@Override
+			public List<ClientJourneyRequestDto> getContent() {
+
+				return clientJourneyRequestDto;
+			}
+
+			@Override
+			public boolean hasContent() {
+
+				return true;
+			}
+
+			@Override
+			public Sort getSort() {
+
+				return Sort.by(List.of(new Order(Direction.ASC, "price")));
+			}
+
+			@Override
+			public boolean isFirst() {
+
+				return true;
+			}
+
+			@Override
+			public boolean isLast() {
+
+				return false;
+			}
+
+			@Override
+			public boolean hasNext() {
+
+				return true;
+			}
+
+			@Override
+			public boolean hasPrevious() {
+
+				return false;
+			}
+
+			@Override
+			public Pageable nextPageable() {
+
+				return null;
+			}
+
+			@Override
+			public Pageable previousPageable() {
+
+				return null;
+			}
+
+			@Override
+			public Iterator<ClientJourneyRequestDto> iterator() {
+
+				return clientJourneyRequestDto.iterator();
+			}
+
+			@Override
+			public int getTotalPages() {
+
+				return 1;
+			}
+
+			@Override
+			public long getTotalElements() {
+
+				return 2;
+			}
+
+			@Override
+			public <U> Page<U> map(Function<? super ClientJourneyRequestDto, ? extends U> converter) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
 		};
 	}
 }

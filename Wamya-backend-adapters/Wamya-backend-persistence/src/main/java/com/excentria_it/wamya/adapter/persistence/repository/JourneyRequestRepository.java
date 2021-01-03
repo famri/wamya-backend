@@ -1,6 +1,7 @@
 package com.excentria_it.wamya.adapter.persistence.repository;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.data.domain.Page;
@@ -24,12 +25,17 @@ public interface JourneyRequestRepository extends JpaRepository<JourneyRequestJp
 			String departurePlaceRegionId, Set<Long> engineTypes, LocalDateTime startDate, LocalDateTime endDate,
 			String locale, Pageable pageable);
 
-	@Query(value = "SELECT jr.id AS id, dp.id AS departurePlaceId, dp.regionId AS departurePlaceRegionId, dp.name AS departurePlaceName, ap.id AS arrivalPlaceId, ap.regionId AS arrivalPlaceRegionId, ap.name AS arrivalPlaceName, et.id AS engineTypeId, VALUE(l).name AS engineTypeName, jr.distance AS distance, jr.dateTime AS dateTime, jr.creationDateTime AS creationDateTime, jr.workers AS workers, jr.description AS description, COUNT(p) AS proposalsCount FROM JourneyRequestJpaEntity jr JOIN jr.engineType et JOIN et.localizations l JOIN jr.client c JOIN jr.departurePlace dp JOIN jr.arrivalPlace ap JOIN jr.client c JOIN jr.proposals p WHERE jr.creationDateTime BETWEEN ?1 AND ?2 AND c.email = ?3 AND KEY(l) = ?4 GROUP BY jr.id, dp.id, dp.regionId, dp.name, ap.id, ap.regionId, ap.name, et.id, VALUE(l).name, jr.distance, jr.dateTime, jr.creationDateTime, jr.workers, jr.description", countQuery="SELECT COUNT(DISTINCT jr.id) FROM JourneyRequestJpaEntity jr JOIN jr.client c WHERE jr.creationDateTime BETWEEN ?1 AND ?2 AND c.email = ?3")
+	@Query(value = "SELECT jr.id AS id, dp.id AS departurePlaceId, dp.regionId AS departurePlaceRegionId, dp.name AS departurePlaceName, ap.id AS arrivalPlaceId, ap.regionId AS arrivalPlaceRegionId, ap.name AS arrivalPlaceName, et.id AS engineTypeId, VALUE(l).name AS engineTypeName, jr.distance AS distance, jr.dateTime AS dateTime, jr.creationDateTime AS creationDateTime, jr.workers AS workers, jr.description AS description, COUNT(p) AS proposalsCount FROM JourneyRequestJpaEntity jr JOIN jr.engineType et JOIN et.localizations l JOIN jr.client c JOIN jr.departurePlace dp JOIN jr.arrivalPlace ap JOIN jr.client c JOIN jr.proposals p WHERE jr.creationDateTime BETWEEN ?1 AND ?2 AND c.email = ?3 AND KEY(l) = ?4 GROUP BY jr.id, dp.id, dp.regionId, dp.name, ap.id, ap.regionId, ap.name, et.id, VALUE(l).name, jr.distance, jr.dateTime, jr.creationDateTime, jr.workers, jr.description", countQuery = "SELECT COUNT(DISTINCT jr.id) FROM JourneyRequestJpaEntity jr JOIN jr.client c WHERE jr.creationDateTime BETWEEN ?1 AND ?2 AND c.email = ?3")
 	Page<ClientJourneyRequestDto> findByCreationDateTimeBetweenAndClient_Email(LocalDateTime lowerDateEdge,
 			LocalDateTime higherDateEdge, String email, String locale, Pageable pageable);
 
-	@Query(value = "SELECT jr.id AS id, dp.id AS departurePlaceId, dp.regionId AS departurePlaceRegionId, dp.name AS departurePlaceName, ap.id AS arrivalPlaceId, ap.regionId AS arrivalPlaceRegionId, ap.name AS arrivalPlaceName, et.id AS engineTypeId, VALUE(l).name AS engineTypeName, jr.distance AS distance, jr.dateTime AS dateTime, jr.creationDateTime AS creationDateTime, jr.workers AS workers, jr.description AS description, COUNT(p) AS proposalsCount FROM JourneyRequestJpaEntity jr JOIN jr.engineType et JOIN et.localizations l JOIN jr.client c JOIN c.icc ic JOIN jr.departurePlace dp JOIN jr.arrivalPlace ap JOIN jr.client c JOIN jr.proposals p WHERE jr.creationDateTime BETWEEN ?1 AND ?2 AND c.mobileNumber = ?3 AND ic.value = ?4 AND KEY(l) = ?5 GROUP BY jr.id, dp.id, dp.regionId, dp.name, ap.id, ap.regionId, ap.name, et.id, VALUE(l).name, jr.distance, jr.dateTime, jr.creationDateTime, jr.workers, jr.description",countQuery="SELECT COUNT(DISTINCT jr.id) FROM JourneyRequestJpaEntity jr JOIN jr.client c JOIN c.icc ic WHERE jr.creationDateTime BETWEEN ?1 AND ?2 AND c.mobileNumber = ?3 AND ic.value = ?4")
+	@Query(value = "SELECT jr.id AS id, dp.id AS departurePlaceId, dp.regionId AS departurePlaceRegionId, dp.name AS departurePlaceName, ap.id AS arrivalPlaceId, ap.regionId AS arrivalPlaceRegionId, ap.name AS arrivalPlaceName, et.id AS engineTypeId, VALUE(l).name AS engineTypeName, jr.distance AS distance, jr.dateTime AS dateTime, jr.creationDateTime AS creationDateTime, jr.workers AS workers, jr.description AS description, COUNT(p) AS proposalsCount FROM JourneyRequestJpaEntity jr JOIN jr.engineType et JOIN et.localizations l JOIN jr.client c JOIN c.icc ic JOIN jr.departurePlace dp JOIN jr.arrivalPlace ap JOIN jr.client c JOIN jr.proposals p WHERE jr.creationDateTime BETWEEN ?1 AND ?2 AND c.mobileNumber = ?3 AND ic.value = ?4 AND KEY(l) = ?5 GROUP BY jr.id, dp.id, dp.regionId, dp.name, ap.id, ap.regionId, ap.name, et.id, VALUE(l).name, jr.distance, jr.dateTime, jr.creationDateTime, jr.workers, jr.description", countQuery = "SELECT COUNT(DISTINCT jr.id) FROM JourneyRequestJpaEntity jr JOIN jr.client c JOIN c.icc ic WHERE jr.creationDateTime BETWEEN ?1 AND ?2 AND c.mobileNumber = ?3 AND ic.value = ?4")
 	Page<ClientJourneyRequestDto> findByCreationDateTimeBetweenAndClient_MobileNumberAndClient_IccValue(
 			LocalDateTime lowerDateEdge, LocalDateTime higherDateEdge, String mobileNumber, String icc, String locale,
 			Pageable pageable);
+
+	Optional<ClientJourneyRequestDto> findByIdAndClient_Email(Long journeyRequestId, String clientEmail);
+
+	Optional<ClientJourneyRequestDto> findByIdAndClient_MobileNumberAndClient_IccValue(Long journeyRequestId,
+			String clientMobileNumber, String clientIccValue);
 }
