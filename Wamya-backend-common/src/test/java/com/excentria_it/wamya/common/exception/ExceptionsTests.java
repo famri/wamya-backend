@@ -77,4 +77,18 @@ public class ExceptionsTests {
 		assertEquals(exception.getMessage(), message);
 
 	}
+
+	@Test
+	void testJourneyProposalNotFoundException() {
+		String message = "SOME MESSAGE";
+		JourneyProposalNotFoundException exception = new JourneyProposalNotFoundException(message);
+		assertEquals(exception.getMessage(), message);
+	}
+
+	@Test
+	void testOperationDeniedException() {
+		String message = "SOME MESSAGE";
+		OperationDeniedException exception = new OperationDeniedException(message);
+		assertEquals(exception.getMessage(), message);
+	}
 }

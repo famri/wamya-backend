@@ -29,17 +29,17 @@ public class TransporterJpaEntity extends UserAccountJpaEntity {
 	@OneToMany(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST,
 			CascadeType.REFRESH }, orphanRemoval = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "owner_id")
-	private Set<VehiculeJpaEntity> vehicules;
+	private Set<VehiculeJpaEntity> vehicules = new HashSet<>();
 
 	@OneToMany(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST,
 			CascadeType.REFRESH }, orphanRemoval = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "rated_user_id")
-	private Set<RatingJpaEntity> ratings;
+	private Set<RatingJpaEntity> ratings = new HashSet<>();
 
 	@OneToMany(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST,
 			CascadeType.REFRESH }, orphanRemoval = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
-	private Set<CommentJpaEntity> comments;
+	private Set<CommentJpaEntity> comments = new HashSet<>();
 
 	@OneToMany(mappedBy = "transporter", cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST,
 			CascadeType.REFRESH }, orphanRemoval = true, fetch = FetchType.LAZY)

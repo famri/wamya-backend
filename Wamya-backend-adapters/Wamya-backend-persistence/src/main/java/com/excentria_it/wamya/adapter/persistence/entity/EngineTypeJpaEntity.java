@@ -34,7 +34,7 @@ public class EngineTypeJpaEntity {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = ENGINE_TYPE_SEQ)
 	private Long id;
 
-	private String code;
+	private EngineTypeCode code;
 
 	@OneToMany(mappedBy = "engineType", cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST,
 			CascadeType.REFRESH }, orphanRemoval = true)
@@ -45,11 +45,11 @@ public class EngineTypeJpaEntity {
 		return id;
 	}
 
-	public String getCode() {
+	public EngineTypeCode getCode() {
 		return code;
 	}
 
-	public void setCode(String code) {
+	public void setCode(EngineTypeCode code) {
 		this.code = code;
 	}
 
@@ -94,6 +94,11 @@ public class EngineTypeJpaEntity {
 	@Override
 	public String toString() {
 		return "EngineTypeJpaEntity [id=" + id + ", code=" + code + "]";
+	}
+
+	public enum EngineTypeCode {
+		UTILITY, PICKUP, BUS, MINIBUS, VAN_L1H1, VAN_L2H2, VAN_L3H2, FLATBED_TRUCK, BOX_TRUCK, REFRIGERATED_TRUCK,
+		TANKER, DUMP_TRUCK, HOOK_LIFT_TRUCK, TANK_TRANSPORTER;
 	}
 
 }

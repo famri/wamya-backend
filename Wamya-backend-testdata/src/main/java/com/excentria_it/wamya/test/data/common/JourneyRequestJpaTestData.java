@@ -11,8 +11,12 @@ import java.util.Map;
 
 import com.excentria_it.wamya.adapter.persistence.entity.EngineTypeJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.JourneyRequestJpaEntity;
+import com.excentria_it.wamya.adapter.persistence.entity.JourneyRequestStatusJpaEntity;
+import com.excentria_it.wamya.adapter.persistence.entity.JourneyRequestStatusJpaEntity.JourneyRequestStatusCode;
+import com.excentria_it.wamya.adapter.persistence.entity.JourneyRequestStatusJpaEntity.JourneyRequestStatusJpaEntityBuilder;
 import com.excentria_it.wamya.adapter.persistence.entity.LocalizedEngineTypeJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.LocalizedId;
+import com.excentria_it.wamya.adapter.persistence.entity.LocalizedJourneyRequestStatusJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.PlaceJpaEntity;
 
 public class JourneyRequestJpaTestData {
@@ -64,6 +68,16 @@ public class JourneyRequestJpaTestData {
 		LocalDateTime dateAfter = zonedDateTime.plusDays(days).toLocalDateTime();
 
 		return dateAfter;
+	}
+
+	public static JourneyRequestStatusJpaEntityBuilder defaultJourneyRequestStatusJpaEntityBuilder() {
+
+		LocalizedJourneyRequestStatusJpaEntity localizedStatusJpaEntity = LocalizedJourneyRequestStatusJpaEntity
+				.builder().localizedId(new LocalizedId(1L, "en_US")).value("opened").build();
+		
+		return JourneyRequestStatusJpaEntity.builder().id(1L).code(JourneyRequestStatusCode.OPENED)
+				.description("Journey request was saved and is ready to receive for proposals.")
+				.localizations(Map.of("en_US", localizedStatusJpaEntity));
 	}
 
 }

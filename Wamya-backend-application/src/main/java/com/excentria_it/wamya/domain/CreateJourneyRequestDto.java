@@ -30,6 +30,8 @@ public class CreateJourneyRequestDto {
 	private Integer workers;
 
 	private String description;
+	
+	private String status;
 
 	@AllArgsConstructor
 	@Data

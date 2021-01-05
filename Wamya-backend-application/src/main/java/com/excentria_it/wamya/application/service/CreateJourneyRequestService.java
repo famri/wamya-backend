@@ -27,7 +27,8 @@ public class CreateJourneyRequestService implements CreateJourneyRequestUseCase 
 	private final LoadUserAccountPort loadUserAccountPort;
 
 	@Override
-	public CreateJourneyRequestDto createJourneyRequest(CreateJourneyRequestCommand command, String username) {
+	public CreateJourneyRequestDto createJourneyRequest(CreateJourneyRequestCommand command, String username,
+			String locale) {
 
 		checkUserMobileNumberIsVerified(username);
 
@@ -41,7 +42,7 @@ public class CreateJourneyRequestService implements CreateJourneyRequestUseCase 
 				.engineType(new EngineTypeDto(command.getEngineTypeId(), null)).distance(command.getDistance())
 				.workers(command.getWorkers()).description(command.getDescription()).build();
 
-		return createJourneyRequestPort.createJourneyRequest(journeyRequest, username);
+		return createJourneyRequestPort.createJourneyRequest(journeyRequest, username, locale);
 	}
 
 	private void checkUserMobileNumberIsVerified(String username) {

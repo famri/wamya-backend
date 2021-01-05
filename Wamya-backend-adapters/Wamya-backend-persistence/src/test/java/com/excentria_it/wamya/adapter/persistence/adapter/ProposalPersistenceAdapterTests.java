@@ -1,15 +1,16 @@
 package com.excentria_it.wamya.adapter.persistence.adapter;
 
 import static com.excentria_it.wamya.test.data.common.JourneyProposalJpaEntityTestData.*;
+import static com.excentria_it.wamya.test.data.common.JourneyProposalTestData.*;
 import static com.excentria_it.wamya.test.data.common.JourneyRequestJpaTestData.*;
 import static com.excentria_it.wamya.test.data.common.UserAccountJpaEntityTestData.*;
 import static com.excentria_it.wamya.test.data.common.VehiculeJpaEntityTestData.*;
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.*;
 
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -27,11 +28,14 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
 
 import com.excentria_it.wamya.adapter.persistence.entity.JourneyProposalJpaEntity;
+import com.excentria_it.wamya.adapter.persistence.entity.JourneyProposalStatusJpaEntity;
+import com.excentria_it.wamya.adapter.persistence.entity.JourneyProposalStatusJpaEntity.JourneyProposalStatusCode;
 import com.excentria_it.wamya.adapter.persistence.entity.JourneyRequestJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.TransporterJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.VehiculeJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.mapper.JourneyProposalMapper;
 import com.excentria_it.wamya.adapter.persistence.repository.JourneyProposalRepository;
+import com.excentria_it.wamya.adapter.persistence.repository.JourneyProposalStatusRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.JourneyRequestRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.TransporterRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.VehiculeRepository;
@@ -54,6 +58,8 @@ public class ProposalPersistenceAdapterTests {
 	private VehiculeRepository vehiculeRepository;
 	@Mock
 	private JourneyProposalMapper journeyProposalMapper;
+	@Mock
+	private JourneyProposalStatusRepository journeyProposalStatusRepository;
 	@InjectMocks
 	private ProposalPersistenceAdapter proposalPersistenceAdapter;
 
@@ -78,9 +84,13 @@ public class ProposalPersistenceAdapterTests {
 		given(journeyRequestRepository.findById(any(Long.class))).willReturn(Optional.of(journeyRequestJpaEntity));
 
 		given(journeyProposalRepository.save(journeyProposalJpaEntity)).willReturn(journeyProposalJpaEntity);
+
+		JourneyProposalStatusJpaEntity status = defaultJourneyProposalStatusJpaEntity();
+		given(journeyProposalStatusRepository.findByCode(JourneyProposalStatusCode.SUBMITTED)).willReturn(status);
+
 		// when
 		proposalPersistenceAdapter.makeProposal(TestConstants.DEFAULT_EMAIL, JOURNEY_PRICE, VEHICULE_ID,
-				JOURNEY_REQUEST_ID);
+				JOURNEY_REQUEST_ID, "en_US");
 
 		// then
 
@@ -99,7 +109,10 @@ public class ProposalPersistenceAdapterTests {
 
 		JourneyRequestJpaEntity journeyRequestJpaEntity = defaultExistentJourneyRequestJpaEntity();
 
-		given(transporterRepository.findByMobilePhoneNumber(any(String.class), any(String.class)))
+		JourneyProposalStatusJpaEntity status = defaultJourneyProposalStatusJpaEntity();
+		given(journeyProposalStatusRepository.findByCode(JourneyProposalStatusCode.SUBMITTED)).willReturn(status);
+
+		given(transporterRepository.findByIcc_ValueAndMobileNumber(any(String.class), any(String.class)))
 				.willReturn(Optional.of(transporterJpaEntity));
 		given(vehiculeRepository.findById(any(Long.class))).willReturn(Optional.of(vehiculeJpaEntity));
 
@@ -110,7 +123,7 @@ public class ProposalPersistenceAdapterTests {
 		given(journeyProposalRepository.save(journeyProposalJpaEntity)).willReturn(journeyProposalJpaEntity);
 		// when
 		proposalPersistenceAdapter.makeProposal(TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME, JOURNEY_PRICE,
-				VEHICULE_ID, JOURNEY_REQUEST_ID);
+				VEHICULE_ID, JOURNEY_REQUEST_ID, "en_US");
 
 		// then
 
@@ -130,14 +143,14 @@ public class ProposalPersistenceAdapterTests {
 		given(journeyProposalRepository.findByJourneyRequest_Id(any(Long.class), any(Pageable.class))).willReturn(page);
 
 		JourneyProposalDto journeyProposalDto = JourneyProposalTestData.defaultJourneyProposalDto();
-		given(journeyProposalMapper.mapToDomainEntity(any(JourneyProposalJpaEntity.class)))
+		given(journeyProposalMapper.mapToDomainEntity(any(JourneyProposalJpaEntity.class), any(String.class)))
 				.willReturn(journeyProposalDto);
 
 		LoadJourneyProposalsCriteria criteria = JourneyProposalTestData.defaultLoadJourneyProposalsCriteriaBuilder()
 				.build();
 
 		// when
-		JourneyRequestProposals result = proposalPersistenceAdapter.loadJourneyProposals(criteria);
+		JourneyRequestProposals result = proposalPersistenceAdapter.loadJourneyProposals(criteria, "en_US");
 
 		// then
 
@@ -155,15 +168,13 @@ public class ProposalPersistenceAdapterTests {
 	void givenNullJourneyProposalJpaEntityPage_WhenLoadJourneyProposals_ThenReturnEmptyJourneyRequestProposals() {
 		// given
 
-		
-
 		given(journeyProposalRepository.findByJourneyRequest_Id(any(Long.class), any(Pageable.class))).willReturn(null);
 
 		LoadJourneyProposalsCriteria criteria = JourneyProposalTestData.defaultLoadJourneyProposalsCriteriaBuilder()
 				.build();
 
 		// when
-		JourneyRequestProposals result = proposalPersistenceAdapter.loadJourneyProposals(criteria);
+		JourneyRequestProposals result = proposalPersistenceAdapter.loadJourneyProposals(criteria, "en_US");
 
 		// then
 
@@ -177,6 +188,118 @@ public class ProposalPersistenceAdapterTests {
 		assertThat(result.getTotalPages()).isEqualTo(0L);
 		assertThat(result.isHasNext()).isEqualTo(false);
 		assertThat(result.getContent()).isEmpty();
+	}
+
+	@Test
+	void givenNullJourneyProposalJpaEntity_WhenLoadJourneyProposalByIdAndJourneyRequestId_ThenReturnEmptyJourneyProposalDto() {
+		// given
+
+		given(journeyProposalRepository.findByIdAndJourneyRequest_Id(any(Long.class), any(Long.class)))
+				.willReturn(null);
+
+		// when
+		Optional<JourneyProposalDto> journeyProposalDtoOptional = proposalPersistenceAdapter
+				.loadJourneyProposalByIdAndJourneyRequestId(1L, 1L, "en_US");
+
+		// then
+
+		assertTrue(journeyProposalDtoOptional.isEmpty());
+	}
+
+	@Test
+	void givenEmptyJourneyProposalJpaEntity_WhenLoadJourneyProposalByIdAndJourneyRequestId_ThenReturnEmptyJourneyProposalDto() {
+		// given
+
+		given(journeyProposalRepository.findByIdAndJourneyRequest_Id(any(Long.class), any(Long.class)))
+				.willReturn(Optional.empty());
+
+		// when
+		Optional<JourneyProposalDto> journeyProposalDtoOptional = proposalPersistenceAdapter
+				.loadJourneyProposalByIdAndJourneyRequestId(1L, 1L, "en_US");
+
+		// then
+		assertTrue(journeyProposalDtoOptional.isEmpty());
+	}
+
+	@Test
+	void givenJourneyProposalJpaEntity_WhenLoadJourneyProposalByIdAndJourneyRequestId_ThenReturnJourneyProposalDtoOptional() {
+		// given
+		JourneyProposalJpaEntity journeyProposalJpaEntity = defaultJourneyProposalJpaEntity();
+
+		given(journeyProposalRepository.findByIdAndJourneyRequest_Id(any(Long.class), any(Long.class)))
+				.willReturn(Optional.of(journeyProposalJpaEntity));
+
+		JourneyProposalDto journeyProposalDto = defaultJourneyProposalDto();
+		given(journeyProposalMapper.mapToDomainEntity(journeyProposalJpaEntity, "en_US"))
+				.willReturn(journeyProposalDto);
+		// when
+		Optional<JourneyProposalDto> journeyProposalDtoOptional = proposalPersistenceAdapter
+				.loadJourneyProposalByIdAndJourneyRequestId(1L, 1L, "en_US");
+
+		// then
+		assertEquals(journeyProposalDto, journeyProposalDtoOptional.get());
+	}
+
+	@Test
+	void givenNullJourneyRequestByID_WhenAcceptProposal_ThenReturnFalse() {
+		// given
+		given(journeyRequestRepository.findById(any(Long.class))).willReturn(null);
+		// when
+		boolean result = proposalPersistenceAdapter.acceptProposal(1L, 1L);
+		// then
+		assertFalse(result);
+	}
+
+	@Test
+	void givenEmptyJourneyRequestByID_WhenAcceptProposal_ThenReturnFalse() {
+		// given
+		given(journeyRequestRepository.findById(any(Long.class))).willReturn(Optional.empty());
+		// when
+		boolean result = proposalPersistenceAdapter.acceptProposal(1L, 1L);
+		// then
+		assertFalse(result);
+	}
+
+	@Test
+	void givenProposalIdNotInJourneyRequestProposalIds_WhenAcceptProposal_ThenReturnFalse() {
+
+		// given
+		JourneyRequestJpaEntity journeyRequestJpaEntity = defaultExistentJourneyRequestJpaEntity();
+		given(journeyRequestRepository.findById(any(Long.class))).willReturn(Optional.of(journeyRequestJpaEntity));
+
+		// when
+		boolean result = proposalPersistenceAdapter.acceptProposal(1L, 1L);
+
+		// then
+		assertFalse(result);
+
+	}
+
+	@Test
+	void givenProposalInJourneyRequestProposalIds_WhenAcceptProposal_ThenReturnTrue() {
+
+		// given
+		JourneyRequestJpaEntity journeyRequestJpaEntity = defaultExistentJourneyRequestJpaEntity();
+		JourneyProposalJpaEntity proposal1 = defaultJourneyProposalJpaEntityBuilder().id(1L).build();
+		JourneyProposalJpaEntity proposal2 = defaultJourneyProposalJpaEntityBuilder().id(2L).build();
+
+		journeyRequestJpaEntity.addProposal(proposal1);
+		journeyRequestJpaEntity.addProposal(proposal2);
+
+		given(journeyRequestRepository.findById(any(Long.class))).willReturn(Optional.of(journeyRequestJpaEntity));
+		
+		given(journeyProposalStatusRepository.findByCode(JourneyProposalStatusCode.ACCEPTED)).willReturn(
+				defaultJourneyProposalStatusJpaEntityBuilder().code(JourneyProposalStatusCode.ACCEPTED).build());
+		given(journeyProposalStatusRepository.findByCode(JourneyProposalStatusCode.REJECTED)).willReturn(
+				defaultJourneyProposalStatusJpaEntityBuilder().code(JourneyProposalStatusCode.REJECTED).build());
+		// when
+		boolean result = proposalPersistenceAdapter.acceptProposal(1L, 1L);
+
+		// then
+		then(journeyRequestRepository).should(times(1)).save(journeyRequestJpaEntity);
+		assertTrue(result);
+		assertEquals(proposal1.getStatus().getCode(), JourneyProposalStatusCode.ACCEPTED);
+		assertEquals(proposal2.getStatus().getCode(), JourneyProposalStatusCode.REJECTED);
 	}
 
 	private Page<JourneyProposalJpaEntity> createPageFromJourneyProposalJpaEntities(

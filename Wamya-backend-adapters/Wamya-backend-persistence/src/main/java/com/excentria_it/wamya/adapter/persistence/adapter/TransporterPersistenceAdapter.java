@@ -1,10 +1,9 @@
 package com.excentria_it.wamya.adapter.persistence.adapter;
 
 import java.util.Collections;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import org.springframework.util.CollectionUtils;
 
 import com.excentria_it.wamya.adapter.persistence.entity.TransporterJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.mapper.VehiculeMapper;
@@ -26,25 +25,26 @@ public class TransporterPersistenceAdapter implements LoadTransporterVehiculesPo
 	@Override
 	public Set<VehiculeDto> loadTransporterVehicules(String transporterEmail) {
 
-		TransporterJpaEntity transporter = transporterRepository.findTransporterWithVehiculesByEmail(transporterEmail);
+		Optional<TransporterJpaEntity> transporter = transporterRepository
+				.findTransporterWithVehiculesByEmail(transporterEmail);
 
-		if (CollectionUtils.isEmpty(transporter.getVehicules()))
+		if (transporter.isEmpty())
 			return Collections.<VehiculeDto>emptySet();
 
-		return transporter.getVehicules().stream().map(v -> vehiculeMapper.mapToDomainEntity(v))
+		return transporter.get().getVehicules().stream().map(v -> vehiculeMapper.mapToDomainEntity(v))
 				.collect(Collectors.toSet());
 	}
 
 	@Override
 	public Set<VehiculeDto> loadTransporterVehicules(String transporterIcc, String transporterMobileNumber) {
 
-		TransporterJpaEntity transporter = transporterRepository
+		Optional<TransporterJpaEntity> transporter = transporterRepository
 				.findTransporterWithVehiculesByMobilePhoneNumber(transporterIcc, transporterMobileNumber);
 
-		if (CollectionUtils.isEmpty(transporter.getVehicules()))
+		if (transporter.isEmpty())
 			return Collections.<VehiculeDto>emptySet();
 
-		return transporter.getVehicules().stream().map(v -> vehiculeMapper.mapToDomainEntity(v))
+		return transporter.get().getVehicules().stream().map(v -> vehiculeMapper.mapToDomainEntity(v))
 				.collect(Collectors.toSet());
 	}
 

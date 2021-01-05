@@ -62,6 +62,9 @@ public class JourneyRequestJpaEntity {
 	private LocalDateTime creationDateTime;
 
 	@ManyToOne
+	private JourneyRequestStatusJpaEntity status;
+
+	@ManyToOne
 	@JoinColumn(name = "client_id")
 	private ClientJpaEntity client;
 
@@ -77,6 +80,10 @@ public class JourneyRequestJpaEntity {
 	public void removeProposal(JourneyProposalJpaEntity proposal) {
 		proposals.remove(proposal);
 		proposal.setJourneyRequest(null);
+	}
+
+	public Long getId() {
+		return id;
 	}
 
 	public PlaceJpaEntity getDeparturePlace() {
@@ -163,10 +170,6 @@ public class JourneyRequestJpaEntity {
 		return Collections.unmodifiableSet(proposals);
 	}
 
-	public Long getId() {
-		return id;
-	}
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -199,4 +202,11 @@ public class JourneyRequestJpaEntity {
 				+ ", creationDateTime=" + creationDateTime + ", client id=" + client.getId() + "]";
 	}
 
+	public JourneyRequestStatusJpaEntity getStatus() {
+		return status;
+	}
+
+	public void setStatus(JourneyRequestStatusJpaEntity status) {
+		this.status = status;
+	}
 }

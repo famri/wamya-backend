@@ -6,8 +6,11 @@ import javax.persistence.Embeddable;
 
 import com.excentria_it.wamya.common.annotation.Generated;
 
+import lombok.AllArgsConstructor;
+
 @Generated
 @Embeddable
+@AllArgsConstructor
 public class LocalizedId implements Serializable {
 
 	private static final long serialVersionUID = -5289594055575768374L;
@@ -41,6 +44,7 @@ public class LocalizedId implements Serializable {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((locale == null) ? 0 : locale.hashCode());
 		return result;
 	}
 
@@ -56,6 +60,11 @@ public class LocalizedId implements Serializable {
 		if (id == null) {
 			return false;
 		} else if (!id.equals(other.id))
+			return false;
+		if (locale == null) {
+			if (other.locale != null)
+				return false;
+		} else if (!locale.equals(other.locale))
 			return false;
 		return true;
 	}

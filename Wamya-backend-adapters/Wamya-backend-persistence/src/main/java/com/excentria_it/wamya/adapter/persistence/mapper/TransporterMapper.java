@@ -1,8 +1,5 @@
 package com.excentria_it.wamya.adapter.persistence.mapper;
 
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-
 import org.springframework.stereotype.Component;
 
 import com.excentria_it.wamya.adapter.persistence.entity.InternationalCallingCodeJpaEntity;
@@ -21,9 +18,7 @@ public class TransporterMapper {
 				userAccount.getEmail(), userAccount.getEmailValidationCode(), userAccount.getIsValidatedEmail(), icc,
 				userAccount.getMobilePhoneNumber().getMobileNumber(), userAccount.getMobileNumberValidationCode(),
 				userAccount.getIsValidatedMobileNumber(), userAccount.getReceiveNewsletter(),
-				userAccount.getCreationDateTime() != null ? userAccount.getCreationDateTime()
-						: LocalDateTime.now(ZoneOffset.UTC),
-				userAccount.getPhotoUrl(), null, null, null, null, null);
+				userAccount.getCreationDateTime(), userAccount.getPhotoUrl(), null, null, null, null, null);
 
 	}
 }

@@ -30,12 +30,15 @@ import org.springframework.data.domain.Sort.Order;
 import com.excentria_it.wamya.adapter.persistence.entity.ClientJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.EngineTypeJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.JourneyRequestJpaEntity;
+import com.excentria_it.wamya.adapter.persistence.entity.JourneyRequestStatusJpaEntity;
+import com.excentria_it.wamya.adapter.persistence.entity.JourneyRequestStatusJpaEntity.JourneyRequestStatusCode;
 import com.excentria_it.wamya.adapter.persistence.entity.PlaceJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.mapper.JourneyRequestMapper;
 import com.excentria_it.wamya.adapter.persistence.mapper.PlaceMapper;
 import com.excentria_it.wamya.adapter.persistence.repository.ClientRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.EngineTypeRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.JourneyRequestRepository;
+import com.excentria_it.wamya.adapter.persistence.repository.JourneyRequestStatusRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.PlaceRepository;
 import com.excentria_it.wamya.common.SortCriterion;
 import com.excentria_it.wamya.domain.ClientJourneyRequestDto;
@@ -59,6 +62,8 @@ public class JourneyRequestsPersistenceAdapterTests {
 	private PlaceRepository placeRepository;
 	@Mock
 	private JourneyRequestMapper journeyRequestMapper;
+	@Mock
+	private JourneyRequestStatusRepository journeyRequestStatusRepository;
 	@Mock
 	private PlaceMapper placeMapper;
 
@@ -182,8 +187,12 @@ public class JourneyRequestsPersistenceAdapterTests {
 
 		given(journeyRequestRepository.save(journeyRequestJpaEntity)).willReturn(journeyRequestJpaEntity);
 
+		JourneyRequestStatusJpaEntity journeyRequestStatusJpaEntity = defaultJourneyRequestStatusJpaEntityBuilder()
+				.build();
+		given(journeyRequestStatusRepository.findByCode(JourneyRequestStatusCode.OPENED))
+				.willReturn(journeyRequestStatusJpaEntity);
 		// when
-		journeyRequestsPersistenceAdapter.createJourneyRequest(journeyRequest, TestConstants.DEFAULT_EMAIL);
+		journeyRequestsPersistenceAdapter.createJourneyRequest(journeyRequest, TestConstants.DEFAULT_EMAIL, "en_US");
 
 		// then
 		then(journeyRequestRepository).should(times(1)).save(journeyRequestJpaEntity);
@@ -219,9 +228,12 @@ public class JourneyRequestsPersistenceAdapterTests {
 				engineTypeJpaEntity, clientJpaEntity)).willReturn(journeyRequestJpaEntity);
 
 		given(journeyRequestRepository.save(journeyRequestJpaEntity)).willReturn(journeyRequestJpaEntity);
-
+		JourneyRequestStatusJpaEntity journeyRequestStatusJpaEntity = defaultJourneyRequestStatusJpaEntityBuilder()
+				.build();
+		given(journeyRequestStatusRepository.findByCode(JourneyRequestStatusCode.OPENED))
+				.willReturn(journeyRequestStatusJpaEntity);
 		// when
-		journeyRequestsPersistenceAdapter.createJourneyRequest(journeyRequest, TestConstants.DEFAULT_EMAIL);
+		journeyRequestsPersistenceAdapter.createJourneyRequest(journeyRequest, TestConstants.DEFAULT_EMAIL, "en_US");
 
 		// then
 		then(journeyRequestRepository).should(times(1)).save(journeyRequestJpaEntity);
@@ -241,7 +253,7 @@ public class JourneyRequestsPersistenceAdapterTests {
 		given(clientRepository.findByEmail(TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME))
 				.willReturn(Optional.ofNullable(null));
 
-		given(clientRepository.findByMobilePhoneNumber(any(String.class), any(String.class)))
+		given(clientRepository.findByIcc_ValueAndMobileNumber(any(String.class), any(String.class)))
 				.willReturn(Optional.of(clientJpaEntity));
 
 		PlaceJpaEntity departurePlaceJpaEntity = defaultDeparturePlaceJpaEntity();
@@ -261,10 +273,13 @@ public class JourneyRequestsPersistenceAdapterTests {
 				engineTypeJpaEntity, clientJpaEntity)).willReturn(journeyRequestJpaEntity);
 
 		given(journeyRequestRepository.save(journeyRequestJpaEntity)).willReturn(journeyRequestJpaEntity);
-
+		JourneyRequestStatusJpaEntity journeyRequestStatusJpaEntity = defaultJourneyRequestStatusJpaEntityBuilder()
+				.build();
+		given(journeyRequestStatusRepository.findByCode(JourneyRequestStatusCode.OPENED))
+				.willReturn(journeyRequestStatusJpaEntity);
 		// when
 		journeyRequestsPersistenceAdapter.createJourneyRequest(journeyRequest,
-				TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME);
+				TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME, "en_US");
 
 		// then
 		then(journeyRequestRepository).should(times(1)).save(journeyRequestJpaEntity);

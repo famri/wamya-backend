@@ -37,9 +37,11 @@ public class JourneyProposalMapperTests {
 	void testMapToDomainEntity() {
 
 		JourneyProposalJpaEntity journeyProposalJpaEntity = defaultJourneyProposalJpaEntity();
-		
-		JourneyProposalDto journeyProposalDto = journeyProposalMapper.mapToDomainEntity(journeyProposalJpaEntity);
-		
+
+		JourneyProposalDto journeyProposalDto = journeyProposalMapper.mapToDomainEntity(journeyProposalJpaEntity,
+				"en_US");
+
+		assertEquals(journeyProposalJpaEntity.getId(), journeyProposalDto.getId());
 		assertEquals(journeyProposalJpaEntity.getId(), journeyProposalDto.getId());
 		assertEquals(journeyProposalJpaEntity.getPrice(), journeyProposalDto.getPrice());
 
@@ -63,7 +65,7 @@ public class JourneyProposalMapperTests {
 	@Test
 	void testMapNullToDomainEntity() {
 
-		JourneyProposalDto journeyProposalDto = journeyProposalMapper.mapToDomainEntity(null);
+		JourneyProposalDto journeyProposalDto = journeyProposalMapper.mapToDomainEntity(null, "en_US");
 
 		assertNull(journeyProposalDto);
 	}

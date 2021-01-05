@@ -29,6 +29,7 @@ import org.springframework.test.context.ActiveProfiles;
 import com.excentria_it.wamya.adapter.persistence.entity.ClientJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.ConstructorJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.EngineTypeJpaEntity;
+import com.excentria_it.wamya.adapter.persistence.entity.EngineTypeJpaEntity.EngineTypeCode;
 import com.excentria_it.wamya.adapter.persistence.entity.InternationalCallingCodeJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.JourneyProposalJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.JourneyRequestJpaEntity;
@@ -658,7 +659,7 @@ public class JourneyRequestRepositoryTests {
 		assertNotNull(journeyRequests);
 		assertEquals(1, journeyRequests.getNumberOfElements());
 		assertEquals(3, journeyRequests.getContent().get(0).getProposalsCount());
-		
+
 		JourneyRequestJpaEntity clientJourneyRequest = journeyRequestRepository
 				.findById(journeyRequests.getContent().get(0).getId()).get();
 
@@ -705,7 +706,8 @@ public class JourneyRequestRepositoryTests {
 
 		Page<ClientJourneyRequestDto> journeyRequests = journeyRequestRepository
 				.findByCreationDateTimeBetweenAndClient_MobileNumberAndClient_IccValue(lowerEdge, higherEdge,
-						clients.get(0).getMobileNumber(), clients.get(0).getIcc().getValue(), "en_US", PageRequest.of(0, 25,
+						clients.get(0).getMobileNumber(), clients.get(0).getIcc().getValue(), "en_US",
+						PageRequest.of(0, 25,
 
 								Sort.by(Direction.DESC, "creationDateTime")));
 
@@ -793,7 +795,7 @@ public class JourneyRequestRepositoryTests {
 	private List<List<EngineTypeJpaEntity>> givenEngineTypes() {
 		// Engine type 11
 		EngineTypeJpaEntity et11 = new EngineTypeJpaEntity();
-		et11.setCode("EngineType11Code");
+		et11.setCode(EngineTypeCode.VAN_L1H1);
 
 		LocalizedEngineTypeJpaEntity let11en = new LocalizedEngineTypeJpaEntity();
 		let11en.setLocalizedId(new LocalizedId("en_US"));
@@ -811,7 +813,7 @@ public class JourneyRequestRepositoryTests {
 
 		// Engine type 12
 		EngineTypeJpaEntity et12 = new EngineTypeJpaEntity();
-		et12.setCode("EngineType12Code");
+		et12.setCode(EngineTypeCode.VAN_L2H2);
 
 		LocalizedEngineTypeJpaEntity let12en = new LocalizedEngineTypeJpaEntity();
 		let12en.setLocalizedId(new LocalizedId("en_US"));
@@ -829,7 +831,7 @@ public class JourneyRequestRepositoryTests {
 
 		// Engine type 13
 		EngineTypeJpaEntity et13 = new EngineTypeJpaEntity();
-		et13.setCode("EngineType13Code");
+		et13.setCode(EngineTypeCode.VAN_L3H2);
 
 		LocalizedEngineTypeJpaEntity let13en = new LocalizedEngineTypeJpaEntity();
 		let13en.setLocalizedId(new LocalizedId("en_US"));
@@ -847,7 +849,7 @@ public class JourneyRequestRepositoryTests {
 
 		// Engine type 21
 		EngineTypeJpaEntity et21 = new EngineTypeJpaEntity();
-		et21.setCode("EngineType21Code");
+		et21.setCode(EngineTypeCode.FLATBED_TRUCK);
 
 		LocalizedEngineTypeJpaEntity let21en = new LocalizedEngineTypeJpaEntity();
 		let21en.setLocalizedId(new LocalizedId("en_US"));
@@ -865,7 +867,7 @@ public class JourneyRequestRepositoryTests {
 
 		// Engine type 22
 		EngineTypeJpaEntity et22 = new EngineTypeJpaEntity();
-		et22.setCode("EngineType22Code");
+		et22.setCode(EngineTypeCode.UTILITY);
 
 		LocalizedEngineTypeJpaEntity let22en = new LocalizedEngineTypeJpaEntity();
 		let22en.setLocalizedId(new LocalizedId("en_US"));
@@ -883,7 +885,8 @@ public class JourneyRequestRepositoryTests {
 
 		// Engine type 23
 		EngineTypeJpaEntity et23 = new EngineTypeJpaEntity();
-		et23.setCode("EngineType23Code");
+		et23.setCode(EngineTypeCode.DUMP_TRUCK);
+		;
 
 		LocalizedEngineTypeJpaEntity let23en = new LocalizedEngineTypeJpaEntity();
 		let23en.setLocalizedId(new LocalizedId("en_US"));
@@ -901,7 +904,7 @@ public class JourneyRequestRepositoryTests {
 
 		// Engine type 31
 		EngineTypeJpaEntity et31 = new EngineTypeJpaEntity();
-		et31.setCode("EngineType31Code");
+		et31.setCode(EngineTypeCode.BOX_TRUCK);
 
 		LocalizedEngineTypeJpaEntity let31en = new LocalizedEngineTypeJpaEntity();
 		let31en.setLocalizedId(new LocalizedId("en_US"));
@@ -919,7 +922,7 @@ public class JourneyRequestRepositoryTests {
 
 		// Engine type 32
 		EngineTypeJpaEntity et32 = new EngineTypeJpaEntity();
-		et32.setCode("EngineType32Code");
+		et32.setCode(EngineTypeCode.TANKER);
 
 		LocalizedEngineTypeJpaEntity let32en = new LocalizedEngineTypeJpaEntity();
 		let32en.setLocalizedId(new LocalizedId("en_US"));
@@ -937,7 +940,7 @@ public class JourneyRequestRepositoryTests {
 
 		// Engine type 33
 		EngineTypeJpaEntity et33 = new EngineTypeJpaEntity();
-		et33.setCode("EngineType33Code");
+		et33.setCode(EngineTypeCode.BUS);
 
 		LocalizedEngineTypeJpaEntity let33en = new LocalizedEngineTypeJpaEntity();
 		let33en.setLocalizedId(new LocalizedId("en_US"));

@@ -48,10 +48,11 @@ public class MakeProposalControllerTests {
 		MakeProposalCommand command = JourneyProposalTestData.defaultMakeProposalCommandBuilder().build();
 
 		String makeProposalJson = objectMapper.writeValueAsString(command);
-		MakeProposalDto makeProposalDto = new MakeProposalDto(1L, command.getPrice());
 
-		given(makeProposalUseCase.makeProposal(any(MakeProposalCommand.class), any(Long.class), any(String.class)))
-				.willReturn(makeProposalDto);
+		MakeProposalDto makeProposalDto = new MakeProposalDto(1L, command.getPrice(), null);
+
+		given(makeProposalUseCase.makeProposal(any(MakeProposalCommand.class), any(Long.class), any(String.class),
+				any(String.class))).willReturn(makeProposalDto);
 		// when
 
 		MvcResult mvcResult = api
@@ -65,7 +66,8 @@ public class MakeProposalControllerTests {
 				MakeProposalDto.class);
 		// then
 
-		then(makeProposalUseCase).should(times(1)).makeProposal(eq(command), eq(1L), eq(TestConstants.DEFAULT_EMAIL));
+		then(makeProposalUseCase).should(times(1)).makeProposal(eq(command), eq(1L), eq(TestConstants.DEFAULT_EMAIL),
+				eq("en_US"));
 		then(makeProposalDto.getId().equals(makeProposalDtoResult.getId()));
 		then(makeProposalDto.getPrice().equals(makeProposalDtoResult.getPrice()));
 
@@ -91,7 +93,7 @@ public class MakeProposalControllerTests {
 		// then
 
 		then(makeProposalUseCase).should(never()).makeProposal(any(MakeProposalCommand.class), any(Long.class),
-				any(String.class));
+				any(String.class), any(String.class));
 
 	}
 

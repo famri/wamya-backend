@@ -12,7 +12,8 @@ import lombok.NoArgsConstructor;
 
 public interface MakeProposalUseCase {
 
-	MakeProposalDto makeProposal(MakeProposalCommand command, Long journeyRequestId, String transporterUsername);
+	MakeProposalDto makeProposal(MakeProposalCommand command, Long journeyRequestId, String transporterUsername,
+			String locale);
 
 	@Data
 	@Builder

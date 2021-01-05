@@ -2,6 +2,7 @@ package com.excentria_it.wamya.adapter.persistence.adapter;
 
 import static com.excentria_it.wamya.test.data.common.UserAccountJpaEntityTestData.*;
 import static com.excentria_it.wamya.test.data.common.VehiculeJpaEntityTestData.*;
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
@@ -10,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
@@ -35,6 +37,31 @@ public class TransporterPersistenceAdapterTests {
 	private TransporterPersistenceAdapter transporterPersistenceAdapter;
 
 	@Test
+	void givenEmptyTransporterJpaEntity_WhenLoadTransporterVehiculesByEmail_ThenReturnEmptySet() {
+
+		// given
+		given(transporterRepository.findTransporterWithVehiculesByEmail(any(String.class)))
+				.willReturn(Optional.empty());
+		// when
+		Set<VehiculeDto> vehicules = transporterPersistenceAdapter
+				.loadTransporterVehicules(TestConstants.DEFAULT_EMAIL);
+		// then
+		assertThat(vehicules).isEmpty();
+	}
+
+	@Test
+	void givenEmptyTransporterJpaEntity_WhenLoadTransporterVehiculesByMobileNumber_ThenReturnEmptySet() {
+
+		// given
+		given(transporterRepository.findTransporterWithVehiculesByMobilePhoneNumber(any(String.class),
+				any(String.class))).willReturn(Optional.empty());
+		// when
+		Set<VehiculeDto> vehicules = transporterPersistenceAdapter.loadTransporterVehicules("+216", "220000001");
+		// then
+		assertThat(vehicules).isEmpty();
+	}
+
+	@Test
 	void testLoadTransporterVehiculesByTransporterEmail() {
 		// given
 
@@ -43,7 +70,7 @@ public class TransporterPersistenceAdapterTests {
 		transporterJpaEntity.setVehicules(vehiculeEntities);
 
 		given(transporterRepository.findTransporterWithVehiculesByEmail(any(String.class)))
-				.willReturn(transporterJpaEntity);
+				.willReturn(Optional.of(transporterJpaEntity));
 
 		List<VehiculeJpaEntity> vehiculeJpaEntities = new ArrayList<>(3);
 		List<VehiculeDto> vehiculeDtos = new ArrayList<>(3);
@@ -75,7 +102,7 @@ public class TransporterPersistenceAdapterTests {
 		transporterJpaEntity.setVehicules(Collections.<VehiculeJpaEntity>emptySet());
 
 		given(transporterRepository.findTransporterWithVehiculesByEmail(any(String.class)))
-				.willReturn(transporterJpaEntity);
+				.willReturn(Optional.of(transporterJpaEntity));
 
 		// when
 		Set<VehiculeDto> vehicules = transporterPersistenceAdapter
@@ -95,7 +122,7 @@ public class TransporterPersistenceAdapterTests {
 		transporterJpaEntity.setVehicules(vehiculeEntities);
 
 		given(transporterRepository.findTransporterWithVehiculesByMobilePhoneNumber(any(String.class),
-				any(String.class))).willReturn(transporterJpaEntity);
+				any(String.class))).willReturn(Optional.of(transporterJpaEntity));
 
 		List<VehiculeJpaEntity> vehiculeJpaEntities = new ArrayList<>(3);
 		List<VehiculeDto> vehiculeDtos = new ArrayList<>(3);
@@ -128,7 +155,7 @@ public class TransporterPersistenceAdapterTests {
 		transporterJpaEntity.setVehicules(Collections.<VehiculeJpaEntity>emptySet());
 
 		given(transporterRepository.findTransporterWithVehiculesByMobilePhoneNumber(any(String.class),
-				any(String.class))).willReturn(transporterJpaEntity);
+				any(String.class))).willReturn(Optional.of(transporterJpaEntity));
 
 		// when
 		String[] mobileNumber = TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME.split("_");

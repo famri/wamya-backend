@@ -8,6 +8,7 @@ import com.excentria_it.wamya.adapter.persistence.entity.JourneyProposalJpaEntit
 import com.excentria_it.wamya.adapter.persistence.entity.TransporterJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.VehiculeJpaEntity;
 import com.excentria_it.wamya.domain.JourneyProposalDto;
+import com.excentria_it.wamya.domain.JourneyProposalDto.StatusCode;
 import com.excentria_it.wamya.domain.JourneyProposalDto.VehiculeDto;
 
 @Component
@@ -20,7 +21,7 @@ public class JourneyProposalMapper {
 				.creationDateTime(LocalDateTime.now()).transporter(transporterAccountJpaEntity).build();
 	}
 
-	public JourneyProposalDto mapToDomainEntity(JourneyProposalJpaEntity journeyProposalJpaEntity) {
+	public JourneyProposalDto mapToDomainEntity(JourneyProposalJpaEntity journeyProposalJpaEntity, String locale) {
 		if (journeyProposalJpaEntity == null)
 			return null;
 
@@ -34,6 +35,9 @@ public class JourneyProposalMapper {
 
 		return JourneyProposalDto.builder().id(journeyProposalJpaEntity.getId())
 				.price(journeyProposalJpaEntity.getPrice()).transporterDto(transporterDto).vehiculeDto(vehiculeDto)
+				.status(new JourneyProposalDto.StatusDto(
+						StatusCode.valueOf(journeyProposalJpaEntity.getStatus().getCode().name()),
+						journeyProposalJpaEntity.getStatus().getValue(locale)))
 				.build();
 	}
 }

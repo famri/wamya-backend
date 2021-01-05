@@ -9,5 +9,8 @@ import lombok.NoArgsConstructor;
 @Data
 public class MakeProposalDto {
 	private Long id;
+
 	private Double price;
+
+	private String status;
 }

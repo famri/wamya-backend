@@ -46,7 +46,7 @@ public class CreateJourneyRequestsControllerTests {
 		CreateJourneyRequestDto journeyRequest = JourneyRequestTestData.defaultCreateJourneyRequestDto();
 
 		given(createJourneyRequestUseCase.createJourneyRequest(any(CreateJourneyRequestCommand.class),
-				any(String.class))).willReturn(journeyRequest);
+				any(String.class), any(String.class))).willReturn(journeyRequest);
 
 		String createJourneyRequestJson = objectMapper.writeValueAsString(command);
 
@@ -57,7 +57,7 @@ public class CreateJourneyRequestsControllerTests {
 				.andExpect(status().isCreated()).andReturn();
 
 		then(createJourneyRequestUseCase).should(times(1)).createJourneyRequest(eq(command),
-				eq(TestConstants.DEFAULT_EMAIL));
+				eq(TestConstants.DEFAULT_EMAIL), eq("en_US"));
 
 	}
 
@@ -68,7 +68,7 @@ public class CreateJourneyRequestsControllerTests {
 		CreateJourneyRequestDto journeyRequest = JourneyRequestTestData.defaultCreateJourneyRequestDto();
 
 		given(createJourneyRequestUseCase.createJourneyRequest(any(CreateJourneyRequestCommand.class),
-				any(String.class))).willReturn(journeyRequest);
+				any(String.class), any(String.class))).willReturn(journeyRequest);
 
 		String createJourneyRequestJson = objectMapper.writeValueAsString(command);
 
@@ -79,7 +79,7 @@ public class CreateJourneyRequestsControllerTests {
 				.andExpect(status().isForbidden()).andReturn();
 
 		then(createJourneyRequestUseCase).should(never()).createJourneyRequest(eq(command),
-				eq(TestConstants.DEFAULT_EMAIL));
+				eq(TestConstants.DEFAULT_EMAIL), eq("en_US"));
 
 	}
 

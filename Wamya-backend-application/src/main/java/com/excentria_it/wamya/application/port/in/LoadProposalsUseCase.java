@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 
 public interface LoadProposalsUseCase {
 
-	JourneyRequestProposals loadProposals(LoadProposalsCommand command);
+	JourneyRequestProposals loadProposals(LoadProposalsCommand command, String locale);
 
 	@Data
 	@Builder

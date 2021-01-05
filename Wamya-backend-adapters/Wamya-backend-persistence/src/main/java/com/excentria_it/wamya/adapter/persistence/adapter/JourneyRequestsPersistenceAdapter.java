@@ -13,12 +13,15 @@ import org.springframework.data.jpa.domain.JpaSort;
 import com.excentria_it.wamya.adapter.persistence.entity.ClientJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.EngineTypeJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.JourneyRequestJpaEntity;
+import com.excentria_it.wamya.adapter.persistence.entity.JourneyRequestStatusJpaEntity;
+import com.excentria_it.wamya.adapter.persistence.entity.JourneyRequestStatusJpaEntity.JourneyRequestStatusCode;
 import com.excentria_it.wamya.adapter.persistence.entity.PlaceJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.mapper.JourneyRequestMapper;
 import com.excentria_it.wamya.adapter.persistence.mapper.PlaceMapper;
 import com.excentria_it.wamya.adapter.persistence.repository.ClientRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.EngineTypeRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.JourneyRequestRepository;
+import com.excentria_it.wamya.adapter.persistence.repository.JourneyRequestStatusRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.PlaceRepository;
 import com.excentria_it.wamya.application.port.in.SearchJourneyRequestsUseCase.SearchJourneyRequestsCommand;
 import com.excentria_it.wamya.application.port.out.CreateJourneyRequestPort;
@@ -56,6 +59,8 @@ public class JourneyRequestsPersistenceAdapter implements SearchJourneyRequestsP
 
 	private final PlaceMapper placeMapper;
 
+	private final JourneyRequestStatusRepository journeyRequestStatusRepository;
+
 	@Override
 	public JourneyRequestsSearchResult searchJourneyRequests(SearchJourneyRequestsCriteria command) {
 
@@ -85,7 +90,8 @@ public class JourneyRequestsPersistenceAdapter implements SearchJourneyRequestsP
 					journeyRequestsPage.getSize(), journeyRequestsPage.hasNext(), journeyRequestsPage.getContent());
 		}
 
-		return new JourneyRequestsSearchResult(0, 0, command.getPageNumber(), command.getPageSize(), false, Collections.<JourneyRequestSearchDto>emptyList());
+		return new JourneyRequestsSearchResult(0, 0, command.getPageNumber(), command.getPageSize(), false,
+				Collections.<JourneyRequestSearchDto>emptyList());
 	}
 
 	protected Sort convertToSort(SortCriterion sortingCriterion) {
@@ -98,7 +104,8 @@ public class JourneyRequestsPersistenceAdapter implements SearchJourneyRequestsP
 	}
 
 	@Override
-	public CreateJourneyRequestDto createJourneyRequest(CreateJourneyRequestDto journeyRequest, String username) {
+	public CreateJourneyRequestDto createJourneyRequest(CreateJourneyRequestDto journeyRequest, String username,
+			String locale) {
 
 		EngineTypeJpaEntity engineTypeJpaEntity = engineTypeRepository.findById(journeyRequest.getEngineType().getId())
 				.get();
@@ -109,7 +116,7 @@ public class JourneyRequestsPersistenceAdapter implements SearchJourneyRequestsP
 
 			String[] userMobilePhone = username.split("_");
 
-			clientJpaEntityOptional = clientRepository.findByMobilePhoneNumber(userMobilePhone[0], userMobilePhone[1]);
+			clientJpaEntityOptional = clientRepository.findByIcc_ValueAndMobileNumber(userMobilePhone[0], userMobilePhone[1]);
 
 		}
 
@@ -141,9 +148,14 @@ public class JourneyRequestsPersistenceAdapter implements SearchJourneyRequestsP
 		JourneyRequestJpaEntity journeyRequestJpaEntity = journeyRequestMapper.mapToJpaEntity(journeyRequest,
 				departurePlaceJpaEntity, arrivalPlaceJpaEntity, engineTypeJpaEntity, clientJpaEntity);
 
+		JourneyRequestStatusJpaEntity journeyRequestStatusJpaEntity = journeyRequestStatusRepository
+				.findByCode(JourneyRequestStatusCode.OPENED);
+
+		journeyRequestJpaEntity.setStatus(journeyRequestStatusJpaEntity);
 		journeyRequestJpaEntity = journeyRequestRepository.save(journeyRequestJpaEntity);
 
 		journeyRequest.setId(journeyRequestJpaEntity.getId());
+		journeyRequest.setStatus(journeyRequestStatusJpaEntity.getValue(locale));
 
 		return journeyRequest;
 	}
@@ -190,7 +202,8 @@ public class JourneyRequestsPersistenceAdapter implements SearchJourneyRequestsP
 					journeyRequestsPage.getSize(), journeyRequestsPage.hasNext(), journeyRequestsPage.getContent());
 		}
 
-		return new ClientJourneyRequests(0, 0, criteria.getPageNumber(), criteria.getPageSize(), false, Collections.<ClientJourneyRequestDto>emptyList());
+		return new ClientJourneyRequests(0, 0, criteria.getPageNumber(), criteria.getPageSize(), false,
+				Collections.<ClientJourneyRequestDto>emptyList());
 	}
 
 	@Override

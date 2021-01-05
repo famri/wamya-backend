@@ -1,5 +1,7 @@
 package com.excentria_it.wamya.adapter.web.adapter;
 
+import java.util.Locale;
+
 import javax.validation.Valid;
 
 import org.springframework.http.HttpStatus;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.excentria_it.wamya.application.port.in.MakeProposalUseCase;
 import com.excentria_it.wamya.application.port.in.MakeProposalUseCase.MakeProposalCommand;
 import com.excentria_it.wamya.common.annotation.WebAdapter;
+import com.excentria_it.wamya.common.utils.LocaleUtils;
 import com.excentria_it.wamya.domain.MakeProposalDto;
 
 import lombok.RequiredArgsConstructor;
@@ -34,9 +37,12 @@ public class MakeProposalController {
 	@ResponseStatus(HttpStatus.CREATED)
 	public MakeProposalDto makeProposal(@Valid @RequestBody MakeProposalCommand command,
 			@PathVariable("journeyRequestId") Long journeyRequestId,
-			final @AuthenticationPrincipal JwtAuthenticationToken principal) {
+			final @AuthenticationPrincipal JwtAuthenticationToken principal, Locale locale) {
 
-		MakeProposalDto proposal = makeProposalUseCase.makeProposal(command, journeyRequestId, principal.getName());
+		Locale supportedLocale = LocaleUtils.getSupporedLocale(locale);
+
+		MakeProposalDto proposal = makeProposalUseCase.makeProposal(command, journeyRequestId, principal.getName(),
+				supportedLocale.toString());
 
 		return proposal;
 	}

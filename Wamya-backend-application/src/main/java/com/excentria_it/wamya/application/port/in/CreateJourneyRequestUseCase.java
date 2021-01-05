@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 
 public interface CreateJourneyRequestUseCase {
 
-	CreateJourneyRequestDto createJourneyRequest(CreateJourneyRequestCommand command, String username);
+	CreateJourneyRequestDto createJourneyRequest(CreateJourneyRequestCommand command, String username, String locale);
 
 	@Data
 	@NoArgsConstructor

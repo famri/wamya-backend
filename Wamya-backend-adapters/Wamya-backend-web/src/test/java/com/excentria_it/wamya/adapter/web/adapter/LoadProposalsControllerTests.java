@@ -51,7 +51,8 @@ public class LoadProposalsControllerTests {
 		// given
 		LoadProposalsCommand command = JourneyProposalTestData.defaultLoadProposalsCommandBuilder().build();
 		JourneyRequestProposals journeyRequestProposals = JourneyProposalTestData.defaultJourneyRequestProposals();
-		given(loadProposalsUseCase.loadProposals(any(LoadProposalsCommand.class))).willReturn(journeyRequestProposals);
+		given(loadProposalsUseCase.loadProposals(any(LoadProposalsCommand.class), any(String.class)))
+				.willReturn(journeyRequestProposals);
 
 		ArgumentCaptor<LoadProposalsCommand> commandCaptor = ArgumentCaptor.forClass(LoadProposalsCommand.class);
 		// when
@@ -68,7 +69,8 @@ public class LoadProposalsControllerTests {
 				JourneyRequestProposals.class);
 		// then
 
-		then(loadProposalsUseCase).should(times(1)).loadProposals(commandCaptor.capture());
+		then(loadProposalsUseCase).should(times(1)).loadProposals(commandCaptor.capture(), eq("en_US"));
+
 		assertThat(commandCaptor.getValue().getClientUsername()).isEqualTo(TestConstants.DEFAULT_EMAIL);
 		assertThat(commandCaptor.getValue().getPageNumber()).isEqualTo(command.getPageNumber());
 		assertThat(commandCaptor.getValue().getPageSize()).isEqualTo(command.getPageSize());
@@ -100,7 +102,7 @@ public class LoadProposalsControllerTests {
 
 		// then
 
-		then(loadProposalsUseCase).should(never()).loadProposals(any(LoadProposalsCommand.class));
+		then(loadProposalsUseCase).should(never()).loadProposals(any(LoadProposalsCommand.class), any(String.class));
 
 	}
 }

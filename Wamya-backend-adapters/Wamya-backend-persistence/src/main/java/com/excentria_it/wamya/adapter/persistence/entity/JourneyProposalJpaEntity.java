@@ -48,6 +48,11 @@ public class JourneyProposalJpaEntity {
 	@JoinColumn(name = "journey_request_id")
 	private JourneyRequestJpaEntity journeyRequest;
 
+	@ManyToOne
+	private JourneyProposalStatusJpaEntity status;
+
+
+	
 	public Double getPrice() {
 		return price;
 	}
@@ -90,6 +95,14 @@ public class JourneyProposalJpaEntity {
 
 	public void setJourneyRequest(JourneyRequestJpaEntity journeyRequest) {
 		this.journeyRequest = journeyRequest;
+	}
+
+	public JourneyProposalStatusJpaEntity getStatus() {
+		return status;
+	}
+
+	public void setStatus(JourneyProposalStatusJpaEntity status) {
+		this.status = status;
 	}
 
 	@Override

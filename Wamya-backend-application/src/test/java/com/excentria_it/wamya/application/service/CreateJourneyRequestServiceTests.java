@@ -50,11 +50,11 @@ public class CreateJourneyRequestServiceTests {
 		UserAccount userAccount = alreadyValidatedEmailUserAccount();
 		given(loadUserAccountPort.loadUserAccountByEmail(any(String.class))).willReturn(Optional.of(userAccount));
 		// when
-		createJourneyRequestsService.createJourneyRequest(command, TestConstants.DEFAULT_EMAIL);
+		createJourneyRequestsService.createJourneyRequest(command, TestConstants.DEFAULT_EMAIL, "en_US");
 
 		// then
 		then(createJourneyRequestPort).should(times(1)).createJourneyRequest(journeyRequestCaptor.capture(),
-				eq(TestConstants.DEFAULT_EMAIL));
+				eq(TestConstants.DEFAULT_EMAIL), eq("en_US"));
 
 		assertThat(journeyRequestCaptor.getValue().getDeparturePlace().getPlaceId())
 				.isEqualTo(command.getDeparturePlaceId());
@@ -99,11 +99,11 @@ public class CreateJourneyRequestServiceTests {
 		given(loadUserAccountPort.loadUserAccountByEmail(any(String.class))).willReturn(Optional.ofNullable(null));
 		// when
 		assertThrows(UserAccountNotFoundException.class,
-				() -> createJourneyRequestsService.createJourneyRequest(command, TestConstants.DEFAULT_EMAIL));
+				() -> createJourneyRequestsService.createJourneyRequest(command, TestConstants.DEFAULT_EMAIL, "en_US"));
 
 		// then
 		then(createJourneyRequestPort).should(never()).createJourneyRequest(any(CreateJourneyRequestDto.class),
-				any(String.class));
+				any(String.class), any(String.class));
 
 	}
 
@@ -118,11 +118,11 @@ public class CreateJourneyRequestServiceTests {
 		given(loadUserAccountPort.loadUserAccountByEmail(any(String.class))).willReturn(Optional.of(userAccount));
 		// when
 		assertThrows(UserMobileNumberValidationException.class,
-				() -> createJourneyRequestsService.createJourneyRequest(command, TestConstants.DEFAULT_EMAIL));
+				() -> createJourneyRequestsService.createJourneyRequest(command, TestConstants.DEFAULT_EMAIL, "en_US"));
 
 		// then
 		then(createJourneyRequestPort).should(never()).createJourneyRequest(any(CreateJourneyRequestDto.class),
-				any(String.class));
+				any(String.class), any(String.class));
 
 	}
 
@@ -138,11 +138,12 @@ public class CreateJourneyRequestServiceTests {
 		given(loadUserAccountPort.loadUserAccountByIccAndMobileNumber(any(String.class), any(String.class)))
 				.willReturn(Optional.of(userAccount));
 		// when
-		createJourneyRequestsService.createJourneyRequest(command, TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME);
+		createJourneyRequestsService.createJourneyRequest(command, TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME,
+				"en_US");
 
 		// then
 		then(createJourneyRequestPort).should(times(1)).createJourneyRequest(journeyRequestCaptor.capture(),
-				eq(TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME));
+				eq(TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME), eq("en_US"));
 
 		assertThat(journeyRequestCaptor.getValue().getDeparturePlace().getPlaceId())
 				.isEqualTo(command.getDeparturePlaceId());
@@ -190,11 +191,11 @@ public class CreateJourneyRequestServiceTests {
 				.willReturn(Optional.of(userAccount));
 		// when
 		assertThrows(UserMobileNumberValidationException.class, () -> createJourneyRequestsService
-				.createJourneyRequest(command, TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME));
+				.createJourneyRequest(command, TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME, "en_US"));
 
 		// then
 		then(createJourneyRequestPort).should(never()).createJourneyRequest(any(CreateJourneyRequestDto.class),
-				any(String.class));
+				any(String.class), any(String.class));
 
 	}
 

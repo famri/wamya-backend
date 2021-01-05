@@ -15,6 +15,8 @@ public class JourneyProposalDto {
 
 	private Double price;
 
+	private StatusDto status;
+
 	private TransporterDto transporterDto;
 
 	private VehiculeDto vehiculeDto;
@@ -49,4 +51,18 @@ public class JourneyProposalDto {
 
 	}
 
+	@AllArgsConstructor
+	@NoArgsConstructor
+	@Data
+	public static class StatusDto {
+
+		private StatusCode code;
+
+		private String value;
+
+	}
+
+	public enum StatusCode {
+		SUBMITTED, CANCELED, REJECTED, ACCEPTED;
+	}
 }
