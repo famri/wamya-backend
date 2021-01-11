@@ -9,7 +9,12 @@ import com.excentria_it.wamya.domain.JourneyProposalDto.VehiculeDto;
 public class VehiculeMapper {
 
 	public VehiculeDto mapToDomainEntity(VehiculeJpaEntity vehiculeJpaEntity) {
+		if(vehiculeJpaEntity.getTemporaryModel()!=null) {
+			return new VehiculeDto(vehiculeJpaEntity.getId(), vehiculeJpaEntity.getTemporaryModel().getConstructorName(),
+					vehiculeJpaEntity.getTemporaryModel().getModelName(), vehiculeJpaEntity.getPhotoUrl());
 
+		}
+		
 		return new VehiculeDto(vehiculeJpaEntity.getId(), vehiculeJpaEntity.getModel().getConstructor().getName(),
 				vehiculeJpaEntity.getModel().getName(), vehiculeJpaEntity.getPhotoUrl());
 
