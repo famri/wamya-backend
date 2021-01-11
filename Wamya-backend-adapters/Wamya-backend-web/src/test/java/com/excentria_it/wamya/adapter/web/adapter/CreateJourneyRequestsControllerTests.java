@@ -1,6 +1,7 @@
 package com.excentria_it.wamya.adapter.web.adapter;
 
 import static com.c4_soft.springaddons.security.oauth2.test.mockmvc.MockAuthenticationRequestPostProcessor.*;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.*;
@@ -8,6 +9,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -55,9 +57,23 @@ public class CreateJourneyRequestsControllerTests {
 				.perform(post("/journey-requests").contentType(MediaType.APPLICATION_JSON_VALUE)
 						.content(createJourneyRequestJson))
 				.andExpect(status().isCreated()).andReturn();
-
-		then(createJourneyRequestUseCase).should(times(1)).createJourneyRequest(eq(command),
+		ArgumentCaptor<CreateJourneyRequestCommand> captor = ArgumentCaptor.forClass(CreateJourneyRequestCommand.class);
+		then(createJourneyRequestUseCase).should(times(1)).createJourneyRequest(captor.capture(),
 				eq(TestConstants.DEFAULT_EMAIL), eq("en_US"));
+
+		assertThat(captor.getValue().getDateTime()).isEqualTo(command.getDateTime());
+		assertThat(captor.getValue().getEndDateTime()).isEqualTo(command.getEndDateTime());
+		assertThat(captor.getValue().getDeparturePlaceId()).isEqualTo(command.getDeparturePlaceId());
+		assertThat(captor.getValue().getDeparturePlaceRegionId()).isEqualTo(command.getDeparturePlaceRegionId());
+		assertThat(captor.getValue().getDeparturePlaceName()).isEqualTo(command.getDeparturePlaceName());
+		assertThat(captor.getValue().getArrivalPlaceId()).isEqualTo(command.getArrivalPlaceId());
+		assertThat(captor.getValue().getArrivalPlaceRegionId()).isEqualTo(command.getArrivalPlaceRegionId());
+		assertThat(captor.getValue().getArrivalPlaceName()).isEqualTo(command.getArrivalPlaceName());
+
+		assertThat(captor.getValue().getEngineTypeId()).isEqualTo(command.getEngineTypeId());
+		assertThat(captor.getValue().getDistance()).isEqualTo(command.getDistance());
+		assertThat(captor.getValue().getWorkers()).isEqualTo(command.getWorkers());
+		assertThat(captor.getValue().getDescription()).isEqualTo(command.getDescription());
 
 	}
 

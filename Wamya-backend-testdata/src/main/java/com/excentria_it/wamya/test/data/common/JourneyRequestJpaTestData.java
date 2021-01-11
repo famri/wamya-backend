@@ -2,10 +2,8 @@ package com.excentria_it.wamya.test.data.common;
 
 import static com.excentria_it.wamya.test.data.common.UserAccountJpaEntityTestData.*;
 
-import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.Map;
 
@@ -20,11 +18,10 @@ import com.excentria_it.wamya.adapter.persistence.entity.LocalizedJourneyRequest
 import com.excentria_it.wamya.adapter.persistence.entity.PlaceJpaEntity;
 
 public class JourneyRequestJpaTestData {
-	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-	private static LocalDateTime startDate = LocalDateTime
-			.parse(LocalDateTime.of(2020, 12, 10, 12, 0, 0, 0).format(DATE_TIME_FORMATTER), DATE_TIME_FORMATTER);
-	private static LocalDateTime endDate = LocalDateTime.parse(addDays(startDate, 1).format(DATE_TIME_FORMATTER),
-			DATE_TIME_FORMATTER);
+
+	private static ZonedDateTime startDate = ZonedDateTime.of(2020, 12, 10, 12, 0, 0, 0, ZoneOffset.UTC);
+
+	private static ZonedDateTime endDate = startDate.plusDays(1);
 
 	public static EngineTypeJpaEntity defaultEngineTypeJpaEntity() {
 		LocalizedEngineTypeJpaEntity en = new LocalizedEngineTypeJpaEntity();
@@ -57,24 +54,16 @@ public class JourneyRequestJpaTestData {
 	public static JourneyRequestJpaEntity defaultExistentJourneyRequestJpaEntity() {
 		return JourneyRequestJpaEntity.builder().id(1L).departurePlace(defaultDeparturePlaceJpaEntity())
 				.arrivalPlace(defaultArrivalPlaceJpaEntity()).engineType(defaultEngineTypeJpaEntity())
-				.dateTime(startDate).endDateTime(endDate).distance(150.5).workers(2).proposals(new HashSet<>())
-				.description("Need transporter URGENT!").client(defaultExistentClientJpaEntity()).build();
-	}
-
-	private static LocalDateTime addDays(LocalDateTime dateTime, int days) {
-
-		ZonedDateTime zonedDateTime = ZonedDateTime.of(dateTime, ZoneOffset.UTC);
-
-		LocalDateTime dateAfter = zonedDateTime.plusDays(days).toLocalDateTime();
-
-		return dateAfter;
+				.dateTime(startDate.toInstant()).endDateTime(endDate.toInstant()).distance(150.5).workers(2)
+				.proposals(new HashSet<>()).description("Need transporter URGENT!")
+				.client(defaultExistentClientJpaEntity()).build();
 	}
 
 	public static JourneyRequestStatusJpaEntityBuilder defaultJourneyRequestStatusJpaEntityBuilder() {
 
 		LocalizedJourneyRequestStatusJpaEntity localizedStatusJpaEntity = LocalizedJourneyRequestStatusJpaEntity
 				.builder().localizedId(new LocalizedId(1L, "en_US")).value("opened").build();
-		
+
 		return JourneyRequestStatusJpaEntity.builder().id(1L).code(JourneyRequestStatusCode.OPENED)
 				.description("Journey request was saved and is ready to receive for proposals.")
 				.localizations(Map.of("en_US", localizedStatusJpaEntity));

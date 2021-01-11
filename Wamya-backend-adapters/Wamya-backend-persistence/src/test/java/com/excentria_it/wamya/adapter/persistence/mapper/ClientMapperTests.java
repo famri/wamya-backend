@@ -4,6 +4,8 @@ import static com.excentria_it.wamya.test.data.common.InternationalCallingCodeJp
 import static com.excentria_it.wamya.test.data.common.UserAccountTestData.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.time.ZoneOffset;
+
 import org.junit.jupiter.api.Test;
 
 import com.excentria_it.wamya.adapter.persistence.entity.ClientJpaEntity;
@@ -37,7 +39,8 @@ public class ClientMapperTests {
 		assertEquals(userAccount.getIsValidatedMobileNumber(), clientJpaEntity.getIsValidatedMobileNumber());
 
 		assertEquals(userAccount.getReceiveNewsletter(), clientJpaEntity.getReceiveNewsletter());
-		assertEquals(userAccount.getCreationDateTime(), clientJpaEntity.getCreationDateTime());
+		assertTrue(userAccount.getCreationDateTime()
+				.isEqual(clientJpaEntity.getCreationDateTime().atZone(ZoneOffset.UTC)));
 		assertEquals(userAccount.getPhotoUrl(), clientJpaEntity.getPhotoUrl());
 	}
 
@@ -49,7 +52,7 @@ public class ClientMapperTests {
 		assertNull(clientJpaEntity);
 
 	}
-	
+
 	@Test
 	void testMapNotClientToJpaEntity() {
 		UserAccount userAccount = defaultUserAccountBuilder().isTransporter(true).build();

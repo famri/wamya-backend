@@ -9,14 +9,9 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.UUID;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.client.ExpectedCount;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.util.LinkedMultiValueMap;
@@ -34,10 +29,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 //@ActiveProfiles("b2b-rest-local")
 public class OAuthUserAccountIntegrationAdapterRestTemplateTests {
 
-	//@Autowired
+	// @Autowired
 	private RestTemplate restTemplate;
 
-	//@Autowired
+	// @Autowired
 	private AuthServerProperties authServerProperties;
 
 	private MockRestServiceServer mockServer;
@@ -46,15 +41,15 @@ public class OAuthUserAccountIntegrationAdapterRestTemplateTests {
 
 	private static final String ACCESS_TOKEN_STRING = "SOME_TOKEN_STRING";
 
-	//@Autowired
+	// @Autowired
 	private OAuthUserAccountIntegrationAdapter oAuthUserAccountIntegrationAdapter;
 
-	//@BeforeEach
+	// @BeforeEach
 	public void init() {
 		mockServer = MockRestServiceServer.createServer(restTemplate);
 	}
 
-	//@Test
+	// @Test
 	void testCreateOAuthUserAccount() throws JsonProcessingException, URISyntaxException {
 
 		Long userOAuthId = 1L;
@@ -76,7 +71,7 @@ public class OAuthUserAccountIntegrationAdapterRestTemplateTests {
 
 	}
 
-	//@Test
+	// @Test
 	void testAuthorizeOAuthUser() throws JsonProcessingException, URISyntaxException {
 		JwtOAuth2AccessToken oAuth2AccessTokenResponse = new JwtOAuth2AccessToken(ACCESS_TOKEN_STRING, "Bearer",
 				"REFRESH_TOKEN", 36000L, "read write", UUID.randomUUID().toString());

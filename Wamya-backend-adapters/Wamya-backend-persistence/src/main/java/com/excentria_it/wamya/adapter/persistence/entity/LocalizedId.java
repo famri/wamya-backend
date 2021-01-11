@@ -7,9 +7,11 @@ import javax.persistence.Embeddable;
 import com.excentria_it.wamya.common.annotation.Generated;
 
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 @Generated
 @Embeddable
+@NoArgsConstructor
 @AllArgsConstructor
 public class LocalizedId implements Serializable {
 

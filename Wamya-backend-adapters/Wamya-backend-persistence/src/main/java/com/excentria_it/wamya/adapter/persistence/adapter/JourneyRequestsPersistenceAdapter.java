@@ -116,7 +116,8 @@ public class JourneyRequestsPersistenceAdapter implements SearchJourneyRequestsP
 
 			String[] userMobilePhone = username.split("_");
 
-			clientJpaEntityOptional = clientRepository.findByIcc_ValueAndMobileNumber(userMobilePhone[0], userMobilePhone[1]);
+			clientJpaEntityOptional = clientRepository.findByIcc_ValueAndMobileNumber(userMobilePhone[0],
+					userMobilePhone[1]);
 
 		}
 
@@ -184,15 +185,17 @@ public class JourneyRequestsPersistenceAdapter implements SearchJourneyRequestsP
 		Page<ClientJourneyRequestDto> journeyRequestsPage = null;
 		if (criteria.getClientUsername().contains("@")) {
 			journeyRequestsPage = journeyRequestRepository.findByCreationDateTimeBetweenAndClient_Email(
-					criteria.getPeriodCriterion().getLowerEdge(), criteria.getPeriodCriterion().getHigherEdge(),
-					criteria.getClientUsername(), criteria.getLocale(), pagingSort);
+					criteria.getPeriodCriterion().getLowerEdge().toInstant(),
+					criteria.getPeriodCriterion().getHigherEdge().toInstant(), criteria.getClientUsername(),
+					criteria.getLocale(), pagingSort);
 		} else {
 
 			String[] mobileNumber = criteria.getClientUsername().split("_");
 			journeyRequestsPage = journeyRequestRepository
 					.findByCreationDateTimeBetweenAndClient_MobileNumberAndClient_IccValue(
-							criteria.getPeriodCriterion().getLowerEdge(), criteria.getPeriodCriterion().getHigherEdge(),
-							mobileNumber[0], mobileNumber[1], criteria.getLocale(), pagingSort);
+							criteria.getPeriodCriterion().getLowerEdge().toInstant(),
+							criteria.getPeriodCriterion().getHigherEdge().toInstant(), mobileNumber[0], mobileNumber[1],
+							criteria.getLocale(), pagingSort);
 		}
 
 		if (journeyRequestsPage != null) {

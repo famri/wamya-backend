@@ -5,6 +5,8 @@ import java.util.Map;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -34,8 +36,12 @@ public class EngineTypeJpaEntity {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = ENGINE_TYPE_SEQ)
 	private Long id;
 
+	@Enumerated(EnumType.STRING)
 	private EngineTypeCode code;
 
+	private String defaultPhotoUri;
+
+	@Builder.Default
 	@OneToMany(mappedBy = "engineType", cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST,
 			CascadeType.REFRESH }, orphanRemoval = true)
 	@MapKey(name = "localizedId.locale")
@@ -63,6 +69,14 @@ public class EngineTypeJpaEntity {
 
 	public String getDescription(String locale) {
 		return localizations.get(locale).getDescription();
+	}
+
+	public String getDefaultPhotoUri() {
+		return defaultPhotoUri;
+	}
+
+	public void setDefaultPhotoUri(String defaultPhotoUri) {
+		this.defaultPhotoUri = defaultPhotoUri;
 	}
 
 	@Override
@@ -97,8 +111,8 @@ public class EngineTypeJpaEntity {
 	}
 
 	public enum EngineTypeCode {
-		UTILITY, PICKUP, BUS, MINIBUS, VAN_L1H1, VAN_L2H2, VAN_L3H2, FLATBED_TRUCK, BOX_TRUCK, REFRIGERATED_TRUCK,
-		TANKER, DUMP_TRUCK, HOOK_LIFT_TRUCK, TANK_TRANSPORTER;
+		UTILITY, PICKUP, BUS, MINIBUS, VAN_L1H1, VAN_L2H2, VAN_L3H3, VAN_L4H3, FLATBED_TRUCK, BOX_TRUCK,
+		REFRIGERATED_TRUCK, TANKER, DUMP_TRUCK, HOOK_LIFT_TRUCK, TANK_TRANSPORTER;
 	}
 
 }

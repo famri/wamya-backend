@@ -9,9 +9,17 @@ import org.springframework.test.web.servlet.ResultMatcher;
 import com.excentria_it.wamya.common.exception.ApiError;
 import com.excentria_it.wamya.common.exception.AuthServerError;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 public class ResponseBodyMatchers {
-	private ObjectMapper objectMapper = new ObjectMapper();
+
+	private ObjectMapper objectMapper;
+
+	ResponseBodyMatchers() {
+		this.objectMapper = new ObjectMapper();
+		objectMapper.registerModule(new JavaTimeModule());
+
+	}
 
 	public <T> ResultMatcher containsObjectAsJson(Object expectedObject, Class<T> targetClass) {
 		return mvcResult -> {

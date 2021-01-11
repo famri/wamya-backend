@@ -1,5 +1,7 @@
 package com.excentria_it.wamya.test.data.common;
 
+import java.util.HashSet;
+
 import com.excentria_it.wamya.adapter.persistence.entity.ClientJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.TransporterJpaEntity;
 import com.excentria_it.wamya.domain.UserAccount;
@@ -16,7 +18,8 @@ public class UserAccountJpaEntityTestData {
 				InternationalCallingCodeJpaEntityTestData.defaultExistentInternationalCallingCodeJpaEntity(),
 				userAccount.getMobilePhoneNumber().getMobileNumber(), userAccount.getMobileNumberValidationCode(),
 				userAccount.getIsValidatedMobileNumber(), userAccount.getReceiveNewsletter(),
-				userAccount.getCreationDateTime(), userAccount.getPhotoUrl(), null, null, null, null, null);
+				userAccount.getCreationDateTime().toInstant(), userAccount.getPhotoUrl(), 5.0, new HashSet<>(),
+				new HashSet<>(), new HashSet<>(), new HashSet<>());
 	}
 
 	public static final TransporterJpaEntity defaultNewTransporterJpaEntity() {
@@ -27,7 +30,8 @@ public class UserAccountJpaEntityTestData {
 				InternationalCallingCodeJpaEntityTestData.defaultExistentInternationalCallingCodeJpaEntity(),
 				userAccount.getMobilePhoneNumber().getMobileNumber(), userAccount.getMobileNumberValidationCode(),
 				userAccount.getIsValidatedMobileNumber(), userAccount.getReceiveNewsletter(),
-				userAccount.getCreationDateTime(), userAccount.getPhotoUrl(), null, null, null, null, null);
+				userAccount.getCreationDateTime().toInstant(), userAccount.getPhotoUrl(), 5.0, new HashSet<>(),
+				new HashSet<>(), new HashSet<>(), new HashSet<>());
 	}
 
 	public static final ClientJpaEntity defaultExistentClientJpaEntity() {
@@ -38,7 +42,7 @@ public class UserAccountJpaEntityTestData {
 				InternationalCallingCodeJpaEntityTestData.defaultExistentInternationalCallingCodeJpaEntity(),
 				userAccount.getMobilePhoneNumber().getMobileNumber(), userAccount.getMobileNumberValidationCode(),
 				userAccount.getIsValidatedMobileNumber(), userAccount.getReceiveNewsletter(),
-				userAccount.getCreationDateTime(), userAccount.getPhotoUrl(), null);
+				userAccount.getCreationDateTime().toInstant(), userAccount.getPhotoUrl(), new HashSet<>());
 
 	}
 
@@ -49,6 +53,6 @@ public class UserAccountJpaEntityTestData {
 				InternationalCallingCodeJpaEntityTestData.defaultExistentInternationalCallingCodeJpaEntity(),
 				userAccount.getMobilePhoneNumber().getMobileNumber(), userAccount.getMobileNumberValidationCode(),
 				userAccount.getIsValidatedMobileNumber(), userAccount.getReceiveNewsletter(),
-				userAccount.getCreationDateTime(), userAccount.getPhotoUrl(), null);
+				userAccount.getCreationDateTime().toInstant(), userAccount.getPhotoUrl(), new HashSet<>());
 	}
 }

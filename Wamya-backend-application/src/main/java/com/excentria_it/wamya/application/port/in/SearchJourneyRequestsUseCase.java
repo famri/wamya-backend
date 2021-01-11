@@ -1,14 +1,19 @@
 package com.excentria_it.wamya.application.port.in;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Set;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
+
 import com.excentria_it.wamya.common.SortCriterion;
 import com.excentria_it.wamya.common.annotation.Sort;
 import com.excentria_it.wamya.domain.JourneyRequestsSearchResult;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -35,9 +40,13 @@ public interface SearchJourneyRequestsUseCase {
 		private Set<String> arrivalPlaceRegionIds;
 
 		@NotNull
-		private LocalDateTime startDateTime;
+		@DateTimeFormat(iso = ISO.DATE_TIME)
+		@JsonFormat(shape = Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+		private ZonedDateTime startDateTime;
 		@NotNull
-		private LocalDateTime endDateTime;
+		@DateTimeFormat(iso = ISO.DATE_TIME)
+		@JsonFormat(shape = Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+		private ZonedDateTime endDateTime;
 
 		@NotNull
 		@NotEmpty

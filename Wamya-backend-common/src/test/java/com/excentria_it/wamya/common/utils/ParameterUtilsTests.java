@@ -2,8 +2,8 @@ package com.excentria_it.wamya.common.utils;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -54,8 +54,8 @@ public class ParameterUtilsTests {
 	@Test
 	void testParameterToPeriodCriterionWithEmptyPeriod() {
 
-		LocalDateTime ldt = LocalDateTime.now(ZoneOffset.UTC);
-		LocalDateTime expectedLowerEdge = ldt.minusYears(1);
+		ZonedDateTime ldt = ZonedDateTime.now(ZoneOffset.UTC);
+		ZonedDateTime expectedLowerEdge = ldt.minusYears(1);
 
 		PeriodCriterion pc = ParameterUtils.parameterToPeriodCriterion(Optional.empty(), "y1");
 
@@ -120,8 +120,8 @@ public class ParameterUtilsTests {
 
 	@Test
 	void testParameterToPeriodCriterionWith1Year() {
-		LocalDateTime ldt = LocalDateTime.now(ZoneOffset.UTC);
-		LocalDateTime expectedLowerEdge = ldt.minusYears(1);
+		ZonedDateTime ldt = ZonedDateTime.now(ZoneOffset.UTC);
+		ZonedDateTime expectedLowerEdge = ldt.minusYears(1);
 
 		PeriodCriterion pc = ParameterUtils.parameterToPeriodCriterion(Optional.of("y1"), "y1");
 
@@ -141,8 +141,9 @@ public class ParameterUtilsTests {
 
 	@Test
 	void testParameterToPeriodCriterionWith6Months() {
-		LocalDateTime ldt = LocalDateTime.now(ZoneOffset.UTC);
-		LocalDateTime expectedLowerEdge = ldt.minusMonths(6);
+		ZonedDateTime ldt = ZonedDateTime.now(ZoneOffset.UTC);
+
+		ZonedDateTime expectedLowerEdge = ldt.minusMonths(6);
 
 		PeriodCriterion pc = ParameterUtils.parameterToPeriodCriterion(Optional.of("m6"), "m6");
 
@@ -163,8 +164,9 @@ public class ParameterUtilsTests {
 	@Test
 	void testParameterToPeriodCriterionWith3Months() {
 
-		LocalDateTime ldt = LocalDateTime.now(ZoneOffset.UTC);
-		LocalDateTime expectedLowerEdge = ldt.minusMonths(3);
+		ZonedDateTime ldt = ZonedDateTime.now(ZoneOffset.UTC);
+
+		ZonedDateTime expectedLowerEdge = ldt.minusMonths(3);
 
 		PeriodCriterion pc = ParameterUtils.parameterToPeriodCriterion(Optional.of("m3"), "m3");
 
@@ -184,8 +186,9 @@ public class ParameterUtilsTests {
 
 	@Test
 	void testParameterToPeriodCriterionWith1Month() {
-		LocalDateTime ldt = LocalDateTime.now(ZoneOffset.UTC);
-		LocalDateTime expectedLowerEdge = ldt.minusMonths(1);
+		ZonedDateTime ldt = ZonedDateTime.now(ZoneOffset.UTC);
+
+		ZonedDateTime expectedLowerEdge = ldt.minusMonths(1);
 
 		PeriodCriterion pc = ParameterUtils.parameterToPeriodCriterion(Optional.of("m1"), "m1");
 
@@ -205,8 +208,9 @@ public class ParameterUtilsTests {
 
 	@Test
 	void testParameterToPeriodCriterionWith2Weeks() {
-		LocalDateTime ldt = LocalDateTime.now(ZoneOffset.UTC);
-		LocalDateTime expectedLowerEdge = ldt.minusWeeks(2);
+		ZonedDateTime ldt = ZonedDateTime.now(ZoneOffset.UTC);
+
+		ZonedDateTime expectedLowerEdge = ldt.minusWeeks(2);
 
 		PeriodCriterion pc = ParameterUtils.parameterToPeriodCriterion(Optional.of("w2"), "w2");
 
@@ -226,8 +230,9 @@ public class ParameterUtilsTests {
 
 	@Test
 	void testParameterToPeriodCriterionWith1Week() {
-		LocalDateTime ldt = LocalDateTime.now(ZoneOffset.UTC);
-		LocalDateTime expectedLowerEdge = ldt.minusWeeks(1);
+		ZonedDateTime ldt = ZonedDateTime.now(ZoneOffset.UTC);
+
+		ZonedDateTime expectedLowerEdge = ldt.minusWeeks(1);
 
 		PeriodCriterion pc = ParameterUtils.parameterToPeriodCriterion(Optional.of("w1"), "w1");
 

@@ -1,7 +1,7 @@
 package com.excentria_it.wamya.adapter.persistence.entity;
 
+import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -40,7 +40,8 @@ public class ClientJpaEntity extends UserAccountJpaEntity {
 	public ClientJpaEntity(Long id, Long oauthId, Gender gender, String firstname, String lastname,
 			LocalDate dateOfBirth, String email, String emailValidationCode, Boolean isValidatedEmail,
 			InternationalCallingCodeJpaEntity icc, String mobileNumber, String mobileNumberValidationCode,
-			Boolean isValidatedMobileNumber, Boolean receiveNewsletter, LocalDateTime creationDateTime, String photoUrl,
+			Boolean isValidatedMobileNumber, Boolean receiveNewsletter,
+			Instant creationDateTime, String photoUrl,
 			Set<JourneyRequestJpaEntity> journeyRequests) {
 
 		super(id, oauthId, gender, firstname, lastname, dateOfBirth, email, emailValidationCode, isValidatedEmail, icc,

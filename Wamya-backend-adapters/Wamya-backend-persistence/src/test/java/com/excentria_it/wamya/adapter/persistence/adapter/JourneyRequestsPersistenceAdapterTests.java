@@ -8,7 +8,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.*;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -311,8 +311,8 @@ public class JourneyRequestsPersistenceAdapterTests {
 
 		Page<ClientJourneyRequestDto> page = createPageFromClientJourneyRequestDto(
 				defaultClientJourneyRequestDtoList());
-		given(journeyRequestRepository.findByCreationDateTimeBetweenAndClient_Email(any(LocalDateTime.class),
-				any(LocalDateTime.class), any(String.class), any(String.class), any(Pageable.class))).willReturn(page);
+		given(journeyRequestRepository.findByCreationDateTimeBetweenAndClient_Email(any(Instant.class),
+				any(Instant.class), any(String.class), any(String.class), any(Pageable.class))).willReturn(page);
 		LoadClientJourneyRequestsCriteria criteria = defaultLoadClientJourneyRequestsCriteriaBuilder().build();
 		// when
 		ClientJourneyRequests result = journeyRequestsPersistenceAdapter.loadClientJourneyRequests(criteria);
@@ -330,8 +330,8 @@ public class JourneyRequestsPersistenceAdapterTests {
 
 		// given
 
-		given(journeyRequestRepository.findByCreationDateTimeBetweenAndClient_Email(any(LocalDateTime.class),
-				any(LocalDateTime.class), any(String.class), any(String.class), any(Pageable.class))).willReturn(null);
+		given(journeyRequestRepository.findByCreationDateTimeBetweenAndClient_Email(any(Instant.class),
+				any(Instant.class), any(String.class), any(String.class), any(Pageable.class))).willReturn(null);
 		LoadClientJourneyRequestsCriteria criteria = defaultLoadClientJourneyRequestsCriteriaBuilder().build();
 		// when
 		ClientJourneyRequests result = journeyRequestsPersistenceAdapter.loadClientJourneyRequests(criteria);
@@ -352,8 +352,8 @@ public class JourneyRequestsPersistenceAdapterTests {
 		Page<ClientJourneyRequestDto> page = createPageFromClientJourneyRequestDto(
 				defaultClientJourneyRequestDtoList());
 		given(journeyRequestRepository.findByCreationDateTimeBetweenAndClient_MobileNumberAndClient_IccValue(
-				any(LocalDateTime.class), any(LocalDateTime.class), any(String.class), any(String.class),
-				any(String.class), any(Pageable.class))).willReturn(page);
+				any(Instant.class), any(Instant.class), any(String.class), any(String.class), any(String.class),
+				any(Pageable.class))).willReturn(page);
 
 		LoadClientJourneyRequestsCriteria criteria = defaultLoadClientJourneyRequestsCriteriaBuilder()
 				.clientUsername(TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME).build();
@@ -374,8 +374,8 @@ public class JourneyRequestsPersistenceAdapterTests {
 		// given
 
 		given(journeyRequestRepository.findByCreationDateTimeBetweenAndClient_MobileNumberAndClient_IccValue(
-				any(LocalDateTime.class), any(LocalDateTime.class), any(String.class), any(String.class),
-				any(String.class), any(Pageable.class))).willReturn(null);
+				any(Instant.class), any(Instant.class), any(String.class), any(String.class), any(String.class),
+				any(Pageable.class))).willReturn(null);
 		LoadClientJourneyRequestsCriteria criteria = defaultLoadClientJourneyRequestsCriteriaBuilder()
 				.clientUsername(TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME).build();
 		// when
@@ -466,8 +466,8 @@ public class JourneyRequestsPersistenceAdapterTests {
 
 		given(journeyRequestRepository
 				.findByDeparturePlace_RegionIdAndArrivalPlace_RegionIdInAndEngineType_IdInAndDateBetween(
-						any(String.class), any(Set.class), any(Set.class), any(LocalDateTime.class),
-						any(LocalDateTime.class), any(String.class), any(Pageable.class))).willReturn(null);
+						any(String.class), any(Set.class), any(Set.class), any(Instant.class), any(Instant.class),
+						any(String.class), any(Pageable.class))).willReturn(null);
 
 		return null;
 	}
@@ -477,8 +477,8 @@ public class JourneyRequestsPersistenceAdapterTests {
 				defaultJourneyRequestSearchDtoList());
 		given(journeyRequestRepository
 				.findByDeparturePlace_RegionIdAndArrivalPlace_RegionIdInAndEngineType_IdInAndDateBetween(
-						any(String.class), any(Set.class), any(Set.class), any(LocalDateTime.class),
-						any(LocalDateTime.class), any(String.class), any(Pageable.class))).willReturn(result);
+						any(String.class), any(Set.class), any(Set.class), any(Instant.class), any(Instant.class),
+						any(String.class), any(Pageable.class))).willReturn(result);
 
 		return result;
 
@@ -487,8 +487,8 @@ public class JourneyRequestsPersistenceAdapterTests {
 	private Page<JourneyRequestSearchDto> givenNullJourneyRequestsPageByDeparturePlace_RegionIdAndEngineType_IdInAndDateBetween() {
 
 		given(journeyRequestRepository.findByDeparturePlace_RegionIdAndEngineType_IdInAndDateBetween(any(String.class),
-				any(Set.class), any(LocalDateTime.class), any(LocalDateTime.class), any(String.class),
-				any(Pageable.class))).willReturn(null);
+				any(Set.class), any(Instant.class), any(Instant.class), any(String.class), any(Pageable.class)))
+						.willReturn(null);
 
 		return null;
 	}
@@ -497,8 +497,8 @@ public class JourneyRequestsPersistenceAdapterTests {
 		Page<JourneyRequestSearchDto> result = createPageFromJourneyRequestSearchDto(
 				defaultJourneyRequestSearchDtoList());
 		given(journeyRequestRepository.findByDeparturePlace_RegionIdAndEngineType_IdInAndDateBetween(any(String.class),
-				any(Set.class), any(LocalDateTime.class), any(LocalDateTime.class), any(String.class),
-				any(Pageable.class))).willReturn(result);
+				any(Set.class), any(Instant.class), any(Instant.class), any(String.class), any(Pageable.class)))
+						.willReturn(result);
 
 		return result;
 

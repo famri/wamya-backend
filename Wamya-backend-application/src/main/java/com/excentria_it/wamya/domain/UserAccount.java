@@ -1,7 +1,7 @@
 package com.excentria_it.wamya.domain;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -44,7 +44,7 @@ public class UserAccount {
 
 	private Boolean receiveNewsletter;
 
-	private LocalDateTime creationDateTime;
+	private ZonedDateTime creationDateTime;
 
 	private String photoUrl;
 

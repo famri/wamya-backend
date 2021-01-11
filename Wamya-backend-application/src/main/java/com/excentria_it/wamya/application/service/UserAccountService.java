@@ -1,7 +1,7 @@
 package com.excentria_it.wamya.application.service;
 
-import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -85,8 +85,7 @@ public class UserAccountService implements CreateUserAccountUseCase {
 				.lastname(command.getLastname()).email(command.getEmail())
 				.phoneNumber(command.getIcc() + "_" + command.getMobileNumber()).password(command.getUserPassword())
 				.isAccountNonExpired(true).isAccountNonLocked(true).isCredentialsNonExpired(true).isEnabled(true)
-				.roles(List.of(new OAuthRole(command.getIsTransporter() ? "TRANSPORTER" : "CLIENT")))
-				.build();
+				.roles(List.of(new OAuthRole(command.getIsTransporter() ? "TRANSPORTER" : "CLIENT"))).build();
 
 		Long oauthId = oAuthUserAccountPort.createOAuthUserAccount(oauthUserAccount);
 
@@ -97,8 +96,8 @@ public class UserAccountService implements CreateUserAccountUseCase {
 				.mobilePhoneNumber(new MobilePhoneNumber(command.getIcc(), command.getMobileNumber()))
 				.isValidatedMobileNumber(false).mobileNumberValidationCode(mobileNumberValidationCode)
 				.isValidatedMobileNumber(false).userPassword(encodedPassword)
-				.creationDateTime(LocalDateTime.now(ZoneOffset.UTC)).receiveNewsletter(command.getReceiveNewsletter())
-				.build();
+				.creationDateTime(ZonedDateTime.now(ZoneOffset.UTC))
+				.receiveNewsletter(command.getReceiveNewsletter()).build();
 
 		createUserAccountPort.createUserAccount(userAccount);
 

@@ -1,7 +1,7 @@
 package com.excentria_it.wamya.adapter.persistence.entity;
 
+import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -50,6 +50,14 @@ public class TransporterJpaEntity extends UserAccountJpaEntity {
 		proposal.setTransporter(this);
 	}
 
+	public void removeVehicule(VehiculeJpaEntity vehicule) {
+		vehicules.remove(vehicule);
+	}
+
+	public void addVehicule(VehiculeJpaEntity vehicule) {
+		vehicules.add(vehicule);
+	}
+
 	public void removeProposal(JourneyProposalJpaEntity proposal) {
 		proposals.remove(proposal);
 		proposal.setTransporter(null);
@@ -58,7 +66,7 @@ public class TransporterJpaEntity extends UserAccountJpaEntity {
 	public TransporterJpaEntity(Long id, Long oauthId, Gender gender, String firstname, String lastname,
 			LocalDate dateOfBirth, String email, String emailValidationCode, Boolean isValidatedEmail,
 			InternationalCallingCodeJpaEntity icc, String mobileNumber, String mobileNumberValidationCode,
-			Boolean isValidatedMobileNumber, Boolean receiveNewsletter, LocalDateTime creationDateTime, String photoUrl,
+			Boolean isValidatedMobileNumber, Boolean receiveNewsletter, Instant creationDateTime, String photoUrl,
 			Double globalRating, Set<VehiculeJpaEntity> vehicules, Set<RatingJpaEntity> ratings,
 			Set<CommentJpaEntity> comments, Set<JourneyProposalJpaEntity> proposals) {
 
@@ -74,12 +82,8 @@ public class TransporterJpaEntity extends UserAccountJpaEntity {
 	}
 
 	public Set<VehiculeJpaEntity> getVehicules() {
+		return Collections.unmodifiableSet(vehicules);
 
-		return vehicules;
-	}
-
-	public void setVehicules(Set<VehiculeJpaEntity> vehicules) {
-		this.vehicules = vehicules;
 	}
 
 	public Set<RatingJpaEntity> getRatings() {

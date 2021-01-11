@@ -18,7 +18,7 @@ public class ClientMapper {
 				userAccount.getEmail(), userAccount.getEmailValidationCode(), userAccount.getIsValidatedEmail(), icc,
 				userAccount.getMobilePhoneNumber().getMobileNumber(), userAccount.getMobileNumberValidationCode(),
 				userAccount.getIsValidatedMobileNumber(), userAccount.getReceiveNewsletter(),
-				userAccount.getCreationDateTime(), userAccount.getPhotoUrl(), null);
+				userAccount.getCreationDateTime().toInstant(), userAccount.getPhotoUrl(), null);
 
 	}
 }

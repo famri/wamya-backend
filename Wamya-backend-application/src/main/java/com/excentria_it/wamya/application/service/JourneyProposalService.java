@@ -1,7 +1,7 @@
 package com.excentria_it.wamya.application.service;
 
-import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.Optional;
 import java.util.Set;
 
@@ -90,7 +90,8 @@ public class JourneyProposalService implements MakeProposalUseCase, LoadProposal
 		if (!CollectionUtils.isEmpty(vehicules) && vehicules.stream().anyMatch(v -> v.getId().equals(vehiculeId))) {
 			return;
 		}
-		throw new InvalidTransporterVehiculeException("Invalid vehiculeId for transporter.");
+		throw new InvalidTransporterVehiculeException(
+				String.format("Invalid vehiculeId for transporter: %d", vehiculeId));
 	}
 
 	private void checkExistentJourneyRequest(Long journeyRequestId) {
@@ -103,9 +104,9 @@ public class JourneyProposalService implements MakeProposalUseCase, LoadProposal
 		}
 
 		CreateJourneyRequestDto journeyRequest = journeyRequestOptional.get();
-		LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
-		if (now.isAfter(journeyRequest.getEndDateTime())) {
-			throw new JourneyRequestExpiredException("Journey request expired.");
+		ZonedDateTime now = ZonedDateTime.now(ZoneOffset.UTC);
+		if (now.toInstant().isAfter(journeyRequest.getEndDateTime())) {
+			throw new JourneyRequestExpiredException(String.format("Journey request expired: %d", journeyRequestId));
 		}
 
 	}
@@ -123,7 +124,7 @@ public class JourneyProposalService implements MakeProposalUseCase, LoadProposal
 		}
 
 		if (journeyRequestOptional == null || journeyRequestOptional.isEmpty()) {
-			throw new JourneyRequestNotFoundException("Journey request not found.");
+			throw new JourneyRequestNotFoundException(String.format("Journey request not found: %d", journeyRequestId));
 		}
 
 	}

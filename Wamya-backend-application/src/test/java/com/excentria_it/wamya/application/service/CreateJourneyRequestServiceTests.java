@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.*;
 
+import java.time.ZoneOffset;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -74,9 +75,11 @@ public class CreateJourneyRequestServiceTests {
 		assertThat(journeyRequestCaptor.getValue().getArrivalPlace().getPlaceName())
 				.isEqualTo(command.getArrivalPlaceName());
 
-		assertThat(journeyRequestCaptor.getValue().getDateTime()).isEqualTo(command.getDateTime());
+		assertThat(journeyRequestCaptor.getValue().getDateTime())
+				.isEqualTo(command.getDateTime().withZoneSameInstant(ZoneOffset.UTC).toInstant());
 
-		assertThat(journeyRequestCaptor.getValue().getEndDateTime()).isEqualTo(command.getEndDateTime());
+		assertThat(journeyRequestCaptor.getValue().getEndDateTime())
+				.isEqualTo(command.getEndDateTime().withZoneSameInstant(ZoneOffset.UTC).toInstant());
 
 		assertThat(journeyRequestCaptor.getValue().getEngineType().getId()).isEqualTo(command.getEngineTypeId());
 
@@ -163,9 +166,9 @@ public class CreateJourneyRequestServiceTests {
 		assertThat(journeyRequestCaptor.getValue().getArrivalPlace().getPlaceName())
 				.isEqualTo(command.getArrivalPlaceName());
 
-		assertThat(journeyRequestCaptor.getValue().getDateTime()).isEqualTo(command.getDateTime());
+		assertThat(journeyRequestCaptor.getValue().getDateTime()).isEqualTo(command.getDateTime().withZoneSameInstant(ZoneOffset.UTC).toInstant());
 
-		assertThat(journeyRequestCaptor.getValue().getEndDateTime()).isEqualTo(command.getEndDateTime());
+		assertThat(journeyRequestCaptor.getValue().getEndDateTime()).isEqualTo(command.getEndDateTime().withZoneSameInstant(ZoneOffset.UTC).toInstant());
 
 		assertThat(journeyRequestCaptor.getValue().getEngineType().getId()).isEqualTo(command.getEngineTypeId());
 

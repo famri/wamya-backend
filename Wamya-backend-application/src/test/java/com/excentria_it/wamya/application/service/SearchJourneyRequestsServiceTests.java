@@ -6,6 +6,8 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.*;
 
+import java.time.ZoneOffset;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -53,8 +55,11 @@ public class SearchJourneyRequestsServiceTests {
 				searchJourneyRequestsCriteriaCaptor.getValue().getDeparturePlaceRegionId());
 		assertEquals(command.getArrivalPlaceRegionIds(),
 				searchJourneyRequestsCriteriaCaptor.getValue().getArrivalPlaceRegionIds());
-		assertEquals(command.getStartDateTime(), searchJourneyRequestsCriteriaCaptor.getValue().getStartDateTime());
-		assertEquals(command.getEndDateTime(), searchJourneyRequestsCriteriaCaptor.getValue().getEndDateTime());
+		assertTrue(command.getStartDateTime()
+				.isEqual(searchJourneyRequestsCriteriaCaptor.getValue().getStartDateTime().atZone(ZoneOffset.UTC)));
+
+		assertTrue(command.getEndDateTime()
+				.isEqual(searchJourneyRequestsCriteriaCaptor.getValue().getEndDateTime().atZone(ZoneOffset.UTC)));
 		assertEquals(command.getEngineTypes(), searchJourneyRequestsCriteriaCaptor.getValue().getEngineTypes());
 		assertEquals(command.getPageNumber(), searchJourneyRequestsCriteriaCaptor.getValue().getPageNumber());
 		assertEquals(command.getSortingCriterion(),

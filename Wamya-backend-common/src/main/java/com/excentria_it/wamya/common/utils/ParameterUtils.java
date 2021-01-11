@@ -2,6 +2,7 @@ package com.excentria_it.wamya.common.utils;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.Optional;
 
 import com.excentria_it.wamya.common.PeriodCriterion;
@@ -42,7 +43,7 @@ public class ParameterUtils {
 		String periodStr = period.orElse(defaultPeriod);
 
 		PeriodValue pv = null;
-		LocalDateTime higherEdge = LocalDateTime.now(ZoneOffset.UTC);
+		ZonedDateTime higherEdge = ZonedDateTime.now(ZoneOffset.UTC);
 
 		try {
 
@@ -52,7 +53,7 @@ public class ParameterUtils {
 			return new PeriodCriterion(periodStr, null, null);
 		}
 
-		LocalDateTime lowerEdge = pv.calculateLowerEdge(higherEdge);
+		ZonedDateTime lowerEdge = pv.calculateLowerEdge(higherEdge);
 
 		return new PeriodCriterion(pv.name(), lowerEdge, higherEdge);
 

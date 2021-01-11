@@ -1,6 +1,6 @@
 package com.excentria_it.wamya.domain;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 import org.springframework.beans.factory.annotation.Value;
 
@@ -22,9 +22,9 @@ public interface JourneyRequestSearchDto {
 
 	Double getDistance();
 
-	LocalDateTime getDateTime();
+	ZonedDateTime getDateTime();
 
-	LocalDateTime getEndDateTime();
+	ZonedDateTime getEndDateTime();
 
 	Integer getWorkers();
 

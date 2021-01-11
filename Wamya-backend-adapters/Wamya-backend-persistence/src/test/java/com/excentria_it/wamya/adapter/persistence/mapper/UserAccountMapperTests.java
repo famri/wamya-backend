@@ -2,6 +2,8 @@ package com.excentria_it.wamya.adapter.persistence.mapper;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.time.ZoneOffset;
+
 import org.junit.jupiter.api.Test;
 
 import com.excentria_it.wamya.adapter.persistence.entity.ClientJpaEntity;
@@ -56,7 +58,8 @@ public class UserAccountMapperTests {
 
 		assertEquals(userAccount.getReceiveNewsletter(), userAccountJpaEntity.getReceiveNewsletter());
 
-		assertEquals(userAccount.getCreationDateTime(), userAccountJpaEntity.getCreationDateTime());
+		assertTrue(userAccount.getCreationDateTime()
+				.isEqual(userAccountJpaEntity.getCreationDateTime().atZone(ZoneOffset.UTC)));
 
 	}
 
@@ -99,7 +102,8 @@ public class UserAccountMapperTests {
 
 		assertEquals(userAccount.getReceiveNewsletter(), userAccountJpaEntity.getReceiveNewsletter());
 
-		assertEquals(userAccount.getCreationDateTime(), userAccountJpaEntity.getCreationDateTime());
+		assertTrue(userAccount.getCreationDateTime()
+				.isEqual(userAccountJpaEntity.getCreationDateTime().atZone(ZoneOffset.UTC)));
 
 	}
 
@@ -114,11 +118,12 @@ public class UserAccountMapperTests {
 		assertNotNull(userAccountJpaEntity.getCreationDateTime());
 
 	}
-	
+
 	@Test
 	void testMapToJpaEntityWithNullTransporterAccountCreationDateTime() {
 
-		UserAccount userAccount = UserAccountTestData.defaultUserAccountBuilder().isTransporter(true).creationDateTime(null).build();
+		UserAccount userAccount = UserAccountTestData.defaultUserAccountBuilder().isTransporter(true)
+				.creationDateTime(null).build();
 		InternationalCallingCodeJpaEntity iccEntity = InternationalCallingCodeJpaEntityTestData
 				.defaultExistentInternationalCallingCodeJpaEntity();
 		UserAccountJpaEntity userAccountJpaEntity = userAccountMapper.mapToJpaEntity(userAccount, iccEntity);
@@ -175,7 +180,8 @@ public class UserAccountMapperTests {
 
 		assertEquals(userAccount.getReceiveNewsletter(), userAccountJpaEntity.getReceiveNewsletter());
 
-		assertEquals(userAccount.getCreationDateTime(), userAccountJpaEntity.getCreationDateTime());
+		assertTrue(userAccount.getCreationDateTime()
+				.isEqual(userAccountJpaEntity.getCreationDateTime().atZone(ZoneOffset.UTC)));
 
 	}
 

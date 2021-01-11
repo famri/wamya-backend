@@ -44,6 +44,7 @@ import com.excentria_it.wamya.domain.UserAccount;
 import com.excentria_it.wamya.domain.UserAccount.MobilePhoneNumber;
 import com.excentria_it.wamya.test.data.common.TestConstants;
 
+
 @ExtendWith(MockitoExtension.class)
 public class UserAccountServiceTest {
 

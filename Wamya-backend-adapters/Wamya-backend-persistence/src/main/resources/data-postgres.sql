@@ -48,34 +48,74 @@ INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(6,'en_US
 INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(6,'fr_FR', 'Véhicule L2H2', 'Examples de Véhicule L2H2: Renault Master L2H2, Peugeot Boxer L2H2, Citroën Jumper L2H2') ON CONFLICT DO NOTHING;
 
 
-INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(7,'en_US', 'L3H2 vehicule', 'Examples of L1H1 vehicule: Renault Master L3H2, Peugeot Boxer L3H2, Fiat Ducato L3H2') ON CONFLICT DO NOTHING;
-INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(7,'fr_FR', 'Véhicule L3H2', 'Examples de Véhicule L1H1: Renault Master L3H2, Peugeot Boxer L3H2, Fiat Ducato L3H2') ON CONFLICT DO NOTHING;
+INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(7,'en_US', 'L3H3 vehicule', 'Examples of L3H3 vehicule: Renault Master L3H3, Peugeot Boxer L3H3, Fiat Ducato L3H3') ON CONFLICT DO NOTHING;
+INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(7,'fr_FR', 'Véhicule L3H3', 'Examples de Véhicule L1H1: Renault Master L3H3, Peugeot Boxer L3H3, Fiat Ducato L3H3') ON CONFLICT DO NOTHING;
 
-INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(8,'en_US', 'Flatbed truck', 'Examples of flatbed truck: Man TGA, Renault Premium, Iveco Trakker') ON CONFLICT DO NOTHING;
-INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(8,'fr_FR', 'Camion plateau', 'Examples de camion plateau: Man TGA, Renault Premium, Iveco Trakker') ON CONFLICT DO NOTHING;
-
-INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(9,'en_US', 'Box truck', 'Examples of box truck: Renault Premium, Iveco Eurocargo, MAN TGX') ON CONFLICT DO NOTHING;
-INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(9,'fr_FR', 'Fourgon caisse', 'Examples de fourgon caisse: Renault Premium, Iveco Eurocargo, MAN TGX') ON CONFLICT DO NOTHING;
-
-INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(10,'en_US', 'Refrigerated truck', 'Examples of refrigerated truck: Renault Midlum, Scania P, Mercedes Atego') ON CONFLICT DO NOTHING;
-INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(10,'fr_FR', 'Camion frigorifique', 'Examples de camion frigorifique: Renault Midlum, Scania P, Mercedes Atego') ON CONFLICT DO NOTHING;
-
-INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(11,'en_US', 'Tanker', 'Examples of tanker: MAN TGS, Renault Premium, Scania G') ON CONFLICT DO NOTHING;
-INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(11,'fr_FR', 'Camion-citerne', 'Examples de camion-citerne: MAN TGS, Renault Premium, Scania G') ON CONFLICT DO NOTHING;
-
-INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(12,'en_US', 'Dump truck', 'Examples of dump truck: Iveco Stralis, Renault Kerax, Mercedes Arocs') ON CONFLICT DO NOTHING;
-INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(12,'fr_FR', 'Camion à benne basculante', 'Examples de camion à benne basculante: Iveco Stralis, Renault Kerax, Mercedes Arocs') ON CONFLICT DO NOTHING;
-
-INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(13,'en_US', 'Hook lift truck', 'Examples of hook lift truck: Iveco Stralis, Mercedes Atego, Man TGS') ON CONFLICT DO NOTHING;
-INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(13,'fr_FR', 'Camion Ampliroll', 'Examples de Camion Ampliroll: Iveco Stralis, Mercedes Atego, Man TGS') ON CONFLICT DO NOTHING;
-
-INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(14,'en_US', 'Tank transporter', 'Examples of tank transporter: Scania D, Mercedes Actros, Renault Premium') ON CONFLICT DO NOTHING;
-INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(14,'fr_FR', 'Camion porte char', 'Examples de camion porte char: Scania D, Mercedes Actros, Renault Premium') ON CONFLICT DO NOTHING;
+INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(8,'en_US', 'L4H3 vehicule', 'Examples of L4H3 vehicule: Renault Master L4H3, Peugeot Boxer L4H3, Fiat Ducato L3H3') ON CONFLICT DO NOTHING;
+INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(8,'fr_FR', 'Véhicule L4H3', 'Examples de Véhicule L4H3: Renault Master L4H3, Peugeot Boxer L4H3, Fiat Ducato L3H3') ON CONFLICT DO NOTHING;
 
 
+INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(9,'en_US', 'Flatbed truck', 'Examples of flatbed truck: Man TGA, Renault Premium, Iveco Trakker') ON CONFLICT DO NOTHING;
+INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(9,'fr_FR', 'Camion plateau', 'Examples de camion plateau: Man TGA, Renault Premium, Iveco Trakker') ON CONFLICT DO NOTHING;
 
+INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(10,'en_US', 'Box truck', 'Examples of box truck: Renault Premium, Iveco Eurocargo, MAN TGX') ON CONFLICT DO NOTHING;
+INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(10,'fr_FR', 'Fourgon caisse', 'Examples de fourgon caisse: Renault Premium, Iveco Eurocargo, MAN TGX') ON CONFLICT DO NOTHING;
 
+INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(11,'en_US', 'Refrigerated truck', 'Examples of refrigerated truck: Renault Midlum, Scania P, Mercedes Atego') ON CONFLICT DO NOTHING;
+INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(11,'fr_FR', 'Camion frigorifique', 'Examples de camion frigorifique: Renault Midlum, Scania P, Mercedes Atego') ON CONFLICT DO NOTHING;
 
+INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(12,'en_US', 'Tanker', 'Examples of tanker: MAN TGS, Renault Premium, Scania G') ON CONFLICT DO NOTHING;
+INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(12,'fr_FR', 'Camion-citerne', 'Examples de camion-citerne: MAN TGS, Renault Premium, Scania G') ON CONFLICT DO NOTHING;
+
+INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(13,'en_US', 'Dump truck', 'Examples of dump truck: Iveco Stralis, Renault Kerax, Mercedes Arocs') ON CONFLICT DO NOTHING;
+INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(13,'fr_FR', 'Camion à benne basculante', 'Examples de camion à benne basculante: Iveco Stralis, Renault Kerax, Mercedes Arocs') ON CONFLICT DO NOTHING;
+
+INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(14,'en_US', 'Hook lift truck', 'Examples of hook lift truck: Iveco Stralis, Mercedes Atego, Man TGS') ON CONFLICT DO NOTHING;
+INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(14,'fr_FR', 'Camion Ampliroll', 'Examples de Camion Ampliroll: Iveco Stralis, Mercedes Atego, Man TGS') ON CONFLICT DO NOTHING;
+
+INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(15,'en_US', 'Tank transporter', 'Examples of tank transporter: Scania D, Mercedes Actros, Renault Premium') ON CONFLICT DO NOTHING;
+INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(15,'fr_FR', 'Camion porte char', 'Examples de camion porte char: Scania D, Mercedes Actros, Renault Premium') ON CONFLICT DO NOTHING;
+
+/*************************************
+* INSERTING JOURNEY REQUEST STATUSES
+*************************************/
+INSERT INTO public.journey_request_status( id, code, description) VALUES (1, 'OPENED', 'Journey request was saved and is waiting for proposals.')ON CONFLICT DO NOTHING;
+INSERT INTO public.journey_request_status( id, code, description) VALUES (2, 'CANCELED', 'Journey request was canceled by the client.')ON CONFLICT DO NOTHING;
+INSERT INTO public.journey_request_status( id, code, description) VALUES (3, 'EXPIRED', 'Client did not accept any proposal for this journey request before its end date.')ON CONFLICT DO NOTHING;
+INSERT INTO public.journey_request_status( id, code, description) VALUES (4, 'FULFILLED', 'Client accepted a proposal for this journey request before its end date.')ON CONFLICT DO NOTHING;
+
+INSERT INTO public.localized_journey_request_status(id, locale, value) VALUES (1, 'en_US', 'opened')ON CONFLICT DO NOTHING;
+INSERT INTO public.localized_journey_request_status(id, locale, value) VALUES (1, 'fr_FR', 'ouvert')ON CONFLICT DO NOTHING;
+
+INSERT INTO public.localized_journey_request_status(id, locale, value) VALUES (2, 'en_US', 'canceled')ON CONFLICT DO NOTHING;
+INSERT INTO public.localized_journey_request_status(id, locale, value) VALUES (2, 'fr_FR', 'annulé')ON CONFLICT DO NOTHING;
+
+INSERT INTO public.localized_journey_request_status(id, locale, value) VALUES (3, 'en_US', 'expired')ON CONFLICT DO NOTHING;
+INSERT INTO public.localized_journey_request_status(id, locale, value) VALUES (3, 'fr_FR', 'expiré')ON CONFLICT DO NOTHING;
+
+INSERT INTO public.localized_journey_request_status(id, locale, value) VALUES (4, 'en_US', 'fulfilled')ON CONFLICT DO NOTHING;
+INSERT INTO public.localized_journey_request_status(id, locale, value) VALUES (4, 'fr_FR', 'rempli')ON CONFLICT DO NOTHING;
+
+			
+/*************************************
+* INSERTING JOURNEY PROPOSAL STATUSES
+*************************************/
+INSERT INTO public.journey_proposal_status(id, code, description) VALUES (1, 'SUBMITTED', 'Journey proposal was submitted to client.')ON CONFLICT DO NOTHING;
+INSERT INTO public.journey_proposal_status(id, code, description) VALUES (2, 'CANCELED', 'Client canceled the journey request.')ON CONFLICT DO NOTHING;
+INSERT INTO public.journey_proposal_status(id, code, description) VALUES (3, 'REJECTED', 'Client rejected this journey proposal.')ON CONFLICT DO NOTHING;
+INSERT INTO public.journey_proposal_status(id, code, description) VALUES (4, 'ACCEPTED', 'Client accepted this journey proposal.')ON CONFLICT DO NOTHING;
+
+INSERT INTO public.localized_journey_proposal_status(id, locale, value) VALUES (1, 'en_US', 'submitted')ON CONFLICT DO NOTHING;
+INSERT INTO public.localized_journey_proposal_status(id, locale, value) VALUES (1, 'fr_FR', 'envoyée')ON CONFLICT DO NOTHING;
+
+INSERT INTO public.localized_journey_proposal_status(id, locale, value) VALUES (2, 'en_US', 'canceled')ON CONFLICT DO NOTHING;
+INSERT INTO public.localized_journey_proposal_status(id, locale, value) VALUES (2, 'fr_FR', 'annulée')ON CONFLICT DO NOTHING;
+
+INSERT INTO public.localized_journey_proposal_status(id, locale, value) VALUES (3, 'en_US', 'rejected')ON CONFLICT DO NOTHING;
+INSERT INTO public.localized_journey_proposal_status(id, locale, value) VALUES (3, 'fr_FR', 'rejetée')ON CONFLICT DO NOTHING;
+
+INSERT INTO public.localized_journey_proposal_status(id, locale, value) VALUES (4, 'en_US', 'accepted')ON CONFLICT DO NOTHING;
+INSERT INTO public.localized_journey_proposal_status(id, locale, value) VALUES (4, 'fr_FR', 'acceptée')ON CONFLICT DO NOTHING;
 
 
 

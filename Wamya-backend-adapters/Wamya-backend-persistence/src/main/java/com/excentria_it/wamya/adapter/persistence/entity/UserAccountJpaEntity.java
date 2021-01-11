@@ -1,5 +1,6 @@
 package com.excentria_it.wamya.adapter.persistence.entity;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -66,7 +67,7 @@ public abstract class UserAccountJpaEntity {
 
 	protected Boolean receiveNewsletter;
 
-	protected LocalDateTime creationDateTime;
+	protected Instant creationDateTime;
 
 	protected String photoUrl;
 
@@ -182,11 +183,11 @@ public abstract class UserAccountJpaEntity {
 		this.receiveNewsletter = receiveNewsletter;
 	}
 
-	public LocalDateTime getCreationDateTime() {
+	public Instant getCreationDateTime() {
 		return creationDateTime;
 	}
 
-	public void setCreationDateTime(LocalDateTime creationDateTime) {
+	public void setCreationDateTime(Instant creationDateTime) {
 		this.creationDateTime = creationDateTime;
 	}
 

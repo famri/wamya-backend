@@ -24,7 +24,8 @@ import com.excentria_it.wamya.application.props.CodeGeneratorProperties;
 import com.excentria_it.wamya.application.props.ServerUrlProperties;
 
 @Configuration
-@Import(value = { B2bRestConfiguration.class, MessagingConfiguration.class, PersistenceConfiguration.class,
+@Import(value = { B2bRestConfiguration.class, MessagingConfiguration.class,
+		PersistenceConfiguration.class,
 		WebConfiguration.class, WebSecurityConfiguration.class })
 @EnableConfigurationProperties(value = { CodeGeneratorProperties.class, ServerUrlProperties.class })
 public class WamyaConfiguration {

@@ -66,10 +66,15 @@ public class UserPrincipal implements UserDetails {
 		Set<GrantedAuthority> authorities = new HashSet<>();
 		roles.forEach(r -> {
 
-			authorities.add(new SimpleGrantedAuthority(r.getName()));
+			authorities.add(new SimpleGrantedAuthority("ROLE_" + r.getName()));
+			if (!r.getAuthorities().isEmpty()) {
+				String[] scopeAuthorities = r.getAuthorities().split(",");
+				for (String scope : scopeAuthorities) {
+					authorities.add(new SimpleGrantedAuthority(scope));
+				}
+			}
 
 		});
-
 		return authorities;
 	}
 }

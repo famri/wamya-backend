@@ -31,26 +31,17 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
-import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
-import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.endpoint.FrameworkEndpoint;
 import org.springframework.security.oauth2.provider.token.DefaultAccessTokenConverter;
@@ -62,12 +53,9 @@ import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.excentria_it.wamya.springcloud.authorisationserver.dto.OAuthUserAccount;
-import com.excentria_it.wamya.springcloud.authorisationserver.service.UserService;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 
@@ -90,48 +78,48 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 	private AuthenticationManager authenticationManager;
 	private DataSource dataSource;
 	private KeyPair keyPair;
+	private ClientDetailsService clientDetailsService;
+	private UserDetailsService userDetailsService;
 	private boolean jwtEnabled;
 
 	public AuthorizationServerConfiguration(AuthenticationConfiguration authenticationConfiguration, KeyPair keyPair,
-			DataSource dataSource, @Value("${security.oauth2.authorizationserver.jwt.enabled:true}") boolean jwtEnabled)
-			throws Exception {
+			DataSource dataSource, ClientDetailsService clientDetailsService, UserDetailsService userDetailsService,
+			@Value("${security.oauth2.authorizationserver.jwt.enabled:true}") boolean jwtEnabled) throws Exception {
 
 		this.authenticationManager = authenticationConfiguration.getAuthenticationManager();
 		this.keyPair = keyPair;
 		this.jwtEnabled = jwtEnabled;
 		this.dataSource = dataSource;
+		this.clientDetailsService = clientDetailsService;
+		this.userDetailsService = userDetailsService;
 	}
 
-	@Override
-	public void configure(AuthorizationServerSecurityConfigurer oauthServer) throws Exception {
-		oauthServer.tokenKeyAccess("isAuthenticated()").checkTokenAccess("isAuthenticated()");
-	}
+//	@Override
+//	public void configure(AuthorizationServerSecurityConfigurer oauthServer) throws Exception {
+//		oauthServer.tokenKeyAccess("isAuthenticated()").checkTokenAccess("isAuthenticated()");
+//	}
 
 	@Override
 	public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
 
-		// Password is prefixed with {noop} to indicate to DelegatingPasswordEncoder
-		// that
-		// NoOpPasswordEncoder should be used.
-		// This is not safe for production, but makes reading
-		// in samples easier.
-		// Normally passwords should be hashed using BCrypt
-
-		// @formatter:off
 		clients.jdbc(dataSource);
 
-		// @formatter:on
 	}
 
 	@Override
 	public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
 		// @formatter:off
 		endpoints.authenticationManager(this.authenticationManager).tokenStore(tokenStore());
-
+		endpoints.requestFactory(userAuthoritiesCheckingOAuth2RequestFactory());
 		if (this.jwtEnabled) {
 			endpoints.accessTokenConverter(accessTokenConverter());
 		}
 		// @formatter:on
+	}
+
+	@Bean
+	UserAuthoritiesCheckingOAuth2RequestFactory userAuthoritiesCheckingOAuth2RequestFactory() {
+		return new UserAuthoritiesCheckingOAuth2RequestFactory(clientDetailsService, userDetailsService);
 	}
 
 	@Bean
@@ -149,7 +137,7 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 		converter.setKeyPair(this.keyPair);
 
 		DefaultAccessTokenConverter accessTokenConverter = new DefaultAccessTokenConverter();
-		accessTokenConverter.setUserTokenConverter(new SubjectAttributeUserTokenConverter());		
+		accessTokenConverter.setUserTokenConverter(new SubjectAttributeUserTokenConverter());
 
 		converter.setAccessTokenConverter(accessTokenConverter);
 
@@ -161,64 +149,6 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 /**
  * For configuring the end users recognized by this Authorization Server
  */
-@Configuration
-@EnableWebSecurity
-class UserConfig extends WebSecurityConfigurerAdapter {
-
-//	private PasswordEncoder passwordEncoder;
-//
-//	@Autowired
-//	private UserDetailsService userDetailsService;
-//
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-
-		String idForEncode = "bcrypt";
-		Map<String, PasswordEncoder> encoders = new HashMap<>();
-		encoders.put(idForEncode, new BCryptPasswordEncoder());
-		encoders.put("noop", NoOpPasswordEncoder.getInstance());
-		encoders.put("pbkdf2", new Pbkdf2PasswordEncoder());
-		encoders.put("scrypt", new SCryptPasswordEncoder());
-
-		return new DelegatingPasswordEncoder(idForEncode, encoders);
-
-	}
-
-//	@Bean
-//	@Override
-//	public AuthenticationManager authenticationManagerBean() throws Exception {
-//		return super.authenticationManagerBean();
-//	}
-//
-//	@Override
-//	protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
-//		auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
-//	}
-
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
-		// @formatter:off
-		http.authorizeRequests(authz -> authz
-
-				.antMatchers("/actuator/**").permitAll().antMatchers("/h2-console/**").permitAll()
-				.antMatchers(HttpMethod.POST, "/oauth/users").permitAll()
-				.mvcMatchers("/.well-known/jwks.json").permitAll().mvcMatchers("/favicon.ico").permitAll())
-
-				.authorizeRequests().anyRequest().authenticated().and().headers().frameOptions().disable().and().csrf()
-				.disable().cors().disable();
-		/*
-		 * .csrf(csrf -> csrf.ignoringRequestMatchers(
-		 * 
-		 * request -> "/introspect".equals(request.getRequestURI()), request ->
-		 * "/oauth/users".equals(request.getRequestURI()))
-		 * 
-		 * .ignoringAntMatchers("/h2-console/**"));
-		 */
-
-		// @formatter:on
-	}
-
-}
 
 /**
  * Legacy Authorization Server (spring-security-oauth2) does not support any
@@ -280,61 +210,6 @@ class JwkSetEndpoint {
 		return new JWKSet(key).toJSONObject();
 	}
 }
-
-/**
- * Legacy Authorization Server (spring-security-oauth2) does not support any
- * user info endpoint.
- *
- * This class adds ad-hoc support in order to better support the other samples
- * in the repo.
- */
-//@FrameworkEndpoint
-//class UserInfoEndpoint {
-//
-//	TokenStore tokenStore;
-//	UserService userService;
-//
-//	public UserInfoEndpoint(TokenStore tokenStore, UserService userService) {
-//		this.tokenStore = tokenStore;
-//		this.userService = userService;
-//	}
-//
-//	@GetMapping("/oauth/user-info")
-//	@ResponseBody
-//	public Map<String, Object> loadUserInfo(@RequestHeader(name = "Authorization") String token) {
-//		// Remove Bearer String
-//		token = token.substring(7);
-//		OAuth2AccessToken accessToken = this.tokenStore.readAccessToken(token);
-//		Map<String, Object> userInfo = new HashMap<>();
-//		if (accessToken == null || accessToken.isExpired()) {
-//			userInfo.put("isActive", false);
-//			return userInfo;
-//		}
-//
-//		OAuth2Authentication authentication = this.tokenStore.readAuthentication(token);
-//		OAuthUserAccount account = userService.loadUserInfoByUsername(authentication.getName);
-//
-//		return oAuthUserAccountToUserInfoMap(account, authentication);
-//	}
-//
-//	private Map<String, Object> oAuthUserAccountToUserInfoMap(OAuthUserAccount account,
-//			OAuth2Authentication authentication) {
-//		Map<String, Object> userInfo = new HashMap<>();
-//		userInfo.put("oauthId", account.getOauthId());
-//		userInfo.put("firstname", account.getFirstname());
-//		userInfo.put("lastname", account.getLastname());
-//		userInfo.put("email", account.getEmail());
-//		userInfo.put("phoneNumber", account.getPhoneNumber());
-//		userInfo.put("isAccountNonExpired", account.isAccountNonExpired());
-//		userInfo.put("isAccountNonLocked", account.isAccountNonLocked());
-//		userInfo.put("isCredentialsNonExpired", account.isCredentialsNonExpired());
-//		userInfo.put("isEnabled", account.isEnabled());
-//		userInfo.put("authorities", AuthorityUtils.authorityListToSet(authentication.getAuthorities()));
-//
-//		return userInfo;
-//
-//	}
-//}
 
 /**
  * An Authorization Server will more typically have a key rotation strategy, and

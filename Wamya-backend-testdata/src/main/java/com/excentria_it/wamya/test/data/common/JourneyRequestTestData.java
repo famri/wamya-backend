@@ -1,9 +1,7 @@
 package com.excentria_it.wamya.test.data.common;
 
-import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Set;
 
@@ -20,7 +18,6 @@ import com.excentria_it.wamya.domain.ClientJourneyRequestDto;
 import com.excentria_it.wamya.domain.ClientJourneyRequests;
 import com.excentria_it.wamya.domain.CreateJourneyRequestDto;
 import com.excentria_it.wamya.domain.CreateJourneyRequestDto.CreateJourneyRequestDtoBuilder;
-import com.excentria_it.wamya.domain.JourneyRequestProposals;
 import com.excentria_it.wamya.domain.JourneyRequestSearchDto;
 import com.excentria_it.wamya.domain.JourneyRequestsSearchResult;
 import com.excentria_it.wamya.domain.LoadClientJourneyRequestsCriteria;
@@ -30,14 +27,8 @@ import com.excentria_it.wamya.domain.SearchJourneyRequestsCriteria.SearchJourney
 
 public class JourneyRequestTestData {
 
-	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-//	private static LocalDateTime startDate = LocalDateTime
-//			.parse(LocalDateTime.of(2020, 12, 10, 12, 0, 0, 0).format(DATE_TIME_FORMATTER), DATE_TIME_FORMATTER);
-//	private static LocalDateTime endDate = LocalDateTime.parse(addDays(startDate, 1).format(DATE_TIME_FORMATTER),
-//			DATE_TIME_FORMATTER);
-
-	private static LocalDateTime startDate = LocalDateTime.of(2020, 12, 10, 12, 0, 0, 0);
-	private static LocalDateTime endDate = startDate.minusDays(1);
+	private static ZonedDateTime startDate = ZonedDateTime.of(2020, 12, 10, 12, 0, 0, 0, ZoneOffset.UTC);
+	private static ZonedDateTime endDate = startDate.minusDays(1);
 
 	private static List<ClientJourneyRequestDto> clientJourneyRequestDtos = List.of(new ClientJourneyRequestDto() {
 
@@ -69,17 +60,17 @@ public class JourneyRequestTestData {
 		}
 
 		@Override
-		public LocalDateTime getDateTime() {
+		public ZonedDateTime getDateTime() {
 			return startDate;
 		}
 
 		@Override
-		public LocalDateTime getEndDateTime() {
+		public ZonedDateTime getEndDateTime() {
 			return endDate;
 		}
 
 		@Override
-		public LocalDateTime getCreationDateTime() {
+		public ZonedDateTime getCreationDateTime() {
 			return endDate.minusDays(1);
 		}
 
@@ -130,17 +121,17 @@ public class JourneyRequestTestData {
 		}
 
 		@Override
-		public LocalDateTime getDateTime() {
+		public ZonedDateTime getDateTime() {
 			return startDate;
 		}
 
 		@Override
-		public LocalDateTime getEndDateTime() {
+		public ZonedDateTime getEndDateTime() {
 			return endDate;
 		}
 
 		@Override
-		public LocalDateTime getCreationDateTime() {
+		public ZonedDateTime getCreationDateTime() {
 			return endDate.minusDays(1);
 		}
 
@@ -197,12 +188,12 @@ public class JourneyRequestTestData {
 				}
 
 				@Override
-				public LocalDateTime getDateTime() {
+				public ZonedDateTime getDateTime() {
 					return startDate;
 				}
 
 				@Override
-				public LocalDateTime getEndDateTime() {
+				public ZonedDateTime getEndDateTime() {
 					return endDate;
 				}
 
@@ -262,12 +253,12 @@ public class JourneyRequestTestData {
 				}
 
 				@Override
-				public LocalDateTime getDateTime() {
+				public ZonedDateTime getDateTime() {
 					return startDate;
 				}
 
 				@Override
-				public LocalDateTime getEndDateTime() {
+				public ZonedDateTime getEndDateTime() {
 					return endDate;
 				}
 
@@ -297,10 +288,8 @@ public class JourneyRequestTestData {
 			});
 
 	public static SearchJourneyRequestsCommandBuilder defaultSearchJourneyRequestsCommandBuilder() {
-		LocalDateTime startDate = LocalDateTime.parse(LocalDateTime.now().format(DATE_TIME_FORMATTER),
-				DATE_TIME_FORMATTER);
-		LocalDateTime endDate = LocalDateTime.parse(addDays(startDate, 1).format(DATE_TIME_FORMATTER),
-				DATE_TIME_FORMATTER);
+		ZonedDateTime startDate = ZonedDateTime.now(ZoneOffset.UTC);
+		ZonedDateTime endDate = startDate.plusDays(1);
 		return SearchJourneyRequestsCommand.builder().departurePlaceRegionId("departurePlaceRegionId")
 				.arrivalPlaceRegionIds(Set.of("arrivalPlaceRegionId1", "arrivalPlaceRegionId2"))
 				.startDateTime(startDate).endDateTime(endDate).engineTypes(Set.of(1L, 2L)).pageNumber(0).pageSize(2)
@@ -309,22 +298,18 @@ public class JourneyRequestTestData {
 	}
 
 	public static SearchJourneyRequestsCriteriaBuilder defaultSearchJourneyRequestsCriteriaBuilder() {
-		LocalDateTime startDate = LocalDateTime.parse(LocalDateTime.now().format(DATE_TIME_FORMATTER),
-				DATE_TIME_FORMATTER);
-		LocalDateTime endDate = LocalDateTime.parse(addDays(startDate, 1).format(DATE_TIME_FORMATTER),
-				DATE_TIME_FORMATTER);
+		ZonedDateTime startDate = ZonedDateTime.now(ZoneOffset.UTC);
+		ZonedDateTime endDate = startDate.plusDays(1);
 		return SearchJourneyRequestsCriteria.builder().departurePlaceRegionId("departurePlaceRegionId")
 				.arrivalPlaceRegionIds(Set.of("arrivalPlaceRegionId1", "arrivalPlaceRegionId2"))
-				.startDateTime(startDate).endDateTime(endDate).engineTypes(Set.of(1L, 2L)).pageNumber(0).pageSize(2)
-				.sortingCriterion(new SortCriterion("min-price", "desc")).locale("en_US");
+				.startDateTime(startDate.toInstant()).endDateTime(endDate.toInstant()).engineTypes(Set.of(1L, 2L))
+				.pageNumber(0).pageSize(2).sortingCriterion(new SortCriterion("min-price", "desc")).locale("en_US");
 
 	}
 
 	public static SearchJourneyRequestsCommandBuilder arrivalPlaceRegionAgnosticSearchJourneyRequestsCommandBuilder() {
-		LocalDateTime startDate = LocalDateTime.parse(LocalDateTime.now().format(DATE_TIME_FORMATTER),
-				DATE_TIME_FORMATTER);
-		LocalDateTime endDate = LocalDateTime.parse(addDays(startDate, 1).format(DATE_TIME_FORMATTER),
-				DATE_TIME_FORMATTER);
+		ZonedDateTime startDate = ZonedDateTime.now(ZoneOffset.UTC);
+		ZonedDateTime endDate = startDate.plusDays(1);
 
 		return SearchJourneyRequestsCommand.builder().departurePlaceRegionId("departurePlaceRegionId")
 				.arrivalPlaceRegionIds(Set.of(SearchJourneyRequestsCommand.ANY_ARRIVAL_REGION)).startDateTime(startDate)
@@ -349,7 +334,7 @@ public class JourneyRequestTestData {
 						"departurePlaceName"))
 				.arrivalPlace(new CreateJourneyRequestDto.PlaceDto("arrivalPlaceId", "arrivalPlaceRegionId",
 						"arrivalPlaceName"))
-				.dateTime(startDate).endDateTime(endDate)
+				.dateTime(startDate.toInstant()).endDateTime(endDate.toInstant())
 				.engineType(new CreateJourneyRequestDto.EngineTypeDto(1L, "EngineType1")).distance(270.8).workers(2)
 				.description("Need a transporter URGENT!!!").build();
 	}
@@ -360,26 +345,17 @@ public class JourneyRequestTestData {
 						"departurePlaceName"))
 				.arrivalPlace(new CreateJourneyRequestDto.PlaceDto("arrivalPlaceId", "arrivalPlaceRegionId",
 						"arrivalPlaceName"))
-				.dateTime(startDate).endDateTime(endDate)
+				.dateTime(startDate.toInstant()).endDateTime(endDate.toInstant())
 				.engineType(new CreateJourneyRequestDto.EngineTypeDto(1L, "EngineType1")).distance(270.8).workers(2)
 				.description("Need a transporter URGENT!!!");
 	}
 
 	public static LoadClientJourneyRequestsCriteriaBuilder defaultLoadClientJourneyRequestsCriteriaBuilder() {
-		LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
+		ZonedDateTime now = ZonedDateTime.now(ZoneOffset.UTC);
 		return LoadClientJourneyRequestsCriteria.builder().clientUsername(TestConstants.DEFAULT_EMAIL).locale("en_US")
 				.pageNumber(0).pageSize(25).sortingCriterion(new SortCriterion("creation-date-time", "desc"))
 				.periodCriterion(new PeriodCriterion("m1", PeriodValue.M1.calculateLowerEdge(now), now));
 
-	}
-
-	private static LocalDateTime addDays(LocalDateTime dateTime, int days) {
-
-		ZonedDateTime zonedDateTime = ZonedDateTime.of(dateTime, ZoneOffset.UTC);
-
-		LocalDateTime dateAfter = zonedDateTime.plusDays(days).toLocalDateTime();
-
-		return dateAfter;
 	}
 
 	public static List<JourneyRequestSearchDto> defaultJourneyRequestSearchDtoList() {
@@ -393,7 +369,7 @@ public class JourneyRequestTestData {
 
 	public static LoadJourneyRequestsCommandBuilder defaultLoadJourneyRequestsCommandBuilder() {
 
-		LocalDateTime ldt = LocalDateTime.now(ZoneOffset.UTC);
+		ZonedDateTime ldt = ZonedDateTime.now(ZoneOffset.UTC);
 		return LoadJourneyRequestsCommand.builder().clientUsername(TestConstants.DEFAULT_EMAIL).pageNumber(0)
 				.pageSize(25).sortingCriterion(new SortCriterion("creation-date-time", "desc"))
 				.periodCriterion(new PeriodCriterion("Y1", ldt.minusYears(1), ldt));
@@ -410,6 +386,5 @@ public class JourneyRequestTestData {
 	public static List<ClientJourneyRequestDto> defaultClientJourneyRequestDtoList() {
 		return clientJourneyRequestDtos;
 	}
-
 
 }

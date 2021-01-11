@@ -1,5 +1,7 @@
 package com.excentria_it.wamya.application.service;
 
+import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.Optional;
 
 import javax.transaction.Transactional;
@@ -38,9 +40,11 @@ public class CreateJourneyRequestService implements CreateJourneyRequestUseCase 
 
 				.arrivalPlace(new PlaceDto(command.getArrivalPlaceId(), command.getArrivalPlaceRegionId(),
 						command.getArrivalPlaceName()))
-				.dateTime(command.getDateTime()).endDateTime(command.getEndDateTime())
-				.engineType(new EngineTypeDto(command.getEngineTypeId(), null)).distance(command.getDistance())
-				.workers(command.getWorkers()).description(command.getDescription()).build();
+				.dateTime(command.getDateTime().withZoneSameInstant(ZoneOffset.UTC).toInstant())
+				.endDateTime(command.getEndDateTime().withZoneSameInstant(ZoneOffset.UTC).toInstant())
+				.creationDateTime(Instant.now()).engineType(new EngineTypeDto(command.getEngineTypeId(), null))
+				.distance(command.getDistance()).workers(command.getWorkers()).description(command.getDescription())
+				.build();
 
 		return createJourneyRequestPort.createJourneyRequest(journeyRequest, username, locale);
 	}
@@ -62,7 +66,7 @@ public class CreateJourneyRequestService implements CreateJourneyRequestUseCase 
 		UserAccount userAccount = userAccountOptional.get();
 
 		if (!userAccount.getIsValidatedMobileNumber()) {
-			throw new UserMobileNumberValidationException("User " + username + "mobile number is not yet validated.");
+			throw new UserMobileNumberValidationException("User " + username + " mobile number is not yet validated.");
 		}
 
 	}

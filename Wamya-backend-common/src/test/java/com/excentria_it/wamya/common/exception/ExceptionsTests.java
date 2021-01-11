@@ -91,4 +91,25 @@ public class ExceptionsTests {
 		OperationDeniedException exception = new OperationDeniedException(message);
 		assertEquals(exception.getMessage(), message);
 	}
+
+	@Test
+	void testConstructorModelNotFoundException() {
+		String message = "SOME MESSAGE";
+		ConstructorModelNotFoundException exception = new ConstructorModelNotFoundException(message);
+		assertEquals(exception.getMessage(), message);
+	}
+
+	@Test
+	void testConstructorNotFoundException() {
+		String message = "SOME MESSAGE";
+		ConstructorNotFoundException exception = new ConstructorNotFoundException(message);
+		assertEquals(exception.getMessage(), message);
+	}
+
+	@Test
+	void testEngineTypeNotFoundException() {
+		String message = "SOME MESSAGE";
+		EngineTypeNotFoundException exception = new EngineTypeNotFoundException(message);
+		assertEquals(exception.getMessage(), message);
+	}
 }

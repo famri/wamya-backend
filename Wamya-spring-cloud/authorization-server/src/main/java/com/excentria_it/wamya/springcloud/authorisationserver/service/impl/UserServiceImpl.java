@@ -99,7 +99,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 		// Remove invalid RoleType
 		if (user.getRoles() != null && !user.getRoles().isEmpty()) {
 			filteredRoles = user.getRoles().stream().filter(r -> {
-				return r != null && !"ROLE_ADMIN".equals(r.getName()) && acceptedRoles.contains(r.getName());
+				return r != null && !"ADMIN".equals(r.getName()) && acceptedRoles.contains(r.getName());
 			}).collect(Collectors.toSet());
 
 		}

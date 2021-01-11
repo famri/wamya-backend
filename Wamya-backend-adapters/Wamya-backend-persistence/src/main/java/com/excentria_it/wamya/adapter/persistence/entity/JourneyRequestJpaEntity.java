@@ -1,6 +1,7 @@
 package com.excentria_it.wamya.adapter.persistence.entity;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -50,16 +51,16 @@ public class JourneyRequestJpaEntity {
 
 	private Double distance;
 
-	private LocalDateTime dateTime;
+	private Instant dateTime;
 
-	private LocalDateTime endDateTime;
+	private Instant endDateTime;
 
 	private Integer workers;
 
 	@Column(length = 500)
 	private String description;
 
-	private LocalDateTime creationDateTime;
+	private Instant creationDateTime;
 
 	@ManyToOne
 	private JourneyRequestStatusJpaEntity status;
@@ -118,19 +119,19 @@ public class JourneyRequestJpaEntity {
 		this.distance = distance;
 	}
 
-	public LocalDateTime getDateTime() {
+	public Instant getDateTime() {
 		return dateTime;
 	}
 
-	public void setDateTime(LocalDateTime dateTime) {
+	public void setDateTime(Instant dateTime) {
 		this.dateTime = dateTime;
 	}
 
-	public LocalDateTime getEndDateTime() {
+	public Instant getEndDateTime() {
 		return endDateTime;
 	}
 
-	public void setEndDateTime(LocalDateTime endDateTime) {
+	public void setEndDateTime(Instant endDateTime) {
 		this.endDateTime = endDateTime;
 	}
 
@@ -150,11 +151,11 @@ public class JourneyRequestJpaEntity {
 		this.description = description;
 	}
 
-	public LocalDateTime getCreationDateTime() {
+	public Instant getCreationDateTime() {
 		return creationDateTime;
 	}
 
-	public void setCreationDateTime(LocalDateTime creationDateTime) {
+	public void setCreationDateTime(Instant creationDateTime) {
 		this.creationDateTime = creationDateTime;
 	}
 

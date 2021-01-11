@@ -1,7 +1,7 @@
 package com.excentria_it.wamya.adapter.persistence.mapper;
 
-import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 
 import org.springframework.stereotype.Component;
 
@@ -26,8 +26,8 @@ public class UserAccountMapper {
 					icc, userAccount.getMobilePhoneNumber().getMobileNumber(),
 					userAccount.getMobileNumberValidationCode(), userAccount.getIsValidatedMobileNumber(),
 					userAccount.getReceiveNewsletter(),
-					userAccount.getCreationDateTime() != null ? userAccount.getCreationDateTime()
-							: LocalDateTime.now(ZoneOffset.UTC),
+					userAccount.getCreationDateTime() != null ? userAccount.getCreationDateTime().toInstant()
+							: ZonedDateTime.now(ZoneOffset.UTC).toInstant(),
 					userAccount.getPhotoUrl(), null, null, null, null, null);
 
 		} else {
@@ -37,8 +37,8 @@ public class UserAccountMapper {
 					icc, userAccount.getMobilePhoneNumber().getMobileNumber(),
 					userAccount.getMobileNumberValidationCode(), userAccount.getIsValidatedMobileNumber(),
 					userAccount.getReceiveNewsletter(),
-					userAccount.getCreationDateTime() != null ? userAccount.getCreationDateTime()
-							: LocalDateTime.now(ZoneOffset.UTC),
+					userAccount.getCreationDateTime() != null ? userAccount.getCreationDateTime().toInstant()
+							: ZonedDateTime.now(ZoneOffset.UTC).toInstant(),
 					userAccount.getPhotoUrl(), null);
 		}
 
@@ -59,7 +59,7 @@ public class UserAccountMapper {
 				.mobileNumberValidationCode(userAccountJpaEntity.getMobileNumberValidationCode())
 				.isValidatedMobileNumber(userAccountJpaEntity.getIsValidatedMobileNumber())
 				.receiveNewsletter(userAccountJpaEntity.getReceiveNewsletter())
-				.creationDateTime(userAccountJpaEntity.getCreationDateTime())
+				.creationDateTime(userAccountJpaEntity.getCreationDateTime().atZone(ZoneOffset.UTC))
 				.photoUrl(userAccountJpaEntity.getPhotoUrl()).build();
 	}
 }

@@ -1,6 +1,6 @@
 package com.excentria_it.wamya.common;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,16 +11,16 @@ public class PeriodCriterion {
 
 	private String value;
 
-	private LocalDateTime lowerEdge;
+	private ZonedDateTime lowerEdge;
 
-	private LocalDateTime higherEdge;
+	private ZonedDateTime higherEdge;
 
 	public enum PeriodValue {
 		Y1, M6, M3, M1, W2, W1;
 
-		public LocalDateTime calculateLowerEdge(LocalDateTime higherEdge) {
+		public ZonedDateTime calculateLowerEdge(ZonedDateTime higherEdge) {
 
-			LocalDateTime lowerEdge = null;
+			ZonedDateTime lowerEdge = null;
 			switch (this) {
 			case Y1:
 				lowerEdge = higherEdge.minusYears(1);

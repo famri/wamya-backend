@@ -3,7 +3,8 @@ package com.excentria_it.wamya.common.validator.impl;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.lang.annotation.Annotation;
-import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 
 import javax.validation.Payload;
 
@@ -57,18 +58,18 @@ public class PeriodCriterionValidatorTests {
 
 	@Test
 	void givenValidPeriodCriterion_WhenIsValid_ThenReturnTrue() {
-		LocalDateTime ldt = LocalDateTime.now();
+		ZonedDateTime ldt = ZonedDateTime.now(ZoneOffset.UTC);
 		boolean validationResult = validator
 				.isValid(new PeriodCriterion("Y1", PeriodCriterion.PeriodValue.Y1.calculateLowerEdge(ldt), ldt), null);
 
 		assertTrue(validationResult);
 	}
-	
+
 	@Test
 	void givenInvalidPeriodCriterion_WhenIsValid_ThenReturnTrue() {
-		LocalDateTime ldt = LocalDateTime.now();
-		boolean validationResult = validator
-				.isValid(new PeriodCriterion("not_valid_period_value", PeriodCriterion.PeriodValue.Y1.calculateLowerEdge(ldt), ldt), null);
+		ZonedDateTime ldt = ZonedDateTime.now(ZoneOffset.UTC);
+		boolean validationResult = validator.isValid(new PeriodCriterion("not_valid_period_value",
+				PeriodCriterion.PeriodValue.Y1.calculateLowerEdge(ldt), ldt), null);
 
 		assertFalse(validationResult);
 	}

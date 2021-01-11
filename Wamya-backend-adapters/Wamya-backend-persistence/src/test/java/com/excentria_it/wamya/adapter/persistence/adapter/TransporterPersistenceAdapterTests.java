@@ -8,7 +8,6 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -67,7 +66,7 @@ public class TransporterPersistenceAdapterTests {
 
 		TransporterJpaEntity transporterJpaEntity = defaultExistentTransporterJpaEntity();
 		Set<VehiculeJpaEntity> vehiculeEntities = defaultVehiculeJpaEntitySet();
-		transporterJpaEntity.setVehicules(vehiculeEntities);
+		vehiculeEntities.forEach(v -> transporterJpaEntity.addVehicule(v));
 
 		given(transporterRepository.findTransporterWithVehiculesByEmail(any(String.class)))
 				.willReturn(Optional.of(transporterJpaEntity));
@@ -99,8 +98,6 @@ public class TransporterPersistenceAdapterTests {
 
 		TransporterJpaEntity transporterJpaEntity = defaultExistentTransporterJpaEntity();
 
-		transporterJpaEntity.setVehicules(Collections.<VehiculeJpaEntity>emptySet());
-
 		given(transporterRepository.findTransporterWithVehiculesByEmail(any(String.class)))
 				.willReturn(Optional.of(transporterJpaEntity));
 
@@ -119,7 +116,6 @@ public class TransporterPersistenceAdapterTests {
 
 		TransporterJpaEntity transporterJpaEntity = defaultExistentTransporterJpaEntity();
 		Set<VehiculeJpaEntity> vehiculeEntities = defaultVehiculeJpaEntitySet();
-		transporterJpaEntity.setVehicules(vehiculeEntities);
 
 		given(transporterRepository.findTransporterWithVehiculesByMobilePhoneNumber(any(String.class),
 				any(String.class))).willReturn(Optional.of(transporterJpaEntity));
@@ -128,7 +124,10 @@ public class TransporterPersistenceAdapterTests {
 		List<VehiculeDto> vehiculeDtos = new ArrayList<>(3);
 		Iterator<VehiculeJpaEntity> it = vehiculeEntities.iterator();
 		while (it.hasNext()) {
+			
 			VehiculeJpaEntity v = it.next();
+			transporterJpaEntity.addVehicule(v);
+			
 			vehiculeJpaEntities.add(v);
 			VehiculeDto vehiculeDto = new VehiculeDto(v.getId(), v.getModel().getConstructor().getName(),
 					v.getModel().getName(), v.getPhotoUrl());
@@ -151,8 +150,6 @@ public class TransporterPersistenceAdapterTests {
 		// given
 
 		TransporterJpaEntity transporterJpaEntity = defaultExistentTransporterJpaEntity();
-
-		transporterJpaEntity.setVehicules(Collections.<VehiculeJpaEntity>emptySet());
 
 		given(transporterRepository.findTransporterWithVehiculesByMobilePhoneNumber(any(String.class),
 				any(String.class))).willReturn(Optional.of(transporterJpaEntity));

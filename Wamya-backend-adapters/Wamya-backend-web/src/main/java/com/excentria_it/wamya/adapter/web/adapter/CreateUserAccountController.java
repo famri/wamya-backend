@@ -26,7 +26,6 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
 @Slf4j
-
 public class CreateUserAccountController {
 
 	private final CreateUserAccountUseCase createUserAccountUseCase;

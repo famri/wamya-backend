@@ -8,8 +8,8 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.*;
 
-import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
@@ -75,8 +75,8 @@ public class JourneyProposalServiceTests {
 
 		CreateJourneyRequestDtoBuilder createJourneyRequestDtoBuilder = defaultCreateJourneyRequestDtoBuilder();
 
-		createJourneyRequestDtoBuilder.dateTime(LocalDateTime.now(ZoneOffset.UTC).minusDays(1));
-		createJourneyRequestDtoBuilder.endDateTime(LocalDateTime.now(ZoneOffset.UTC).plusDays(1));
+		createJourneyRequestDtoBuilder.dateTime(ZonedDateTime.now(ZoneOffset.UTC).minusDays(1).toInstant());
+		createJourneyRequestDtoBuilder.endDateTime(ZonedDateTime.now(ZoneOffset.UTC).plusDays(1).toInstant());
 
 		given(loadJourneyRequestPort.loadJourneyRequestById(any(Long.class)))
 				.willReturn(Optional.of(createJourneyRequestDtoBuilder.build()));
@@ -127,8 +127,8 @@ public class JourneyProposalServiceTests {
 		MakeProposalCommand makeProposalCommand = new MakeProposalCommand(JOURNEY_PRICE, VEHICULE_ID);
 		CreateJourneyRequestDtoBuilder createJourneyRequestDtoBuilder = defaultCreateJourneyRequestDtoBuilder();
 
-		createJourneyRequestDtoBuilder.dateTime(LocalDateTime.now(ZoneOffset.UTC).minusDays(2));
-		createJourneyRequestDtoBuilder.endDateTime(LocalDateTime.now(ZoneOffset.UTC).minusDays(1));
+		createJourneyRequestDtoBuilder.dateTime(ZonedDateTime.now(ZoneOffset.UTC).minusDays(2).toInstant());
+		createJourneyRequestDtoBuilder.endDateTime(ZonedDateTime.now(ZoneOffset.UTC).minusDays(1).toInstant());
 
 		given(loadJourneyRequestPort.loadJourneyRequestById(any(Long.class)))
 				.willReturn(Optional.of(createJourneyRequestDtoBuilder.build()));
@@ -146,8 +146,8 @@ public class JourneyProposalServiceTests {
 
 		CreateJourneyRequestDtoBuilder createJourneyRequestDtoBuilder = defaultCreateJourneyRequestDtoBuilder();
 
-		createJourneyRequestDtoBuilder.dateTime(LocalDateTime.now(ZoneOffset.UTC).minusDays(1));
-		createJourneyRequestDtoBuilder.endDateTime(LocalDateTime.now(ZoneOffset.UTC).plusDays(1));
+		createJourneyRequestDtoBuilder.dateTime(ZonedDateTime.now(ZoneOffset.UTC).minusDays(1).toInstant());
+		createJourneyRequestDtoBuilder.endDateTime(ZonedDateTime.now(ZoneOffset.UTC).plusDays(1).toInstant());
 
 		given(loadJourneyRequestPort.loadJourneyRequestById(any(Long.class)))
 				.willReturn(Optional.of(createJourneyRequestDtoBuilder.build()));
@@ -167,8 +167,8 @@ public class JourneyProposalServiceTests {
 
 		CreateJourneyRequestDtoBuilder createJourneyRequestDtoBuilder = defaultCreateJourneyRequestDtoBuilder();
 
-		createJourneyRequestDtoBuilder.dateTime(LocalDateTime.now(ZoneOffset.UTC).minusDays(1));
-		createJourneyRequestDtoBuilder.endDateTime(LocalDateTime.now(ZoneOffset.UTC).plusDays(1));
+		createJourneyRequestDtoBuilder.dateTime(ZonedDateTime.now(ZoneOffset.UTC).minusDays(1).toInstant());
+		createJourneyRequestDtoBuilder.endDateTime(ZonedDateTime.now(ZoneOffset.UTC).plusDays(1).toInstant());
 
 		given(loadJourneyRequestPort.loadJourneyRequestById(any(Long.class)))
 				.willReturn(Optional.of(createJourneyRequestDtoBuilder.build()));
@@ -188,8 +188,8 @@ public class JourneyProposalServiceTests {
 
 		CreateJourneyRequestDtoBuilder createJourneyRequestDtoBuilder = defaultCreateJourneyRequestDtoBuilder();
 
-		createJourneyRequestDtoBuilder.dateTime(LocalDateTime.now(ZoneOffset.UTC).minusDays(1));
-		createJourneyRequestDtoBuilder.endDateTime(LocalDateTime.now(ZoneOffset.UTC).plusDays(1));
+		createJourneyRequestDtoBuilder.dateTime(ZonedDateTime.now(ZoneOffset.UTC).minusDays(1).toInstant());
+		createJourneyRequestDtoBuilder.endDateTime(ZonedDateTime.now(ZoneOffset.UTC).plusDays(1).toInstant());
 
 		given(loadJourneyRequestPort.loadJourneyRequestById(any(Long.class)))
 				.willReturn(Optional.of(createJourneyRequestDtoBuilder.build()));

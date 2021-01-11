@@ -20,8 +20,8 @@ public class JourneyRequestMapper {
 		return JourneyRequestJpaEntity.builder().id(journeyRequest.getId()).departurePlace(departurePlace)
 				.arrivalPlace(arrivalPlace).engineType(engineType).distance(journeyRequest.getDistance())
 				.dateTime(journeyRequest.getDateTime()).endDateTime(journeyRequest.getEndDateTime())
-				.workers(journeyRequest.getWorkers()).description(journeyRequest.getDescription()).client(client)
-				.build();
+				.creationDateTime(journeyRequest.getCreationDateTime()).workers(journeyRequest.getWorkers())
+				.description(journeyRequest.getDescription()).client(client).build();
 	}
 
 	public CreateJourneyRequestDto mapToDomainEntity(JourneyRequestJpaEntity journeyRequestJpaEntity, String locale) {

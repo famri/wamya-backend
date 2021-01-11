@@ -29,7 +29,7 @@ public class ClientRepositoryTests {
 	private InternationalCallingCodeRepository internationalCallingCodeRepository;
 
 	@BeforeEach
-	public void cleanDatabase() {
+	void cleanDatabase() {
 		clientRepository.deleteAll();
 		internationalCallingCodeRepository.deleteAll();
 	}

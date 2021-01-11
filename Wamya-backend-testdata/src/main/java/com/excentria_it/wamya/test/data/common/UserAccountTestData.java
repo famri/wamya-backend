@@ -2,7 +2,8 @@ package com.excentria_it.wamya.test.data.common;
 
 import static com.excentria_it.wamya.test.data.common.TestConstants.*;
 
-import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 
 import com.excentria_it.wamya.application.port.in.CreateUserAccountUseCase.CreateUserAccountCommand;
 import com.excentria_it.wamya.application.port.in.CreateUserAccountUseCase.CreateUserAccountCommand.CreateUserAccountCommandBuilder;
@@ -20,7 +21,7 @@ public class UserAccountTestData {
 				.emailValidationCode(DEFAULT_VALIDATION_CODE).isValidatedEmail(true)
 				.mobilePhoneNumber(defaultMobilePhoneNumber()).mobileNumberValidationCode(DEFAULT_VALIDATION_CODE)
 				.isValidatedMobileNumber(true).userPassword(DEFAULT_ENCODED_PASSWORD).receiveNewsletter(true)
-				.creationDateTime(LocalDateTime.now());
+				.creationDateTime(ZonedDateTime.now(ZoneOffset.UTC));
 
 	}
 

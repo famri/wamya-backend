@@ -1,9 +1,16 @@
 package com.excentria_it.wamya.adapter.persistence.entity;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -30,6 +37,25 @@ public class ConstructorJpaEntity {
 
 	private String name;
 
+	@Builder.Default
+	@OneToMany(mappedBy = "constructor", cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST,
+			CascadeType.REFRESH }, orphanRemoval = true, fetch = FetchType.LAZY)
+	private Set<ModelJpaEntity> models = new HashSet<>();
+
+	public void addModel(ModelJpaEntity model) {
+		this.models.add(model);
+		model.setConstructor(this);
+	}
+
+	public void removeModel(ModelJpaEntity model) {
+		this.models.remove(model);
+		model.setConstructor(null);
+	}
+
+	public Long getId() {
+		return id;
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -38,8 +64,8 @@ public class ConstructorJpaEntity {
 		this.name = name;
 	}
 
-	public Long getId() {
-		return id;
+	public Set<ModelJpaEntity> getModels() {
+		return Collections.unmodifiableSet(models);
 	}
 
 	@Override

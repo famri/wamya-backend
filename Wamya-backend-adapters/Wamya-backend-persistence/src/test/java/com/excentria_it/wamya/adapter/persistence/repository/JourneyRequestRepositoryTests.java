@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.HashSet;
@@ -99,8 +98,8 @@ public class JourneyRequestRepositoryTests {
 				engineTypesListList.get(1).get(0), engineTypesListList.get(2).get(0));
 		InternationalCallingCodeJpaEntity icc = givenIcc("+216");
 		List<ClientJpaEntity> clients = givenClients(icc);
-		List<LocalDateTime> dates = givenLocalDateTimes();
-		List<LocalDateTime> endDates = givenEndDates();
+		List<ZonedDateTime> dates = givenLocalDateTimes();
+		List<ZonedDateTime> endDates = givenEndDates();
 		List<Double> distances = givenDistances();
 		List<List<ConstructorJpaEntity>> constructors = givenConstructors();
 		List<List<ModelJpaEntity>> models = givenModels(constructors);
@@ -114,7 +113,7 @@ public class JourneyRequestRepositoryTests {
 		givenJourneyRequests(departurePlaces, arrivalPlaces, engineTypes, distances, dates, endDates, List.of(2, 2, 2),
 				descriptions, clients, proposalsMap);
 
-		List<LocalDateTime> searchStartAndEndDates = getDateBeforeAndDateAfter(dates.get(0).toLocalDate());
+		List<ZonedDateTime> searchStartAndEndDates = getDateBeforeAndDateAfter(dates.get(0));
 
 		// When
 
@@ -122,8 +121,9 @@ public class JourneyRequestRepositoryTests {
 				.findByDeparturePlace_RegionIdAndArrivalPlace_RegionIdInAndEngineType_IdInAndDateBetween(
 						departurePlaces.get(0).getRegionId(),
 						Set.of(arrivalPlaces.get(0).getRegionId(), arrivalPlaces.get(1).getRegionId()),
-						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()), searchStartAndEndDates.get(0),
-						searchStartAndEndDates.get(1), "en_US", PageRequest.of(0, 1000,
+						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()),
+						searchStartAndEndDates.get(0).toInstant(), searchStartAndEndDates.get(1).toInstant(), "en_US",
+						PageRequest.of(0, 1000,
 								// Sort.by(List.of(new Order(Direction.DESC, "(minPrice)")))
 								JpaSort.unsafe(Direction.DESC, "(minPrice)")));
 
@@ -169,8 +169,8 @@ public class JourneyRequestRepositoryTests {
 
 		InternationalCallingCodeJpaEntity icc = givenIcc("+216");
 		List<ClientJpaEntity> clients = givenClients(icc);
-		List<LocalDateTime> dates = givenLocalDateTimes();
-		List<LocalDateTime> endDates = givenEndDates();
+		List<ZonedDateTime> dates = givenLocalDateTimes();
+		List<ZonedDateTime> endDates = givenEndDates();
 		List<Double> distances = givenDistances();
 		List<List<ConstructorJpaEntity>> constructors = givenConstructors();
 		List<List<ModelJpaEntity>> models = givenModels(constructors);
@@ -184,14 +184,15 @@ public class JourneyRequestRepositoryTests {
 		givenJourneyRequests(departurePlaces, arrivalPlaces, engineTypes, distances, dates, endDates, List.of(2, 2, 2),
 				descriptions, clients, proposalsMap);
 
-		List<LocalDateTime> searchStartAndEndDates = getDateBeforeAndDateAfter(dates.get(0).toLocalDate());
+		List<ZonedDateTime> searchStartAndEndDates = getDateBeforeAndDateAfter(dates.get(0));
 
 		// When
 
 		Page<JourneyRequestSearchDto> journeyRequests = journeyRequestRepository
 				.findByDeparturePlace_RegionIdAndEngineType_IdInAndDateBetween(departurePlaces.get(0).getRegionId(),
-						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()), searchStartAndEndDates.get(0),
-						searchStartAndEndDates.get(1), "en_US", PageRequest.of(0, 1000,
+						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()),
+						searchStartAndEndDates.get(0).toInstant(), searchStartAndEndDates.get(1).toInstant(), "en_US",
+						PageRequest.of(0, 1000,
 								// Sort.by(List.of(new Order(Direction.DESC, "(minPrice)")))
 								JpaSort.unsafe(Direction.DESC, "(minPrice)")));
 
@@ -237,8 +238,8 @@ public class JourneyRequestRepositoryTests {
 
 		InternationalCallingCodeJpaEntity icc = givenIcc("+216");
 		List<ClientJpaEntity> clients = givenClients(icc);
-		List<LocalDateTime> dates = givenLocalDateTimes();
-		List<LocalDateTime> endDates = givenEndDates();
+		List<ZonedDateTime> dates = givenLocalDateTimes();
+		List<ZonedDateTime> endDates = givenEndDates();
 		List<Double> distances = givenDistances();
 		List<List<ConstructorJpaEntity>> constructors = givenConstructors();
 		List<List<ModelJpaEntity>> models = givenModels(constructors);
@@ -252,7 +253,7 @@ public class JourneyRequestRepositoryTests {
 		givenJourneyRequests(departurePlaces, arrivalPlaces, engineTypes, distances, dates, endDates, List.of(2, 2, 2),
 				descriptions, clients, proposalsMap);
 
-		List<LocalDateTime> searchStartAndEndDates = getDateBeforeAndDateAfter(dates.get(0).toLocalDate());
+		List<ZonedDateTime> searchStartAndEndDates = getDateBeforeAndDateAfter(dates.get(0));
 
 		// When
 
@@ -260,8 +261,9 @@ public class JourneyRequestRepositoryTests {
 				.findByDeparturePlace_RegionIdAndArrivalPlace_RegionIdInAndEngineType_IdInAndDateBetween(
 						departurePlaces.get(0).getRegionId(),
 						Set.of(arrivalPlaces.get(0).getRegionId(), arrivalPlaces.get(1).getRegionId()),
-						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()), searchStartAndEndDates.get(0),
-						searchStartAndEndDates.get(1), "en_US", PageRequest.of(1, 1,
+						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()),
+						searchStartAndEndDates.get(0).toInstant(), searchStartAndEndDates.get(1).toInstant(), "en_US",
+						PageRequest.of(1, 1,
 								// Sort.by(List.of(new Order(Direction.DESC, "(minPrice)")))
 								JpaSort.unsafe(Direction.ASC, "(minPrice)")));
 
@@ -300,8 +302,8 @@ public class JourneyRequestRepositoryTests {
 
 		InternationalCallingCodeJpaEntity icc = givenIcc("+216");
 		List<ClientJpaEntity> clients = givenClients(icc);
-		List<LocalDateTime> dates = givenLocalDateTimes();
-		List<LocalDateTime> endDates = givenEndDates();
+		List<ZonedDateTime> dates = givenLocalDateTimes();
+		List<ZonedDateTime> endDates = givenEndDates();
 		List<Double> distances = givenDistances();
 		List<List<ConstructorJpaEntity>> constructors = givenConstructors();
 		List<List<ModelJpaEntity>> models = givenModels(constructors);
@@ -315,14 +317,15 @@ public class JourneyRequestRepositoryTests {
 		givenJourneyRequests(departurePlaces, arrivalPlaces, engineTypes, distances, dates, endDates, List.of(2, 2, 2),
 				descriptions, clients, proposalsMap);
 
-		List<LocalDateTime> searchStartAndEndDates = getDateBeforeAndDateAfter(dates.get(0).toLocalDate());
+		List<ZonedDateTime> searchStartAndEndDates = getDateBeforeAndDateAfter(dates.get(0));
 
 		// When
 
 		Page<JourneyRequestSearchDto> journeyRequests = journeyRequestRepository
 				.findByDeparturePlace_RegionIdAndEngineType_IdInAndDateBetween(departurePlaces.get(0).getRegionId(),
-						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()), searchStartAndEndDates.get(0),
-						searchStartAndEndDates.get(1), "en_US", PageRequest.of(1, 1,
+						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()),
+						searchStartAndEndDates.get(0).toInstant(), searchStartAndEndDates.get(1).toInstant(), "en_US",
+						PageRequest.of(1, 1,
 								// Sort.by(List.of(new Order(Direction.DESC, "(minPrice)")))
 								JpaSort.unsafe(Direction.ASC, "(minPrice)")));
 
@@ -364,8 +367,8 @@ public class JourneyRequestRepositoryTests {
 
 		InternationalCallingCodeJpaEntity icc = givenIcc("+216");
 		List<ClientJpaEntity> clients = givenClients(icc);
-		List<LocalDateTime> dates = givenLocalDateTimes();
-		List<LocalDateTime> endDates = givenEndDates();
+		List<ZonedDateTime> dates = givenLocalDateTimes();
+		List<ZonedDateTime> endDates = givenEndDates();
 		List<Double> distances = givenDistances();
 		List<List<ConstructorJpaEntity>> constructors = givenConstructors();
 		List<List<ModelJpaEntity>> models = givenModels(constructors);
@@ -379,7 +382,7 @@ public class JourneyRequestRepositoryTests {
 		givenJourneyRequests(departurePlaces, arrivalPlaces, engineTypes, distances, dates, endDates, List.of(2, 2, 2),
 				descriptions, clients, proposalsMap);
 
-		List<LocalDateTime> searchStartAndEndDates = getDateBeforeAndDateAfter(dates.get(0).toLocalDate());
+		List<ZonedDateTime> searchStartAndEndDates = getDateBeforeAndDateAfter(dates.get(0));
 
 		// When
 
@@ -387,8 +390,9 @@ public class JourneyRequestRepositoryTests {
 				.findByDeparturePlace_RegionIdAndArrivalPlace_RegionIdInAndEngineType_IdInAndDateBetween(
 						departurePlaces.get(0).getRegionId(),
 						Set.of(arrivalPlaces.get(0).getRegionId(), arrivalPlaces.get(1).getRegionId()),
-						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()), searchStartAndEndDates.get(0),
-						searchStartAndEndDates.get(1), "en_US", PageRequest.of(0, 1000,
+						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()),
+						searchStartAndEndDates.get(0).toInstant(), searchStartAndEndDates.get(1).toInstant(), "en_US",
+						PageRequest.of(0, 1000,
 
 								Sort.by(Direction.DESC, "dateTime")));
 
@@ -431,8 +435,8 @@ public class JourneyRequestRepositoryTests {
 
 		InternationalCallingCodeJpaEntity icc = givenIcc("+216");
 		List<ClientJpaEntity> clients = givenClients(icc);
-		List<LocalDateTime> dates = givenLocalDateTimes();
-		List<LocalDateTime> endDates = givenEndDates();
+		List<ZonedDateTime> dates = givenLocalDateTimes();
+		List<ZonedDateTime> endDates = givenEndDates();
 
 		List<Double> distances = givenDistances();
 
@@ -448,14 +452,15 @@ public class JourneyRequestRepositoryTests {
 		givenJourneyRequests(departurePlaces, arrivalPlaces, engineTypes, distances, dates, endDates, List.of(2, 2, 2),
 				descriptions, clients, proposalsMap);
 
-		List<LocalDateTime> searchStartAndEndDates = getDateBeforeAndDateAfter(dates.get(0).toLocalDate());
+		List<ZonedDateTime> searchStartAndEndDates = getDateBeforeAndDateAfter(dates.get(0));
 
 		// When
 
 		Page<JourneyRequestSearchDto> journeyRequests = journeyRequestRepository
 				.findByDeparturePlace_RegionIdAndEngineType_IdInAndDateBetween(departurePlaces.get(0).getRegionId(),
-						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()), searchStartAndEndDates.get(0),
-						searchStartAndEndDates.get(1), "en_US", PageRequest.of(0, 1000,
+						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()),
+						searchStartAndEndDates.get(0).toInstant(), searchStartAndEndDates.get(1).toInstant(), "en_US",
+						PageRequest.of(0, 1000,
 
 								Sort.by(Direction.DESC, "dateTime")));
 
@@ -498,8 +503,8 @@ public class JourneyRequestRepositoryTests {
 
 		InternationalCallingCodeJpaEntity icc = givenIcc("+216");
 		List<ClientJpaEntity> clients = givenClients(icc);
-		List<LocalDateTime> dates = givenLocalDateTimes();
-		List<LocalDateTime> endDates = givenEndDates();
+		List<ZonedDateTime> dates = givenLocalDateTimes();
+		List<ZonedDateTime> endDates = givenEndDates();
 
 		List<List<ConstructorJpaEntity>> constructors = givenConstructors();
 		List<List<ModelJpaEntity>> models = givenModels(constructors);
@@ -513,7 +518,7 @@ public class JourneyRequestRepositoryTests {
 		givenJourneyRequests(departurePlaces, arrivalPlaces, engineTypes, List.of(112.7D, 205.5, 308.2), dates,
 				endDates, List.of(2, 2, 2), descriptions, clients, proposalsMap);
 
-		List<LocalDateTime> searchStartAndEndDates = getDateBeforeAndDateAfter(dates.get(0).toLocalDate());
+		List<ZonedDateTime> searchStartAndEndDates = getDateBeforeAndDateAfter(dates.get(0));
 
 		// When
 
@@ -521,8 +526,9 @@ public class JourneyRequestRepositoryTests {
 				.findByDeparturePlace_RegionIdAndArrivalPlace_RegionIdInAndEngineType_IdInAndDateBetween(
 						departurePlaces.get(0).getRegionId(),
 						Set.of(arrivalPlaces.get(0).getRegionId(), arrivalPlaces.get(1).getRegionId()),
-						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()), searchStartAndEndDates.get(0),
-						searchStartAndEndDates.get(1), "en_US", PageRequest.of(0, 1000,
+						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()),
+						searchStartAndEndDates.get(0).toInstant(), searchStartAndEndDates.get(1).toInstant(), "en_US",
+						PageRequest.of(0, 1000,
 
 								Sort.by(Direction.DESC, "distance")));
 
@@ -565,8 +571,8 @@ public class JourneyRequestRepositoryTests {
 
 		InternationalCallingCodeJpaEntity icc = givenIcc("+216");
 		List<ClientJpaEntity> clients = givenClients(icc);
-		List<LocalDateTime> dates = givenLocalDateTimes();
-		List<LocalDateTime> endDates = givenEndDates();
+		List<ZonedDateTime> dates = givenLocalDateTimes();
+		List<ZonedDateTime> endDates = givenEndDates();
 
 		List<List<ConstructorJpaEntity>> constructors = givenConstructors();
 		List<List<ModelJpaEntity>> models = givenModels(constructors);
@@ -580,14 +586,15 @@ public class JourneyRequestRepositoryTests {
 		givenJourneyRequests(departurePlaces, arrivalPlaces, engineTypes, List.of(112.7D, 205.5, 308.2), dates,
 				endDates, List.of(2, 2, 2), descriptions, clients, proposalsMap);
 
-		List<LocalDateTime> searchStartAndEndDates = getDateBeforeAndDateAfter(dates.get(0).toLocalDate());
+		List<ZonedDateTime> searchStartAndEndDates = getDateBeforeAndDateAfter(dates.get(0));
 
 		// When
 
 		Page<JourneyRequestSearchDto> journeyRequests = journeyRequestRepository
 				.findByDeparturePlace_RegionIdAndEngineType_IdInAndDateBetween(departurePlaces.get(0).getRegionId(),
-						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()), searchStartAndEndDates.get(0),
-						searchStartAndEndDates.get(1), "en_US", PageRequest.of(0, 1000,
+						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()),
+						searchStartAndEndDates.get(0).toInstant(), searchStartAndEndDates.get(1).toInstant(), "en_US",
+						PageRequest.of(0, 1000,
 
 								Sort.by(Direction.DESC, "distance")));
 
@@ -629,8 +636,8 @@ public class JourneyRequestRepositoryTests {
 
 		InternationalCallingCodeJpaEntity icc = givenIcc("+216");
 		List<ClientJpaEntity> clients = givenClients(icc);
-		List<LocalDateTime> dates = givenLocalDateTimes();
-		List<LocalDateTime> endDates = givenEndDates();
+		List<ZonedDateTime> dates = givenLocalDateTimes();
+		List<ZonedDateTime> endDates = givenEndDates();
 
 		List<List<ConstructorJpaEntity>> constructors = givenConstructors();
 		List<List<ModelJpaEntity>> models = givenModels(constructors);
@@ -646,12 +653,12 @@ public class JourneyRequestRepositoryTests {
 
 		// When
 
-		LocalDateTime higherEdge = LocalDateTime.now();
-		LocalDateTime lowerEdge = endDates.get(0).minusDays(1);
+		ZonedDateTime higherEdge = ZonedDateTime.now(ZoneOffset.UTC);
+		ZonedDateTime lowerEdge = endDates.get(0).minusDays(1);
 
 		Page<ClientJourneyRequestDto> journeyRequests = journeyRequestRepository
-				.findByCreationDateTimeBetweenAndClient_Email(lowerEdge, higherEdge, clients.get(0).getEmail(), "en_US",
-						PageRequest.of(0, 25,
+				.findByCreationDateTimeBetweenAndClient_Email(lowerEdge.toInstant(), higherEdge.toInstant(),
+						clients.get(0).getEmail(), "en_US", PageRequest.of(0, 25,
 
 								Sort.by(Direction.DESC, "creationDateTime")));
 
@@ -684,8 +691,8 @@ public class JourneyRequestRepositoryTests {
 
 		InternationalCallingCodeJpaEntity icc = givenIcc("+216");
 		List<ClientJpaEntity> clients = givenClients(icc);
-		List<LocalDateTime> dates = givenLocalDateTimes();
-		List<LocalDateTime> endDates = givenEndDates();
+		List<ZonedDateTime> dates = givenLocalDateTimes();
+		List<ZonedDateTime> endDates = givenEndDates();
 
 		List<List<ConstructorJpaEntity>> constructors = givenConstructors();
 		List<List<ModelJpaEntity>> models = givenModels(constructors);
@@ -701,13 +708,13 @@ public class JourneyRequestRepositoryTests {
 
 		// When
 
-		LocalDateTime higherEdge = LocalDateTime.now();
-		LocalDateTime lowerEdge = endDates.get(0).minusDays(1);
+		ZonedDateTime higherEdge = ZonedDateTime.now(ZoneOffset.UTC);
+		ZonedDateTime lowerEdge = endDates.get(0).minusDays(1);
 
 		Page<ClientJourneyRequestDto> journeyRequests = journeyRequestRepository
-				.findByCreationDateTimeBetweenAndClient_MobileNumberAndClient_IccValue(lowerEdge, higherEdge,
-						clients.get(0).getMobileNumber(), clients.get(0).getIcc().getValue(), "en_US",
-						PageRequest.of(0, 25,
+				.findByCreationDateTimeBetweenAndClient_MobileNumberAndClient_IccValue(lowerEdge.toInstant(),
+						higherEdge.toInstant(), clients.get(0).getMobileNumber(), clients.get(0).getIcc().getValue(),
+						"en_US", PageRequest.of(0, 25,
 
 								Sort.by(Direction.DESC, "creationDateTime")));
 
@@ -735,14 +742,14 @@ public class JourneyRequestRepositoryTests {
 		return List.of(112.7D, 205.5, 308.2);
 	}
 
-	private List<LocalDateTime> getDateBeforeAndDateAfter(LocalDate date) {
+	private List<ZonedDateTime> getDateBeforeAndDateAfter(ZonedDateTime date) {
 
-		ZonedDateTime zonedDateTime = date.atStartOfDay(ZoneOffset.UTC);
+		ZonedDateTime zonedDateTime = date.toLocalDate().atStartOfDay(ZoneOffset.UTC);
 
-		LocalDateTime dateBefore = zonedDateTime.minusDays(1).toLocalDateTime();
+		ZonedDateTime dateBefore = zonedDateTime.minusDays(1);
 
-		LocalDateTime dateAfter = zonedDateTime.plusDays(1).plusHours(23).plusMinutes(59).plusSeconds(59)
-				.plusNanos(999999999).toLocalDateTime();
+		ZonedDateTime dateAfter = zonedDateTime.plusDays(1).plusHours(23).plusMinutes(59).plusSeconds(59)
+				.plusNanos(999999999);
 
 		return List.of(dateBefore, dateAfter);
 	}
@@ -753,27 +760,27 @@ public class JourneyRequestRepositoryTests {
 
 	}
 
-	private List<LocalDateTime> givenLocalDateTimes() {
+	private List<ZonedDateTime> givenLocalDateTimes() {
 
-		LocalDateTime ldt = LocalDateTime.of(2020, 12, 10, 12, 0, 0, 0);
+		ZonedDateTime zdt = ZonedDateTime.of(2020, 12, 10, 12, 0, 0, 0, ZoneOffset.UTC);
 
-		LocalDateTime tomorrow12PM = ldt.plusDays(1);
+		ZonedDateTime tomorrow12PM = zdt.plusDays(1);
 
-		LocalDateTime overmorrow12PM = tomorrow12PM.plusDays(1);
+		ZonedDateTime overmorrow12PM = tomorrow12PM.plusDays(1);
 
-		return List.of(ldt, tomorrow12PM, overmorrow12PM);
+		return List.of(zdt, tomorrow12PM, overmorrow12PM);
 
 	}
 
-	private List<LocalDateTime> givenEndDates() {
+	private List<ZonedDateTime> givenEndDates() {
 
-		LocalDateTime ldt = LocalDateTime.of(2020, 12, 9, 23, 59, 59, 999999999);
+		ZonedDateTime zdt = ZonedDateTime.of(2020, 12, 9, 23, 59, 59, 999999999, ZoneOffset.UTC);
 
-		LocalDateTime tomorrow11PM59 = ldt.plusDays(1);
+		ZonedDateTime tomorrow11PM59 = zdt.plusDays(1);
 
-		LocalDateTime overmorrowZoned11PM59 = tomorrow11PM59.plusDays(1);
+		ZonedDateTime overmorrowZoned11PM59 = tomorrow11PM59.plusDays(1);
 
-		return List.of(ldt, tomorrow11PM59, overmorrowZoned11PM59);
+		return List.of(zdt, tomorrow11PM59, overmorrowZoned11PM59);
 	}
 
 	private List<PlaceJpaEntity> givenDeparturePlaces() {
@@ -831,7 +838,7 @@ public class JourneyRequestRepositoryTests {
 
 		// Engine type 13
 		EngineTypeJpaEntity et13 = new EngineTypeJpaEntity();
-		et13.setCode(EngineTypeCode.VAN_L3H2);
+		et13.setCode(EngineTypeCode.VAN_L3H3);
 
 		LocalizedEngineTypeJpaEntity let13en = new LocalizedEngineTypeJpaEntity();
 		let13en.setLocalizedId(new LocalizedId("en_US"));
@@ -988,17 +995,17 @@ public class JourneyRequestRepositoryTests {
 	private List<List<ModelJpaEntity>> givenModels(List<List<ConstructorJpaEntity>> constructors) {
 
 		List<ModelJpaEntity> models1 = List.of(
-				ModelJpaEntity.builder().name("Model11").Constructor(constructors.get(0).get(0)).build(),
-				ModelJpaEntity.builder().name("Model12").Constructor(constructors.get(0).get(1)).build(),
-				ModelJpaEntity.builder().name("Model13").Constructor(constructors.get(0).get(2)).build());
+				ModelJpaEntity.builder().name("Model11").constructor(constructors.get(0).get(0)).build(),
+				ModelJpaEntity.builder().name("Model12").constructor(constructors.get(0).get(1)).build(),
+				ModelJpaEntity.builder().name("Model13").constructor(constructors.get(0).get(2)).build());
 		List<ModelJpaEntity> models2 = List.of(
-				ModelJpaEntity.builder().name("Model21").Constructor(constructors.get(1).get(0)).build(),
-				ModelJpaEntity.builder().name("Model22").Constructor(constructors.get(1).get(1)).build(),
-				ModelJpaEntity.builder().name("Model23").Constructor(constructors.get(1).get(2)).build());
+				ModelJpaEntity.builder().name("Model21").constructor(constructors.get(1).get(0)).build(),
+				ModelJpaEntity.builder().name("Model22").constructor(constructors.get(1).get(1)).build(),
+				ModelJpaEntity.builder().name("Model23").constructor(constructors.get(1).get(2)).build());
 		List<ModelJpaEntity> models3 = List.of(
-				ModelJpaEntity.builder().name("Model31").Constructor(constructors.get(2).get(0)).build(),
-				ModelJpaEntity.builder().name("Model32").Constructor(constructors.get(2).get(1)).build(),
-				ModelJpaEntity.builder().name("Model33").Constructor(constructors.get(2).get(2)).build());
+				ModelJpaEntity.builder().name("Model31").constructor(constructors.get(2).get(0)).build(),
+				ModelJpaEntity.builder().name("Model32").constructor(constructors.get(2).get(1)).build(),
+				ModelJpaEntity.builder().name("Model33").constructor(constructors.get(2).get(2)).build());
 
 		models1 = modelRepository.saveAll(models1);
 		models2 = modelRepository.saveAll(models2);
@@ -1114,31 +1121,31 @@ public class JourneyRequestRepositoryTests {
 	}
 
 	private void givenJourneyRequests(List<PlaceJpaEntity> departurePlaces, List<PlaceJpaEntity> arrivalPlaces,
-			List<EngineTypeJpaEntity> engineTypes, List<Double> distances, List<LocalDateTime> dates,
-			List<LocalDateTime> endDates, List<Integer> workers, List<String> descriptions,
+			List<EngineTypeJpaEntity> engineTypes, List<Double> distances, List<ZonedDateTime> dates,
+			List<ZonedDateTime> endDates, List<Integer> workers, List<String> descriptions,
 			List<ClientJpaEntity> clients, Map<Integer, Set<JourneyProposalJpaEntity>> proposalsMap) {
 
 		JourneyRequestJpaEntity jrToday = JourneyRequestJpaEntity.builder().departurePlace(departurePlaces.get(0))
 				.arrivalPlace(arrivalPlaces.get(0)).engineType(engineTypes.get(0)).distance(distances.get(0))
-				.dateTime(dates.get(0)).endDateTime(endDates.get(0)).workers(workers.get(0))
+				.dateTime(dates.get(0).toInstant()).endDateTime(endDates.get(0).toInstant()).workers(workers.get(0))
 				.description(descriptions.get(0)).client(clients.get(0)).proposals(proposalsMap.get(0))
-				.creationDateTime(endDates.get(0).minusDays(1)).build();
+				.creationDateTime(endDates.get(0).minusDays(1).toInstant()).build();
 		proposalsMap.get(0).forEach(p -> p.setJourneyRequest(jrToday));
 		clients.get(0).addJourneyRequest(jrToday);
 
 		JourneyRequestJpaEntity jrTomorrow = JourneyRequestJpaEntity.builder().departurePlace(departurePlaces.get(1))
 				.arrivalPlace(arrivalPlaces.get(1)).engineType(engineTypes.get(1)).distance(distances.get(1))
-				.dateTime(dates.get(1)).endDateTime(endDates.get(1)).workers(workers.get(1))
+				.dateTime(dates.get(1).toInstant()).endDateTime(endDates.get(1).toInstant()).workers(workers.get(1))
 				.description(descriptions.get(1)).client(clients.get(1)).proposals(proposalsMap.get(1))
-				.creationDateTime(endDates.get(1).minusDays(1)).build();
+				.creationDateTime(endDates.get(1).minusDays(1).toInstant()).build();
 		proposalsMap.get(1).forEach(p -> p.setJourneyRequest(jrTomorrow));
 		clients.get(1).addJourneyRequest(jrTomorrow);
 
 		JourneyRequestJpaEntity jrOvermorrow = JourneyRequestJpaEntity.builder().departurePlace(departurePlaces.get(2))
 				.arrivalPlace(arrivalPlaces.get(2)).engineType(engineTypes.get(2)).distance(distances.get(2))
-				.dateTime(dates.get(2)).endDateTime(endDates.get(2)).workers(workers.get(2))
+				.dateTime(dates.get(2).toInstant()).endDateTime(endDates.get(2).toInstant()).workers(workers.get(2))
 				.description(descriptions.get(2)).client(clients.get(2)).proposals(proposalsMap.get(2))
-				.creationDateTime(endDates.get(2).minusDays(1)).build();
+				.creationDateTime(endDates.get(2).minusDays(1).toInstant()).build();
 		proposalsMap.get(2).forEach(p -> p.setJourneyRequest(jrOvermorrow));
 		clients.get(2).addJourneyRequest(jrOvermorrow);
 

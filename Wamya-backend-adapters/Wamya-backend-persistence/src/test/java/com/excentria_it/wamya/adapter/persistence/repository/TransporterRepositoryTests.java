@@ -289,7 +289,7 @@ public class TransporterRepositoryTests {
 
 		// Engine type 13
 		EngineTypeJpaEntity et13 = new EngineTypeJpaEntity();
-		et13.setCode(EngineTypeCode.VAN_L3H2);
+		et13.setCode(EngineTypeCode.VAN_L3H3);
 
 		LocalizedEngineTypeJpaEntity let13en = new LocalizedEngineTypeJpaEntity();
 		let13en.setLocalizedId(new LocalizedId("en_US"));
@@ -446,17 +446,17 @@ public class TransporterRepositoryTests {
 	private List<List<ModelJpaEntity>> givenModels(List<List<ConstructorJpaEntity>> constructors) {
 
 		List<ModelJpaEntity> models1 = List.of(
-				ModelJpaEntity.builder().name("Model11").Constructor(constructors.get(0).get(0)).build(),
-				ModelJpaEntity.builder().name("Model12").Constructor(constructors.get(0).get(1)).build(),
-				ModelJpaEntity.builder().name("Model13").Constructor(constructors.get(0).get(2)).build());
+				ModelJpaEntity.builder().name("Model11").constructor(constructors.get(0).get(0)).build(),
+				ModelJpaEntity.builder().name("Model12").constructor(constructors.get(0).get(1)).build(),
+				ModelJpaEntity.builder().name("Model13").constructor(constructors.get(0).get(2)).build());
 		List<ModelJpaEntity> models2 = List.of(
-				ModelJpaEntity.builder().name("Model21").Constructor(constructors.get(1).get(0)).build(),
-				ModelJpaEntity.builder().name("Model22").Constructor(constructors.get(1).get(1)).build(),
-				ModelJpaEntity.builder().name("Model23").Constructor(constructors.get(1).get(2)).build());
+				ModelJpaEntity.builder().name("Model21").constructor(constructors.get(1).get(0)).build(),
+				ModelJpaEntity.builder().name("Model22").constructor(constructors.get(1).get(1)).build(),
+				ModelJpaEntity.builder().name("Model23").constructor(constructors.get(1).get(2)).build());
 		List<ModelJpaEntity> models3 = List.of(
-				ModelJpaEntity.builder().name("Model31").Constructor(constructors.get(2).get(0)).build(),
-				ModelJpaEntity.builder().name("Model32").Constructor(constructors.get(2).get(1)).build(),
-				ModelJpaEntity.builder().name("Model33").Constructor(constructors.get(2).get(2)).build());
+				ModelJpaEntity.builder().name("Model31").constructor(constructors.get(2).get(0)).build(),
+				ModelJpaEntity.builder().name("Model32").constructor(constructors.get(2).get(1)).build(),
+				ModelJpaEntity.builder().name("Model33").constructor(constructors.get(2).get(2)).build());
 
 		models1 = modelRepository.saveAll(models1);
 		models2 = modelRepository.saveAll(models2);

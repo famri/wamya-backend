@@ -1,6 +1,6 @@
 package com.excentria_it.wamya.domain;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Set;
 
 import com.excentria_it.wamya.common.SortCriterion;
@@ -20,9 +20,9 @@ public class SearchJourneyRequestsCriteria {
 
 	private Set<String> arrivalPlaceRegionIds;
 
-	private LocalDateTime startDateTime;
+	private Instant startDateTime;
 
-	private LocalDateTime endDateTime;
+	private Instant endDateTime;
 
 	private Set<Long> engineTypes;
 

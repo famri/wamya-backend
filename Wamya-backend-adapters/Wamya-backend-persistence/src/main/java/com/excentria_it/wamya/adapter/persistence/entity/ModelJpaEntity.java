@@ -4,6 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -30,16 +31,17 @@ public class ModelJpaEntity {
 	private Long id;
 
 	@ManyToOne
-	private ConstructorJpaEntity Constructor;
+	@JoinColumn(name = "constructor_id")
+	private ConstructorJpaEntity constructor;
 
 	private String name;
 
 	public ConstructorJpaEntity getConstructor() {
-		return Constructor;
+		return constructor;
 	}
 
 	public void setConstructor(ConstructorJpaEntity constructor) {
-		Constructor = constructor;
+		this.constructor = constructor;
 	}
 
 	public String getName() {
@@ -80,7 +82,7 @@ public class ModelJpaEntity {
 
 	@Override
 	public String toString() {
-		return "ModelJpaEntity [id=" + id + ", Constructor=" + Constructor + ", name=" + name + "]";
+		return "ModelJpaEntity [id=" + id + ", Constructor=" + constructor + ", name=" + name + "]";
 	}
 
 }

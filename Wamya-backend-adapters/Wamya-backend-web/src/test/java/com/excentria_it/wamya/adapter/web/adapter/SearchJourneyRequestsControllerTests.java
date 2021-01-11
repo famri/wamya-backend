@@ -37,7 +37,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @WebMvcTest(controllers = SearchJourneyRequestsController.class)
 public class SearchJourneyRequestsControllerTests {
 
-	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
 
 	@Autowired
 	private MockMvcSupport api;
