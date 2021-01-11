@@ -14,10 +14,10 @@ public interface TransporterRepository extends JpaRepository<TransporterJpaEntit
 
 	Optional<TransporterJpaEntity> findByEmail(String email);
 
-	@Query("SELECT t FROM TransporterJpaEntity t JOIN FETCH t.vehicules v WHERE  t.email = :email")
+	@Query("SELECT t FROM TransporterJpaEntity t LEFT JOIN t.vehicules v WHERE  t.email = :email")
 	Optional<TransporterJpaEntity> findTransporterWithVehiculesByEmail(@Param("email") String email);
 
-	@Query("SELECT t from TransporterJpaEntity t JOIN FETCH t.vehicules v  WHERE t.icc.value = :internationalCallingCode AND t.mobileNumber = :mobileNumber")
+	@Query("SELECT t from TransporterJpaEntity t LEFT JOIN t.vehicules v  WHERE t.icc.value = :internationalCallingCode AND t.mobileNumber = :mobileNumber")
 	Optional<TransporterJpaEntity> findTransporterWithVehiculesByMobilePhoneNumber(
 			@Param("internationalCallingCode") String internationalCallingCode,
 			@Param("mobileNumber") String mobileNumber);

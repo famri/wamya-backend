@@ -118,6 +118,32 @@ INSERT INTO public.localized_journey_proposal_status(id, locale, value) VALUES (
 INSERT INTO public.localized_journey_proposal_status(id, locale, value) VALUES (4, 'fr_FR', 'acceptée')ON CONFLICT DO NOTHING;
 
 
+			
+/*************************************
+* INSERTING VEHICULES CONSTRUCTORS
+*************************************/
+
+INSERT INTO public.vehicule_constructor(id, name) VALUES (1, 'CITROEN');
+INSERT INTO public.vehicule_constructor(id, name) VALUES (2, 'FIAT');
+INSERT INTO public.vehicule_constructor(id, name) VALUES (3, 'IVECO');
+
+
+			
+/*************************************
+* INSERTING VEHICULES MODELS
+*************************************/
+INSERT INTO public.vehicule_model( id, name, constructor_id, length, height, width) VALUES (1, 'BERLINGO B9 COURT', 1, 4.34, 1.85, 1.8);
+INSERT INTO public.vehicule_model( id, name, constructor_id, length, height, width) VALUES (2, 'BERLINGO B9 LONG', 1, 4.59, 1.85, 1.8);
+INSERT INTO public.vehicule_model( id, name, constructor_id, length, height, width) VALUES (3, 'BERLINGO COURT', 1, 4.11, 1.8, 1.72);
+
+INSERT INTO public.vehicule_model( id, name, constructor_id, length, height, width) VALUES (4, 'DOBLO CARGO', 2, 4.16, 1.8, 1.71);
+INSERT INTO public.vehicule_model( id, name, constructor_id, length, height, width) VALUES (5, 'DOBLO CARGO 1.3 MULTIJET', 2, 4.38, 1.81, 1.81);
+INSERT INTO public.vehicule_model( id, name, constructor_id, length, height, width) VALUES (6, 'DUCATO', 2, 4.65, 2.13, 1.99);
+
+INSERT INTO public.vehicule_model( id, name, constructor_id, length, height, width) VALUES (7, 'DAILY', 3, 4.9, 2.71, 1.9);
+INSERT INTO public.vehicule_model( id, name, constructor_id, length, height, width) VALUES (8, 'DAILY 170 HIMATIC', 3, 6.99, 2.41, 2.01);
+INSERT INTO public.vehicule_model( id, name, constructor_id, length, height, width) VALUES (9, 'DAILY 29 L H1', 3, 5.07, 2.26, 1.99);
+
 
 
 

@@ -30,18 +30,20 @@ public class ModelJpaEntity {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = MODEL_SEQ)
 	private Long id;
 
+	private String name;
+
 	@ManyToOne
 	@JoinColumn(name = "constructor_id")
 	private ConstructorJpaEntity constructor;
 
-	private String name;
+	private Double length;
 
-	public ConstructorJpaEntity getConstructor() {
-		return constructor;
-	}
+	private Double width;
 
-	public void setConstructor(ConstructorJpaEntity constructor) {
-		this.constructor = constructor;
+	private Double height;
+
+	public Long getId() {
+		return id;
 	}
 
 	public String getName() {
@@ -52,8 +54,36 @@ public class ModelJpaEntity {
 		this.name = name;
 	}
 
-	public Long getId() {
-		return id;
+	public ConstructorJpaEntity getConstructor() {
+		return constructor;
+	}
+
+	public void setConstructor(ConstructorJpaEntity constructor) {
+		this.constructor = constructor;
+	}
+
+	public Double getLength() {
+		return length;
+	}
+
+	public void setLength(Double length) {
+		this.length = length;
+	}
+
+	public Double getWidth() {
+		return width;
+	}
+
+	public void setWidth(Double width) {
+		this.width = width;
+	}
+
+	public Double getHeight() {
+		return height;
+	}
+
+	public void setHeight(Double height) {
+		this.height = height;
 	}
 
 	@Override
@@ -82,7 +112,10 @@ public class ModelJpaEntity {
 
 	@Override
 	public String toString() {
-		return "ModelJpaEntity [id=" + id + ", Constructor=" + constructor + ", name=" + name + "]";
+		return "ModelJpaEntity [id=" + id + ", name=" + name + ", constructor=" + constructor + ", length=" + length
+				+ ", width=" + width + ", height=" + height + "]";
 	}
+
+
 
 }

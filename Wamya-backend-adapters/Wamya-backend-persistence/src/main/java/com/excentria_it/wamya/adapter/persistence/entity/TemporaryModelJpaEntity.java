@@ -32,6 +32,10 @@ public class TemporaryModelJpaEntity {
 
 	private String modelName;
 
+	public Long getId() {
+		return id;
+	}
+
 	public String getConstructorName() {
 		return constructorName;
 	}
@@ -46,10 +50,6 @@ public class TemporaryModelJpaEntity {
 
 	public void setModelName(String modelName) {
 		this.modelName = modelName;
-	}
-
-	public Long getId() {
-		return id;
 	}
 
 	@Override

@@ -2,6 +2,7 @@ package com.excentria_it.wamya.adapter.persistence.entity;
 
 import java.time.LocalDate;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -45,7 +46,7 @@ public class VehiculeJpaEntity {
 
 	private String photoUrl;
 
-	@OneToOne
+	@OneToOne(cascade = { CascadeType.ALL })
 	@JoinColumn(name = "temporary_model_id", unique = true, nullable = true, updatable = true)
 	private TemporaryModelJpaEntity temporaryModel;
 
