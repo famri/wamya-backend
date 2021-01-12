@@ -12,6 +12,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.excentria_it.wamya.adapter.persistence.entity.EngineTypeJpaEntity;
@@ -19,6 +22,7 @@ import com.excentria_it.wamya.adapter.persistence.entity.EngineTypeJpaEntity.Eng
 import com.excentria_it.wamya.adapter.persistence.entity.LocalizedEngineTypeJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.LocalizedId;
 import com.excentria_it.wamya.domain.EngineTypeDto;
+import com.excentria_it.wamya.domain.LoadEngineTypesDto;
 
 @DataJpaTest
 @ActiveProfiles(profiles = { "persistence-local" })
@@ -53,11 +57,23 @@ public class EngineTypeRepositoryTests {
 
 	}
 
+	@Test
+	void testFindAllByLocale() {
+		// given
+		List<List<EngineTypeJpaEntity>> engineTypes = givenEngineTypes();
+		// when
+		List<LoadEngineTypesDto> engineTypesListResult = engineTypeRepository.findAllByLocale("en_US",
+				Sort.by(new Order(Direction.ASC, "rank")));
+
+		// then
+		
+	}
+
 	private List<List<EngineTypeJpaEntity>> givenEngineTypes() {
 		// Engine type 11
 		EngineTypeJpaEntity et11 = new EngineTypeJpaEntity();
 		et11.setCode(EngineTypeCode.VAN_L1H1);
-
+		et11.setRank(1);
 		LocalizedEngineTypeJpaEntity let11en = new LocalizedEngineTypeJpaEntity();
 		let11en.setLocalizedId(new LocalizedId("en_US"));
 		let11en.setEngineType(et11);
@@ -75,7 +91,7 @@ public class EngineTypeRepositoryTests {
 		// Engine type 12
 		EngineTypeJpaEntity et12 = new EngineTypeJpaEntity();
 		et12.setCode(EngineTypeCode.VAN_L2H2);
-
+		et12.setRank(2);
 		LocalizedEngineTypeJpaEntity let12en = new LocalizedEngineTypeJpaEntity();
 		let12en.setLocalizedId(new LocalizedId("en_US"));
 		let12en.setEngineType(et12);
@@ -93,7 +109,7 @@ public class EngineTypeRepositoryTests {
 		// Engine type 13
 		EngineTypeJpaEntity et13 = new EngineTypeJpaEntity();
 		et13.setCode(EngineTypeCode.VAN_L3H3);
-
+		et13.setRank(3);
 		LocalizedEngineTypeJpaEntity let13en = new LocalizedEngineTypeJpaEntity();
 		let13en.setLocalizedId(new LocalizedId("en_US"));
 		let13en.setEngineType(et13);
@@ -111,7 +127,7 @@ public class EngineTypeRepositoryTests {
 		// Engine type 21
 		EngineTypeJpaEntity et21 = new EngineTypeJpaEntity();
 		et21.setCode(EngineTypeCode.FLATBED_TRUCK);
-
+		et21.setRank(4);
 		LocalizedEngineTypeJpaEntity let21en = new LocalizedEngineTypeJpaEntity();
 		let21en.setLocalizedId(new LocalizedId("en_US"));
 		let21en.setEngineType(et21);
@@ -129,7 +145,7 @@ public class EngineTypeRepositoryTests {
 		// Engine type 22
 		EngineTypeJpaEntity et22 = new EngineTypeJpaEntity();
 		et22.setCode(EngineTypeCode.UTILITY);
-
+		et22.setRank(5);
 		LocalizedEngineTypeJpaEntity let22en = new LocalizedEngineTypeJpaEntity();
 		let22en.setLocalizedId(new LocalizedId("en_US"));
 		let22en.setEngineType(et22);
@@ -147,7 +163,7 @@ public class EngineTypeRepositoryTests {
 		// Engine type 23
 		EngineTypeJpaEntity et23 = new EngineTypeJpaEntity();
 		et23.setCode(EngineTypeCode.DUMP_TRUCK);
-		;
+		et23.setRank(6);
 
 		LocalizedEngineTypeJpaEntity let23en = new LocalizedEngineTypeJpaEntity();
 		let23en.setLocalizedId(new LocalizedId("en_US"));
@@ -166,7 +182,7 @@ public class EngineTypeRepositoryTests {
 		// Engine type 31
 		EngineTypeJpaEntity et31 = new EngineTypeJpaEntity();
 		et31.setCode(EngineTypeCode.BOX_TRUCK);
-
+		et31.setRank(7);
 		LocalizedEngineTypeJpaEntity let31en = new LocalizedEngineTypeJpaEntity();
 		let31en.setLocalizedId(new LocalizedId("en_US"));
 		let31en.setEngineType(et31);
@@ -184,7 +200,7 @@ public class EngineTypeRepositoryTests {
 		// Engine type 32
 		EngineTypeJpaEntity et32 = new EngineTypeJpaEntity();
 		et32.setCode(EngineTypeCode.TANKER);
-
+		et32.setRank(8);
 		LocalizedEngineTypeJpaEntity let32en = new LocalizedEngineTypeJpaEntity();
 		let32en.setLocalizedId(new LocalizedId("en_US"));
 		let32en.setEngineType(et32);
@@ -202,7 +218,7 @@ public class EngineTypeRepositoryTests {
 		// Engine type 33
 		EngineTypeJpaEntity et33 = new EngineTypeJpaEntity();
 		et33.setCode(EngineTypeCode.BUS);
-
+		et33.setRank(9);
 		LocalizedEngineTypeJpaEntity let33en = new LocalizedEngineTypeJpaEntity();
 		let33en.setLocalizedId(new LocalizedId("en_US"));
 		let33en.setEngineType(et33);

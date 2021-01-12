@@ -41,6 +41,8 @@ public class EngineTypeJpaEntity {
 
 	private String defaultPhotoUri;
 
+	private Integer rank;
+
 	@Builder.Default
 	@OneToMany(mappedBy = "engineType", cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST,
 			CascadeType.REFRESH }, orphanRemoval = true)
@@ -77,6 +79,14 @@ public class EngineTypeJpaEntity {
 
 	public void setDefaultPhotoUri(String defaultPhotoUri) {
 		this.defaultPhotoUri = defaultPhotoUri;
+	}
+
+	public Integer getRank() {
+		return rank;
+	}
+
+	public void setRank(Integer rank) {
+		this.rank = rank;
 	}
 
 	@Override

@@ -59,7 +59,7 @@ public class CreateJourneyRequestService implements CreateJourneyRequestUseCase 
 					mobileNumber[1]);
 		}
 
-		if (userAccountOptional == null || userAccountOptional.isEmpty()) {
+		if (userAccountOptional.isEmpty()) {
 			throw new UserAccountNotFoundException("User " + username + " does not exist.");
 		}
 

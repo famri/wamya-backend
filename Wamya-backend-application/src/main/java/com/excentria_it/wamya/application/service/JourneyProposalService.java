@@ -99,7 +99,7 @@ public class JourneyProposalService implements MakeProposalUseCase, LoadProposal
 		Optional<CreateJourneyRequestDto> journeyRequestOptional = loadJourneyRequestPort
 				.loadJourneyRequestById(journeyRequestId);
 
-		if (journeyRequestOptional == null || journeyRequestOptional.isEmpty()) {
+		if (journeyRequestOptional.isEmpty()) {
 			throw new JourneyRequestNotFoundException("Journey request not found.");
 		}
 
@@ -123,7 +123,7 @@ public class JourneyProposalService implements MakeProposalUseCase, LoadProposal
 					journeyRequestId, mobileNumber[1], mobileNumber[0]);
 		}
 
-		if (journeyRequestOptional == null || journeyRequestOptional.isEmpty()) {
+		if (journeyRequestOptional.isEmpty()) {
 			throw new JourneyRequestNotFoundException(String.format("Journey request not found: %d", journeyRequestId));
 		}
 
@@ -152,14 +152,14 @@ public class JourneyProposalService implements MakeProposalUseCase, LoadProposal
 					journeyRequestId, mobileNumber[1], mobileNumber[0]);
 		}
 
-		if (journeyRequestOptional == null || journeyRequestOptional.isEmpty()) {
+		if (journeyRequestOptional.isEmpty()) {
 			throw new JourneyRequestNotFoundException(String.format("Journey request not found: %d", journeyRequestId));
 		}
 
 		Optional<JourneyProposalDto> journeyProposalDto = loadPropsalsPort
 				.loadJourneyProposalByIdAndJourneyRequestId(proposalId, journeyRequestId, locale);
 
-		if (journeyProposalDto == null || journeyProposalDto.isEmpty()) {
+		if (journeyProposalDto.isEmpty()) {
 			throw new JourneyProposalNotFoundException(String.format("Journey proposal not found: %d", proposalId));
 		}
 

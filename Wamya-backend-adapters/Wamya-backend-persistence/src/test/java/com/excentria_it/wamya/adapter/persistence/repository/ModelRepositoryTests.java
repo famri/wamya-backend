@@ -6,7 +6,6 @@ import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTest
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -21,69 +20,36 @@ import org.springframework.test.context.ActiveProfiles;
 
 import com.excentria_it.wamya.adapter.persistence.entity.ConstructorJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.ModelJpaEntity;
-import com.excentria_it.wamya.domain.ConstructorDto;
-import com.excentria_it.wamya.domain.LoadConstructorsDto;
+import com.excentria_it.wamya.domain.LoadModelsDto;
 
 @DataJpaTest
 @ActiveProfiles(profiles = { "persistence-local" })
 @AutoConfigureTestDatabase(replace = NONE)
-public class ConstructorRepositoryTests {
+public class ModelRepositoryTests {
+	@Autowired
+	private ModelRepository modelRepository;
 	@Autowired
 	private ConstructorRepository constructorRepository;
 
 	@BeforeEach
 	void cleanDatabase() {
-		constructorRepository.deleteAll();
+		modelRepository.deleteAll();
 	}
 
 	@Test
-	void testFindConstructorById() {
-
-		// given
+	void testFindByConstructor_Id() {
 		List<List<ModelJpaEntity>> models = givenModels();
 		List<ConstructorJpaEntity> constructors = givenConstructors(models);
 
-		// when
-		Optional<ConstructorDto> constructorDtoOptional = constructorRepository
-				.findConstructorById(constructors.get(0).getId());
-		ConstructorDto constructorDto = constructorDtoOptional.get();
+		List<LoadModelsDto> modelsListResult = modelRepository.findByConstructor_Id(constructors.get(0).getId(),
+				Sort.by(new Order(Direction.ASC, "name")));
 
-		// then
-		assertEquals(constructors.get(0).getId(), constructorDto.getId());
-		assertEquals(constructors.get(0).getName(), constructorDto.getName());
-
-		List<Long> modelDtosIds = constructorDto.getModels().stream().map(m -> m.getId()).collect(Collectors.toList());
-		List<String> modelDtosNames = constructorDto.getModels().stream().map(m -> m.getName())
+		List<String> modelsNames = models.get(0).stream().map(c -> c.getName()).sorted((n1, n2) -> n1.compareTo(n2))
 				.collect(Collectors.toList());
-
-		List<Long> modelIds = models.get(0).stream().map(m -> m.getId()).collect(Collectors.toList());
-
-		List<String> modelNames = models.get(0).stream().map(m -> m.getName()).collect(Collectors.toList());
-
-		assertTrue(modelDtosIds.size() == modelIds.size() && modelDtosIds.containsAll(modelIds));
-
-		assertTrue(modelDtosNames.size() == modelNames.size() && modelDtosNames.containsAll(modelNames));
-	}
-
-	@Test
-	void testLoadAllConstructors() {
-
-		// given
-		List<List<ModelJpaEntity>> models = givenModels();
-		List<ConstructorJpaEntity> constructors = givenConstructors(models);
-
-		// when
-		List<LoadConstructorsDto> constructorsListResult = constructorRepository
-				.findAllBy(Sort.by(new Order(Direction.DESC, "name")));
-
-		// then
-
-		List<String> constructorsNames = constructors.stream().map(c -> c.getName())
+		List<String> modelsListResultNames = modelsListResult.stream().map(c -> c.getName())
 				.sorted((n1, n2) -> n1.compareTo(n2)).collect(Collectors.toList());
-		List<String> constructorsListResultNames = constructorsListResult.stream().map(c -> c.getName())
-				.sorted((n1, n2) -> n1.compareTo(n2)).collect(Collectors.toList());
-		assertTrue(constructorsListResultNames.size() == constructorsNames.size()
-				&& constructorsNames.containsAll(constructorsListResultNames));
+		assertTrue(
+				modelsListResultNames.size() == modelsNames.size() && modelsNames.containsAll(modelsListResultNames));
 	}
 
 	private List<ConstructorJpaEntity> givenConstructors(List<List<ModelJpaEntity>> models) {

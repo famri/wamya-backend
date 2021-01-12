@@ -8,8 +8,10 @@ import org.springframework.test.web.servlet.ResultMatcher;
 
 import com.excentria_it.wamya.common.exception.ApiError;
 import com.excentria_it.wamya.common.exception.AuthServerError;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.module.mrbean.MrBeanModule;
 
 public class ResponseBodyMatchers {
 
@@ -18,6 +20,7 @@ public class ResponseBodyMatchers {
 	ResponseBodyMatchers() {
 		this.objectMapper = new ObjectMapper();
 		objectMapper.registerModule(new JavaTimeModule());
+		objectMapper.registerModule(new MrBeanModule());
 
 	}
 
@@ -26,6 +29,16 @@ public class ResponseBodyMatchers {
 			String json = mvcResult.getResponse().getContentAsString();
 			T actualObject = objectMapper.readValue(json, targetClass);
 			assertThat(actualObject).isEqualToComparingFieldByField(expectedObject);
+		};
+	}
+
+	public <T> ResultMatcher containsListOfObjectsAsJson(List<T> expectedObjectList,
+			TypeReference<List<T>> typeReference) {
+		return mvcResult -> {
+			String json = mvcResult.getResponse().getContentAsString();
+			List<T> actualObjectsList = objectMapper.readValue(json, typeReference);
+			assertThat(actualObjectsList.containsAll(expectedObjectList)
+					&& actualObjectsList.size() == expectedObjectList.size());
 		};
 	}
 

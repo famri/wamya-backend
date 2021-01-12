@@ -3,9 +3,50 @@ package com.excentria_it.wamya.test.data.common;
 import java.util.List;
 
 import com.excentria_it.wamya.domain.ConstructorDto;
+import com.excentria_it.wamya.domain.LoadConstructorsDto;
 import com.excentria_it.wamya.domain.ModelDto;
 
 public class ConstructorTestData {
+	private static final List<LoadConstructorsDto> loadConstructorsDtos = List.of(new LoadConstructorsDto() {
+
+		@Override
+		public Long getId() {
+			return 1L;
+		}
+
+		@Override
+		public String getName() {
+
+			return "Constructor1";
+		}
+
+	}, new LoadConstructorsDto() {
+
+		@Override
+		public Long getId() {
+			return 2L;
+		}
+
+		@Override
+		public String getName() {
+
+			return "Constructor2";
+		}
+
+	}, new LoadConstructorsDto() {
+
+		@Override
+		public Long getId() {
+			return 3L;
+		}
+
+		@Override
+		public String getName() {
+
+			return "Constructor3";
+		}
+
+	});
 
 	public static ConstructorDto defaultConstructorDto() {
 		return new ConstructorDto() {
@@ -55,5 +96,9 @@ public class ConstructorTestData {
 			}
 
 		};
+	}
+
+	public static List<LoadConstructorsDto> defaultLoadConstructorsDtos() {
+		return loadConstructorsDtos;
 	}
 }
