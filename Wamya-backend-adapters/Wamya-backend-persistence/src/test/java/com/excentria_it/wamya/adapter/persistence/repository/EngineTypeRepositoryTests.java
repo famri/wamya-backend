@@ -6,6 +6,7 @@ import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTest
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -66,7 +67,9 @@ public class EngineTypeRepositoryTests {
 				Sort.by(new Order(Direction.ASC, "rank")));
 
 		// then
-		
+		assertEquals(engineTypes.stream().flatMap(l -> l.stream()).map(et -> et.getId()).collect(Collectors.toList()),
+				engineTypesListResult.stream().map(et -> et.getId()).collect(Collectors.toList()));
+
 	}
 
 	private List<List<EngineTypeJpaEntity>> givenEngineTypes() {

@@ -216,9 +216,9 @@ public class JourneyRequestTestData {
 				}
 
 				@Override
-				public Integer getMinPrice() {
+				public Double getMinPrice() {
 
-					return 250;
+					return 250D;
 				}
 			}, new JourneyRequestSearchDto() {
 
@@ -281,9 +281,9 @@ public class JourneyRequestTestData {
 				}
 
 				@Override
-				public Integer getMinPrice() {
+				public Double getMinPrice() {
 
-					return 220;
+					return 220D;
 				}
 			});
 

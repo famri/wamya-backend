@@ -21,7 +21,7 @@ services:
   eureka:
     container_name: eureka
     build: Wamya-spring-cloud/eureka-server
-    mem_limit: 350m
+    mem_limit: 512m
 #    deploy:
 #      resources:
 #        limits:
@@ -66,7 +66,7 @@ services:
       - "9595:9595" 
     build: Wamya-spring-cloud/authorization-server
     entrypoint: ["java", "-Djava.security.egd=file:/dev/./urandom", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:9595", "-jar", "/app.jar"]
-    mem_limit: 350m
+    mem_limit: 512m
 #    deploy:
 #      resources:
 #        limits:

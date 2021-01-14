@@ -1,5 +1,6 @@
 package com.excentria_it.wamya.adapter.web.adapter;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -15,6 +16,7 @@ import com.excentria_it.wamya.application.port.in.LoadEngineTypesUseCase;
 import com.excentria_it.wamya.common.annotation.WebAdapter;
 import com.excentria_it.wamya.common.utils.LocaleUtils;
 import com.excentria_it.wamya.domain.LoadEngineTypesDto;
+import com.excentria_it.wamya.domain.LoadEngineTypesResult;
 
 import lombok.RequiredArgsConstructor;
 
@@ -29,11 +31,17 @@ public class EngineTypeController {
 
 	@GetMapping
 	@ResponseStatus(HttpStatus.OK)
-	public List<LoadEngineTypesDto> loadAllEngineTypes(Locale locale) {
+	public LoadEngineTypesResult loadAllEngineTypes(Locale locale) {
 
 		Locale supportedLocale = LocaleUtils.getSupporedLocale(locale);
 
-		return loadEngineTypesUseCase.loadAllEngineTypes(supportedLocale.toString());
+		List<LoadEngineTypesDto> loadEngineTypesDtos = loadEngineTypesUseCase
+				.loadAllEngineTypes(supportedLocale.toString());
+
+		if (loadEngineTypesDtos == null || loadEngineTypesDtos.isEmpty()) {
+			return new LoadEngineTypesResult(0, Collections.<LoadEngineTypesDto>emptyList());
+		}
+		return new LoadEngineTypesResult(loadEngineTypesDtos.size(), loadEngineTypesDtos);
 
 	}
 }

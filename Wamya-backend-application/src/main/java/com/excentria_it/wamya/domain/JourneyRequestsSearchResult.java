@@ -2,15 +2,10 @@ package com.excentria_it.wamya.domain;
 
 import java.util.List;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Value;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Data
-@Builder
+@Value
+
 public class JourneyRequestsSearchResult {
 
 	private int totalPages;

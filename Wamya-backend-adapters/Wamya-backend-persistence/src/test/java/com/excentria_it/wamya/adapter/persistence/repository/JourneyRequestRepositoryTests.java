@@ -133,13 +133,13 @@ public class JourneyRequestRepositoryTests {
 		assertEquals(2, journeyRequests.getNumberOfElements());
 
 		assertEquals(departurePlaces.get(0).getRegionId(),
-				journeyRequests.getContent().get(0).getDeparturePlace().getPlaceRegionId());
+				journeyRequests.getContent().get(0).getDeparturePlace().getRegionId());
 
 		assertEquals(departurePlaces.get(0).getRegionId(),
-				journeyRequests.getContent().get(1).getDeparturePlace().getPlaceRegionId());
+				journeyRequests.getContent().get(1).getDeparturePlace().getRegionId());
 
 		assertTrue(Set.of(arrivalPlaces.get(0).getRegionId(), arrivalPlaces.get(1).getRegionId())
-				.containsAll(journeyRequests.getContent().stream().map(jr -> jr.getArrivalPlace().getPlaceRegionId())
+				.containsAll(journeyRequests.getContent().stream().map(jr -> jr.getArrivalPlace().getRegionId())
 						.collect(Collectors.toSet())));
 
 		assertTrue(Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()).containsAll(journeyRequests
@@ -202,13 +202,13 @@ public class JourneyRequestRepositoryTests {
 		assertEquals(2, journeyRequests.getNumberOfElements());
 
 		assertEquals(departurePlaces.get(0).getRegionId(),
-				journeyRequests.getContent().get(0).getDeparturePlace().getPlaceRegionId());
+				journeyRequests.getContent().get(0).getDeparturePlace().getRegionId());
 
 		assertEquals(departurePlaces.get(0).getRegionId(),
-				journeyRequests.getContent().get(1).getDeparturePlace().getPlaceRegionId());
+				journeyRequests.getContent().get(1).getDeparturePlace().getRegionId());
 
 		assertTrue(Set.of(arrivalPlaces.get(0).getRegionId(), arrivalPlaces.get(1).getRegionId())
-				.containsAll(journeyRequests.getContent().stream().map(jr -> jr.getArrivalPlace().getPlaceRegionId())
+				.containsAll(journeyRequests.getContent().stream().map(jr -> jr.getArrivalPlace().getRegionId())
 						.collect(Collectors.toSet())));
 
 		assertTrue(Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()).containsAll(journeyRequests
@@ -273,10 +273,10 @@ public class JourneyRequestRepositoryTests {
 		assertEquals(1, journeyRequests.getNumberOfElements());
 
 		assertEquals(departurePlaces.get(0).getRegionId(),
-				journeyRequests.getContent().get(0).getDeparturePlace().getPlaceRegionId());
+				journeyRequests.getContent().get(0).getDeparturePlace().getRegionId());
 
 		assertTrue(Set.of(arrivalPlaces.get(0).getRegionId(), arrivalPlaces.get(1).getRegionId())
-				.containsAll(journeyRequests.getContent().stream().map(jr -> jr.getArrivalPlace().getPlaceRegionId())
+				.containsAll(journeyRequests.getContent().stream().map(jr -> jr.getArrivalPlace().getRegionId())
 						.collect(Collectors.toSet())));
 
 		assertTrue(Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()).containsAll(journeyRequests
@@ -335,13 +335,13 @@ public class JourneyRequestRepositoryTests {
 		assertEquals(1, journeyRequests.getNumberOfElements());
 
 		assertEquals(departurePlaces.get(0).getRegionId(),
-				journeyRequests.getContent().get(0).getDeparturePlace().getPlaceRegionId());
+				journeyRequests.getContent().get(0).getDeparturePlace().getRegionId());
 
 		assertEquals(departurePlaces.get(0).getRegionId(),
-				journeyRequests.getContent().get(0).getDeparturePlace().getPlaceRegionId());
+				journeyRequests.getContent().get(0).getDeparturePlace().getRegionId());
 
 		assertTrue(Set.of(arrivalPlaces.get(0).getRegionId(), arrivalPlaces.get(1).getRegionId())
-				.containsAll(journeyRequests.getContent().stream().map(jr -> jr.getArrivalPlace().getPlaceRegionId())
+				.containsAll(journeyRequests.getContent().stream().map(jr -> jr.getArrivalPlace().getRegionId())
 						.collect(Collectors.toSet())));
 
 		assertTrue(Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()).containsAll(journeyRequests
@@ -402,13 +402,13 @@ public class JourneyRequestRepositoryTests {
 		assertEquals(2, journeyRequests.getNumberOfElements());
 
 		assertEquals(departurePlaces.get(0).getRegionId(),
-				journeyRequests.getContent().get(0).getDeparturePlace().getPlaceRegionId());
+				journeyRequests.getContent().get(0).getDeparturePlace().getRegionId());
 
 		assertEquals(departurePlaces.get(0).getRegionId(),
-				journeyRequests.getContent().get(1).getDeparturePlace().getPlaceRegionId());
+				journeyRequests.getContent().get(1).getDeparturePlace().getRegionId());
 
 		assertTrue(Set.of(arrivalPlaces.get(0).getRegionId(), arrivalPlaces.get(1).getRegionId())
-				.containsAll(journeyRequests.getContent().stream().map(jr -> jr.getArrivalPlace().getPlaceRegionId())
+				.containsAll(journeyRequests.getContent().stream().map(jr -> jr.getArrivalPlace().getRegionId())
 						.collect(Collectors.toSet())));
 
 		assertTrue(Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()).containsAll(journeyRequests
@@ -470,13 +470,13 @@ public class JourneyRequestRepositoryTests {
 		assertEquals(2, journeyRequests.getNumberOfElements());
 
 		assertEquals(departurePlaces.get(0).getRegionId(),
-				journeyRequests.getContent().get(0).getDeparturePlace().getPlaceRegionId());
+				journeyRequests.getContent().get(0).getDeparturePlace().getRegionId());
 
 		assertEquals(departurePlaces.get(0).getRegionId(),
-				journeyRequests.getContent().get(1).getDeparturePlace().getPlaceRegionId());
+				journeyRequests.getContent().get(1).getDeparturePlace().getRegionId());
 
 		assertTrue(Set.of(arrivalPlaces.get(0).getRegionId(), arrivalPlaces.get(1).getRegionId())
-				.containsAll(journeyRequests.getContent().stream().map(jr -> jr.getArrivalPlace().getPlaceRegionId())
+				.containsAll(journeyRequests.getContent().stream().map(jr -> jr.getArrivalPlace().getRegionId())
 						.collect(Collectors.toSet())));
 
 		assertTrue(Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()).containsAll(journeyRequests
@@ -538,13 +538,13 @@ public class JourneyRequestRepositoryTests {
 		assertEquals(2, journeyRequests.getNumberOfElements());
 
 		assertEquals(departurePlaces.get(0).getRegionId(),
-				journeyRequests.getContent().get(0).getDeparturePlace().getPlaceRegionId());
+				journeyRequests.getContent().get(0).getDeparturePlace().getRegionId());
 
 		assertEquals(departurePlaces.get(0).getRegionId(),
-				journeyRequests.getContent().get(1).getDeparturePlace().getPlaceRegionId());
+				journeyRequests.getContent().get(1).getDeparturePlace().getRegionId());
 
 		assertTrue(Set.of(arrivalPlaces.get(0).getRegionId(), arrivalPlaces.get(1).getRegionId())
-				.containsAll(journeyRequests.getContent().stream().map(jr -> jr.getArrivalPlace().getPlaceRegionId())
+				.containsAll(journeyRequests.getContent().stream().map(jr -> jr.getArrivalPlace().getRegionId())
 						.collect(Collectors.toSet())));
 
 		assertTrue(Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()).containsAll(journeyRequests
@@ -604,13 +604,13 @@ public class JourneyRequestRepositoryTests {
 		assertEquals(2, journeyRequests.getNumberOfElements());
 
 		assertEquals(departurePlaces.get(0).getRegionId(),
-				journeyRequests.getContent().get(0).getDeparturePlace().getPlaceRegionId());
+				journeyRequests.getContent().get(0).getDeparturePlace().getRegionId());
 
 		assertEquals(departurePlaces.get(0).getRegionId(),
-				journeyRequests.getContent().get(1).getDeparturePlace().getPlaceRegionId());
+				journeyRequests.getContent().get(1).getDeparturePlace().getRegionId());
 
 		assertTrue(Set.of(arrivalPlaces.get(0).getRegionId(), arrivalPlaces.get(1).getRegionId())
-				.containsAll(journeyRequests.getContent().stream().map(jr -> jr.getArrivalPlace().getPlaceRegionId())
+				.containsAll(journeyRequests.getContent().stream().map(jr -> jr.getArrivalPlace().getRegionId())
 						.collect(Collectors.toSet())));
 
 		assertTrue(Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()).containsAll(journeyRequests

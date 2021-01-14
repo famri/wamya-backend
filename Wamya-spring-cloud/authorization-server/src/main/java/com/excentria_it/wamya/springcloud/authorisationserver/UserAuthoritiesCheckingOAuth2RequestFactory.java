@@ -41,13 +41,21 @@ public class UserAuthoritiesCheckingOAuth2RequestFactory extends DefaultOAuth2Re
 
 			Set<String> userGrantedAuthoritiesStr = userGrantedAuthorities.stream().map(a -> a.getAuthority())
 					.collect(Collectors.toSet());
-			
+
 			Set<String> filteredScopes = new LinkedHashSet<String>();
 
-			for (String scope : requestedScopes) {
-				if (userGrantedAuthoritiesStr.contains(scope) || userGrantedAuthoritiesStr.contains(scope.toUpperCase())
-						|| userGrantedAuthoritiesStr.contains("ROLE_" + scope.toUpperCase())) {
-					filteredScopes.add(scope);
+			if (requestedScopes == null || requestedScopes.isEmpty()) {
+				userGrantedAuthoritiesStr.forEach(a -> {
+					if (!a.startsWith("ROLE_")) {
+						filteredScopes.add(a);
+					}
+				});
+			} else {
+				for (String scope : requestedScopes) {
+					if (userGrantedAuthoritiesStr.contains(scope)
+							|| userGrantedAuthoritiesStr.contains(scope.toUpperCase())) {
+						filteredScopes.add(scope);
+					}
 				}
 			}
 			requestParameters.put(OAuth2Utils.SCOPE, StringUtils.join(filteredScopes, " "));

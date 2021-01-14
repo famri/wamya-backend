@@ -11,7 +11,7 @@ public class SecurityConfig {
 	@Bean
 	SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) throws Exception {
 		http.csrf().disable().authorizeExchange()
-				.pathMatchers("/actuator/**", "/eureka/**", "/wamya-backend/login/**", "/wamya-backend/accounts/**", "/oauth/token/**")
+				.pathMatchers("/actuator/**", "/eureka/**", "/wamya-backend/login/**", "/wamya-backend/accounts/**", "/oauth/**")
 				.permitAll().anyExchange().authenticated().and().oauth2ResourceServer().jwt();
 		return http.build();
 	}

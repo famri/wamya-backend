@@ -23,10 +23,11 @@ import org.springframework.test.context.ActiveProfiles;
 import com.c4_soft.springaddons.security.oauth2.test.mockmvc.MockMvcSupport;
 import com.excentria_it.wamya.application.port.in.LoadConstructorsUseCase;
 import com.excentria_it.wamya.common.exception.RestApiExceptionHandler;
+import com.excentria_it.wamya.domain.LoadConstructorModelsResult;
 import com.excentria_it.wamya.domain.LoadConstructorsDto;
+import com.excentria_it.wamya.domain.LoadConstructorsResult;
 import com.excentria_it.wamya.domain.LoadModelsDto;
 import com.excentria_it.wamya.test.data.common.TestConstants;
-import com.fasterxml.jackson.core.type.TypeReference;
 
 @ActiveProfiles(profiles = { "web-local" })
 @Import(value = { ConstructorController.class, RestApiExceptionHandler.class, MockMvcSupport.class })
@@ -43,14 +44,13 @@ public class ConstructorControllerTests {
 	void testLoadAllConstructors() throws Exception {
 
 		List<LoadConstructorsDto> loadConstructorsDtos = defaultLoadConstructorsDtos();
+		LoadConstructorsResult result = new LoadConstructorsResult(loadConstructorsDtos.size(), loadConstructorsDtos);
 		// given
 		given(loadConstructorsUseCase.loadAllConstructors()).willReturn(loadConstructorsDtos);
 		// when
 		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
 				.authorities("SCOPE_vehicule:write")).perform(get("/constructors")).andExpect(status().isOk())
-				.andExpect(responseBody().containsListOfObjectsAsJson(loadConstructorsDtos,
-						new TypeReference<List<LoadConstructorsDto>>() {
-						}));
+				.andExpect(responseBody().containsObjectAsJson(result, LoadConstructorsResult.class));
 
 		// then
 
@@ -61,14 +61,14 @@ public class ConstructorControllerTests {
 	void testLoadConstructorModels() throws Exception {
 
 		List<LoadModelsDto> loadModelsDtos = defaultLoadModelsDtos();
+		LoadConstructorModelsResult result = new LoadConstructorModelsResult(loadModelsDtos.size(), loadModelsDtos);
 		// given
 		given(loadConstructorsUseCase.loadConstructorModels(any(Long.class))).willReturn(loadModelsDtos);
 		// when
 		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
 				.authorities("SCOPE_vehicule:write")).perform(get("/constructors/{constructorId}/models", 1L))
-				.andExpect(status().isOk()).andExpect(responseBody().containsListOfObjectsAsJson(loadModelsDtos,
-						new TypeReference<List<LoadModelsDto>>() {
-						}));
+				.andExpect(status().isOk())
+				.andExpect(responseBody().containsObjectAsJson(result, LoadConstructorModelsResult.class));
 
 		// then
 

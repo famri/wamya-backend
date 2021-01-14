@@ -8,61 +8,11 @@ import com.excentria_it.wamya.domain.LoadEngineTypesDto;
 
 public class EngineTypeTestData {
 
-	private static final List<LoadEngineTypesDto> loadEngineTypesDtos = List.of(new LoadEngineTypesDto() {
+	private static final List<LoadEngineTypesDto> loadEngineTypesDtos = List.of(
 
-		@Override
-		public Long getId() {
-			return 1L;
-		}
-
-		@Override
-		public String getName() {
-
-			return "utility vehicule";
-		}
-
-		@Override
-		public String getDescription() {
-			return "utility vehicule description";
-		}
-
-	}, new LoadEngineTypesDto() {
-
-		@Override
-		public Long getId() {
-			return 2L;
-		}
-
-		@Override
-		public String getName() {
-
-			return "L1H1 vehicule";
-		}
-
-		@Override
-		public String getDescription() {
-			return "L1H1 vehicule description";
-		}
-
-	}, new LoadEngineTypesDto() {
-
-		@Override
-		public Long getId() {
-			return 3L;
-		}
-
-		@Override
-		public String getName() {
-
-			return "L2H2 vehicule";
-		}
-
-		@Override
-		public String getDescription() {
-			return "L2H2 vehicule description";
-		}
-
-	});
+			new LoadEngineTypesDto(1L, "utility vehicule", "UTILITY", "utility vehicule description"),
+			new LoadEngineTypesDto(2L, "L1H1 vehicule", "VAN_L1H1", "L1H1 vehicule description"),
+			new LoadEngineTypesDto(3L, "L2H2 vehicule", "VAN_L2H2", "L2H2 vehicule description"));
 
 	public static EngineTypeDto defaultEngineTypeDto() {
 		return new EngineTypeDto() {

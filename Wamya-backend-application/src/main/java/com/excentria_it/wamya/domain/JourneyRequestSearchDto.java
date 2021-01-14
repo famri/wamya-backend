@@ -33,7 +33,7 @@ public interface JourneyRequestSearchDto {
 	@Value("#{new com.excentria_it.wamya.domain.JourneyRequestSearchDto.ClientDto(target.clientId, target.clientFirstname, target.clientPhotoUrl)}")
 	ClientDto getClient();
 
-	Integer getMinPrice();
+	Double getMinPrice();
 
 	@AllArgsConstructor
 	@Data
@@ -49,11 +49,11 @@ public interface JourneyRequestSearchDto {
 	@Data
 	class PlaceDto {
 
-		private String placeId;
+		private String id;
 
-		private String placeRegionId;
+		private String regionId;
 
-		private String placeName;
+		private String name;
 	}
 
 	@AllArgsConstructor

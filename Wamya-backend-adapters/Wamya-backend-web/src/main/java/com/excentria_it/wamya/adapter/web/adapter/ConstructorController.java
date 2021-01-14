@@ -1,5 +1,6 @@
 package com.excentria_it.wamya.adapter.web.adapter;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -13,7 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.excentria_it.wamya.application.port.in.LoadConstructorsUseCase;
 import com.excentria_it.wamya.common.annotation.WebAdapter;
+import com.excentria_it.wamya.domain.LoadConstructorModelsResult;
 import com.excentria_it.wamya.domain.LoadConstructorsDto;
+import com.excentria_it.wamya.domain.LoadConstructorsResult;
 import com.excentria_it.wamya.domain.LoadModelsDto;
 
 import lombok.RequiredArgsConstructor;
@@ -29,17 +32,23 @@ public class ConstructorController {
 
 	@GetMapping
 	@ResponseStatus(HttpStatus.OK)
-	public List<LoadConstructorsDto> loadAllConstructors() {
+	public LoadConstructorsResult loadAllConstructors() {
 
-		return loadConstructorsUseCase.loadAllConstructors();
-
+		List<LoadConstructorsDto> loadConstructorsDtos = loadConstructorsUseCase.loadAllConstructors();
+		if (loadConstructorsDtos == null || loadConstructorsDtos.isEmpty()) {
+			return new LoadConstructorsResult(0, Collections.<LoadConstructorsDto>emptyList());
+		}
+		return new LoadConstructorsResult(loadConstructorsDtos.size(), loadConstructorsDtos);
 	}
 
 	@GetMapping(path = "/{constructorId}/models")
 	@ResponseStatus(HttpStatus.OK)
-	public List<LoadModelsDto> loadConstructorModels(@PathVariable("constructorId") Long constructorId) {
+	public LoadConstructorModelsResult loadConstructorModels(@PathVariable("constructorId") Long constructorId) {
 
-		return loadConstructorsUseCase.loadConstructorModels(constructorId);
-
+		List<LoadModelsDto> loadModelsDtos = loadConstructorsUseCase.loadConstructorModels(constructorId);
+		if (loadModelsDtos == null || loadModelsDtos.isEmpty()) {
+			return new LoadConstructorModelsResult(0, Collections.<LoadModelsDto>emptyList());
+		}
+		return new LoadConstructorModelsResult(loadModelsDtos.size(), loadModelsDtos);
 	}
 }

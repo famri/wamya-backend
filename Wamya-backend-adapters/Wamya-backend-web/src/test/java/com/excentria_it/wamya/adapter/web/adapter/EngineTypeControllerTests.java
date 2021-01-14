@@ -23,8 +23,8 @@ import com.c4_soft.springaddons.security.oauth2.test.mockmvc.MockMvcSupport;
 import com.excentria_it.wamya.application.port.in.LoadEngineTypesUseCase;
 import com.excentria_it.wamya.common.exception.RestApiExceptionHandler;
 import com.excentria_it.wamya.domain.LoadEngineTypesDto;
+import com.excentria_it.wamya.domain.LoadEngineTypesResult;
 import com.excentria_it.wamya.test.data.common.TestConstants;
-import com.fasterxml.jackson.core.type.TypeReference;
 
 @ActiveProfiles(profiles = { "web-local" })
 @Import(value = { EngineTypeController.class, RestApiExceptionHandler.class, MockMvcSupport.class })
@@ -38,19 +38,20 @@ public class EngineTypeControllerTests {
 
 	@Test
 	void testLoadAllEngineTypes() throws Exception {
-		
-		//given
+
+		// given
 		List<LoadEngineTypesDto> loadEngineTypesDtos = defaultLoadEngineTypesDtos();
+		LoadEngineTypesResult loadEngineTypesResult = new LoadEngineTypesResult(loadEngineTypesDtos.size(),
+				loadEngineTypesDtos);
 		given(loadEngineTypesUseCase.loadAllEngineTypes(any(String.class))).willReturn(loadEngineTypesDtos);
-		
-		//when
+
+		// when
 		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
-				.authorities("SCOPE_journey:write")).perform(get("/engine-types").param("lang", "fr_FR")).andExpect(status().isOk())
-				.andExpect(responseBody().containsListOfObjectsAsJson(loadEngineTypesDtos,
-						new TypeReference<List<LoadEngineTypesDto>>() {
-						}));
-		//then
-		
+				.authorities("SCOPE_journey:write")).perform(get("/engine-types").param("lang", "fr_FR"))
+				.andExpect(status().isOk())
+				.andExpect(responseBody().containsObjectAsJson(loadEngineTypesResult, LoadEngineTypesResult.class));
+		// then
+
 		then(loadEngineTypesUseCase).should(times(1)).loadAllEngineTypes(eq("fr_FR"));
 	}
 }
