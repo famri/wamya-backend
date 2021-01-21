@@ -62,7 +62,6 @@ public class CreateJourneyRequestsControllerTests {
 				eq(TestConstants.DEFAULT_EMAIL), eq("en_US"));
 
 		assertThat(captor.getValue().getDateTime()).isEqualTo(command.getDateTime());
-		assertThat(captor.getValue().getEndDateTime()).isEqualTo(command.getEndDateTime());
 		assertThat(captor.getValue().getDeparturePlaceId()).isEqualTo(command.getDeparturePlaceId());
 		assertThat(captor.getValue().getDeparturePlaceRegionId()).isEqualTo(command.getDeparturePlaceRegionId());
 		assertThat(captor.getValue().getDeparturePlaceName()).isEqualTo(command.getDeparturePlaceName());

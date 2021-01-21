@@ -1,7 +1,6 @@
 package com.excentria_it.wamya.adapter.persistence.entity;
 
 import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -52,8 +51,6 @@ public class JourneyRequestJpaEntity {
 	private Double distance;
 
 	private Instant dateTime;
-
-	private Instant endDateTime;
 
 	private Integer workers;
 
@@ -127,14 +124,6 @@ public class JourneyRequestJpaEntity {
 		this.dateTime = dateTime;
 	}
 
-	public Instant getEndDateTime() {
-		return endDateTime;
-	}
-
-	public void setEndDateTime(Instant endDateTime) {
-		this.endDateTime = endDateTime;
-	}
-
 	public Integer getWorkers() {
 		return workers;
 	}
@@ -199,8 +188,8 @@ public class JourneyRequestJpaEntity {
 	public String toString() {
 		return "JourneyRequestJpaEntity [id=" + id + ", departurePlace=" + departurePlace + ", arrivalPlace="
 				+ arrivalPlace + ", engineType=" + engineType + ", distance=" + distance + ", dateTime=" + dateTime
-				+ ", endDateTime=" + endDateTime + ", workers=" + workers + ", description=" + description
-				+ ", creationDateTime=" + creationDateTime + ", client id=" + client.getId() + "]";
+				+ ", workers=" + workers + ", description=" + description + ", creationDateTime=" + creationDateTime
+				+ ", client id=" + client.getId() + "]";
 	}
 
 	public JourneyRequestStatusJpaEntity getStatus() {

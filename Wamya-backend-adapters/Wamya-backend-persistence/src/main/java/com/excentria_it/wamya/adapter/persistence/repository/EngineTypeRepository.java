@@ -16,9 +16,7 @@ public interface EngineTypeRepository extends JpaRepository<EngineTypeJpaEntity,
 	@Query(value = "SELECT e.id AS id, e.code AS code, VALUE(l).name AS name,  VALUE(l).description AS description FROM EngineTypeJpaEntity e JOIN e.localizations l WHERE e.id = ?1 AND KEY(l) = ?2")
 	Optional<EngineTypeDto> findByIdAndLocale(Long engineTypeId, String locale);
 
-	@Query(value = "SELECT e.id AS id, VALUE(l).name AS name,  e.code AS code, VALUE(l).description AS description FROM EngineTypeJpaEntity e JOIN e.localizations l WHERE KEY(l) = ?1")
+	@Query(value = "SELECT new com.excentria_it.wamya.domain.LoadEngineTypesDto(e.id, VALUE(l).name,  CAST(e.code as text), VALUE(l).description) FROM EngineTypeJpaEntity e JOIN e.localizations l WHERE KEY(l) = ?1")
 	List<LoadEngineTypesDto> findAllByLocale(String locale, Sort sort);
-
-
 
 }

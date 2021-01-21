@@ -10,6 +10,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -58,6 +59,38 @@ public class ConstructorControllerTests {
 	}
 
 	@Test
+	void testLoadAllConstructorsWithEmptyResult() throws Exception {
+
+		LoadConstructorsResult result = new LoadConstructorsResult(0, Collections.<LoadConstructorsDto>emptyList());
+		// given
+		given(loadConstructorsUseCase.loadAllConstructors()).willReturn(Collections.<LoadConstructorsDto>emptyList());
+		// when
+		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
+				.authorities("SCOPE_vehicule:write")).perform(get("/constructors")).andExpect(status().isOk())
+				.andExpect(responseBody().containsObjectAsJson(result, LoadConstructorsResult.class));
+
+		// then
+
+		then(loadConstructorsUseCase).should(times(1)).loadAllConstructors();
+	}
+
+	@Test
+	void testLoadAllConstructorsWithNullResult() throws Exception {
+
+		LoadConstructorsResult result = new LoadConstructorsResult(0, Collections.<LoadConstructorsDto>emptyList());
+		// given
+		given(loadConstructorsUseCase.loadAllConstructors()).willReturn(null);
+		// when
+		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
+				.authorities("SCOPE_vehicule:write")).perform(get("/constructors")).andExpect(status().isOk())
+				.andExpect(responseBody().containsObjectAsJson(result, LoadConstructorsResult.class));
+
+		// then
+
+		then(loadConstructorsUseCase).should(times(1)).loadAllConstructors();
+	}
+
+	@Test
 	void testLoadConstructorModels() throws Exception {
 
 		List<LoadModelsDto> loadModelsDtos = defaultLoadModelsDtos();
@@ -75,4 +108,38 @@ public class ConstructorControllerTests {
 		then(loadConstructorsUseCase).should(times(1)).loadConstructorModels(eq(1L));
 	}
 
+	@Test
+	void testLoadConstructorModelsWithEmptyResult() throws Exception {
+
+		LoadConstructorModelsResult result = new LoadConstructorModelsResult(0, Collections.<LoadModelsDto>emptyList());
+		// given
+		given(loadConstructorsUseCase.loadConstructorModels(any(Long.class)))
+				.willReturn(Collections.<LoadModelsDto>emptyList());
+		// when
+		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
+				.authorities("SCOPE_vehicule:write")).perform(get("/constructors/{constructorId}/models", 1L))
+				.andExpect(status().isOk())
+				.andExpect(responseBody().containsObjectAsJson(result, LoadConstructorModelsResult.class));
+
+		// then
+
+		then(loadConstructorsUseCase).should(times(1)).loadConstructorModels(eq(1L));
+	}
+
+	@Test
+	void testLoadConstructorModelsWithNullResult() throws Exception {
+
+		LoadConstructorModelsResult result = new LoadConstructorModelsResult(0, Collections.<LoadModelsDto>emptyList());
+		// given
+		given(loadConstructorsUseCase.loadConstructorModels(any(Long.class))).willReturn(null);
+		// when
+		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
+				.authorities("SCOPE_vehicule:write")).perform(get("/constructors/{constructorId}/models", 1L))
+				.andExpect(status().isOk())
+				.andExpect(responseBody().containsObjectAsJson(result, LoadConstructorModelsResult.class));
+
+		// then
+
+		then(loadConstructorsUseCase).should(times(1)).loadConstructorModels(eq(1L));
+	}
 }

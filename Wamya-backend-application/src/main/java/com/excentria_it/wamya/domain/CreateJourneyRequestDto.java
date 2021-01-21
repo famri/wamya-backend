@@ -23,8 +23,6 @@ public class CreateJourneyRequestDto {
 
 	private Instant dateTime;
 
-	private Instant endDateTime;
-
 	private EngineTypeDto engineType;
 
 	private Integer workers;

@@ -78,9 +78,6 @@ public class CreateJourneyRequestServiceTests {
 		assertThat(journeyRequestCaptor.getValue().getDateTime())
 				.isEqualTo(command.getDateTime().withZoneSameInstant(ZoneOffset.UTC).toInstant());
 
-		assertThat(journeyRequestCaptor.getValue().getEndDateTime())
-				.isEqualTo(command.getEndDateTime().withZoneSameInstant(ZoneOffset.UTC).toInstant());
-
 		assertThat(journeyRequestCaptor.getValue().getEngineType().getId()).isEqualTo(command.getEngineTypeId());
 
 		assertThat(journeyRequestCaptor.getValue().getEngineType().getId()).isEqualTo(command.getEngineTypeId());
@@ -166,9 +163,8 @@ public class CreateJourneyRequestServiceTests {
 		assertThat(journeyRequestCaptor.getValue().getArrivalPlace().getPlaceName())
 				.isEqualTo(command.getArrivalPlaceName());
 
-		assertThat(journeyRequestCaptor.getValue().getDateTime()).isEqualTo(command.getDateTime().withZoneSameInstant(ZoneOffset.UTC).toInstant());
-
-		assertThat(journeyRequestCaptor.getValue().getEndDateTime()).isEqualTo(command.getEndDateTime().withZoneSameInstant(ZoneOffset.UTC).toInstant());
+		assertThat(journeyRequestCaptor.getValue().getDateTime())
+				.isEqualTo(command.getDateTime().withZoneSameInstant(ZoneOffset.UTC).toInstant());
 
 		assertThat(journeyRequestCaptor.getValue().getEngineType().getId()).isEqualTo(command.getEngineTypeId());
 

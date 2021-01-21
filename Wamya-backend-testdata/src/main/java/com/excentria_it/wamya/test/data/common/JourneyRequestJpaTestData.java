@@ -54,7 +54,7 @@ public class JourneyRequestJpaTestData {
 	public static JourneyRequestJpaEntity defaultExistentJourneyRequestJpaEntity() {
 		return JourneyRequestJpaEntity.builder().id(1L).departurePlace(defaultDeparturePlaceJpaEntity())
 				.arrivalPlace(defaultArrivalPlaceJpaEntity()).engineType(defaultEngineTypeJpaEntity())
-				.dateTime(startDate.toInstant()).endDateTime(endDate.toInstant()).distance(150.5).workers(2)
+				.dateTime(startDate.toInstant()).distance(150.5).workers(2)
 				.proposals(new HashSet<>()).description("Need transporter URGENT!")
 				.client(defaultExistentClientJpaEntity()).build();
 	}

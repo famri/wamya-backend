@@ -27,22 +27,22 @@ public class LoadEngineTypesDto {
 
 		String description;
 
-		Builder id(Long id) {
+		Builder withId(Long id) {
 			this.id = id;
 			return this;
 		}
 
-		Builder name(String name) {
+		Builder withName(String name) {
 			this.name = name;
 			return this;
 		}
 
-		Builder code(String code) {
+		Builder withCode(String code) {
 			this.code = code;
 			return this;
 		}
 
-		Builder description(String description) {
+		Builder withDescription(String description) {
 			this.description = description;
 			return this;
 		}

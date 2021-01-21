@@ -323,8 +323,8 @@ public class JourneyRequestTestData {
 		return CreateJourneyRequestCommand.builder().departurePlaceId("departurePlaceId")
 				.departurePlaceRegionId("departurePlaceRegionId").departurePlaceName("departurePlaceName")
 				.arrivalPlaceId("arrivalPlaceId").arrivalPlaceRegionId("arrivalPlaceRegionId")
-				.arrivalPlaceName("arrivalPlaceName").dateTime(startDate).endDateTime(endDate).engineTypeId(1L)
-				.distance(270.8).workers(2).description("Need a transporter URGENT!!!");
+				.arrivalPlaceName("arrivalPlaceName").dateTime(startDate).engineTypeId(1L).distance(270.8).workers(2)
+				.description("Need a transporter URGENT!!!");
 
 	}
 
@@ -334,7 +334,7 @@ public class JourneyRequestTestData {
 						"departurePlaceName"))
 				.arrivalPlace(new CreateJourneyRequestDto.PlaceDto("arrivalPlaceId", "arrivalPlaceRegionId",
 						"arrivalPlaceName"))
-				.dateTime(startDate.toInstant()).endDateTime(endDate.toInstant())
+				.dateTime(startDate.toInstant())
 				.engineType(new CreateJourneyRequestDto.EngineTypeDto(1L, "EngineType1")).distance(270.8).workers(2)
 				.description("Need a transporter URGENT!!!").build();
 	}
@@ -345,7 +345,7 @@ public class JourneyRequestTestData {
 						"departurePlaceName"))
 				.arrivalPlace(new CreateJourneyRequestDto.PlaceDto("arrivalPlaceId", "arrivalPlaceRegionId",
 						"arrivalPlaceName"))
-				.dateTime(startDate.toInstant()).endDateTime(endDate.toInstant())
+				.dateTime(startDate.toInstant())
 				.engineType(new CreateJourneyRequestDto.EngineTypeDto(1L, "EngineType1")).distance(270.8).workers(2)
 				.description("Need a transporter URGENT!!!");
 	}

@@ -17,12 +17,12 @@ public class LoadConstructorsDto {
 
 		String name;
 
-		Builder id(Long id) {
+		Builder withId(Long id) {
 			this.id = id;
 			return this;
 		}
 
-		Builder name(String name) {
+		Builder withName(String name) {
 			this.name = name;
 			return this;
 		}

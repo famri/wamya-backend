@@ -81,7 +81,7 @@ public class EngineTypeRepositoryTests {
 		let11en.setLocalizedId(new LocalizedId("en_US"));
 		let11en.setEngineType(et11);
 		let11en.setName("EngineType11");
-		let11en.setDescription("EngineTypeDescription11");
+		let11en.setDescription("שטיא");
 		et11.getLocalizations().put("en_US", let11en);
 
 		LocalizedEngineTypeJpaEntity let11fr = new LocalizedEngineTypeJpaEntity();

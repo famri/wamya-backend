@@ -11,7 +11,6 @@ import com.excentria_it.wamya.adapter.persistence.entity.ClientJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.EngineTypeJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.JourneyRequestJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.PlaceJpaEntity;
-import com.excentria_it.wamya.adapter.persistence.entity.UserAccountJpaEntity;
 import com.excentria_it.wamya.domain.CreateJourneyRequestDto;
 
 public class JourneyRequestMapperTests {
@@ -38,7 +37,6 @@ public class JourneyRequestMapperTests {
 		assertEquals(engineTypeJpaEntity, journeyRequestJpaEntity.getEngineType());
 
 		assertEquals(journeyRequest.getDateTime(), journeyRequestJpaEntity.getDateTime());
-		assertEquals(journeyRequest.getEndDateTime(), journeyRequestJpaEntity.getEndDateTime());
 
 		assertEquals(journeyRequest.getDistance(), journeyRequestJpaEntity.getDistance());
 
@@ -88,7 +86,6 @@ public class JourneyRequestMapperTests {
 		assertEquals(journeyRequestJpaEntity.getDistance(), journeyRequest.getDistance());
 
 		assertEquals(journeyRequestJpaEntity.getDateTime(), journeyRequest.getDateTime());
-		assertEquals(journeyRequestJpaEntity.getEndDateTime(), journeyRequest.getEndDateTime());
 
 		assertEquals(journeyRequestJpaEntity.getWorkers(), journeyRequest.getWorkers());
 

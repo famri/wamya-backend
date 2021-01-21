@@ -1127,24 +1127,24 @@ public class JourneyRequestRepositoryTests {
 
 		JourneyRequestJpaEntity jrToday = JourneyRequestJpaEntity.builder().departurePlace(departurePlaces.get(0))
 				.arrivalPlace(arrivalPlaces.get(0)).engineType(engineTypes.get(0)).distance(distances.get(0))
-				.dateTime(dates.get(0).toInstant()).endDateTime(endDates.get(0).toInstant()).workers(workers.get(0))
-				.description(descriptions.get(0)).client(clients.get(0)).proposals(proposalsMap.get(0))
+				.dateTime(dates.get(0).toInstant()).workers(workers.get(0)).description(descriptions.get(0))
+				.client(clients.get(0)).proposals(proposalsMap.get(0))
 				.creationDateTime(endDates.get(0).minusDays(1).toInstant()).build();
 		proposalsMap.get(0).forEach(p -> p.setJourneyRequest(jrToday));
 		clients.get(0).addJourneyRequest(jrToday);
 
 		JourneyRequestJpaEntity jrTomorrow = JourneyRequestJpaEntity.builder().departurePlace(departurePlaces.get(1))
 				.arrivalPlace(arrivalPlaces.get(1)).engineType(engineTypes.get(1)).distance(distances.get(1))
-				.dateTime(dates.get(1).toInstant()).endDateTime(endDates.get(1).toInstant()).workers(workers.get(1))
-				.description(descriptions.get(1)).client(clients.get(1)).proposals(proposalsMap.get(1))
+				.dateTime(dates.get(1).toInstant()).workers(workers.get(1)).description(descriptions.get(1))
+				.client(clients.get(1)).proposals(proposalsMap.get(1))
 				.creationDateTime(endDates.get(1).minusDays(1).toInstant()).build();
 		proposalsMap.get(1).forEach(p -> p.setJourneyRequest(jrTomorrow));
 		clients.get(1).addJourneyRequest(jrTomorrow);
 
 		JourneyRequestJpaEntity jrOvermorrow = JourneyRequestJpaEntity.builder().departurePlace(departurePlaces.get(2))
 				.arrivalPlace(arrivalPlaces.get(2)).engineType(engineTypes.get(2)).distance(distances.get(2))
-				.dateTime(dates.get(2).toInstant()).endDateTime(endDates.get(2).toInstant()).workers(workers.get(2))
-				.description(descriptions.get(2)).client(clients.get(2)).proposals(proposalsMap.get(2))
+				.dateTime(dates.get(2).toInstant()).workers(workers.get(2)).description(descriptions.get(2))
+				.client(clients.get(2)).proposals(proposalsMap.get(2))
 				.creationDateTime(endDates.get(2).minusDays(1).toInstant()).build();
 		proposalsMap.get(2).forEach(p -> p.setJourneyRequest(jrOvermorrow));
 		clients.get(2).addJourneyRequest(jrOvermorrow);

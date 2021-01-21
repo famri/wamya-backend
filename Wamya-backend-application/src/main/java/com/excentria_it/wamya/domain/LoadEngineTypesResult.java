@@ -2,15 +2,35 @@ package com.excentria_it.wamya.domain;
 
 import java.util.List;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
+import lombok.Value;
+
+@Value
+@JsonDeserialize(builder = LoadEngineTypesResult.Builder.class)
 public class LoadEngineTypesResult {
 	private Integer totalElements;
 	private List<LoadEngineTypesDto> content;
 
+	@JsonPOJOBuilder
+	static class Builder {
+		Integer totalElements;
+
+		List<LoadEngineTypesDto> content;
+
+		Builder withTotalElements(Integer totalElements) {
+			this.totalElements = totalElements;
+			return this;
+		}
+
+		Builder withContent(List<LoadEngineTypesDto> content) {
+			this.content = content;
+			return this;
+		}
+
+		public LoadEngineTypesResult build() {
+			return new LoadEngineTypesResult(totalElements, content);
+		}
+	}
 }

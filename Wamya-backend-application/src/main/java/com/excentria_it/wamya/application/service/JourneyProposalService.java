@@ -105,7 +105,7 @@ public class JourneyProposalService implements MakeProposalUseCase, LoadProposal
 
 		CreateJourneyRequestDto journeyRequest = journeyRequestOptional.get();
 		ZonedDateTime now = ZonedDateTime.now(ZoneOffset.UTC);
-		if (now.toInstant().isAfter(journeyRequest.getEndDateTime())) {
+		if (now.toInstant().isAfter(journeyRequest.getDateTime())) {
 			throw new JourneyRequestExpiredException(String.format("Journey request expired: %d", journeyRequestId));
 		}
 

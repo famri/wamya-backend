@@ -31,27 +31,27 @@ public class LoadModelsDto {
 
 		Double height;
 
-		Builder id(Long id) {
+		Builder withId(Long id) {
 			this.id = id;
 			return this;
 		}
 
-		Builder name(String name) {
+		Builder withName(String name) {
 			this.name = name;
 			return this;
 		}
 
-		Builder length(Double length) {
+		Builder withLength(Double length) {
 			this.length = length;
 			return this;
 		}
 
-		Builder width(Double width) {
+		Builder withWidth(Double width) {
 			this.width = width;
 			return this;
 		}
 
-		Builder height(Double height) {
+		Builder withHeight(Double height) {
 			this.height = height;
 			return this;
 		}

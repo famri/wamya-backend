@@ -28,8 +28,8 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
-@RequestMapping(path = "/validation-codes")
-@Slf4j
+@RequestMapping(path = "/validation-codes", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+
 public class SendValidationCodeController {
 
 	private final SendValidationCodeUseCase sendValidationCodeUseCase;

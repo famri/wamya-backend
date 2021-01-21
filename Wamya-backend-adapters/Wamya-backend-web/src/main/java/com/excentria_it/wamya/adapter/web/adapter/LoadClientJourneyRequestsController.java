@@ -34,7 +34,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
-@RequestMapping(path = "/users", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/users", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class LoadClientJourneyRequestsController {
 
 	private final LoadClientJourneyRequestsUseCase loadJourneyRequestUseCase;

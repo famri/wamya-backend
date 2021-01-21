@@ -24,7 +24,8 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
-@RequestMapping(path = "/engine-types", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/engine-types", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+
 public class EngineTypeController {
 
 	private final LoadEngineTypesUseCase loadEngineTypesUseCase;

@@ -19,9 +19,9 @@ public class JourneyRequestMapper {
 
 		return JourneyRequestJpaEntity.builder().id(journeyRequest.getId()).departurePlace(departurePlace)
 				.arrivalPlace(arrivalPlace).engineType(engineType).distance(journeyRequest.getDistance())
-				.dateTime(journeyRequest.getDateTime()).endDateTime(journeyRequest.getEndDateTime())
-				.creationDateTime(journeyRequest.getCreationDateTime()).workers(journeyRequest.getWorkers())
-				.description(journeyRequest.getDescription()).client(client).build();
+				.dateTime(journeyRequest.getDateTime()).creationDateTime(journeyRequest.getCreationDateTime())
+				.workers(journeyRequest.getWorkers()).description(journeyRequest.getDescription()).client(client)
+				.build();
 	}
 
 	public CreateJourneyRequestDto mapToDomainEntity(JourneyRequestJpaEntity journeyRequestJpaEntity, String locale) {
@@ -39,9 +39,7 @@ public class JourneyRequestMapper {
 				.engineType(new CreateJourneyRequestDto.EngineTypeDto(journeyRequestJpaEntity.getEngineType().getId(),
 						journeyRequestJpaEntity.getEngineType().getName(locale)))
 				.distance(journeyRequestJpaEntity.getDistance()).dateTime(journeyRequestJpaEntity.getDateTime())
-				.endDateTime(journeyRequestJpaEntity.getEndDateTime()).workers(journeyRequestJpaEntity.getWorkers())
-				.description(journeyRequestJpaEntity.getDescription())
-
+				.workers(journeyRequestJpaEntity.getWorkers()).description(journeyRequestJpaEntity.getDescription())
 				.build();
 	}
 }

@@ -16,6 +16,7 @@ import com.excentria_it.wamya.common.exception.ApiError;
 import com.excentria_it.wamya.common.exception.AuthServerError;
 import com.excentria_it.wamya.common.exception.AuthorizationException;
 import com.excentria_it.wamya.common.exception.UserAccountAlreadyExistsException;
+import com.excentria_it.wamya.common.exception.UserAccountNotFoundException;
 import com.excentria_it.wamya.domain.JwtOAuth2AccessToken;
 import com.excentria_it.wamya.domain.OAuthUserAccount;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -108,7 +109,8 @@ public class OAuthUserAccountIntegrationAdapter implements OAuthUserAccountPort 
 
 		case BAD_REQUEST:
 			return new AuthorizationException(getAuthServerErrorMessage(wcre));
-
+		case UNAUTHORIZED:
+			return new UserAccountNotFoundException(getAuthServerErrorMessage(wcre));
 		default:
 			log.warn("Got a unexpected HTTP error: {}, will rethrow it", wcre.getStatusCode());
 			log.warn("Error body: {}", wcre.getResponseBodyAsString());

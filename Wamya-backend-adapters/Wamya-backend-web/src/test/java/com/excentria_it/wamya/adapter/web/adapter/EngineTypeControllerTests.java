@@ -9,6 +9,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -44,6 +45,46 @@ public class EngineTypeControllerTests {
 		LoadEngineTypesResult loadEngineTypesResult = new LoadEngineTypesResult(loadEngineTypesDtos.size(),
 				loadEngineTypesDtos);
 		given(loadEngineTypesUseCase.loadAllEngineTypes(any(String.class))).willReturn(loadEngineTypesDtos);
+
+		// when
+		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
+				.authorities("SCOPE_journey:write")).perform(get("/engine-types").param("lang", "fr_FR"))
+				.andExpect(status().isOk())
+				.andExpect(responseBody().containsObjectAsJson(loadEngineTypesResult, LoadEngineTypesResult.class));
+		// then
+
+		then(loadEngineTypesUseCase).should(times(1)).loadAllEngineTypes(eq("fr_FR"));
+	}
+
+	@Test
+	void testLoadAllEngineTypesWithEmptyResult() throws Exception {
+
+		// given
+
+		LoadEngineTypesResult loadEngineTypesResult = new LoadEngineTypesResult(0,
+				Collections.<LoadEngineTypesDto>emptyList());
+		given(loadEngineTypesUseCase.loadAllEngineTypes(any(String.class)))
+				.willReturn(Collections.<LoadEngineTypesDto>emptyList());
+
+		// when
+		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
+				.authorities("SCOPE_journey:write")).perform(get("/engine-types").param("lang", "fr_FR"))
+				.andExpect(status().isOk())
+				.andExpect(responseBody().containsObjectAsJson(loadEngineTypesResult, LoadEngineTypesResult.class));
+		// then
+
+		then(loadEngineTypesUseCase).should(times(1)).loadAllEngineTypes(eq("fr_FR"));
+	}
+
+	@Test
+	void testLoadAllEngineTypesWithNullResult() throws Exception {
+
+		// given
+
+		LoadEngineTypesResult loadEngineTypesResult = new LoadEngineTypesResult(0,
+				Collections.<LoadEngineTypesDto>emptyList());
+
+		given(loadEngineTypesUseCase.loadAllEngineTypes(any(String.class))).willReturn(null);
 
 		// when
 		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)

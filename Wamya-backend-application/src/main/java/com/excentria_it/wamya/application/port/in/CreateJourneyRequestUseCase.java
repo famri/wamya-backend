@@ -49,13 +49,8 @@ public interface CreateJourneyRequestUseCase {
 		@JsonFormat(shape = Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
 		private ZonedDateTime dateTime;
 
-		@NotNull
-		@DateTimeFormat(iso = ISO.DATE_TIME)
-		@JsonFormat(shape = Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
-		private ZonedDateTime endDateTime;
-
-		@NotNull
 		private Long engineTypeId;
+		@NotNull
 
 		@NotNull
 		private Double distance;

@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
-@RequestMapping(path = "/users/me", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/users/me", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class VehiculesController {
 
 	private final AddVehiculeUseCase addVehiculeUseCase;

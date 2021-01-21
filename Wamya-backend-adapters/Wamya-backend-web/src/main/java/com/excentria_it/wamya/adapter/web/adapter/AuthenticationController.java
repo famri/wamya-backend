@@ -28,8 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
-@Slf4j
-
+@RequestMapping(path = "/", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class AuthenticationController {
 
 	private final AuthenticateUserUseCase authenticateUserUseCase;

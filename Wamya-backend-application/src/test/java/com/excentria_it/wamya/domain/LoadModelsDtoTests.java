@@ -8,8 +8,8 @@ public class LoadModelsDtoTests {
 
 	@Test
 	void testBuilder() {
-		LoadModelsDto loadModelsDto = new LoadModelsDto.Builder().id(1L).name("Model1").length(4.25).width(1.85)
-				.height(1.8).build();
+		LoadModelsDto loadModelsDto = new LoadModelsDto.Builder().withId(1L).withName("Model1").withLength(4.25)
+				.withWidth(1.85).withHeight(1.8).build();
 
 		assertEquals(1L, loadModelsDto.getId());
 		assertEquals("Model1", loadModelsDto.getName());
