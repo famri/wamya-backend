@@ -20,13 +20,12 @@ import com.excentria_it.wamya.common.utils.LocaleUtils;
 import com.excentria_it.wamya.domain.JwtOAuth2AccessToken;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @WebAdapter
 @RestController
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
-@RequestMapping(path = "/", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@RequestMapping(path = "/", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CreateUserAccountController {
 
 	private final CreateUserAccountUseCase createUserAccountUseCase;

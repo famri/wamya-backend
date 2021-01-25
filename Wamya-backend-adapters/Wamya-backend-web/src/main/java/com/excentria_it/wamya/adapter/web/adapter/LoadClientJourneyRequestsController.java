@@ -34,7 +34,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
-@RequestMapping(path = "/users", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@RequestMapping(path = "/users", produces = MediaType.APPLICATION_JSON_VALUE)
 public class LoadClientJourneyRequestsController {
 
 	private final LoadClientJourneyRequestsUseCase loadJourneyRequestUseCase;
@@ -43,7 +43,8 @@ public class LoadClientJourneyRequestsController {
 
 	@GetMapping(path = "/me/journey-requests")
 	@ResponseStatus(HttpStatus.OK)
-	public ClientJourneyRequests loadClientJourneyRequests(@RequestParam(name = "period", defaultValue = "w1") Optional<String> period,
+	public ClientJourneyRequests loadClientJourneyRequests(
+			@RequestParam(name = "period", defaultValue = "w1") Optional<String> period,
 			@RequestParam(name = "page", defaultValue = "0") Integer pageNumber,
 			@RequestParam(name = "size", defaultValue = "25") Integer pageSize,
 			@RequestParam(name = "sort") Optional<String> sort,

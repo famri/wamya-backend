@@ -3,6 +3,7 @@ package com.excentria_it.wamya.adapter.web.helper;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.test.web.servlet.ResultMatcher;
 
@@ -48,9 +49,16 @@ public class ResponseBodyMatchers {
 			ApiError apiError = objectMapper.readValue(json, ApiError.class);
 			List<String> actualErrors = apiError.getErrors();
 
-			assertThat(actualErrors.containsAll(expectedErrors) && actualErrors.size() == expectedErrors.size())
-					.isTrue().withFailMessage("expecting exactly %d error message but found %d.", expectedErrors.size(),
-							actualErrors.size());
+			assertThat(actualErrors.containsAll(expectedErrors))
+					.withFailMessage("expecting exactly %s error message but found %s.",
+							expectedErrors.stream().collect(Collectors.joining(",")),
+							actualErrors != null ? actualErrors.stream().collect(Collectors.joining(",")) : "null")
+					.isTrue();
+
+			assertThat(actualErrors.size() == expectedErrors.size())
+					.withFailMessage("expecting exactly %d error message but found %d.", expectedErrors.size(),
+							actualErrors.size())
+					.isTrue();
 		};
 	}
 

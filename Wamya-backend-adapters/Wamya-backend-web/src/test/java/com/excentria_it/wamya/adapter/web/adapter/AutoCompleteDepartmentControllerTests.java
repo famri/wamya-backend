@@ -49,13 +49,13 @@ public class AutoCompleteDepartmentControllerTests {
 		// when
 		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
 				.authorities("SCOPE_offer:write"))
-				.perform(get("/departments").param("lang", "fr_FR").param("input", "be").param("country", "TN"))
+				.perform(get("/departments").param("lang", "fr_FR").param("input", "ben").param("country", "TN"))
 				.andExpect(status().isOk())
 				.andExpect(responseBody().containsObjectAsJson(result, AutoCompleteDepartmentsResult.class));
 
 		// then
 
-		then(autoCompleteDepartmentUseCase).should(times(1)).autoCompleteDepartment(eq("be"), eq("TN"), eq("fr_FR"));
+		then(autoCompleteDepartmentUseCase).should(times(1)).autoCompleteDepartment(eq("ben"), eq("TN"), eq("fr_FR"));
 	}
 
 	@Test
@@ -69,15 +69,15 @@ public class AutoCompleteDepartmentControllerTests {
 		// when
 		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
 				.authorities("SCOPE_offer:write"))
-				.perform(get("/departments").param("lang", "fr_FR").param("input", "be").param("country", "TN"))
+				.perform(get("/departments").param("lang", "fr_FR").param("input", "ben").param("country", "TN"))
 				.andExpect(status().isOk())
 				.andExpect(responseBody().containsObjectAsJson(result, AutoCompleteDepartmentsResult.class));
 
 		// then
 
-		then(autoCompleteDepartmentUseCase).should(times(1)).autoCompleteDepartment(eq("be"), eq("TN"), eq("fr_FR"));
+		then(autoCompleteDepartmentUseCase).should(times(1)).autoCompleteDepartment(eq("ben"), eq("TN"), eq("fr_FR"));
 	}
-	
+
 	@Test
 	void testAutoCompleteDepartmentNullResult() throws Exception {
 
@@ -89,13 +89,44 @@ public class AutoCompleteDepartmentControllerTests {
 		// when
 		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
 				.authorities("SCOPE_offer:write"))
-				.perform(get("/departments").param("lang", "fr_FR").param("input", "be").param("country", "TN"))
+				.perform(get("/departments").param("lang", "fr_FR").param("input", "ben").param("country", "TN"))
 				.andExpect(status().isOk())
 				.andExpect(responseBody().containsObjectAsJson(result, AutoCompleteDepartmentsResult.class));
 
 		// then
 
-		then(autoCompleteDepartmentUseCase).should(times(1)).autoCompleteDepartment(eq("be"), eq("TN"), eq("fr_FR"));
+		then(autoCompleteDepartmentUseCase).should(times(1)).autoCompleteDepartment(eq("ben"), eq("TN"), eq("fr_FR"));
 	}
 
+	@Test
+	void testAutoCompleteDepartmentWithInputSizeLessThan3AndEmptyCountryCode() throws Exception {
+
+		// given // when
+		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
+				.authorities("SCOPE_offer:write"))
+				.perform(get("/departments").param("lang", "fr_FR").param("input", "be").param("country", "TN"))
+				.andExpect(status().isBadRequest()).andExpect(responseBody().containsApiErrors(
+						List.of("autoCompleteDepartment.input: la taille doit être comprise entre 3 et 2147483647")));
+
+		// then
+
+		then(autoCompleteDepartmentUseCase).should(never()).autoCompleteDepartment(any(String.class), any(String.class),
+				any(String.class));
+	}
+
+	@Test
+	void testAutoCompleteDepartmentWithCountryCodeEmpty() throws Exception {
+
+		// given // when
+		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
+				.authorities("SCOPE_offer:write"))
+				.perform(get("/departments").param("lang", "fr_FR").param("input", "ben").param("country", ""))
+				.andExpect(status().isBadRequest()).andExpect(responseBody().containsApiErrors(
+						List.of("autoCompleteDepartment.countryCode: ne doit pas être vide")));
+
+		// then
+
+		then(autoCompleteDepartmentUseCase).should(never()).autoCompleteDepartment(any(String.class), any(String.class),
+				any(String.class));
+	}
 }

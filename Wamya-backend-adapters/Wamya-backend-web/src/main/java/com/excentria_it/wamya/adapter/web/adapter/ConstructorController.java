@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
-@RequestMapping(path = "/constructors", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@RequestMapping(path = "/constructors", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ConstructorController {
 
 	private final LoadConstructorsUseCase loadConstructorsUseCase;

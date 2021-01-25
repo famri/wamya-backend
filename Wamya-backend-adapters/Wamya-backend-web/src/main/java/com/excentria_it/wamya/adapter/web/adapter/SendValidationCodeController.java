@@ -22,13 +22,12 @@ import com.excentria_it.wamya.common.annotation.WebAdapter;
 import com.excentria_it.wamya.common.utils.LocaleUtils;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @WebAdapter
 @RestController
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
-@RequestMapping(path = "/validation-codes", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@RequestMapping(path = "/validation-codes", produces = MediaType.APPLICATION_JSON_VALUE)
 
 public class SendValidationCodeController {
 

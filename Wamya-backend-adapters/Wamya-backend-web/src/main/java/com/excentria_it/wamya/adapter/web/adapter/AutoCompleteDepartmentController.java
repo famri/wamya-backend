@@ -9,6 +9,7 @@ import javax.validation.constraints.Size;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,7 +29,8 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
-@RequestMapping(path = "/departments", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@Validated
+@RequestMapping(path = "/departments", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AutoCompleteDepartmentController {
 
 	private final AutoCompleteDepartmentUseCase autoCompleteDepartmentUseCase;
