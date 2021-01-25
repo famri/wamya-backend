@@ -41,13 +41,17 @@ public class JourneyProposalStatusJpaEntity {
 
 	private String description;
 
+	@Builder.Default
 	@OneToMany(mappedBy = "status", cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST,
 			CascadeType.REFRESH }, orphanRemoval = true)
 	@MapKey(name = "localizedId.locale")
 	private Map<String, LocalizedJourneyProposalStatusJpaEntity> localizations = new HashMap<>();
 
 	public String getValue(String locale) {
-		return localizations.get(locale).getValue();
+		if (localizations.containsKey(locale)) {
+			return localizations.get(locale).getValue();
+		}
+		return null;
 	}
 
 	public JourneyProposalStatusCode getCode() {

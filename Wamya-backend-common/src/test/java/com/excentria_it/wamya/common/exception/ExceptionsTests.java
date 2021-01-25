@@ -112,4 +112,11 @@ public class ExceptionsTests {
 		EngineTypeNotFoundException exception = new EngineTypeNotFoundException(message);
 		assertEquals(exception.getMessage(), message);
 	}
+
+	@Test
+	void testCountryNotFoundException() {
+		String message = "SOME MESSAGE";
+		CountryNotFoundException exception = new CountryNotFoundException(message);
+		assertEquals(exception.getMessage(), message);
+	}
 }

@@ -24,8 +24,6 @@ public interface ClientJourneyRequestDto {
 
 	ZonedDateTime getDateTime();
 
-	ZonedDateTime getEndDateTime();
-
 	ZonedDateTime getCreationDateTime();
 
 	Integer getWorkers();

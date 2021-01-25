@@ -66,7 +66,10 @@ public class EngineTypeJpaEntity {
 	}
 
 	public String getName(String locale) {
-		return localizations.get(locale).getName();
+		if (localizations.containsKey(locale)) {
+			return localizations.get(locale).getName();
+		}
+		return null;
 	}
 
 	public String getDescription(String locale) {

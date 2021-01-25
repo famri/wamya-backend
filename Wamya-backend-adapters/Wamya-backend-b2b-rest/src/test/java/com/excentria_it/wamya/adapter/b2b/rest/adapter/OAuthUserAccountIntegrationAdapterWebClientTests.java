@@ -18,9 +18,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
@@ -29,6 +26,7 @@ import com.excentria_it.wamya.common.exception.ApiError;
 import com.excentria_it.wamya.common.exception.AuthServerError;
 import com.excentria_it.wamya.common.exception.AuthorizationException;
 import com.excentria_it.wamya.common.exception.UserAccountAlreadyExistsException;
+import com.excentria_it.wamya.common.exception.UserAccountNotFoundException;
 import com.excentria_it.wamya.domain.JwtOAuth2AccessToken;
 import com.excentria_it.wamya.domain.OAuthRole;
 import com.excentria_it.wamya.domain.OAuthUserAccount;
@@ -231,7 +229,7 @@ public class OAuthUserAccountIntegrationAdapterWebClientTests {
 
 		assertEquals(headers.getOrEmpty(HttpHeaders.AUTHORIZATION).get(0), actualAuthorizationHeader);
 
-		assertEquals(MediaType.APPLICATION_FORM_URLENCODED+";charset=UTF-8", actualContentTypeHeader);
+		assertEquals(MediaType.APPLICATION_FORM_URLENCODED + ";charset=UTF-8", actualContentTypeHeader);
 
 		assertEquals(ACCESS_TOKEN_STRING, oAuth2AccessToken.getAccessToken());
 
@@ -250,6 +248,29 @@ public class OAuthUserAccountIntegrationAdapterWebClientTests {
 				.addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON));
 
 		assertThrows(AuthorizationException.class,
+				() -> oAuthUserAccountIntegrationAdapter.fetchJwtTokenForUser("test", "test"));
+
+		RecordedRequest recordedRequest = mockBackEnd.takeRequest();
+
+		assertEquals(HttpMethod.POST.name(), recordedRequest.getMethod());
+
+		assertEquals("/oauth/token", recordedRequest.getPath());
+
+	}
+
+	@Test
+	void givenUnauthorized_WhenFetchJwtTokenForUser_ThenThrowUserAccountNotFoundException()
+			throws InterruptedException, JsonProcessingException {
+
+		AuthServerError authServerError = new AuthServerError();
+		authServerError.setError("SOME ERROR");
+		authServerError.setErrorDescription("SOME ERROR DESCRIPTION");
+
+		mockBackEnd.enqueue(new MockResponse().setBody(objectMapper.writeValueAsString(authServerError))
+				.setResponseCode(HttpStatus.UNAUTHORIZED.value())
+				.addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON));
+
+		assertThrows(UserAccountNotFoundException.class,
 				() -> oAuthUserAccountIntegrationAdapter.fetchJwtTokenForUser("test", "test"));
 
 		RecordedRequest recordedRequest = mockBackEnd.takeRequest();

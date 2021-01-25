@@ -66,6 +66,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.disksize.size = '50GB'
   config.vm.define "dev_env" do |dev|
 		dev.vm.box = "ubuntu/eoan64"
+		dev.vm.boot_timeout = 600
 	  	dev.vm.provider "virtualbox" do |vb|
 	  	  vb.memory = "2048"
 	  	  vb.customize ["modifyvm", :id, "--natdnsproxy1", "on"]

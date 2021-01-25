@@ -24,8 +24,6 @@ public interface JourneyRequestSearchDto {
 
 	ZonedDateTime getDateTime();
 
-	ZonedDateTime getEndDateTime();
-
 	Integer getWorkers();
 
 	String getDescription();

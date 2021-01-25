@@ -65,11 +65,6 @@ public class JourneyRequestTestData {
 		}
 
 		@Override
-		public ZonedDateTime getEndDateTime() {
-			return endDate;
-		}
-
-		@Override
 		public ZonedDateTime getCreationDateTime() {
 			return endDate.minusDays(1);
 		}
@@ -123,11 +118,6 @@ public class JourneyRequestTestData {
 		@Override
 		public ZonedDateTime getDateTime() {
 			return startDate;
-		}
-
-		@Override
-		public ZonedDateTime getEndDateTime() {
-			return endDate;
 		}
 
 		@Override
@@ -193,11 +183,6 @@ public class JourneyRequestTestData {
 				}
 
 				@Override
-				public ZonedDateTime getEndDateTime() {
-					return endDate;
-				}
-
-				@Override
 				public Integer getWorkers() {
 
 					return 2;
@@ -255,11 +240,6 @@ public class JourneyRequestTestData {
 				@Override
 				public ZonedDateTime getDateTime() {
 					return startDate;
-				}
-
-				@Override
-				public ZonedDateTime getEndDateTime() {
-					return endDate;
 				}
 
 				@Override

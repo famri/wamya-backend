@@ -152,8 +152,8 @@ public class EngineTypeRepositoryTests {
 		LocalizedEngineTypeJpaEntity let22en = new LocalizedEngineTypeJpaEntity();
 		let22en.setLocalizedId(new LocalizedId("en_US"));
 		let22en.setEngineType(et22);
-		let22en.setName("EngineType22");
 		let22en.setDescription("EngineTypeDescription22");
+		let22en.setName("EngineType22");
 		et22.getLocalizations().put("en_US", let22en);
 
 		LocalizedEngineTypeJpaEntity let22fr = new LocalizedEngineTypeJpaEntity();
