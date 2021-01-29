@@ -407,6 +407,22 @@ public class RestApiExceptionHandlerTest {
 	}
 
 	@Test
+	void whenHandleCountryNotFoundException_ThenStatusIsBadRequest() {
+		// given
+		CountryNotFoundException exception = givenCountryNotFoundException();
+
+		// When
+		ResponseEntity<ApiError> responseEntity = restApiExceptionHandler.handleCountryNotFoundException(exception);
+
+		// Then
+		then(responseEntity.getBody() instanceof ApiError);
+		then(((ApiError) responseEntity.getBody()).getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
+		then(((ApiError) responseEntity.getBody()).getErrorCode()).isEqualTo(ErrorCode.VALIDATION_ERROR);
+		then(((ApiError) responseEntity.getBody()).getErrors()).containsExactly(SOME_MESSAGE);
+		then(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+	}
+
+	@Test
 	void whenHandleAuthorizationException_ThenStatusIsUnauthorized() {
 		// given
 		AuthorizationException exception = givenAuthorizationException();
@@ -484,6 +500,13 @@ public class RestApiExceptionHandlerTest {
 
 	private InvalidTransporterVehiculeException givenInvalidTransporterVehiculeException() {
 		InvalidTransporterVehiculeException exception = Mockito.mock(InvalidTransporterVehiculeException.class);
+		given(exception.getMessage()).willReturn(SOME_MESSAGE);
+
+		return exception;
+	}
+
+	private CountryNotFoundException givenCountryNotFoundException() {
+		CountryNotFoundException exception = Mockito.mock(CountryNotFoundException.class);
 		given(exception.getMessage()).willReturn(SOME_MESSAGE);
 
 		return exception;

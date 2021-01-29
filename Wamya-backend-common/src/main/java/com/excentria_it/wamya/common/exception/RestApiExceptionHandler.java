@@ -277,10 +277,23 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 		return new ResponseEntity<ApiError>(apiError, new HttpHeaders(), apiError.getStatus());
 
 	}
+
 	@ExceptionHandler({ InvalidTransporterVehiculeException.class })
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	public ResponseEntity<ApiError> handleInvalidTransporterVehiculeException(
 			InvalidTransporterVehiculeException exception) {
+
+		log.warn("Exception at " + exception.getClass() + ": ", exception);
+		final String error = exception.getMessage();
+		final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ErrorCode.VALIDATION_ERROR, error);
+		return new ResponseEntity<ApiError>(apiError, new HttpHeaders(), apiError.getStatus());
+
+	}
+
+	@ExceptionHandler({ CountryNotFoundException.class })
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public ResponseEntity<ApiError> handleCountryNotFoundException(
+			CountryNotFoundException exception) {
 
 		log.warn("Exception at " + exception.getClass() + ": ", exception);
 		final String error = exception.getMessage();

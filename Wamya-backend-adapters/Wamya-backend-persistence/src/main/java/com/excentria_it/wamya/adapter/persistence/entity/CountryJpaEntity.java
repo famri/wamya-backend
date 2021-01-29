@@ -33,23 +33,23 @@ public class CountryJpaEntity {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = COUNTRY_SEQ)
 	private Long id;
 
+	private String code;
+
 	@OneToMany(mappedBy = "country", cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST,
 			CascadeType.REFRESH }, orphanRemoval = true)
 	@MapKey(name = "localizedId.locale")
 	private Map<String, LocalizedCountryJpaEntity> localizations = new HashMap<>();
 
-	private String code;
-
-	public CountryJpaEntity(Map<String, LocalizedCountryJpaEntity> localizations, String name, String code,
-			Set<DepartmentJpaEntity> departments) {
-
-		this.localizations = localizations;
-		this.code = code;
-		this.departments = departments;
-	}
-
 	@OneToMany(mappedBy = "country")
 	private Set<DepartmentJpaEntity> departments = new HashSet<>();
+
+	public CountryJpaEntity(String code, Map<String, LocalizedCountryJpaEntity> localizations,
+			Set<DepartmentJpaEntity> departments) {
+
+		this.code = code;
+		this.localizations = localizations;
+		departments.forEach(d -> this.addDepartment(d));
+	}
 
 	public Long getId() {
 		return id;
@@ -67,6 +67,8 @@ public class CountryJpaEntity {
 	}
 
 	public void addDepartment(DepartmentJpaEntity department) {
+		if (department == null)
+			return;
 		this.departments.add(department);
 		department.setCountry(this);
 	}

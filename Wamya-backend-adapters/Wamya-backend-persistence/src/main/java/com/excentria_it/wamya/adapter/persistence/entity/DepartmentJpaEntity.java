@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -35,6 +36,7 @@ public class DepartmentJpaEntity {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = DEPARTMENT_SEQ)
 	private Long id;
 
+	@Column(length = 4096)
 	private String possibleNames;
 
 	@OneToMany(mappedBy = "department", cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST,
@@ -51,7 +53,7 @@ public class DepartmentJpaEntity {
 		this.possibleNames = possibleNames;
 		this.localizations = localizations;
 		this.country = country;
-		this.delegations = delegations;
+		delegations.forEach(d -> this.addDelegation(d));
 	}
 
 	public String getPossibleNames() {
@@ -93,6 +95,8 @@ public class DepartmentJpaEntity {
 	}
 
 	public void addDelegation(DelegationJpaEntity delegation) {
+		if (delegation == null)
+			return;
 		this.delegations.add(delegation);
 		delegation.setDepartment(this);
 	}

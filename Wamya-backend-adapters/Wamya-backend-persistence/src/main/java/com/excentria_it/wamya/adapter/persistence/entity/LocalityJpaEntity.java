@@ -1,9 +1,7 @@
 package com.excentria_it.wamya.adapter.persistence.entity;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -24,49 +22,34 @@ import lombok.NoArgsConstructor;
 
 @Generated
 @Entity
-@Table(name = "delegation")
+@Table(name = "locality")
 @NoArgsConstructor
-@SequenceGenerator(name = DelegationJpaEntity.DELEGATION_SEQ)
-public class DelegationJpaEntity {
-	public static final String DELEGATION_SEQ = "delegation_seq";
+@SequenceGenerator(name = LocalityJpaEntity.LOCALITY_SEQ)
+public class LocalityJpaEntity {
+	public static final String LOCALITY_SEQ = "locality_seq";
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = DELEGATION_SEQ)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = LOCALITY_SEQ)
 	private Long id;
-	
+
 	@Column(length = 4096)
 	private String possibleNames;
 
-	@OneToMany(mappedBy = "delegation", cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST,
+	@OneToMany(mappedBy = "locality", cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST,
 			CascadeType.REFRESH }, orphanRemoval = true)
 	@MapKey(name = "localizedId.locale")
-	private Map<String, LocalizedDelegationJpaEntity> localizations = new HashMap<>();
+	private Map<String, LocalizedLocalityJpaEntity> localizations = new HashMap<>();
 
 	@ManyToOne
-	@JoinColumn(name = "department_id")
-	private DepartmentJpaEntity department;
+	@JoinColumn(name = "delegation_id")
+	private DelegationJpaEntity delegation;
 
-	@OneToMany(mappedBy = "delegation")
-	private Set<LocalityJpaEntity> localities = new HashSet<>();
-
-	public DelegationJpaEntity(String possibleNames, Map<String, LocalizedDelegationJpaEntity> localizations,
-			DepartmentJpaEntity department, Set<LocalityJpaEntity> localities) {
-
+	public LocalityJpaEntity(String possibleNames, Map<String, LocalizedLocalityJpaEntity> localizations,
+			DelegationJpaEntity delegation) {
+		super();
 		this.possibleNames = possibleNames;
 		this.localizations = localizations;
-		this.department = department;
-		localities.forEach(l -> this.addLocality(l));
-	}
-
-	public void addLocality(LocalityJpaEntity locality) {
-		if (locality == null)
-			return;
-		this.localities.add(locality);
-		locality.setDelegation(this);
-	}
-
-	public Long getId() {
-		return id;
+		this.delegation = delegation;
 	}
 
 	public String getName(String locale) {
@@ -84,16 +67,24 @@ public class DelegationJpaEntity {
 		this.possibleNames = possibleNames;
 	}
 
-	public DepartmentJpaEntity getDepartment() {
-		return department;
-	}
-
-	public void setDepartment(DepartmentJpaEntity department) {
-		this.department = department;
-	}
-
-	public Map<String, LocalizedDelegationJpaEntity> getLocalizations() {
+	public Map<String, LocalizedLocalityJpaEntity> getLocalizations() {
 		return localizations;
+	}
+
+	public void setLocalizations(Map<String, LocalizedLocalityJpaEntity> localizations) {
+		this.localizations = localizations;
+	}
+
+	public DelegationJpaEntity getDelegation() {
+		return delegation;
+	}
+
+	public void setDelegation(DelegationJpaEntity delegation) {
+		this.delegation = delegation;
+	}
+
+	public Long getId() {
+		return id;
 	}
 
 	@Override
@@ -112,7 +103,7 @@ public class DelegationJpaEntity {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		DelegationJpaEntity other = (DelegationJpaEntity) obj;
+		LocalityJpaEntity other = (LocalityJpaEntity) obj;
 		if (id == null) {
 			return false;
 		} else if (!id.equals(other.id))
@@ -122,8 +113,7 @@ public class DelegationJpaEntity {
 
 	@Override
 	public String toString() {
-		return "DelegationJpaEntity [id=" + id + ", possibleNames=" + possibleNames + ", department=" + department
-				+ "]";
+		return "LocalityJpaEntity [id=" + id + ", delegation=" + delegation + "]";
 	}
 
 }
