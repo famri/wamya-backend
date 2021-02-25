@@ -3,13 +3,17 @@ package com.excentria_it.wamya.adapter.persistence.repository;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -27,19 +31,28 @@ import org.springframework.test.context.ActiveProfiles;
 
 import com.excentria_it.wamya.adapter.persistence.entity.ClientJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.ConstructorJpaEntity;
+import com.excentria_it.wamya.adapter.persistence.entity.CountryJpaEntity;
+import com.excentria_it.wamya.adapter.persistence.entity.DelegationJpaEntity;
+import com.excentria_it.wamya.adapter.persistence.entity.DepartmentJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.EngineTypeJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.EngineTypeJpaEntity.EngineTypeCode;
 import com.excentria_it.wamya.adapter.persistence.entity.InternationalCallingCodeJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.JourneyProposalJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.JourneyRequestJpaEntity;
+import com.excentria_it.wamya.adapter.persistence.entity.LocalizedCountryJpaEntity;
+import com.excentria_it.wamya.adapter.persistence.entity.LocalizedDepartmentJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.LocalizedEngineTypeJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.LocalizedId;
+import com.excentria_it.wamya.adapter.persistence.entity.LocalizedPlaceId;
+import com.excentria_it.wamya.adapter.persistence.entity.LocalizedPlaceJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.ModelJpaEntity;
+import com.excentria_it.wamya.adapter.persistence.entity.PlaceId;
 import com.excentria_it.wamya.adapter.persistence.entity.PlaceJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.TransporterJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.VehiculeJpaEntity;
 import com.excentria_it.wamya.domain.ClientJourneyRequestDto;
 import com.excentria_it.wamya.domain.JourneyRequestSearchDto;
+import com.excentria_it.wamya.domain.PlaceType;
 
 @DataJpaTest
 @ActiveProfiles(profiles = { "persistence-local" })
@@ -73,6 +86,12 @@ public class JourneyRequestRepositoryTests {
 	@Autowired
 	private InternationalCallingCodeRepository internationalCallingCodeRepository;
 
+	@Autowired
+	private DepartmentRepository departmentRepository;
+
+	@Autowired
+	private CountryRepository countryRepository;
+
 	@BeforeEach
 	public void cleanDatabase() {
 		transporterRepository.deleteAll();
@@ -84,14 +103,18 @@ public class JourneyRequestRepositoryTests {
 		modelRepository.deleteAll();
 		constructorRepository.deleteAll();
 		internationalCallingCodeRepository.deleteAll();
+		departmentRepository.deleteAll();
+		countryRepository.deleteAll();
 	}
 
 	@Test
-	public void testFindByDeparturePlace_RegionIdAndArrivalPlace_RegionIdInAndEngineType_IdInAndDateBetween_OrderByMinPriceDesc() {
+	public void testFindByDeparturePlace_DepartmentIdAndArrivalPlace_DepartmentIdInAndEngineType_IdInAndDateBetween_OrderByMinPriceDesc() {
 
 		// Given
-		List<PlaceJpaEntity> departurePlaces = givenDeparturePlaces();
-		List<PlaceJpaEntity> arrivalPlaces = givenArrivalPlaces();
+		List<DepartmentJpaEntity> departureDepartments = givenDepartureDepartments();
+		List<DepartmentJpaEntity> arrivalDepartments = givenArrivalDepartments();
+		List<PlaceJpaEntity> departurePlaces = givenDeparturePlaces(departureDepartments);
+		List<PlaceJpaEntity> arrivalPlaces = givenArrivalPlaces(arrivalDepartments);
 
 		List<List<EngineTypeJpaEntity>> engineTypesListList = givenEngineTypes();
 		List<EngineTypeJpaEntity> engineTypes = List.of(engineTypesListList.get(0).get(0),
@@ -100,7 +123,7 @@ public class JourneyRequestRepositoryTests {
 		List<ClientJpaEntity> clients = givenClients(icc);
 		List<ZonedDateTime> dates = givenLocalDateTimes();
 		List<ZonedDateTime> endDates = givenEndDates();
-		List<Double> distances = givenDistances();
+		List<Integer> distances = givenDistances();
 		List<List<ConstructorJpaEntity>> constructors = givenConstructors();
 		List<List<ModelJpaEntity>> models = givenModels(constructors);
 
@@ -118,9 +141,10 @@ public class JourneyRequestRepositoryTests {
 		// When
 
 		Page<JourneyRequestSearchDto> journeyRequests = journeyRequestRepository
-				.findByDeparturePlace_RegionIdAndArrivalPlace_RegionIdInAndEngineType_IdInAndDateBetween(
-						departurePlaces.get(0).getRegionId(),
-						Set.of(arrivalPlaces.get(0).getRegionId(), arrivalPlaces.get(1).getRegionId()),
+				.findByDeparturePlace_DepartmentIdAndArrivalPlace_DepartmentIdInAndEngineType_IdInAndDateBetween(
+						departurePlaces.get(0).getDepartment().getId(),
+						Set.of(arrivalPlaces.get(0).getDepartment().getId(),
+								arrivalPlaces.get(1).getDepartment().getId()),
 						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()),
 						searchStartAndEndDates.get(0).toInstant(), searchStartAndEndDates.get(1).toInstant(), "en_US",
 						PageRequest.of(0, 1000,
@@ -132,14 +156,14 @@ public class JourneyRequestRepositoryTests {
 
 		assertEquals(2, journeyRequests.getNumberOfElements());
 
-		assertEquals(departurePlaces.get(0).getRegionId(),
-				journeyRequests.getContent().get(0).getDeparturePlace().getRegionId());
+		assertEquals(departurePlaces.get(0).getDepartment().getId(),
+				journeyRequests.getContent().get(0).getDeparturePlace().getDepartmentId());
 
-		assertEquals(departurePlaces.get(0).getRegionId(),
-				journeyRequests.getContent().get(1).getDeparturePlace().getRegionId());
+		assertEquals(departurePlaces.get(0).getDepartment().getId(),
+				journeyRequests.getContent().get(1).getDeparturePlace().getDepartmentId());
 
-		assertTrue(Set.of(arrivalPlaces.get(0).getRegionId(), arrivalPlaces.get(1).getRegionId())
-				.containsAll(journeyRequests.getContent().stream().map(jr -> jr.getArrivalPlace().getRegionId())
+		assertTrue(Set.of(arrivalPlaces.get(0).getDepartment().getId(), arrivalPlaces.get(1).getDepartment().getId())
+				.containsAll(journeyRequests.getContent().stream().map(jr -> jr.getArrivalPlace().getDepartmentId())
 						.collect(Collectors.toSet())));
 
 		assertTrue(Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()).containsAll(journeyRequests
@@ -157,11 +181,13 @@ public class JourneyRequestRepositoryTests {
 	}
 
 	@Test
-	public void testFindByDeparturePlace_RegionIdAndEngineType_IdInAndDateBetween_OrderByMinPriceDesc() {
+	public void testFindByDeparturePlace_DepartmentIdAndEngineType_IdInAndDateBetween_OrderByMinPriceDesc() {
 
 		// Given
-		List<PlaceJpaEntity> departurePlaces = givenDeparturePlaces();
-		List<PlaceJpaEntity> arrivalPlaces = givenArrivalPlaces();
+		List<DepartmentJpaEntity> departureDepartments = givenDepartureDepartments();
+		List<DepartmentJpaEntity> arrivalDepartments = givenArrivalDepartments();
+		List<PlaceJpaEntity> departurePlaces = givenDeparturePlaces(departureDepartments);
+		List<PlaceJpaEntity> arrivalPlaces = givenArrivalPlaces(arrivalDepartments);
 
 		List<List<EngineTypeJpaEntity>> engineTypesListList = givenEngineTypes();
 		List<EngineTypeJpaEntity> engineTypes = List.of(engineTypesListList.get(0).get(0),
@@ -171,7 +197,7 @@ public class JourneyRequestRepositoryTests {
 		List<ClientJpaEntity> clients = givenClients(icc);
 		List<ZonedDateTime> dates = givenLocalDateTimes();
 		List<ZonedDateTime> endDates = givenEndDates();
-		List<Double> distances = givenDistances();
+		List<Integer> distances = givenDistances();
 		List<List<ConstructorJpaEntity>> constructors = givenConstructors();
 		List<List<ModelJpaEntity>> models = givenModels(constructors);
 
@@ -189,7 +215,8 @@ public class JourneyRequestRepositoryTests {
 		// When
 
 		Page<JourneyRequestSearchDto> journeyRequests = journeyRequestRepository
-				.findByDeparturePlace_RegionIdAndEngineType_IdInAndDateBetween(departurePlaces.get(0).getRegionId(),
+				.findByDeparturePlace_DepartmentIdAndEngineType_IdInAndDateBetween(
+						departurePlaces.get(0).getDepartment().getId(),
 						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()),
 						searchStartAndEndDates.get(0).toInstant(), searchStartAndEndDates.get(1).toInstant(), "en_US",
 						PageRequest.of(0, 1000,
@@ -201,14 +228,14 @@ public class JourneyRequestRepositoryTests {
 
 		assertEquals(2, journeyRequests.getNumberOfElements());
 
-		assertEquals(departurePlaces.get(0).getRegionId(),
-				journeyRequests.getContent().get(0).getDeparturePlace().getRegionId());
+		assertEquals(departurePlaces.get(0).getDepartment().getId(),
+				journeyRequests.getContent().get(0).getDeparturePlace().getDepartmentId());
 
-		assertEquals(departurePlaces.get(0).getRegionId(),
-				journeyRequests.getContent().get(1).getDeparturePlace().getRegionId());
+		assertEquals(departurePlaces.get(0).getDepartment().getId(),
+				journeyRequests.getContent().get(1).getDeparturePlace().getDepartmentId());
 
-		assertTrue(Set.of(arrivalPlaces.get(0).getRegionId(), arrivalPlaces.get(1).getRegionId())
-				.containsAll(journeyRequests.getContent().stream().map(jr -> jr.getArrivalPlace().getRegionId())
+		assertTrue(Set.of(arrivalPlaces.get(0).getDepartment().getId(), arrivalPlaces.get(1).getDepartment().getId())
+				.containsAll(journeyRequests.getContent().stream().map(jr -> jr.getArrivalPlace().getDepartmentId())
 						.collect(Collectors.toSet())));
 
 		assertTrue(Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()).containsAll(journeyRequests
@@ -226,11 +253,13 @@ public class JourneyRequestRepositoryTests {
 	}
 
 	@Test
-	public void testFindByDeparturePlace_RegionIdAndArrivalPlace_RegionIdInAndEngineType_IdInAndDateBetween_OrderByMinPriceAsc_WithPaging() {
+	public void testFindByDeparturePlace_DepartmentIdAndArrivalPlace_DepartmentIdInAndEngineType_IdInAndDateBetween_OrderByMinPriceAsc_WithPaging() {
 
 		// Given
-		List<PlaceJpaEntity> departurePlaces = givenDeparturePlaces();
-		List<PlaceJpaEntity> arrivalPlaces = givenArrivalPlaces();
+		List<DepartmentJpaEntity> departureDepartments = givenDepartureDepartments();
+		List<DepartmentJpaEntity> arrivalDepartments = givenArrivalDepartments();
+		List<PlaceJpaEntity> departurePlaces = givenDeparturePlaces(departureDepartments);
+		List<PlaceJpaEntity> arrivalPlaces = givenArrivalPlaces(arrivalDepartments);
 
 		List<List<EngineTypeJpaEntity>> engineTypesListList = givenEngineTypes();
 		List<EngineTypeJpaEntity> engineTypes = List.of(engineTypesListList.get(0).get(0),
@@ -240,7 +269,76 @@ public class JourneyRequestRepositoryTests {
 		List<ClientJpaEntity> clients = givenClients(icc);
 		List<ZonedDateTime> dates = givenLocalDateTimes();
 		List<ZonedDateTime> endDates = givenEndDates();
-		List<Double> distances = givenDistances();
+		List<Integer> distances = givenDistances();
+		List<List<ConstructorJpaEntity>> constructors = givenConstructors();
+		List<List<ModelJpaEntity>> models = givenModels(constructors);
+
+		List<List<VehiculeJpaEntity>> vehicules = givenVehicules(engineTypesListList, models);
+		List<TransporterJpaEntity> transporters = givenTransporters(vehicules);
+		List<String> descriptions = givenDescriptions();
+
+		Map<Integer, Set<JourneyProposalJpaEntity>> proposalsMap = givenProposals(transporters, vehicules);
+
+		List<JourneyRequestJpaEntity> createdJourneyRequests = givenJourneyRequests(departurePlaces, arrivalPlaces,
+				engineTypes, distances, dates, endDates, List.of(2, 2, 2), descriptions, clients, proposalsMap);
+
+		List<ZonedDateTime> searchStartAndEndDates = getDateBeforeAndDateAfter(dates.get(0));
+
+		// When
+
+		Page<JourneyRequestSearchDto> journeyRequests = journeyRequestRepository
+				.findByDeparturePlace_DepartmentIdAndArrivalPlace_DepartmentIdInAndEngineType_IdInAndDateBetween(
+						departurePlaces.get(0).getDepartment().getId(),
+						Set.of(arrivalPlaces.get(0).getDepartment().getId(),
+								arrivalPlaces.get(1).getDepartment().getId()),
+						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()),
+						searchStartAndEndDates.get(0).toInstant(), searchStartAndEndDates.get(1).toInstant(), "en_US",
+						PageRequest.of(1, 1,
+								// Sort.by(List.of(new Order(Direction.DESC, "(minPrice)")))
+								JpaSort.unsafe(Direction.ASC, "(minPrice)")));
+
+		// Then
+		assertNotNull(journeyRequests);
+
+		assertEquals(1, journeyRequests.getNumberOfElements());
+
+		assertEquals(departurePlaces.get(0).getDepartment().getId(),
+				journeyRequests.getContent().get(0).getDeparturePlace().getDepartmentId());
+
+		assertTrue(Set.of(arrivalPlaces.get(0).getDepartment().getId(), arrivalPlaces.get(1).getDepartment().getId())
+				.containsAll(journeyRequests.getContent().stream().map(jr -> jr.getArrivalPlace().getDepartmentId())
+						.collect(Collectors.toSet())));
+
+		assertTrue(Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()).containsAll(journeyRequests
+				.getContent().stream().map(jr -> jr.getEngineType().getId()).collect(Collectors.toSet())));
+
+		assertTrue(journeyRequests.getContent().get(0).getDateTime().isAfter(searchStartAndEndDates.get(0)));
+		assertTrue(journeyRequests.getContent().get(0).getDateTime().isBefore(searchStartAndEndDates.get(1)));
+
+		assertEquals(createdJourneyRequests.get(1).getProposals().stream()
+				.sorted((p1, p2) -> p1.getPrice().compareTo(p2.getPrice())).collect(Collectors.toList()).get(0)
+				.getPrice(), journeyRequests.getContent().get(0).getMinPrice());
+
+	}
+
+	@Test
+	public void testFindByDeparturePlace_DepartmentIdAndEngineType_IdInAndDateBetween_OrderByMinPriceAsc_WithPaging() {
+
+		// Given
+		List<DepartmentJpaEntity> departureDepartments = givenDepartureDepartments();
+		List<DepartmentJpaEntity> arrivalDepartments = givenArrivalDepartments();
+		List<PlaceJpaEntity> departurePlaces = givenDeparturePlaces(departureDepartments);
+		List<PlaceJpaEntity> arrivalPlaces = givenArrivalPlaces(arrivalDepartments);
+
+		List<List<EngineTypeJpaEntity>> engineTypesListList = givenEngineTypes();
+		List<EngineTypeJpaEntity> engineTypes = List.of(engineTypesListList.get(0).get(0),
+				engineTypesListList.get(1).get(0), engineTypesListList.get(2).get(0));
+
+		InternationalCallingCodeJpaEntity icc = givenIcc("+216");
+		List<ClientJpaEntity> clients = givenClients(icc);
+		List<ZonedDateTime> dates = givenLocalDateTimes();
+		List<ZonedDateTime> endDates = givenEndDates();
+		List<Integer> distances = givenDistances();
 		List<List<ConstructorJpaEntity>> constructors = givenConstructors();
 		List<List<ModelJpaEntity>> models = givenModels(constructors);
 
@@ -258,9 +356,8 @@ public class JourneyRequestRepositoryTests {
 		// When
 
 		Page<JourneyRequestSearchDto> journeyRequests = journeyRequestRepository
-				.findByDeparturePlace_RegionIdAndArrivalPlace_RegionIdInAndEngineType_IdInAndDateBetween(
-						departurePlaces.get(0).getRegionId(),
-						Set.of(arrivalPlaces.get(0).getRegionId(), arrivalPlaces.get(1).getRegionId()),
+				.findByDeparturePlace_DepartmentIdAndEngineType_IdInAndDateBetween(
+						departurePlaces.get(0).getDepartment().getId(),
 						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()),
 						searchStartAndEndDates.get(0).toInstant(), searchStartAndEndDates.get(1).toInstant(), "en_US",
 						PageRequest.of(1, 1,
@@ -272,11 +369,11 @@ public class JourneyRequestRepositoryTests {
 
 		assertEquals(1, journeyRequests.getNumberOfElements());
 
-		assertEquals(departurePlaces.get(0).getRegionId(),
-				journeyRequests.getContent().get(0).getDeparturePlace().getRegionId());
+		assertEquals(departurePlaces.get(0).getDepartment().getId(),
+				journeyRequests.getContent().get(0).getDeparturePlace().getDepartmentId());
 
-		assertTrue(Set.of(arrivalPlaces.get(0).getRegionId(), arrivalPlaces.get(1).getRegionId())
-				.containsAll(journeyRequests.getContent().stream().map(jr -> jr.getArrivalPlace().getRegionId())
+		assertTrue(Set.of(arrivalPlaces.get(0).getDepartment().getId(), arrivalPlaces.get(1).getDepartment().getId())
+				.containsAll(journeyRequests.getContent().stream().map(jr -> jr.getArrivalPlace().getDepartmentId())
 						.collect(Collectors.toSet())));
 
 		assertTrue(Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()).containsAll(journeyRequests
@@ -290,11 +387,13 @@ public class JourneyRequestRepositoryTests {
 	}
 
 	@Test
-	public void testFindByDeparturePlace_RegionIdAndEngineType_IdInAndDateBetween_OrderByMinPriceAsc_WithPaging() {
+	public void testFindByDeparturePlace_DepartmentIdAndArrivalPlace_DepartmentIdInAndEngineType_IdInAndDateBetween_OrderByDateTimeDesc() {
 
 		// Given
-		List<PlaceJpaEntity> departurePlaces = givenDeparturePlaces();
-		List<PlaceJpaEntity> arrivalPlaces = givenArrivalPlaces();
+		List<DepartmentJpaEntity> departureDepartments = givenDepartureDepartments();
+		List<DepartmentJpaEntity> arrivalDepartments = givenArrivalDepartments();
+		List<PlaceJpaEntity> departurePlaces = givenDeparturePlaces(departureDepartments);
+		List<PlaceJpaEntity> arrivalPlaces = givenArrivalPlaces(arrivalDepartments);
 
 		List<List<EngineTypeJpaEntity>> engineTypesListList = givenEngineTypes();
 		List<EngineTypeJpaEntity> engineTypes = List.of(engineTypesListList.get(0).get(0),
@@ -304,7 +403,7 @@ public class JourneyRequestRepositoryTests {
 		List<ClientJpaEntity> clients = givenClients(icc);
 		List<ZonedDateTime> dates = givenLocalDateTimes();
 		List<ZonedDateTime> endDates = givenEndDates();
-		List<Double> distances = givenDistances();
+		List<Integer> distances = givenDistances();
 		List<List<ConstructorJpaEntity>> constructors = givenConstructors();
 		List<List<ModelJpaEntity>> models = givenModels(constructors);
 
@@ -322,74 +421,10 @@ public class JourneyRequestRepositoryTests {
 		// When
 
 		Page<JourneyRequestSearchDto> journeyRequests = journeyRequestRepository
-				.findByDeparturePlace_RegionIdAndEngineType_IdInAndDateBetween(departurePlaces.get(0).getRegionId(),
-						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()),
-						searchStartAndEndDates.get(0).toInstant(), searchStartAndEndDates.get(1).toInstant(), "en_US",
-						PageRequest.of(1, 1,
-								// Sort.by(List.of(new Order(Direction.DESC, "(minPrice)")))
-								JpaSort.unsafe(Direction.ASC, "(minPrice)")));
-
-		// Then
-		assertNotNull(journeyRequests);
-
-		assertEquals(1, journeyRequests.getNumberOfElements());
-
-		assertEquals(departurePlaces.get(0).getRegionId(),
-				journeyRequests.getContent().get(0).getDeparturePlace().getRegionId());
-
-		assertEquals(departurePlaces.get(0).getRegionId(),
-				journeyRequests.getContent().get(0).getDeparturePlace().getRegionId());
-
-		assertTrue(Set.of(arrivalPlaces.get(0).getRegionId(), arrivalPlaces.get(1).getRegionId())
-				.containsAll(journeyRequests.getContent().stream().map(jr -> jr.getArrivalPlace().getRegionId())
-						.collect(Collectors.toSet())));
-
-		assertTrue(Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()).containsAll(journeyRequests
-				.getContent().stream().map(jr -> jr.getEngineType().getId()).collect(Collectors.toSet())));
-
-		assertTrue(journeyRequests.getContent().get(0).getDateTime().isAfter(searchStartAndEndDates.get(0)));
-		assertTrue(journeyRequests.getContent().get(0).getDateTime().isBefore(searchStartAndEndDates.get(1)));
-
-		assertEquals(journeyRequests.getContent().get(0).getMinPrice(), 240);
-
-	}
-
-	@Test
-	public void testFindByDeparturePlace_RegionIdAndArrivalPlace_RegionIdInAndEngineType_IdInAndDateBetween_OrderByDateTimeDesc() {
-
-		// Given
-		List<PlaceJpaEntity> departurePlaces = givenDeparturePlaces();
-		List<PlaceJpaEntity> arrivalPlaces = givenArrivalPlaces();
-
-		List<List<EngineTypeJpaEntity>> engineTypesListList = givenEngineTypes();
-		List<EngineTypeJpaEntity> engineTypes = List.of(engineTypesListList.get(0).get(0),
-				engineTypesListList.get(1).get(0), engineTypesListList.get(2).get(0));
-
-		InternationalCallingCodeJpaEntity icc = givenIcc("+216");
-		List<ClientJpaEntity> clients = givenClients(icc);
-		List<ZonedDateTime> dates = givenLocalDateTimes();
-		List<ZonedDateTime> endDates = givenEndDates();
-		List<Double> distances = givenDistances();
-		List<List<ConstructorJpaEntity>> constructors = givenConstructors();
-		List<List<ModelJpaEntity>> models = givenModels(constructors);
-
-		List<List<VehiculeJpaEntity>> vehicules = givenVehicules(engineTypesListList, models);
-		List<TransporterJpaEntity> transporters = givenTransporters(vehicules);
-		List<String> descriptions = givenDescriptions();
-
-		Map<Integer, Set<JourneyProposalJpaEntity>> proposalsMap = givenProposals(transporters, vehicules);
-
-		givenJourneyRequests(departurePlaces, arrivalPlaces, engineTypes, distances, dates, endDates, List.of(2, 2, 2),
-				descriptions, clients, proposalsMap);
-
-		List<ZonedDateTime> searchStartAndEndDates = getDateBeforeAndDateAfter(dates.get(0));
-
-		// When
-
-		Page<JourneyRequestSearchDto> journeyRequests = journeyRequestRepository
-				.findByDeparturePlace_RegionIdAndArrivalPlace_RegionIdInAndEngineType_IdInAndDateBetween(
-						departurePlaces.get(0).getRegionId(),
-						Set.of(arrivalPlaces.get(0).getRegionId(), arrivalPlaces.get(1).getRegionId()),
+				.findByDeparturePlace_DepartmentIdAndArrivalPlace_DepartmentIdInAndEngineType_IdInAndDateBetween(
+						departurePlaces.get(0).getDepartment().getId(),
+						Set.of(arrivalPlaces.get(0).getDepartment().getId(),
+								arrivalPlaces.get(1).getDepartment().getId()),
 						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()),
 						searchStartAndEndDates.get(0).toInstant(), searchStartAndEndDates.get(1).toInstant(), "en_US",
 						PageRequest.of(0, 1000,
@@ -401,14 +436,14 @@ public class JourneyRequestRepositoryTests {
 
 		assertEquals(2, journeyRequests.getNumberOfElements());
 
-		assertEquals(departurePlaces.get(0).getRegionId(),
-				journeyRequests.getContent().get(0).getDeparturePlace().getRegionId());
+		assertEquals(departurePlaces.get(0).getDepartment().getId(),
+				journeyRequests.getContent().get(0).getDeparturePlace().getDepartmentId());
 
-		assertEquals(departurePlaces.get(0).getRegionId(),
-				journeyRequests.getContent().get(1).getDeparturePlace().getRegionId());
+		assertEquals(departurePlaces.get(0).getDepartment().getId(),
+				journeyRequests.getContent().get(1).getDeparturePlace().getDepartmentId());
 
-		assertTrue(Set.of(arrivalPlaces.get(0).getRegionId(), arrivalPlaces.get(1).getRegionId())
-				.containsAll(journeyRequests.getContent().stream().map(jr -> jr.getArrivalPlace().getRegionId())
+		assertTrue(Set.of(arrivalPlaces.get(0).getDepartment().getId(), arrivalPlaces.get(1).getDepartment().getId())
+				.containsAll(journeyRequests.getContent().stream().map(jr -> jr.getArrivalPlace().getDepartmentId())
 						.collect(Collectors.toSet())));
 
 		assertTrue(Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()).containsAll(journeyRequests
@@ -423,11 +458,13 @@ public class JourneyRequestRepositoryTests {
 	}
 
 	@Test
-	public void testFindByDeparturePlace_RegionIdAndEngineType_IdInAndDateBetween_OrderByDateTimeDesc() {
+	public void testFindByDeparturePlace_DepartmentIdAndEngineType_IdInAndDateBetween_OrderByDateTimeDesc() {
 
 		// Given
-		List<PlaceJpaEntity> departurePlaces = givenDeparturePlaces();
-		List<PlaceJpaEntity> arrivalPlaces = givenArrivalPlaces();
+		List<DepartmentJpaEntity> departureDepartments = givenDepartureDepartments();
+		List<DepartmentJpaEntity> arrivalDepartments = givenArrivalDepartments();
+		List<PlaceJpaEntity> departurePlaces = givenDeparturePlaces(departureDepartments);
+		List<PlaceJpaEntity> arrivalPlaces = givenArrivalPlaces(arrivalDepartments);
 
 		List<List<EngineTypeJpaEntity>> engineTypesListList = givenEngineTypes();
 		List<EngineTypeJpaEntity> engineTypes = List.of(engineTypesListList.get(0).get(0),
@@ -438,7 +475,7 @@ public class JourneyRequestRepositoryTests {
 		List<ZonedDateTime> dates = givenLocalDateTimes();
 		List<ZonedDateTime> endDates = givenEndDates();
 
-		List<Double> distances = givenDistances();
+		List<Integer> distances = givenDistances();
 
 		List<List<ConstructorJpaEntity>> constructors = givenConstructors();
 		List<List<ModelJpaEntity>> models = givenModels(constructors);
@@ -457,7 +494,8 @@ public class JourneyRequestRepositoryTests {
 		// When
 
 		Page<JourneyRequestSearchDto> journeyRequests = journeyRequestRepository
-				.findByDeparturePlace_RegionIdAndEngineType_IdInAndDateBetween(departurePlaces.get(0).getRegionId(),
+				.findByDeparturePlace_DepartmentIdAndEngineType_IdInAndDateBetween(
+						departurePlaces.get(0).getDepartment().getId(),
 						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()),
 						searchStartAndEndDates.get(0).toInstant(), searchStartAndEndDates.get(1).toInstant(), "en_US",
 						PageRequest.of(0, 1000,
@@ -469,14 +507,14 @@ public class JourneyRequestRepositoryTests {
 
 		assertEquals(2, journeyRequests.getNumberOfElements());
 
-		assertEquals(departurePlaces.get(0).getRegionId(),
-				journeyRequests.getContent().get(0).getDeparturePlace().getRegionId());
+		assertEquals(departurePlaces.get(0).getDepartment().getId(),
+				journeyRequests.getContent().get(0).getDeparturePlace().getDepartmentId());
 
-		assertEquals(departurePlaces.get(0).getRegionId(),
-				journeyRequests.getContent().get(1).getDeparturePlace().getRegionId());
+		assertEquals(departurePlaces.get(0).getDepartment().getId(),
+				journeyRequests.getContent().get(1).getDeparturePlace().getDepartmentId());
 
-		assertTrue(Set.of(arrivalPlaces.get(0).getRegionId(), arrivalPlaces.get(1).getRegionId())
-				.containsAll(journeyRequests.getContent().stream().map(jr -> jr.getArrivalPlace().getRegionId())
+		assertTrue(Set.of(arrivalPlaces.get(0).getDepartment().getId(), arrivalPlaces.get(1).getDepartment().getId())
+				.containsAll(journeyRequests.getContent().stream().map(jr -> jr.getArrivalPlace().getDepartmentId())
 						.collect(Collectors.toSet())));
 
 		assertTrue(Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()).containsAll(journeyRequests
@@ -491,11 +529,13 @@ public class JourneyRequestRepositoryTests {
 	}
 
 	@Test
-	public void testFindByDeparturePlace_RegionIdAndArrivalPlace_RegionIdInAndEngineType_IdInAndDateBetween_OrderByDistanceDesc() {
+	public void testFindByDeparturePlace_DepartmentIdAndArrivalPlace_DepartmentIdInAndEngineType_IdInAndDateBetween_OrderByDistanceDesc() {
 
 		// Given
-		List<PlaceJpaEntity> departurePlaces = givenDeparturePlaces();
-		List<PlaceJpaEntity> arrivalPlaces = givenArrivalPlaces();
+		List<DepartmentJpaEntity> departureDepartments = givenDepartureDepartments();
+		List<DepartmentJpaEntity> arrivalDepartments = givenArrivalDepartments();
+		List<PlaceJpaEntity> departurePlaces = givenDeparturePlaces(departureDepartments);
+		List<PlaceJpaEntity> arrivalPlaces = givenArrivalPlaces(arrivalDepartments);
 
 		List<List<EngineTypeJpaEntity>> engineTypesListList = givenEngineTypes();
 		List<EngineTypeJpaEntity> engineTypes = List.of(engineTypesListList.get(0).get(0),
@@ -515,7 +555,7 @@ public class JourneyRequestRepositoryTests {
 
 		Map<Integer, Set<JourneyProposalJpaEntity>> proposalsMap = givenProposals(transporters, vehicules);
 
-		givenJourneyRequests(departurePlaces, arrivalPlaces, engineTypes, List.of(112.7D, 205.5, 308.2), dates,
+		givenJourneyRequests(departurePlaces, arrivalPlaces, engineTypes, List.of(112700, 205500, 308200), dates,
 				endDates, List.of(2, 2, 2), descriptions, clients, proposalsMap);
 
 		List<ZonedDateTime> searchStartAndEndDates = getDateBeforeAndDateAfter(dates.get(0));
@@ -523,9 +563,10 @@ public class JourneyRequestRepositoryTests {
 		// When
 
 		Page<JourneyRequestSearchDto> journeyRequests = journeyRequestRepository
-				.findByDeparturePlace_RegionIdAndArrivalPlace_RegionIdInAndEngineType_IdInAndDateBetween(
-						departurePlaces.get(0).getRegionId(),
-						Set.of(arrivalPlaces.get(0).getRegionId(), arrivalPlaces.get(1).getRegionId()),
+				.findByDeparturePlace_DepartmentIdAndArrivalPlace_DepartmentIdInAndEngineType_IdInAndDateBetween(
+						departurePlaces.get(0).getDepartment().getId(),
+						Set.of(arrivalPlaces.get(0).getDepartment().getId(),
+								arrivalPlaces.get(1).getDepartment().getId()),
 						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()),
 						searchStartAndEndDates.get(0).toInstant(), searchStartAndEndDates.get(1).toInstant(), "en_US",
 						PageRequest.of(0, 1000,
@@ -537,14 +578,14 @@ public class JourneyRequestRepositoryTests {
 
 		assertEquals(2, journeyRequests.getNumberOfElements());
 
-		assertEquals(departurePlaces.get(0).getRegionId(),
-				journeyRequests.getContent().get(0).getDeparturePlace().getRegionId());
+		assertEquals(departurePlaces.get(0).getDepartment().getId(),
+				journeyRequests.getContent().get(0).getDeparturePlace().getDepartmentId());
 
-		assertEquals(departurePlaces.get(0).getRegionId(),
-				journeyRequests.getContent().get(1).getDeparturePlace().getRegionId());
+		assertEquals(departurePlaces.get(0).getDepartment().getId(),
+				journeyRequests.getContent().get(1).getDeparturePlace().getDepartmentId());
 
-		assertTrue(Set.of(arrivalPlaces.get(0).getRegionId(), arrivalPlaces.get(1).getRegionId())
-				.containsAll(journeyRequests.getContent().stream().map(jr -> jr.getArrivalPlace().getRegionId())
+		assertTrue(Set.of(arrivalPlaces.get(0).getDepartment().getId(), arrivalPlaces.get(1).getDepartment().getId())
+				.containsAll(journeyRequests.getContent().stream().map(jr -> jr.getArrivalPlace().getDepartmentId())
 						.collect(Collectors.toSet())));
 
 		assertTrue(Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()).containsAll(journeyRequests
@@ -559,11 +600,13 @@ public class JourneyRequestRepositoryTests {
 	}
 
 	@Test
-	public void testFindByDeparturePlace_RegionIdAndEngineType_IdInAndDateBetween_OrderByDistanceDesc() {
+	public void testFindByDeparturePlace_DepartmentIdAndEngineType_IdInAndDateBetween_OrderByDistanceDesc() {
 
 		// Given
-		List<PlaceJpaEntity> departurePlaces = givenDeparturePlaces();
-		List<PlaceJpaEntity> arrivalPlaces = givenArrivalPlaces();
+		List<DepartmentJpaEntity> departureDepartments = givenDepartureDepartments();
+		List<DepartmentJpaEntity> arrivalDepartments = givenArrivalDepartments();
+		List<PlaceJpaEntity> departurePlaces = givenDeparturePlaces(departureDepartments);
+		List<PlaceJpaEntity> arrivalPlaces = givenArrivalPlaces(arrivalDepartments);
 
 		List<List<EngineTypeJpaEntity>> engineTypesListList = givenEngineTypes();
 		List<EngineTypeJpaEntity> engineTypes = List.of(engineTypesListList.get(0).get(0),
@@ -583,7 +626,7 @@ public class JourneyRequestRepositoryTests {
 
 		Map<Integer, Set<JourneyProposalJpaEntity>> proposalsMap = givenProposals(transporters, vehicules);
 
-		givenJourneyRequests(departurePlaces, arrivalPlaces, engineTypes, List.of(112.7D, 205.5, 308.2), dates,
+		givenJourneyRequests(departurePlaces, arrivalPlaces, engineTypes, List.of(112700, 205500, 308200), dates,
 				endDates, List.of(2, 2, 2), descriptions, clients, proposalsMap);
 
 		List<ZonedDateTime> searchStartAndEndDates = getDateBeforeAndDateAfter(dates.get(0));
@@ -591,7 +634,8 @@ public class JourneyRequestRepositoryTests {
 		// When
 
 		Page<JourneyRequestSearchDto> journeyRequests = journeyRequestRepository
-				.findByDeparturePlace_RegionIdAndEngineType_IdInAndDateBetween(departurePlaces.get(0).getRegionId(),
+				.findByDeparturePlace_DepartmentIdAndEngineType_IdInAndDateBetween(
+						departurePlaces.get(0).getDepartment().getId(),
 						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()),
 						searchStartAndEndDates.get(0).toInstant(), searchStartAndEndDates.get(1).toInstant(), "en_US",
 						PageRequest.of(0, 1000,
@@ -603,14 +647,14 @@ public class JourneyRequestRepositoryTests {
 
 		assertEquals(2, journeyRequests.getNumberOfElements());
 
-		assertEquals(departurePlaces.get(0).getRegionId(),
-				journeyRequests.getContent().get(0).getDeparturePlace().getRegionId());
+		assertEquals(departurePlaces.get(0).getDepartment().getId(),
+				journeyRequests.getContent().get(0).getDeparturePlace().getDepartmentId());
 
-		assertEquals(departurePlaces.get(0).getRegionId(),
-				journeyRequests.getContent().get(1).getDeparturePlace().getRegionId());
+		assertEquals(departurePlaces.get(0).getDepartment().getId(),
+				journeyRequests.getContent().get(1).getDeparturePlace().getDepartmentId());
 
-		assertTrue(Set.of(arrivalPlaces.get(0).getRegionId(), arrivalPlaces.get(1).getRegionId())
-				.containsAll(journeyRequests.getContent().stream().map(jr -> jr.getArrivalPlace().getRegionId())
+		assertTrue(Set.of(arrivalPlaces.get(0).getDepartment().getId(), arrivalPlaces.get(1).getDepartment().getId())
+				.containsAll(journeyRequests.getContent().stream().map(jr -> jr.getArrivalPlace().getDepartmentId())
 						.collect(Collectors.toSet())));
 
 		assertTrue(Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()).containsAll(journeyRequests
@@ -627,8 +671,10 @@ public class JourneyRequestRepositoryTests {
 	@Test
 	void testFindByCreationDateTimeBetweenAndClient_Email() {
 		// Given
-		List<PlaceJpaEntity> departurePlaces = givenDeparturePlaces();
-		List<PlaceJpaEntity> arrivalPlaces = givenArrivalPlaces();
+		List<DepartmentJpaEntity> departureDepartments = givenDepartureDepartments();
+		List<DepartmentJpaEntity> arrivalDepartments = givenArrivalDepartments();
+		List<PlaceJpaEntity> departurePlaces = givenDeparturePlaces(departureDepartments);
+		List<PlaceJpaEntity> arrivalPlaces = givenArrivalPlaces(arrivalDepartments);
 
 		List<List<EngineTypeJpaEntity>> engineTypesListList = givenEngineTypes();
 		List<EngineTypeJpaEntity> engineTypes = List.of(engineTypesListList.get(0).get(0),
@@ -648,7 +694,7 @@ public class JourneyRequestRepositoryTests {
 
 		Map<Integer, Set<JourneyProposalJpaEntity>> proposalsMap = givenProposals(transporters, vehicules);
 
-		givenJourneyRequests(departurePlaces, arrivalPlaces, engineTypes, List.of(112.7D, 205.5, 308.2), dates,
+		givenJourneyRequests(departurePlaces, arrivalPlaces, engineTypes, List.of(112700, 205500, 308200), dates,
 				endDates, List.of(2, 2, 2), descriptions, clients, proposalsMap);
 
 		// When
@@ -682,8 +728,10 @@ public class JourneyRequestRepositoryTests {
 	@Test
 	void testFindByCreationDateTimeBetweenAndClient_MobileNumberAndClient_IccValue() {
 		// Given
-		List<PlaceJpaEntity> departurePlaces = givenDeparturePlaces();
-		List<PlaceJpaEntity> arrivalPlaces = givenArrivalPlaces();
+		List<DepartmentJpaEntity> departureDepartments = givenDepartureDepartments();
+		List<DepartmentJpaEntity> arrivalDepartments = givenArrivalDepartments();
+		List<PlaceJpaEntity> departurePlaces = givenDeparturePlaces(departureDepartments);
+		List<PlaceJpaEntity> arrivalPlaces = givenArrivalPlaces(arrivalDepartments);
 
 		List<List<EngineTypeJpaEntity>> engineTypesListList = givenEngineTypes();
 		List<EngineTypeJpaEntity> engineTypes = List.of(engineTypesListList.get(0).get(0),
@@ -693,6 +741,7 @@ public class JourneyRequestRepositoryTests {
 		List<ClientJpaEntity> clients = givenClients(icc);
 		List<ZonedDateTime> dates = givenLocalDateTimes();
 		List<ZonedDateTime> endDates = givenEndDates();
+		List<Integer> distances = givenDistances();
 
 		List<List<ConstructorJpaEntity>> constructors = givenConstructors();
 		List<List<ModelJpaEntity>> models = givenModels(constructors);
@@ -703,8 +752,8 @@ public class JourneyRequestRepositoryTests {
 
 		Map<Integer, Set<JourneyProposalJpaEntity>> proposalsMap = givenProposals(transporters, vehicules);
 
-		givenJourneyRequests(departurePlaces, arrivalPlaces, engineTypes, List.of(112.7D, 205.5, 308.2), dates,
-				endDates, List.of(2, 2, 2), descriptions, clients, proposalsMap);
+		givenJourneyRequests(departurePlaces, arrivalPlaces, engineTypes, distances, dates, endDates, List.of(2, 2, 2),
+				descriptions, clients, proposalsMap);
 
 		// When
 
@@ -737,9 +786,9 @@ public class JourneyRequestRepositoryTests {
 
 	}
 
-	private List<Double> givenDistances() {
+	private List<Integer> givenDistances() {
 
-		return List.of(112.7D, 205.5, 308.2);
+		return List.of(112700, 205500, 308200);
 	}
 
 	private List<ZonedDateTime> getDateBeforeAndDateAfter(ZonedDateTime date) {
@@ -783,20 +832,122 @@ public class JourneyRequestRepositoryTests {
 		return List.of(zdt, tomorrow11PM59, overmorrowZoned11PM59);
 	}
 
-	private List<PlaceJpaEntity> givenDeparturePlaces() {
-		List<PlaceJpaEntity> departurePlaces = List.of(
-				new PlaceJpaEntity("DeparturePlace1", "DepartureRegion1", "Departure Place 1"),
-				new PlaceJpaEntity("DeparturePlace2", "DepartureRegion1", "Departure Place 2"),
-				new PlaceJpaEntity("DeparturePlace3", "DepartureRegion3", "Departure Place 3"));
-		return placeRepository.saveAll(departurePlaces);
+	private List<PlaceJpaEntity> givenDeparturePlaces(List<DepartmentJpaEntity> departments) {
+
+		PlaceJpaEntity p1 = new PlaceJpaEntity(departments.get(0), new HashMap<String, LocalizedPlaceJpaEntity>(),
+				departments.get(0).getLatitude(), departments.get(0).getLongitude());
+		p1.setPlaceId(new PlaceId(1L, PlaceType.DEPARTMENT));
+
+		LocalizedPlaceJpaEntity p1FR = new LocalizedPlaceJpaEntity();
+		p1FR.setLocalizedPlaceId(new LocalizedPlaceId("fr_FR"));
+		p1FR.setName("Sfax");
+
+		LocalizedPlaceJpaEntity p1EN = new LocalizedPlaceJpaEntity();
+		p1EN.setLocalizedPlaceId(new LocalizedPlaceId(new PlaceId(1L, PlaceType.DEPARTMENT), "en_US"));
+		p1EN.setName("Sfax");
+
+		p1FR.setPlace(p1);
+		p1EN.setPlace(p1);
+
+		p1.getLocalizations().put("fr_FR", p1FR);
+		p1.getLocalizations().put("en_US", p1EN);
+//
+//		PlaceJpaEntity p2 = new PlaceJpaEntity(departments.get(1), new HashMap<String, LocalizedPlaceJpaEntity>(),
+//				departments.get(1).getLongitude(), departments.get(1).getLongitude());
+//		p2.setPlaceId(new PlaceId(2L, PlaceType.DEPARTMENT));
+//
+//		LocalizedPlaceJpaEntity p2FR = new LocalizedPlaceJpaEntity();
+//		p2FR.setLocalizedPlaceId(new LocalizedPlaceId("fr_FR"));
+//		p2FR.setName("Nabeul");
+//
+//		LocalizedPlaceJpaEntity p2EN = new LocalizedPlaceJpaEntity();
+//		p2EN.setLocalizedPlaceId(new LocalizedPlaceId(new PlaceId(2L, PlaceType.DEPARTMENT), "en_US"));
+//		p2EN.setName("Nabeul");
+//
+//		p2FR.setPlace(p2);
+//		p2EN.setPlace(p2);
+//
+//		p2.getLocalizations().put("fr_FR", p2FR);
+//		p2.getLocalizations().put("en_US", p2EN);
+
+		PlaceJpaEntity p3 = new PlaceJpaEntity(departments.get(2), new HashMap<String, LocalizedPlaceJpaEntity>(),
+				departments.get(2).getLatitude(), departments.get(2).getLongitude());
+		p3.setPlaceId(new PlaceId(3L, PlaceType.DEPARTMENT));
+
+		LocalizedPlaceJpaEntity p3FR = new LocalizedPlaceJpaEntity();
+		p3FR.setLocalizedPlaceId(new LocalizedPlaceId("fr_FR"));
+		p3FR.setName("Tunis");
+
+		LocalizedPlaceJpaEntity p3EN = new LocalizedPlaceJpaEntity();
+		p3EN.setLocalizedPlaceId(new LocalizedPlaceId(new PlaceId(3L, PlaceType.DEPARTMENT), "en_US"));
+		p3EN.setName("Tunis");
+
+		p3FR.setPlace(p3);
+		p3EN.setPlace(p3);
+
+		p3.getLocalizations().put("fr_FR", p3FR);
+		p3.getLocalizations().put("en_US", p3EN);
+
+		return placeRepository.saveAll(List.of(p1, p1, p3));
 	}
 
-	private List<PlaceJpaEntity> givenArrivalPlaces() {
-		List<PlaceJpaEntity> arrivalPlaces = List.of(
-				new PlaceJpaEntity("ArrivalPlace1", "ArrivalPlaceRegion1", "Arrival Place 1"),
-				new PlaceJpaEntity("ArrivalPlace2", "ArrivalPlaceRegion2", "Arrival Place 2"),
-				new PlaceJpaEntity("ArrivalPlace3", "ArrivalPlaceRegion3", "Arrival Place 3"));
-		return placeRepository.saveAll(arrivalPlaces);
+	private List<PlaceJpaEntity> givenArrivalPlaces(List<DepartmentJpaEntity> departments) {
+
+		PlaceJpaEntity p1 = new PlaceJpaEntity(departments.get(0), new HashMap<String, LocalizedPlaceJpaEntity>(),
+				departments.get(0).getLatitude(), departments.get(0).getLongitude());
+		p1.setPlaceId(new PlaceId(4L, PlaceType.DEPARTMENT));
+
+		LocalizedPlaceJpaEntity p1FR = new LocalizedPlaceJpaEntity();
+		p1FR.setLocalizedPlaceId(new LocalizedPlaceId("fr_FR"));
+		p1FR.setName("Sousse");
+
+		LocalizedPlaceJpaEntity p1EN = new LocalizedPlaceJpaEntity();
+		p1EN.setLocalizedPlaceId(new LocalizedPlaceId(new PlaceId(4L, PlaceType.DEPARTMENT), "en_US"));
+		p1EN.setName("Sousse");
+
+		p1FR.setPlace(p1);
+		p1EN.setPlace(p1);
+
+		p1.getLocalizations().put("fr_FR", p1FR);
+		p1.getLocalizations().put("en_US", p1EN);
+
+		PlaceJpaEntity p2 = new PlaceJpaEntity(departments.get(1), new HashMap<String, LocalizedPlaceJpaEntity>(),
+				departments.get(1).getLatitude(), departments.get(1).getLongitude());
+		p2.setPlaceId(new PlaceId(5L, PlaceType.DEPARTMENT));
+
+		LocalizedPlaceJpaEntity p2FR = new LocalizedPlaceJpaEntity();
+		p2FR.setLocalizedPlaceId(new LocalizedPlaceId("fr_FR"));
+		p2FR.setName("Bizerte");
+
+		LocalizedPlaceJpaEntity p2EN = new LocalizedPlaceJpaEntity();
+		p2EN.setLocalizedPlaceId(new LocalizedPlaceId(new PlaceId(5L, PlaceType.DEPARTMENT), "en_US"));
+		p2EN.setName("Bizerte");
+
+		p2FR.setPlace(p2);
+		p2EN.setPlace(p2);
+
+		p2.getLocalizations().put("fr_FR", p2FR);
+		p2.getLocalizations().put("en_US", p2EN);
+
+		PlaceJpaEntity p3 = new PlaceJpaEntity(departments.get(2), new HashMap<String, LocalizedPlaceJpaEntity>(),
+				departments.get(2).getLatitude(), departments.get(2).getLongitude());
+		p3.setPlaceId(new PlaceId(6L, PlaceType.DEPARTMENT));
+
+		LocalizedPlaceJpaEntity p3FR = new LocalizedPlaceJpaEntity();
+		p3FR.setLocalizedPlaceId(new LocalizedPlaceId("fr_FR"));
+		p3FR.setName("Béja");
+
+		LocalizedPlaceJpaEntity p3EN = new LocalizedPlaceJpaEntity();
+		p3EN.setLocalizedPlaceId(new LocalizedPlaceId(new PlaceId(6L, PlaceType.DEPARTMENT), "en_US"));
+		p3EN.setName("Béja");
+
+		p3FR.setPlace(p3);
+		p3EN.setPlace(p3);
+
+		p3.getLocalizations().put("fr_FR", p3FR);
+		p3.getLocalizations().put("en_US", p3EN);
+
+		return placeRepository.saveAll(List.of(p1, p2, p3));
 	}
 
 	private List<List<EngineTypeJpaEntity>> givenEngineTypes() {
@@ -893,7 +1044,6 @@ public class JourneyRequestRepositoryTests {
 		// Engine type 23
 		EngineTypeJpaEntity et23 = new EngineTypeJpaEntity();
 		et23.setCode(EngineTypeCode.DUMP_TRUCK);
-		;
 
 		LocalizedEngineTypeJpaEntity let23en = new LocalizedEngineTypeJpaEntity();
 		let23en.setLocalizedId(new LocalizedId("en_US"));
@@ -1120,9 +1270,9 @@ public class JourneyRequestRepositoryTests {
 		return proposalsMap;
 	}
 
-	private void givenJourneyRequests(List<PlaceJpaEntity> departurePlaces, List<PlaceJpaEntity> arrivalPlaces,
-			List<EngineTypeJpaEntity> engineTypes, List<Double> distances, List<ZonedDateTime> dates,
-			List<ZonedDateTime> endDates, List<Integer> workers, List<String> descriptions,
+	private List<JourneyRequestJpaEntity> givenJourneyRequests(List<PlaceJpaEntity> departurePlaces,
+			List<PlaceJpaEntity> arrivalPlaces, List<EngineTypeJpaEntity> engineTypes, List<Integer> distances,
+			List<ZonedDateTime> dates, List<ZonedDateTime> endDates, List<Integer> workers, List<String> descriptions,
 			List<ClientJpaEntity> clients, Map<Integer, Set<JourneyProposalJpaEntity>> proposalsMap) {
 
 		JourneyRequestJpaEntity jrToday = JourneyRequestJpaEntity.builder().departurePlace(departurePlaces.get(0))
@@ -1149,7 +1299,7 @@ public class JourneyRequestRepositoryTests {
 		proposalsMap.get(2).forEach(p -> p.setJourneyRequest(jrOvermorrow));
 		clients.get(2).addJourneyRequest(jrOvermorrow);
 
-		journeyRequestRepository.saveAll(List.of(jrToday, jrTomorrow, jrOvermorrow));
+		return journeyRequestRepository.saveAll(List.of(jrToday, jrTomorrow, jrOvermorrow));
 
 	}
 
@@ -1157,6 +1307,60 @@ public class JourneyRequestRepositoryTests {
 		InternationalCallingCodeJpaEntity icc = InternationalCallingCodeJpaEntity.builder().value(code)
 				.countryName("Some country").flagPath("https://path/to/some/country/flag").enabled(true).build();
 		return internationalCallingCodeRepository.save(icc);
+	}
+
+	private List<DepartmentJpaEntity> givenArrivalDepartments() {
+		CountryJpaEntity country = givenCountry();
+
+		DepartmentJpaEntity d1 = new DepartmentJpaEntity("Sousse", new HashMap<String, LocalizedDepartmentJpaEntity>(),
+				country, Collections.<DelegationJpaEntity>emptySet(), new BigDecimal(34.73910078895307),
+				new BigDecimal(10.755186404578666));
+		d1.setId(3L);
+
+		DepartmentJpaEntity d2 = new DepartmentJpaEntity("Bizerte", new HashMap<String, LocalizedDepartmentJpaEntity>(),
+				country, Collections.<DelegationJpaEntity>emptySet(), new BigDecimal(36.44898025387017),
+				new BigDecimal(10.737296664741075));
+		d2.setId(4L);
+
+		DepartmentJpaEntity d3 = new DepartmentJpaEntity("Béja", new HashMap<String, LocalizedDepartmentJpaEntity>(),
+				country, Collections.<DelegationJpaEntity>emptySet(), new BigDecimal(36.80157399848794),
+				new BigDecimal(10.178896922512495));
+		d3.setId(5L);
+
+		return departmentRepository.saveAll(List.of(d1, d2, d3));
+	}
+
+	private List<DepartmentJpaEntity> givenDepartureDepartments() {
+		CountryJpaEntity country = givenCountry();
+		DepartmentJpaEntity d1 = new DepartmentJpaEntity("Sfax", new HashMap<String, LocalizedDepartmentJpaEntity>(),
+				country, Collections.<DelegationJpaEntity>emptySet(), new BigDecimal(34.73910078895307),
+				new BigDecimal(10.755186404578666));
+		d1.setId(1L);
+
+		DepartmentJpaEntity d2 = new DepartmentJpaEntity("Nabeul", new HashMap<String, LocalizedDepartmentJpaEntity>(),
+				country, Collections.<DelegationJpaEntity>emptySet(), new BigDecimal(36.44898025387017),
+				new BigDecimal(10.737296664741075));
+		d2.setId(2L);
+
+		DepartmentJpaEntity d3 = new DepartmentJpaEntity("Tunis", new HashMap<String, LocalizedDepartmentJpaEntity>(),
+				country, Collections.<DelegationJpaEntity>emptySet(), new BigDecimal(36.80157399848794),
+				new BigDecimal(10.178896922512495));
+		d3.setId(3L);
+
+		return departmentRepository.saveAll(List.of(d1, d2, d3));
+
+	}
+
+	private CountryJpaEntity givenCountry() {
+		Optional<CountryJpaEntity> countryFromDb = countryRepository.findByCode("TN");
+		if (countryFromDb.isPresent()) {
+			return countryFromDb.get();
+		}
+		CountryJpaEntity country = new CountryJpaEntity("TN", new HashMap<String, LocalizedCountryJpaEntity>(),
+				Collections.<DepartmentJpaEntity>emptySet());
+
+		return countryRepository.save(country);
+
 	}
 
 }

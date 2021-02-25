@@ -27,22 +27,16 @@ public interface CreateJourneyRequestUseCase {
 	class CreateJourneyRequestCommand {
 
 		@NotNull
-		private String departurePlaceId;
+		private Long departurePlaceId;
 
 		@NotNull
-		private String departurePlaceRegionId;
+		private String departurePlaceType;
 
 		@NotNull
-		private String departurePlaceName;
+		private Long arrivalPlaceId;
 
 		@NotNull
-		private String arrivalPlaceId;
-
-		@NotNull
-		private String arrivalPlaceRegionId;
-
-		@NotNull
-		private String arrivalPlaceName;
+		private String arrivalPlaceType;
 
 		@NotNull
 		@DateTimeFormat(iso = ISO.DATE_TIME)
@@ -51,9 +45,6 @@ public interface CreateJourneyRequestUseCase {
 
 		private Long engineTypeId;
 		@NotNull
-
-		@NotNull
-		private Double distance;
 
 		@NotNull
 		private Integer workers;

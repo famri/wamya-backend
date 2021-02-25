@@ -51,10 +51,10 @@ public class SearchJourneyRequestsServiceTests {
 		then(searchJourneyRequestsPort).should(times(1))
 				.searchJourneyRequests(searchJourneyRequestsCriteriaCaptor.capture());
 
-		assertEquals(command.getDeparturePlaceRegionId(),
-				searchJourneyRequestsCriteriaCaptor.getValue().getDeparturePlaceRegionId());
-		assertEquals(command.getArrivalPlaceRegionIds(),
-				searchJourneyRequestsCriteriaCaptor.getValue().getArrivalPlaceRegionIds());
+		assertEquals(command.getDeparturePlaceDepartmentId(),
+				searchJourneyRequestsCriteriaCaptor.getValue().getDeparturePlaceDepartmentId());
+		assertEquals(command.getArrivalPlaceDepartmentIds(),
+				searchJourneyRequestsCriteriaCaptor.getValue().getArrivalPlaceDepartmentIds());
 		assertTrue(command.getStartDateTime()
 				.isEqual(searchJourneyRequestsCriteriaCaptor.getValue().getStartDateTime().atZone(ZoneOffset.UTC)));
 

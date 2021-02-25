@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,10 +22,12 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.test.context.ActiveProfiles;
 
 import com.c4_soft.springaddons.security.oauth2.test.mockmvc.MockMvcSupport;
-import com.excentria_it.wamya.application.port.in.AutoCompleteDepartmentUseCase;
+import com.excentria_it.wamya.application.port.in.AutoCompletePlaceForTransporterUseCase;
+import com.excentria_it.wamya.application.utils.AutoCompletePlaceMapper;
 import com.excentria_it.wamya.common.exception.RestApiExceptionHandler;
-import com.excentria_it.wamya.domain.AutoCompleteDepartmentsDto;
-import com.excentria_it.wamya.domain.AutoCompleteDepartmentsResult;
+import com.excentria_it.wamya.domain.AutoCompleteDepartmentDto;
+import com.excentria_it.wamya.domain.AutoCompletePlaceDto;
+import com.excentria_it.wamya.domain.AutoCompletePlaceResult;
 import com.excentria_it.wamya.test.data.common.TestConstants;
 
 @ActiveProfiles(profiles = { "web-local" })
@@ -35,67 +38,73 @@ public class AutoCompleteDepartmentControllerTests {
 	private MockMvcSupport api;
 
 	@MockBean
-	private AutoCompleteDepartmentUseCase autoCompleteDepartmentUseCase;
+	private AutoCompletePlaceForTransporterUseCase autoCompleteDepartmentUseCase;
 
 	@Test
 	void testAutoCompleteDepartment() throws Exception {
+		List<AutoCompleteDepartmentDto> departments = defaultAutoCompleteDepartmentsDtos();
+		List<AutoCompletePlaceDto> autoCompletePlaceDtos = departments.stream()
+				.map(d -> AutoCompletePlaceMapper.mapDepartmentToPlace(d)).collect(Collectors.toList());
 
-		List<AutoCompleteDepartmentsDto> autoCompleteDepartmentsDtos = defaultAutoCompleteDepartmentsDtos();
-		AutoCompleteDepartmentsResult result = new AutoCompleteDepartmentsResult(autoCompleteDepartmentsDtos.size(),
-				autoCompleteDepartmentsDtos);
+		AutoCompletePlaceResult result = new AutoCompletePlaceResult(autoCompletePlaceDtos.size(),
+				autoCompletePlaceDtos);
 		// given
 		given(autoCompleteDepartmentUseCase.autoCompleteDepartment(any(String.class), any(String.class),
-				any(String.class))).willReturn(autoCompleteDepartmentsDtos);
+				any(Integer.class), any(String.class))).willReturn(autoCompletePlaceDtos);
 		// when
 		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
 				.authorities("SCOPE_offer:write"))
-				.perform(get("/departments").param("lang", "fr_FR").param("input", "ben").param("country", "TN"))
+				.perform(get("/departments").param("lang", "fr_FR").param("input", "ben").param("country", "TN")
+						.param("limit", "5"))
 				.andExpect(status().isOk())
-				.andExpect(responseBody().containsObjectAsJson(result, AutoCompleteDepartmentsResult.class));
+				.andExpect(responseBody().containsObjectAsJson(result, AutoCompletePlaceResult.class));
 
 		// then
 
-		then(autoCompleteDepartmentUseCase).should(times(1)).autoCompleteDepartment(eq("ben"), eq("TN"), eq("fr_FR"));
+		then(autoCompleteDepartmentUseCase).should(times(1)).autoCompleteDepartment(eq("ben"), eq("TN"), eq(5),
+				eq("fr_FR"));
 	}
 
 	@Test
 	void testAutoCompleteDepartmentEmptyResult() throws Exception {
 
-		AutoCompleteDepartmentsResult result = new AutoCompleteDepartmentsResult(0,
-				Collections.<AutoCompleteDepartmentsDto>emptyList());
+		AutoCompletePlaceResult result = new AutoCompletePlaceResult(0, Collections.<AutoCompletePlaceDto>emptyList());
 		// given
 		given(autoCompleteDepartmentUseCase.autoCompleteDepartment(any(String.class), any(String.class),
-				any(String.class))).willReturn(Collections.<AutoCompleteDepartmentsDto>emptyList());
+				any(Integer.class), any(String.class))).willReturn(Collections.<AutoCompletePlaceDto>emptyList());
 		// when
 		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
 				.authorities("SCOPE_offer:write"))
-				.perform(get("/departments").param("lang", "fr_FR").param("input", "ben").param("country", "TN"))
+				.perform(get("/departments").param("lang", "fr_FR").param("input", "ben").param("country", "TN")
+						.param("limit", "5"))
 				.andExpect(status().isOk())
-				.andExpect(responseBody().containsObjectAsJson(result, AutoCompleteDepartmentsResult.class));
+				.andExpect(responseBody().containsObjectAsJson(result, AutoCompletePlaceResult.class));
 
 		// then
 
-		then(autoCompleteDepartmentUseCase).should(times(1)).autoCompleteDepartment(eq("ben"), eq("TN"), eq("fr_FR"));
+		then(autoCompleteDepartmentUseCase).should(times(1)).autoCompleteDepartment(eq("ben"), eq("TN"), eq(5),
+				eq("fr_FR"));
 	}
 
 	@Test
 	void testAutoCompleteDepartmentNullResult() throws Exception {
 
-		AutoCompleteDepartmentsResult result = new AutoCompleteDepartmentsResult(0,
-				Collections.<AutoCompleteDepartmentsDto>emptyList());
+		AutoCompletePlaceResult result = new AutoCompletePlaceResult(0, Collections.<AutoCompletePlaceDto>emptyList());
 		// given
 		given(autoCompleteDepartmentUseCase.autoCompleteDepartment(any(String.class), any(String.class),
-				any(String.class))).willReturn(null);
+				any(Integer.class), any(String.class))).willReturn(null);
 		// when
 		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
 				.authorities("SCOPE_offer:write"))
-				.perform(get("/departments").param("lang", "fr_FR").param("input", "ben").param("country", "TN"))
+				.perform(get("/departments").param("lang", "fr_FR").param("input", "ben").param("country", "TN")
+						.param("limit", "5"))
 				.andExpect(status().isOk())
-				.andExpect(responseBody().containsObjectAsJson(result, AutoCompleteDepartmentsResult.class));
+				.andExpect(responseBody().containsObjectAsJson(result, AutoCompletePlaceResult.class));
 
 		// then
 
-		then(autoCompleteDepartmentUseCase).should(times(1)).autoCompleteDepartment(eq("ben"), eq("TN"), eq("fr_FR"));
+		then(autoCompleteDepartmentUseCase).should(times(1)).autoCompleteDepartment(eq("ben"), eq("TN"), eq(5),
+				eq("fr_FR"));
 	}
 
 	@Test
@@ -111,7 +120,7 @@ public class AutoCompleteDepartmentControllerTests {
 		// then
 
 		then(autoCompleteDepartmentUseCase).should(never()).autoCompleteDepartment(any(String.class), any(String.class),
-				any(String.class));
+				any(Integer.class), any(String.class));
 	}
 
 	@Test
@@ -120,13 +129,31 @@ public class AutoCompleteDepartmentControllerTests {
 		// given // when
 		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
 				.authorities("SCOPE_offer:write"))
-				.perform(get("/departments").param("lang", "fr_FR").param("input", "ben").param("country", ""))
-				.andExpect(status().isBadRequest()).andExpect(responseBody().containsApiErrors(
-						List.of("autoCompleteDepartment.countryCode: ne doit pas être vide")));
+				.perform(get("/departments").param("lang", "fr_FR").param("input", "ben").param("country", "")
+						.param("limit", "5"))
+				.andExpect(status().isBadRequest()).andExpect(responseBody()
+						.containsApiErrors(List.of("autoCompleteDepartment.countryCode: ne doit pas être vide")));
 
 		// then
 
 		then(autoCompleteDepartmentUseCase).should(never()).autoCompleteDepartment(any(String.class), any(String.class),
-				any(String.class));
+				any(Integer.class), any(String.class));
+	}
+
+	@Test
+	void testAutoCompleteDepartmentWithLimitZeor() throws Exception {
+
+		// given // when
+		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
+				.authorities("SCOPE_offer:write"))
+				.perform(get("/departments").param("lang", "fr_FR").param("input", "ben").param("country", "TN")
+						.param("limit", "0"))
+				.andExpect(status().isBadRequest()).andExpect(responseBody()
+						.containsApiErrors(List.of("autoCompleteDepartment.limit: doit être supérieur ou égal à 1")));
+
+		// then
+
+		then(autoCompleteDepartmentUseCase).should(never()).autoCompleteDepartment(any(String.class), any(String.class),
+				any(Integer.class), any(String.class));
 	}
 }

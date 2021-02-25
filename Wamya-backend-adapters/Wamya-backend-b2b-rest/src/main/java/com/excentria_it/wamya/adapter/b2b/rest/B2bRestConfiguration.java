@@ -9,11 +9,12 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 import com.excentria_it.wamya.adapter.b2b.rest.props.AuthServerProperties;
+import com.excentria_it.wamya.adapter.b2b.rest.props.GoogleApiProperties;
 import com.excentria_it.wamya.common.exception.RestTemplateResponseErrorHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Configuration
-@EnableConfigurationProperties(value = AuthServerProperties.class)
+@EnableConfigurationProperties(value = { AuthServerProperties.class, GoogleApiProperties.class })
 @ComponentScan
 public class B2bRestConfiguration {
 

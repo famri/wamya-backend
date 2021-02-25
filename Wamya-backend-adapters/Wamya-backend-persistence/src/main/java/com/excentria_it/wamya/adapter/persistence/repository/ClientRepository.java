@@ -11,4 +11,5 @@ public interface ClientRepository extends JpaRepository<ClientJpaEntity, Long> {
 	Optional<ClientJpaEntity> findByIcc_ValueAndMobileNumber(String internationalCallingCode, String mobileNumber);
 
 	Optional<ClientJpaEntity> findByEmail(String email);
+
 }

@@ -34,7 +34,7 @@ public class JourneyProposalMapper {
 				transporter.getFirstname(), transporter.getPhotoUrl(), transporter.getGlobalRating());
 
 		return JourneyProposalDto.builder().id(journeyProposalJpaEntity.getId())
-				.price(journeyProposalJpaEntity.getPrice()).transporterDto(transporterDto).vehiculeDto(vehiculeDto)
+				.price(journeyProposalJpaEntity.getPrice()).transporter(transporterDto).vehicule(vehiculeDto)
 				.status(new JourneyProposalDto.StatusDto(
 						StatusCode.valueOf(journeyProposalJpaEntity.getStatus().getCode().name()),
 						journeyProposalJpaEntity.getStatus().getValue(locale)))

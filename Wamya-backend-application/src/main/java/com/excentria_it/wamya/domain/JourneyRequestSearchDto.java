@@ -1,5 +1,6 @@
 package com.excentria_it.wamya.domain;
 
+import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -11,16 +12,16 @@ public interface JourneyRequestSearchDto {
 
 	Long getId();
 
-	@Value("#{new  com.excentria_it.wamya.domain.JourneyRequestSearchDto.PlaceDto(target.departurePlaceId, target.departurePlaceRegionId, target.departurePlaceName)}")
+	@Value("#{new  com.excentria_it.wamya.domain.JourneyRequestSearchDto.PlaceDto(target.departurePlaceId, target.departurePlaceType, target.departurePlaceName, target.departurePlaceLatitude, target.departurePlaceLongitude, target.departurePlaceDepartmentId)}")
 	PlaceDto getDeparturePlace();
 
-	@Value("#{new com.excentria_it.wamya.domain.JourneyRequestSearchDto.PlaceDto(target.arrivalPlaceId, target.arrivalPlaceRegionId, target.arrivalPlaceName)}")
+	@Value("#{new com.excentria_it.wamya.domain.JourneyRequestSearchDto.PlaceDto(target.arrivalPlaceId, target.arrivalPlaceType,  target.arrivalPlaceName, target.arrivalPlaceLatitude, target.arrivalPlaceLongitude, target.arrivalPlaceDepartmentId)}")
 	PlaceDto getArrivalPlace();
 
 	@Value("#{new com.excentria_it.wamya.domain.JourneyRequestSearchDto.EngineTypeDto(target.engineTypeId, target.engineTypeName)}")
 	EngineTypeDto getEngineType();
 
-	Double getDistance();
+	Integer getDistance();
 
 	ZonedDateTime getDateTime();
 
@@ -47,11 +48,17 @@ public interface JourneyRequestSearchDto {
 	@Data
 	class PlaceDto {
 
-		private String id;
+		private Long id;
 
-		private String regionId;
-
+		private String type;
+		
 		private String name;
+		
+		private BigDecimal latitude;
+
+		private BigDecimal longitude;
+
+		private Long departmentId;
 	}
 
 	@AllArgsConstructor

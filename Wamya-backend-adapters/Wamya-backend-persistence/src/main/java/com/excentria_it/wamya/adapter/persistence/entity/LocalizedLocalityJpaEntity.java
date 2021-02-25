@@ -26,12 +26,12 @@ public class LocalizedLocalityJpaEntity {
 	@EmbeddedId
 	private LocalizedId localizedId;
 
+	private String name;
+
 	@ManyToOne
 	@MapsId("id")
 	@JoinColumn(name = "id")
 	private LocalityJpaEntity locality;
-
-	private String name;
 
 	public LocalizedId getLocalizedId() {
 		return localizedId;

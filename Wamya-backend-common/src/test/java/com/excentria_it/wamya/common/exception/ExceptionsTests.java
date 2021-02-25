@@ -119,4 +119,19 @@ public class ExceptionsTests {
 		CountryNotFoundException exception = new CountryNotFoundException(message);
 		assertEquals(exception.getMessage(), message);
 	}
+
+	@Test
+	void testInvalidPlaceTypeException() {
+		String message = "SOME MESSAGE";
+		InvalidPlaceTypeException exception = new InvalidPlaceTypeException(message);
+		assertEquals(exception.getMessage(), message);
+	}
+
+	@Test
+	void testDepartmentNotFoundException() {
+
+		String message = "SOME MESSAGE";
+		DepartmentNotFoundException exception = new DepartmentNotFoundException(message);
+		assertEquals(exception.getMessage(), message);
+	}
 }

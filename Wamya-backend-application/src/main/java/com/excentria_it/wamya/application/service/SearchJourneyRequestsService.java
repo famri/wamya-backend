@@ -21,7 +21,7 @@ public class SearchJourneyRequestsService implements SearchJourneyRequestsUseCas
 	public JourneyRequestsSearchResult searchJourneyRequests(SearchJourneyRequestsCommand command, String locale) {
 
 		SearchJourneyRequestsCriteria searchCriteria = new SearchJourneyRequestsCriteria(
-				command.getDeparturePlaceRegionId(), command.getArrivalPlaceRegionIds(),
+				command.getDeparturePlaceDepartmentId(), command.getArrivalPlaceDepartmentIds(),
 				command.getStartDateTime().toInstant(), command.getEndDateTime().toInstant(), command.getEngineTypes(),
 				command.getPageNumber(), command.getPageSize(), command.getSortingCriterion(), locale);
 

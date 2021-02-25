@@ -45,21 +45,21 @@ public class JourneyProposalMapperTests {
 		assertEquals(journeyProposalJpaEntity.getId(), journeyProposalDto.getId());
 		assertEquals(journeyProposalJpaEntity.getPrice(), journeyProposalDto.getPrice());
 
-		assertEquals(journeyProposalJpaEntity.getTransporter().getId(), journeyProposalDto.getTransporterDto().getId());
+		assertEquals(journeyProposalJpaEntity.getTransporter().getId(), journeyProposalDto.getTransporter().getId());
 		assertEquals(journeyProposalJpaEntity.getTransporter().getFirstname(),
-				journeyProposalDto.getTransporterDto().getFirstname());
+				journeyProposalDto.getTransporter().getFirstname());
 		assertEquals(journeyProposalJpaEntity.getTransporter().getGlobalRating(),
-				journeyProposalDto.getTransporterDto().getGlobalRating());
+				journeyProposalDto.getTransporter().getGlobalRating());
 		assertEquals(journeyProposalJpaEntity.getTransporter().getPhotoUrl(),
-				journeyProposalDto.getTransporterDto().getPhotoUrl());
+				journeyProposalDto.getTransporter().getPhotoUrl());
 
-		assertEquals(journeyProposalJpaEntity.getVehicule().getId(), journeyProposalDto.getVehiculeDto().getId());
+		assertEquals(journeyProposalJpaEntity.getVehicule().getId(), journeyProposalDto.getVehicule().getId());
 		assertEquals(journeyProposalJpaEntity.getVehicule().getModel().getConstructor().getName(),
-				journeyProposalDto.getVehiculeDto().getConstructor());
+				journeyProposalDto.getVehicule().getConstructor());
 		assertEquals(journeyProposalJpaEntity.getVehicule().getModel().getName(),
-				journeyProposalDto.getVehiculeDto().getModel());
+				journeyProposalDto.getVehicule().getModel());
 		assertEquals(journeyProposalJpaEntity.getVehicule().getPhotoUrl(),
-				journeyProposalDto.getVehiculeDto().getPhotoUrl());
+				journeyProposalDto.getVehicule().getPhotoUrl());
 	}
 
 	@Test

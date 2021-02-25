@@ -34,6 +34,8 @@ public class OAuthUserAccountIntegrationAdapterRestTemplateTests {
 
 	// @Autowired
 	private AuthServerProperties authServerProperties;
+	
+	
 
 	private MockRestServiceServer mockServer;
 

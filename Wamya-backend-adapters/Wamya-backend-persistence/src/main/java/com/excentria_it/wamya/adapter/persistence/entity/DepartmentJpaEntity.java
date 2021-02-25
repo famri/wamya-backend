@@ -1,5 +1,6 @@
 package com.excentria_it.wamya.adapter.persistence.entity;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -18,6 +19,7 @@ import javax.persistence.MapKey;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.validation.constraints.Digits;
 
 import com.excentria_it.wamya.common.annotation.Generated;
 
@@ -47,13 +49,21 @@ public class DepartmentJpaEntity {
 	@ManyToOne
 	@JoinColumn(name = "country_id")
 	private CountryJpaEntity country;
+	
+	@Column(scale = 6, precision = 8)
+	private BigDecimal latitude;
+	
+	@Column(scale = 6, precision = 9)
+	private BigDecimal longitude;
 
 	public DepartmentJpaEntity(String possibleNames, Map<String, LocalizedDepartmentJpaEntity> localizations,
-			CountryJpaEntity country, Set<DelegationJpaEntity> delegations) {
+			CountryJpaEntity country, Set<DelegationJpaEntity> delegations, BigDecimal latitude, BigDecimal longitude) {
 		this.possibleNames = possibleNames;
 		this.localizations = localizations;
 		this.country = country;
 		delegations.forEach(d -> this.addDelegation(d));
+		this.latitude = latitude;
+		this.longitude = longitude;
 	}
 
 	public String getPossibleNames() {
@@ -69,6 +79,10 @@ public class DepartmentJpaEntity {
 
 	public Long getId() {
 		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public String getName(String locale) {
@@ -92,6 +106,22 @@ public class DepartmentJpaEntity {
 
 	public Set<DelegationJpaEntity> getDelegations() {
 		return Collections.unmodifiableSet(delegations);
+	}
+
+	public BigDecimal getLatitude() {
+		return latitude;
+	}
+
+	public void setLatitude(BigDecimal latitude) {
+		this.latitude = latitude;
+	}
+
+	public BigDecimal getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(BigDecimal longitude) {
+		this.longitude = longitude;
 	}
 
 	public void addDelegation(DelegationJpaEntity delegation) {
@@ -127,7 +157,8 @@ public class DepartmentJpaEntity {
 
 	@Override
 	public String toString() {
-		return "DepartmentJpaEntity [id=" + id + ", country=" + country + "]";
+		return "DepartmentJpaEntity [id=" + id + ", country=" + country + ", latitude=" + latitude + ", longitude="
+				+ longitude + "]";
 	}
 
 }

@@ -292,8 +292,7 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 
 	@ExceptionHandler({ CountryNotFoundException.class })
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	public ResponseEntity<ApiError> handleCountryNotFoundException(
-			CountryNotFoundException exception) {
+	public ResponseEntity<ApiError> handleCountryNotFoundException(CountryNotFoundException exception) {
 
 		log.warn("Exception at " + exception.getClass() + ": ", exception);
 		final String error = exception.getMessage();
@@ -301,4 +300,25 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 		return new ResponseEntity<ApiError>(apiError, new HttpHeaders(), apiError.getStatus());
 
 	}
+
+	@ExceptionHandler({ InvalidPlaceTypeException.class })
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public ResponseEntity<ApiError> handleInvalidPlaceTypeException(InvalidPlaceTypeException exception) {
+
+		log.warn("Exception at " + exception.getClass() + ": ", exception);
+		final String error = exception.getMessage();
+		final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ErrorCode.VALIDATION_ERROR, error);
+		return new ResponseEntity<ApiError>(apiError, new HttpHeaders(), apiError.getStatus());
+	}
+
+	@ExceptionHandler({ DepartmentNotFoundException.class })
+	@ResponseStatus(HttpStatus.NOT_FOUND)
+	public ResponseEntity<ApiError> handleDepartmentNotFoundException(DepartmentNotFoundException exception) {
+
+		log.error("Exception at " + exception.getClass() + ": ", exception);
+		final String error = exception.getMessage();
+		final ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, ErrorCode.OBJECT_NOT_FOUND, error);
+		return new ResponseEntity<ApiError>(apiError, new HttpHeaders(), apiError.getStatus());
+	}
+
 }

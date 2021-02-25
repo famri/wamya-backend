@@ -1,5 +1,6 @@
 package com.excentria_it.wamya.adapter.persistence.entity;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,12 +45,28 @@ public class LocalityJpaEntity {
 	@JoinColumn(name = "delegation_id")
 	private DelegationJpaEntity delegation;
 
+	@Column(scale = 6, precision = 8)
+	private BigDecimal latitude;
+
+	@Column(scale = 6, precision = 9)
+	private BigDecimal longitude;
+
 	public LocalityJpaEntity(String possibleNames, Map<String, LocalizedLocalityJpaEntity> localizations,
-			DelegationJpaEntity delegation) {
+			DelegationJpaEntity delegation, BigDecimal latitude, BigDecimal longitude) {
 		super();
 		this.possibleNames = possibleNames;
 		this.localizations = localizations;
 		this.delegation = delegation;
+		this.latitude = latitude;
+		this.longitude = longitude;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public String getName(String locale) {
@@ -71,10 +88,6 @@ public class LocalityJpaEntity {
 		return localizations;
 	}
 
-	public void setLocalizations(Map<String, LocalizedLocalityJpaEntity> localizations) {
-		this.localizations = localizations;
-	}
-
 	public DelegationJpaEntity getDelegation() {
 		return delegation;
 	}
@@ -83,8 +96,20 @@ public class LocalityJpaEntity {
 		this.delegation = delegation;
 	}
 
-	public Long getId() {
-		return id;
+	public BigDecimal getLatitude() {
+		return latitude;
+	}
+
+	public void setLatitude(BigDecimal latitude) {
+		this.latitude = latitude;
+	}
+
+	public BigDecimal getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(BigDecimal longitude) {
+		this.longitude = longitude;
 	}
 
 	@Override
@@ -113,7 +138,8 @@ public class LocalityJpaEntity {
 
 	@Override
 	public String toString() {
-		return "LocalityJpaEntity [id=" + id + ", delegation=" + delegation + "]";
+		return "LocalityJpaEntity [id=" + id + ", delegation=" + delegation + ", latitude=" + latitude + ", longitude="
+				+ longitude + "]";
 	}
 
 }

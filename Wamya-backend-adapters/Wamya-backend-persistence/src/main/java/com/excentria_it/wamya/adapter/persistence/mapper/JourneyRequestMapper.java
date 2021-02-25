@@ -29,17 +29,22 @@ public class JourneyRequestMapper {
 			return null;
 
 		return CreateJourneyRequestDto.builder().id(journeyRequestJpaEntity.getId())
-				.departurePlace(
-						new CreateJourneyRequestDto.PlaceDto(journeyRequestJpaEntity.getDeparturePlace().getId(),
-								journeyRequestJpaEntity.getDeparturePlace().getRegionId(),
-								journeyRequestJpaEntity.getDeparturePlace().getName()))
-				.arrivalPlace(new CreateJourneyRequestDto.PlaceDto(journeyRequestJpaEntity.getArrivalPlace().getId(),
-						journeyRequestJpaEntity.getArrivalPlace().getRegionId(),
-						journeyRequestJpaEntity.getArrivalPlace().getName()))
+				.departurePlace(new CreateJourneyRequestDto.PlaceDto(
+						journeyRequestJpaEntity.getDeparturePlace().getPlaceId().getId(),
+						journeyRequestJpaEntity.getDeparturePlace().getPlaceId().getType(),
+						journeyRequestJpaEntity.getDeparturePlace().getLatitude(),
+						journeyRequestJpaEntity.getDeparturePlace().getLongitude()))
+
+				.arrivalPlace(new CreateJourneyRequestDto.PlaceDto(
+						journeyRequestJpaEntity.getArrivalPlace().getPlaceId().getId(),
+						journeyRequestJpaEntity.getArrivalPlace().getPlaceId().getType(),
+						journeyRequestJpaEntity.getArrivalPlace().getLatitude(),
+						journeyRequestJpaEntity.getArrivalPlace().getLongitude()))
+
 				.engineType(new CreateJourneyRequestDto.EngineTypeDto(journeyRequestJpaEntity.getEngineType().getId(),
 						journeyRequestJpaEntity.getEngineType().getName(locale)))
 				.distance(journeyRequestJpaEntity.getDistance()).dateTime(journeyRequestJpaEntity.getDateTime())
 				.workers(journeyRequestJpaEntity.getWorkers()).description(journeyRequestJpaEntity.getDescription())
-				.build();
+				.status(journeyRequestJpaEntity.getStatus().getValue(locale)).build();
 	}
 }

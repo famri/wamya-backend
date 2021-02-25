@@ -473,6 +473,22 @@ public class RestApiExceptionHandlerTest {
 	}
 
 	@Test
+	void whenHandleInvalidPlaceTypeException_ThenStatusIsBadRequest() {
+		// given
+		InvalidPlaceTypeException exception = givenInvalidPlaceTypeException();
+
+		// When
+		ResponseEntity<ApiError> responseEntity = restApiExceptionHandler.handleInvalidPlaceTypeException(exception);
+
+		// Then
+		then(responseEntity.getBody() instanceof ApiError);
+		then(((ApiError) responseEntity.getBody()).getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
+		then(((ApiError) responseEntity.getBody()).getErrorCode()).isEqualTo(ErrorCode.VALIDATION_ERROR);
+		then(((ApiError) responseEntity.getBody()).getErrors()).containsExactly(SOME_MESSAGE);
+		then(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+	}
+
+	@Test
 	void whenHandleAll_thenStatusIsMethodNotAllowed() {
 		// given
 		Exception exception = givenAnyOtherException();
@@ -491,8 +507,38 @@ public class RestApiExceptionHandlerTest {
 
 	}
 
+	@Test
+	void whenHandleDepartmentNotFoundException_thenStatusIsNotFound() {
+		// given
+		DepartmentNotFoundException exception = givenDepartmentNotFoundException();
+
+		// When
+		ResponseEntity<ApiError> responseEntity = restApiExceptionHandler.handleDepartmentNotFoundException(exception);
+
+		// Then
+		then(responseEntity.getBody() instanceof ApiError);
+		then(((ApiError) responseEntity.getBody()).getStatus()).isEqualTo(HttpStatus.NOT_FOUND);
+		then(((ApiError) responseEntity.getBody()).getErrorCode()).isEqualTo(ErrorCode.OBJECT_NOT_FOUND);
+		then(((ApiError) responseEntity.getBody()).getErrors()).containsExactly(SOME_MESSAGE);
+		then(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+	}
+
+	private DepartmentNotFoundException givenDepartmentNotFoundException() {
+		DepartmentNotFoundException exception = Mockito.mock(DepartmentNotFoundException.class);
+		given(exception.getMessage()).willReturn(SOME_MESSAGE);
+
+		return exception;
+	}
+
 	private UserAccountNotFoundException givenUserAccountNotFoundException() {
 		UserAccountNotFoundException exception = Mockito.mock(UserAccountNotFoundException.class);
+		given(exception.getMessage()).willReturn(SOME_MESSAGE);
+
+		return exception;
+	}
+
+	private InvalidPlaceTypeException givenInvalidPlaceTypeException() {
+		InvalidPlaceTypeException exception = Mockito.mock(InvalidPlaceTypeException.class);
 		given(exception.getMessage()).willReturn(SOME_MESSAGE);
 
 		return exception;

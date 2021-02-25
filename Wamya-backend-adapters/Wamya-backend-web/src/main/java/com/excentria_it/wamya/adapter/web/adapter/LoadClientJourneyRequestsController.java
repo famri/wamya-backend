@@ -44,7 +44,7 @@ public class LoadClientJourneyRequestsController {
 	@GetMapping(path = "/me/journey-requests")
 	@ResponseStatus(HttpStatus.OK)
 	public ClientJourneyRequests loadClientJourneyRequests(
-			@RequestParam(name = "period", defaultValue = "w1") Optional<String> period,
+			@RequestParam(name = "period", defaultValue = "m1") Optional<String> period,
 			@RequestParam(name = "page", defaultValue = "0") Integer pageNumber,
 			@RequestParam(name = "size", defaultValue = "25") Integer pageSize,
 			@RequestParam(name = "sort") Optional<String> sort,

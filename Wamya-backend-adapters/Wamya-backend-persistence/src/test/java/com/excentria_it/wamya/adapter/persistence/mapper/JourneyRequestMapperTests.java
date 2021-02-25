@@ -66,22 +66,21 @@ public class JourneyRequestMapperTests {
 	@Test
 	void testMapToDoaminEntity() {
 		JourneyRequestJpaEntity journeyRequestJpaEntity = defaultExistentJourneyRequestJpaEntity();
-		CreateJourneyRequestDto journeyRequest = journeyRequestMapper.mapToDomainEntity(journeyRequestJpaEntity, "en");
+		CreateJourneyRequestDto journeyRequest = journeyRequestMapper.mapToDomainEntity(journeyRequestJpaEntity,
+				"en_US");
 
 		assertEquals(journeyRequestJpaEntity.getId(), journeyRequest.getId());
 
-		assertEquals(journeyRequestJpaEntity.getDeparturePlace().getId(),
-				journeyRequest.getDeparturePlace().getPlaceId());
-		assertEquals(journeyRequestJpaEntity.getDeparturePlace().getRegionId(),
-				journeyRequest.getDeparturePlace().getPlaceRegionId());
-		assertEquals(journeyRequestJpaEntity.getDeparturePlace().getName(),
-				journeyRequest.getDeparturePlace().getPlaceName());
+		assertEquals(journeyRequestJpaEntity.getDeparturePlace().getPlaceId().getId(),
+				journeyRequest.getDeparturePlace().getId());
 
-		assertEquals(journeyRequestJpaEntity.getArrivalPlace().getId(), journeyRequest.getArrivalPlace().getPlaceId());
-		assertEquals(journeyRequestJpaEntity.getArrivalPlace().getRegionId(),
-				journeyRequest.getArrivalPlace().getPlaceRegionId());
-		assertEquals(journeyRequestJpaEntity.getArrivalPlace().getName(),
-				journeyRequest.getArrivalPlace().getPlaceName());
+		assertEquals(journeyRequestJpaEntity.getDeparturePlace().getPlaceId().getType(),
+				journeyRequest.getDeparturePlace().getType());
+
+		assertEquals(journeyRequestJpaEntity.getArrivalPlace().getPlaceId().getId(),
+				journeyRequest.getArrivalPlace().getId());
+		assertEquals(journeyRequestJpaEntity.getArrivalPlace().getPlaceId().getType(),
+				journeyRequest.getArrivalPlace().getType());
 
 		assertEquals(journeyRequestJpaEntity.getDistance(), journeyRequest.getDistance());
 

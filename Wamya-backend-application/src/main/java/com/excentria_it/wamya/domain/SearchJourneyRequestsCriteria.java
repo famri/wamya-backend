@@ -16,9 +16,9 @@ import lombok.NoArgsConstructor;
 @Builder
 public class SearchJourneyRequestsCriteria {
 
-	private String departurePlaceRegionId;
+	private Long departurePlaceDepartmentId;
 
-	private Set<String> arrivalPlaceRegionIds;
+	private Set<Long> arrivalPlaceDepartmentIds;
 
 	private Instant startDateTime;
 

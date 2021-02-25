@@ -1,60 +1,105 @@
 package com.excentria_it.wamya.adapter.persistence.entity;
 
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.MapKey;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.Digits;
 
 import com.excentria_it.wamya.common.annotation.Generated;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.NoArgsConstructor;
-
 
 @Generated
 @Entity
 @Table(name = "place")
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor
 public class PlaceJpaEntity {
 
-	@Id
-	private String id;
+	@EmbeddedId
+	private PlaceId placeId;
 
-	private String regionId;
+	@ManyToOne
+	@JoinColumn(name = "department_id")
+	private DepartmentJpaEntity department;
 
-	private String name;
+	@OneToMany(mappedBy = "place", cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST,
+			CascadeType.REFRESH }, orphanRemoval = true)
+	@MapKey(name = "localizedPlaceId.locale")
+	private Map<String, LocalizedPlaceJpaEntity> localizations = new HashMap<>();
 
-	public String getId() {
-		return id;
+	@Column(scale = 6, precision = 8)
+	private BigDecimal latitude;
+	
+	@Column(scale = 6, precision = 9)
+	private BigDecimal longitude;
+
+	public PlaceJpaEntity(DepartmentJpaEntity department, Map<String, LocalizedPlaceJpaEntity> localizations,
+			BigDecimal latitude, BigDecimal longitude) {
+		super();
+		this.department = department;
+		this.localizations = localizations;
+		this.latitude = latitude;
+		this.longitude = longitude;
 	}
 
-	public void setId(String id) {
-		this.id = id;
+	public PlaceId getPlaceId() {
+		return placeId;
 	}
 
-	public String getRegionId() {
-		return regionId;
+	public void setPlaceId(PlaceId placeId) {
+		this.placeId = placeId;
 	}
 
-	public void setRegionId(String regionId) {
-		this.regionId = regionId;
+	public DepartmentJpaEntity getDepartment() {
+		return department;
 	}
 
-	public String getName() {
-		return name;
+	public void setDepartment(DepartmentJpaEntity department) {
+		this.department = department;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public Map<String, LocalizedPlaceJpaEntity> getLocalizations() {
+		return localizations;
+	}
+
+	public BigDecimal getLatitude() {
+		return latitude;
+	}
+
+	public void setLatitude(BigDecimal latitude) {
+		this.latitude = latitude;
+	}
+
+	public BigDecimal getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(BigDecimal longitude) {
+		this.longitude = longitude;
+	}
+
+	public String getName(String locale) {
+		if (localizations.containsKey(locale)) {
+			return localizations.get(locale).getName();
+		}
+		return null;
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((placeId == null) ? 0 : placeId.hashCode());
 		return result;
 	}
 
@@ -67,16 +112,18 @@ public class PlaceJpaEntity {
 		if (getClass() != obj.getClass())
 			return false;
 		PlaceJpaEntity other = (PlaceJpaEntity) obj;
-		if (id == null) {
+		if (placeId == null) {
+
 			return false;
-		} else if (!id.equals(other.id))
+		} else if (!placeId.equals(other.placeId))
 			return false;
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return "PlaceJpaEntity [id=" + id + ", regionId=" + regionId + ", name=" + name + "]";
+		return "PlaceJpaEntity [placeId=" + placeId + ", department=" + department + ", latitude=" + latitude
+				+ ", longitude=" + longitude + "]";
 	}
 
 }

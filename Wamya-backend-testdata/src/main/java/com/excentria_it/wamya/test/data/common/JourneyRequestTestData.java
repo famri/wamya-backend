@@ -1,5 +1,6 @@
 package com.excentria_it.wamya.test.data.common;
 
+import java.math.BigDecimal;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -22,6 +23,7 @@ import com.excentria_it.wamya.domain.JourneyRequestSearchDto;
 import com.excentria_it.wamya.domain.JourneyRequestsSearchResult;
 import com.excentria_it.wamya.domain.LoadClientJourneyRequestsCriteria;
 import com.excentria_it.wamya.domain.LoadClientJourneyRequestsCriteria.LoadClientJourneyRequestsCriteriaBuilder;
+import com.excentria_it.wamya.domain.PlaceType;
 import com.excentria_it.wamya.domain.SearchJourneyRequestsCriteria;
 import com.excentria_it.wamya.domain.SearchJourneyRequestsCriteria.SearchJourneyRequestsCriteriaBuilder;
 
@@ -41,12 +43,14 @@ public class JourneyRequestTestData {
 		@Override
 		public PlaceDto getDeparturePlace() {
 
-			return new PlaceDto("departurePlaceId", "departurePlaceRegionId", "departurePlaceName");
+			return new PlaceDto(1L, "DEPARTMENT", "departurePlaceName", new BigDecimal(34.486523),
+					new BigDecimal(10.486523), 1L);
 		}
 
 		@Override
 		public PlaceDto getArrivalPlace() {
-			return new PlaceDto("arrivalPlaceId1", "arrivalPlaceRegionId1", "arrivalPlaceName1");
+			return new PlaceDto(2L, "DEPARTMENT", "arrivalPlaceName1", new BigDecimal(36.486523),
+					new BigDecimal(10.486523), 2L);
 		}
 
 		@Override
@@ -55,8 +59,8 @@ public class JourneyRequestTestData {
 		}
 
 		@Override
-		public Double getDistance() {
-			return 100D;
+		public Integer getDistance() {
+			return 100000;
 		}
 
 		@Override
@@ -97,12 +101,14 @@ public class JourneyRequestTestData {
 		@Override
 		public PlaceDto getDeparturePlace() {
 
-			return new PlaceDto("departurePlaceId", "departurePlaceRegionId", "departurePlaceName");
+			return new PlaceDto(3L, "DEPARTMENT", "departurePlaceName2", new BigDecimal(35.486523),
+					new BigDecimal(11.486523), 3L);
 		}
 
 		@Override
 		public PlaceDto getArrivalPlace() {
-			return new PlaceDto("arrivalPlaceId2", "arrivalPlaceRegionId2", "arrivalPlaceName2");
+			return new PlaceDto(4L, "DEPARTMENT", "arrivalPlaceName2", new BigDecimal(37.486523),
+					new BigDecimal(12.486523), 4L);
 		}
 
 		@Override
@@ -111,8 +117,8 @@ public class JourneyRequestTestData {
 		}
 
 		@Override
-		public Double getDistance() {
-			return 200D;
+		public Integer getDistance() {
+			return 200000;
 		}
 
 		@Override
@@ -156,13 +162,15 @@ public class JourneyRequestTestData {
 				@Override
 				public PlaceDto getDeparturePlace() {
 
-					return new PlaceDto("departurePlaceId", "departurePlaceRegionId", "departurePlaceName");
+					return new PlaceDto(1L, PlaceType.LOCALITY.name(), "departurePlaceName1", new BigDecimal(36.456582),
+							new BigDecimal(10.456582), 1L);
 				}
 
 				@Override
 				public PlaceDto getArrivalPlace() {
 
-					return new PlaceDto("arrivalPlaceId1", "arrivalPlaceRegionId1", "arrivalPlaceName1");
+					return new PlaceDto(2L, PlaceType.LOCALITY.name(), "arrivalPlaceName1", new BigDecimal(37.456582),
+							new BigDecimal(11.456582), 2L);
 				}
 
 				@Override
@@ -172,9 +180,9 @@ public class JourneyRequestTestData {
 				}
 
 				@Override
-				public Double getDistance() {
+				public Integer getDistance() {
 
-					return 100D;
+					return 100000;
 				}
 
 				@Override
@@ -216,13 +224,15 @@ public class JourneyRequestTestData {
 				@Override
 				public PlaceDto getDeparturePlace() {
 
-					return new PlaceDto("departurePlaceId", "departurePlaceRegionId", "departurePlaceName");
+					return new PlaceDto(1L, PlaceType.LOCALITY.name(), "departurePlaceName1", new BigDecimal(36.456582),
+							new BigDecimal(10.456582), 1L);
 				}
 
 				@Override
 				public PlaceDto getArrivalPlace() {
 
-					return new PlaceDto("arrivalPlaceId2", "arrivalPlaceRegionId2", "arrivalPlaceName2");
+					return new PlaceDto(3L, PlaceType.LOCALITY.name(), "arrivalPlaceName2", new BigDecimal(38.456582),
+							new BigDecimal(12.456582), 3L);
 				}
 
 				@Override
@@ -232,9 +242,9 @@ public class JourneyRequestTestData {
 				}
 
 				@Override
-				public Double getDistance() {
+				public Integer getDistance() {
 
-					return 90D;
+					return 90000;
 				}
 
 				@Override
@@ -270,9 +280,9 @@ public class JourneyRequestTestData {
 	public static SearchJourneyRequestsCommandBuilder defaultSearchJourneyRequestsCommandBuilder() {
 		ZonedDateTime startDate = ZonedDateTime.now(ZoneOffset.UTC);
 		ZonedDateTime endDate = startDate.plusDays(1);
-		return SearchJourneyRequestsCommand.builder().departurePlaceRegionId("departurePlaceRegionId")
-				.arrivalPlaceRegionIds(Set.of("arrivalPlaceRegionId1", "arrivalPlaceRegionId2"))
-				.startDateTime(startDate).endDateTime(endDate).engineTypes(Set.of(1L, 2L)).pageNumber(0).pageSize(2)
+		return SearchJourneyRequestsCommand.builder().departurePlaceDepartmentId(1L)
+				.arrivalPlaceDepartmentIds(Set.of(2L, 3L)).startDateTime(startDate).endDateTime(endDate)
+				.engineTypes(Set.of(1L, 2L)).pageNumber(0).pageSize(2)
 				.sortingCriterion(new SortCriterion("min-price", "desc"));
 
 	}
@@ -280,10 +290,10 @@ public class JourneyRequestTestData {
 	public static SearchJourneyRequestsCriteriaBuilder defaultSearchJourneyRequestsCriteriaBuilder() {
 		ZonedDateTime startDate = ZonedDateTime.now(ZoneOffset.UTC);
 		ZonedDateTime endDate = startDate.plusDays(1);
-		return SearchJourneyRequestsCriteria.builder().departurePlaceRegionId("departurePlaceRegionId")
-				.arrivalPlaceRegionIds(Set.of("arrivalPlaceRegionId1", "arrivalPlaceRegionId2"))
-				.startDateTime(startDate.toInstant()).endDateTime(endDate.toInstant()).engineTypes(Set.of(1L, 2L))
-				.pageNumber(0).pageSize(2).sortingCriterion(new SortCriterion("min-price", "desc")).locale("en_US");
+		return SearchJourneyRequestsCriteria.builder().departurePlaceDepartmentId(1L)
+				.arrivalPlaceDepartmentIds(Set.of(2L, 3L)).startDateTime(startDate.toInstant())
+				.endDateTime(endDate.toInstant()).engineTypes(Set.of(1L, 2L)).pageNumber(0).pageSize(2)
+				.sortingCriterion(new SortCriterion("min-price", "desc")).locale("en_US");
 
 	}
 
@@ -291,42 +301,41 @@ public class JourneyRequestTestData {
 		ZonedDateTime startDate = ZonedDateTime.now(ZoneOffset.UTC);
 		ZonedDateTime endDate = startDate.plusDays(1);
 
-		return SearchJourneyRequestsCommand.builder().departurePlaceRegionId("departurePlaceRegionId")
-				.arrivalPlaceRegionIds(Set.of(SearchJourneyRequestsCommand.ANY_ARRIVAL_REGION)).startDateTime(startDate)
-				.endDateTime(endDate).engineTypes(Set.of(1L, 2L)).pageNumber(0).pageSize(2)
+		return SearchJourneyRequestsCommand.builder().departurePlaceDepartmentId(1L)
+				.arrivalPlaceDepartmentIds(Set.of(SearchJourneyRequestsCommand.ANY_ARRIVAL_REGION))
+				.startDateTime(startDate).endDateTime(endDate).engineTypes(Set.of(1L, 2L)).pageNumber(0).pageSize(2)
 				.sortingCriterion(new SortCriterion("min-price", "desc"));
 
 	}
 
 	public static CreateJourneyRequestCommandBuilder defaultCreateJourneyRequestCommandBuilder() {
 
-		return CreateJourneyRequestCommand.builder().departurePlaceId("departurePlaceId")
-				.departurePlaceRegionId("departurePlaceRegionId").departurePlaceName("departurePlaceName")
-				.arrivalPlaceId("arrivalPlaceId").arrivalPlaceRegionId("arrivalPlaceRegionId")
-				.arrivalPlaceName("arrivalPlaceName").dateTime(startDate).engineTypeId(1L).distance(270.8).workers(2)
-				.description("Need a transporter URGENT!!!");
+		return CreateJourneyRequestCommand.builder().departurePlaceId(1L).departurePlaceType(PlaceType.LOCALITY.name())
+
+				.arrivalPlaceId(2L).arrivalPlaceType(PlaceType.LOCALITY.name()).dateTime(startDate).engineTypeId(1L)
+				.workers(2).description("Need a transporter URGENT!!!");
 
 	}
 
 	public static CreateJourneyRequestDto defaultCreateJourneyRequestDto() {
 		return CreateJourneyRequestDto.builder().id(1L)
-				.departurePlace(new CreateJourneyRequestDto.PlaceDto("departurePlaceId", "departurePlaceRegionId",
-						"departurePlaceName"))
-				.arrivalPlace(new CreateJourneyRequestDto.PlaceDto("arrivalPlaceId", "arrivalPlaceRegionId",
-						"arrivalPlaceName"))
+				.departurePlace(new CreateJourneyRequestDto.PlaceDto(1L, PlaceType.LOCALITY, new BigDecimal(36.8015),
+						new BigDecimal(10.1788)))
+				.arrivalPlace(new CreateJourneyRequestDto.PlaceDto(2L, PlaceType.LOCALITY, new BigDecimal(37.8015),
+						new BigDecimal(11.1788)))
 				.dateTime(startDate.toInstant())
-				.engineType(new CreateJourneyRequestDto.EngineTypeDto(1L, "EngineType1")).distance(270.8).workers(2)
+				.engineType(new CreateJourneyRequestDto.EngineTypeDto(1L, "EngineType1")).workers(2)
 				.description("Need a transporter URGENT!!!").build();
 	}
 
 	public static CreateJourneyRequestDtoBuilder defaultCreateJourneyRequestDtoBuilder() {
 		return CreateJourneyRequestDto.builder().id(1L)
-				.departurePlace(new CreateJourneyRequestDto.PlaceDto("departurePlaceId", "departurePlaceRegionId",
-						"departurePlaceName"))
-				.arrivalPlace(new CreateJourneyRequestDto.PlaceDto("arrivalPlaceId", "arrivalPlaceRegionId",
-						"arrivalPlaceName"))
+				.departurePlace(new CreateJourneyRequestDto.PlaceDto(1L, PlaceType.LOCALITY, new BigDecimal(36.8015),
+						new BigDecimal(10.1788)))
+				.arrivalPlace(new CreateJourneyRequestDto.PlaceDto(2L, PlaceType.LOCALITY, new BigDecimal(37.8015),
+						new BigDecimal(11.1788)))
 				.dateTime(startDate.toInstant())
-				.engineType(new CreateJourneyRequestDto.EngineTypeDto(1L, "EngineType1")).distance(270.8).workers(2)
+				.engineType(new CreateJourneyRequestDto.EngineTypeDto(1L, "EngineType1")).workers(2)
 				.description("Need a transporter URGENT!!!");
 	}
 

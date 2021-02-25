@@ -55,6 +55,10 @@ public class CountryJpaEntity {
 		return id;
 	}
 
+	public void setId(Long id) {
+		this.id = id;
+	}
+
 	public String getName(String locale) {
 		if (localizations.containsKey(locale)) {
 			return localizations.get(locale).getName();

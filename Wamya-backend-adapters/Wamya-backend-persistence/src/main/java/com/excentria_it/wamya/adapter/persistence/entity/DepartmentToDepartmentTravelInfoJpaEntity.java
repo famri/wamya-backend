@@ -5,7 +5,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
@@ -27,11 +27,11 @@ public class DepartmentToDepartmentTravelInfoJpaEntity {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = DP2DPTI_SEQ)
 	private Long id;
 
-	@OneToOne
+	@ManyToOne
 	@JoinColumn(name = "department_one_id")
 	private DepartmentJpaEntity departmentOne;
 
-	@OneToOne
+	@ManyToOne
 	@JoinColumn(name = "department_two_id")
 	private DepartmentJpaEntity departmentTwo;
 

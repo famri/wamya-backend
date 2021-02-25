@@ -16,7 +16,8 @@ eureka:
   instance:
     leaseRenewalIntervalInSeconds: 5
     leaseExpirationDurationInSeconds: 8
-
+#    preferIpAddress: true
+    
 ribbon.ServerListRefreshInterval: 30000
 ribbon.NFLoadBalancerPingInterval: 5
 

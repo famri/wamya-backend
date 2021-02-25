@@ -34,7 +34,8 @@ public class CreateJourneyRequestsController {
 
 	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
-	public CreateJourneyRequestDto createJourneyRequest(@Valid @RequestBody CreateJourneyRequestCommand command,
+	public CreateJourneyRequestDto createJourneyRequestFromPlaceId(
+			@Valid @RequestBody CreateJourneyRequestCommand command,
 			final @AuthenticationPrincipal JwtAuthenticationToken principal, Locale locale) {
 
 		Locale supportedLocale = LocaleUtils.getSupporedLocale(locale);

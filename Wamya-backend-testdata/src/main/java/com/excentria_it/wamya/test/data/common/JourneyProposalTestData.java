@@ -20,14 +20,14 @@ import com.excentria_it.wamya.domain.MakeProposalDto;
 public class JourneyProposalTestData {
 	private static final List<JourneyProposalDto> journeyProposalDtos = List.of(
 			JourneyProposalDto.builder().id(1L).price(220.0).status(new StatusDto(StatusCode.SUBMITTED, "submitted"))
-					.transporterDto(new TransporterDto(1L, "transporter1", "https://path/to/transporter1/photo", 4.5))
-					.vehiculeDto(new VehiculeDto(1L, "RENAULT", "KANGOO", "https://path/to/vehicule1/photo")).build(),
+					.transporter(new TransporterDto(1L, "transporter1", "https://path/to/transporter1/photo", 4.5))
+					.vehicule(new VehiculeDto(1L, "RENAULT", "KANGOO", "https://path/to/vehicule1/photo")).build(),
 			JourneyProposalDto.builder().id(2L).price(230.0).status(new StatusDto(StatusCode.SUBMITTED, "submitted"))
-					.transporterDto(new TransporterDto(2L, "transporter2", "https://path/to/transporter2/photo", 4.9))
-					.vehiculeDto(new VehiculeDto(2L, "PEUGEOT", "PARTNER", "https://path/to/vehicule2/photo")).build(),
+					.transporter(new TransporterDto(2L, "transporter2", "https://path/to/transporter2/photo", 4.9))
+					.vehicule(new VehiculeDto(2L, "PEUGEOT", "PARTNER", "https://path/to/vehicule2/photo")).build(),
 			JourneyProposalDto.builder().id(2L).price(240.0).status(new StatusDto(StatusCode.SUBMITTED, "submitted"))
-					.transporterDto(new TransporterDto(3L, "transporter3", "https://path/to/transporter3/photo", 4.7))
-					.vehiculeDto(new VehiculeDto(3L, "PEUGEOT", "PARTNER", "https://path/to/vehicule3/photo")).build());
+					.transporter(new TransporterDto(3L, "transporter3", "https://path/to/transporter3/photo", 4.7))
+					.vehicule(new VehiculeDto(3L, "PEUGEOT", "PARTNER", "https://path/to/vehicule3/photo")).build());
 
 	public static final Double JOURNEY_PROPOSAL_PRICE = 250.0;
 

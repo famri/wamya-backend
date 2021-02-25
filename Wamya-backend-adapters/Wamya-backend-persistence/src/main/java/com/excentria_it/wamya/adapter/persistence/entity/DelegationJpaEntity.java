@@ -1,5 +1,6 @@
 package com.excentria_it.wamya.adapter.persistence.entity;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -17,6 +18,7 @@ import javax.persistence.MapKey;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.validation.constraints.Digits;
 
 import com.excentria_it.wamya.common.annotation.Generated;
 
@@ -33,7 +35,7 @@ public class DelegationJpaEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = DELEGATION_SEQ)
 	private Long id;
-	
+
 	@Column(length = 4096)
 	private String possibleNames;
 
@@ -48,14 +50,31 @@ public class DelegationJpaEntity {
 
 	@OneToMany(mappedBy = "delegation")
 	private Set<LocalityJpaEntity> localities = new HashSet<>();
+	
+	@Column(scale = 6, precision = 8)
+	private BigDecimal latitude;
+	@Column(scale = 6, precision = 9)
+	private BigDecimal longitude;
 
 	public DelegationJpaEntity(String possibleNames, Map<String, LocalizedDelegationJpaEntity> localizations,
-			DepartmentJpaEntity department, Set<LocalityJpaEntity> localities) {
+			DepartmentJpaEntity department, Set<LocalityJpaEntity> localities, BigDecimal latitude,
+			BigDecimal longitude) {
 
 		this.possibleNames = possibleNames;
 		this.localizations = localizations;
 		this.department = department;
+		this.latitude = latitude;
+		this.longitude = longitude;
+
 		localities.forEach(l -> this.addLocality(l));
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public void addLocality(LocalityJpaEntity locality) {
@@ -63,10 +82,6 @@ public class DelegationJpaEntity {
 			return;
 		this.localities.add(locality);
 		locality.setDelegation(this);
-	}
-
-	public Long getId() {
-		return id;
 	}
 
 	public String getName(String locale) {
@@ -96,6 +111,22 @@ public class DelegationJpaEntity {
 		return localizations;
 	}
 
+	public BigDecimal getLatitude() {
+		return latitude;
+	}
+
+	public void setLatitude(BigDecimal latitude) {
+		this.latitude = latitude;
+	}
+
+	public BigDecimal getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(BigDecimal longitude) {
+		this.longitude = longitude;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -122,8 +153,8 @@ public class DelegationJpaEntity {
 
 	@Override
 	public String toString() {
-		return "DelegationJpaEntity [id=" + id + ", possibleNames=" + possibleNames + ", department=" + department
-				+ "]";
+		return "DelegationJpaEntity [id=" + id + ", department=" + department + ", latitude=" + latitude
+				+ ", longitude=" + longitude + "]";
 	}
 
 }

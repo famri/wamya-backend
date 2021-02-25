@@ -5,7 +5,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
@@ -27,10 +27,11 @@ public class DelegationToDelegationTravelInfoJpaEntity {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = DL2DLTI_SEQ)
 	private Long id;
 
-	@OneToOne
+	@ManyToOne
 	@JoinColumn(name = "delegation_one_id")
 	private DelegationJpaEntity delegationOne;
-	@OneToOne
+
+	@ManyToOne
 	@JoinColumn(name = "delegation_two_id")
 	private DelegationJpaEntity delegationTwo;
 

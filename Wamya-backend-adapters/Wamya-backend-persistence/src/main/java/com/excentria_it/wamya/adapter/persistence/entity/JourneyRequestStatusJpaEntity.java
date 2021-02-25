@@ -41,6 +41,7 @@ public class JourneyRequestStatusJpaEntity {
 
 	private String description;
 
+	@Builder.Default
 	@OneToMany(mappedBy = "status", cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST,
 			CascadeType.REFRESH }, orphanRemoval = true)
 	@MapKey(name = "localizedId.locale")

@@ -30,14 +30,14 @@ public interface SearchJourneyRequestsUseCase {
 	@Builder
 	class SearchJourneyRequestsCommand {
 
-		public static final String ANY_ARRIVAL_REGION = "ANY";
+		public static final Long ANY_ARRIVAL_REGION = -1L;
 
 		@NotNull
-		private String departurePlaceRegionId;
+		private Long departurePlaceDepartmentId;
 
 		@NotNull
 		@NotEmpty
-		private Set<String> arrivalPlaceRegionIds;
+		private Set<Long> arrivalPlaceDepartmentIds;
 
 		@NotNull
 		@DateTimeFormat(iso = ISO.DATE_TIME)

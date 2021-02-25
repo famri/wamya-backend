@@ -41,8 +41,8 @@ public class SearchJourneyRequestsController {
 
 	@GetMapping
 	public JourneyRequestsSearchResult searchJourneyRequests(
-			@RequestParam(name = "departure") String departurePlaceRegionId,
-			@RequestParam(name = "arrival") Set<String> arrivalPlaceRegionIds,
+			@RequestParam(name = "departure") Long departurePlaceRegionId,
+			@RequestParam(name = "arrival") Set<Long> arrivalPlaceRegionIds,
 			@RequestParam(name = "fromDate") @DateTimeFormat(iso = ISO.DATE_TIME) ZonedDateTime startDateTime,
 			@RequestParam(name = "toDate") @DateTimeFormat(iso = ISO.DATE_TIME) ZonedDateTime endDateTime,
 			@RequestParam(name = "engine") Set<Long> engineTypeIds,
@@ -55,7 +55,7 @@ public class SearchJourneyRequestsController {
 		SortCriterion sortingCriterion = ParameterUtils.parameterToSortCriterion(sort, "min-price,desc");
 
 		SearchJourneyRequestsCommand command = SearchJourneyRequestsCommand.builder()
-				.departurePlaceRegionId(departurePlaceRegionId).arrivalPlaceRegionIds(arrivalPlaceRegionIds)
+				.departurePlaceDepartmentId(departurePlaceRegionId).arrivalPlaceDepartmentIds(arrivalPlaceRegionIds)
 				.startDateTime(startDateTime).endDateTime(endDateTime).engineTypes(engineTypeIds).pageNumber(pageNumber)
 				.pageSize(pageSize).sortingCriterion(sortingCriterion).build();
 

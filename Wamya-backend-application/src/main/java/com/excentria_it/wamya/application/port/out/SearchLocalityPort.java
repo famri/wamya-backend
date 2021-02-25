@@ -2,10 +2,19 @@ package com.excentria_it.wamya.application.port.out;
 
 import java.util.List;
 
-import com.excentria_it.wamya.domain.AutoCompleteLocalitiesDto;
+import com.excentria_it.wamya.domain.AutoCompleteLocalityDto;
 
 public interface SearchLocalityPort {
 
-	List<AutoCompleteLocalitiesDto> searchLocality(String input, Long countryId, String locale);
+	List<AutoCompleteLocalityDto> searchLocalityByName(String localityName, Long countryId, Integer limit,
+			String locale);
 
+	List<AutoCompleteLocalityDto> searchLocalityByNameAndDelegationName(String localityName, String delegationName,
+			Long countryId, Integer limit, String locale);
+
+	List<AutoCompleteLocalityDto> searchLocalityByNameAndDepartmentName(String localityName, String departmentName,
+			Long countryId, Integer limit, String locale);
+
+	List<AutoCompleteLocalityDto> searchLocalityByNameAndDelegationNameAndDepartmentName(String localityName,
+			String delegationName, String departmentName, Long countryId, Integer limit, String locale);
 }

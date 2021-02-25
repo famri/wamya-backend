@@ -35,11 +35,11 @@ public class CreateJourneyRequestsControllerTests {
 	@Autowired
 	private MockMvcSupport api;
 
-	@MockBean
-	private CreateJourneyRequestUseCase createJourneyRequestUseCase;
-
 	@Autowired
 	private ObjectMapper objectMapper;
+
+	@MockBean
+	private CreateJourneyRequestUseCase createJourneyRequestUseCase;
 
 	@Test
 	void givenValidInput_WhenCreateJourneyRequest_ThenReturnCreatedJourneyRequest() throws Exception {
@@ -57,27 +57,29 @@ public class CreateJourneyRequestsControllerTests {
 				.perform(post("/journey-requests").contentType(MediaType.APPLICATION_JSON_VALUE)
 						.content(createJourneyRequestJson))
 				.andExpect(status().isCreated()).andReturn();
+
 		ArgumentCaptor<CreateJourneyRequestCommand> captor = ArgumentCaptor.forClass(CreateJourneyRequestCommand.class);
+
 		then(createJourneyRequestUseCase).should(times(1)).createJourneyRequest(captor.capture(),
 				eq(TestConstants.DEFAULT_EMAIL), eq("en_US"));
 
 		assertThat(captor.getValue().getDateTime()).isEqualTo(command.getDateTime());
 		assertThat(captor.getValue().getDeparturePlaceId()).isEqualTo(command.getDeparturePlaceId());
-		assertThat(captor.getValue().getDeparturePlaceRegionId()).isEqualTo(command.getDeparturePlaceRegionId());
-		assertThat(captor.getValue().getDeparturePlaceName()).isEqualTo(command.getDeparturePlaceName());
+		assertThat(captor.getValue().getDeparturePlaceType()).isEqualTo(command.getDeparturePlaceType());
+
 		assertThat(captor.getValue().getArrivalPlaceId()).isEqualTo(command.getArrivalPlaceId());
-		assertThat(captor.getValue().getArrivalPlaceRegionId()).isEqualTo(command.getArrivalPlaceRegionId());
-		assertThat(captor.getValue().getArrivalPlaceName()).isEqualTo(command.getArrivalPlaceName());
+
+		assertThat(captor.getValue().getArrivalPlaceType()).isEqualTo(command.getArrivalPlaceType());
 
 		assertThat(captor.getValue().getEngineTypeId()).isEqualTo(command.getEngineTypeId());
-		assertThat(captor.getValue().getDistance()).isEqualTo(command.getDistance());
+
 		assertThat(captor.getValue().getWorkers()).isEqualTo(command.getWorkers());
 		assertThat(captor.getValue().getDescription()).isEqualTo(command.getDescription());
 
 	}
 
 	@Test
-	void givenValidInputAndBadAuthority_WhenCreateJourneyRequest_ThenReturnUnauthorized() throws Exception {
+	void givenValidInputAndBadAuthority_WhenCreateJourneyRequest_ThenReturnForbidden() throws Exception {
 		CreateJourneyRequestCommand command = JourneyRequestTestData.defaultCreateJourneyRequestCommandBuilder()
 				.build();
 		CreateJourneyRequestDto journeyRequest = JourneyRequestTestData.defaultCreateJourneyRequestDto();

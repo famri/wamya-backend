@@ -1,5 +1,6 @@
 package com.excentria_it.wamya.adapter.persistence.repository;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.*;
 
@@ -10,6 +11,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.excentria_it.wamya.adapter.persistence.entity.CountryJpaEntity;
@@ -19,7 +22,7 @@ import com.excentria_it.wamya.adapter.persistence.entity.LocalizedCountryJpaEnti
 import com.excentria_it.wamya.adapter.persistence.entity.LocalizedDelegationJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.LocalizedDepartmentJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.LocalizedId;
-import com.excentria_it.wamya.domain.AutoCompleteDepartmentsDto;
+import com.excentria_it.wamya.domain.AutoCompleteDepartmentDto;
 
 @DataJpaTest
 @ActiveProfiles(profiles = { "persistence-local" })
@@ -36,6 +39,8 @@ public class DepartmentRepositoryTests {
 
 	@BeforeEach
 	void cleanDatabase() {
+		delegationRepository.deleteAll();
+		departmentRepository.deleteAll();
 		countryRepository.deleteAll();
 
 	}
@@ -48,12 +53,15 @@ public class DepartmentRepositoryTests {
 
 		CountryJpaEntity country = givenCountry(departments);
 		// when
-		List<AutoCompleteDepartmentsDto> departmentsDtosResult = departmentRepository
+
+		Pageable firstPageWithFiveElements = PageRequest.of(0, 5);
+		List<AutoCompleteDepartmentDto> departmentsDtosResult = departmentRepository
 				.findByCountry_IdAndNameLikeIgnoringCase(country.getId(),
-						departments.get(0).getPossibleNames().substring(0, 4), "fr_FR");
+						departments.get(0).getPossibleNames().substring(0, 4), "fr_FR", firstPageWithFiveElements);
 		// then
 		assertEquals(departments.get(0).getId(), departmentsDtosResult.get(0).getId());
 		assertEquals(departments.get(0).getName("fr_FR"), departmentsDtosResult.get(0).getName());
+		assertThat(departmentsDtosResult.size()).isLessThanOrEqualTo(5);
 	}
 
 	private List<List<DelegationJpaEntity>> givenDelegations() {

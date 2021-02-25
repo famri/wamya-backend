@@ -48,7 +48,7 @@ public class JourneyRequestJpaEntity {
 	@ManyToOne
 	private EngineTypeJpaEntity engineType;
 
-	private Double distance;
+	private Integer distance;
 
 	private Instant dateTime;
 
@@ -66,6 +66,7 @@ public class JourneyRequestJpaEntity {
 	@JoinColumn(name = "client_id")
 	private ClientJpaEntity client;
 
+	@Builder.Default
 	@OneToMany(mappedBy = "journeyRequest", cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST,
 			CascadeType.REFRESH }, orphanRemoval = true, fetch = FetchType.LAZY)
 	private Set<JourneyProposalJpaEntity> proposals = new HashSet<>();
@@ -108,11 +109,11 @@ public class JourneyRequestJpaEntity {
 		this.engineType = engineType;
 	}
 
-	public Double getDistance() {
+	public Integer getDistance() {
 		return distance;
 	}
 
-	public void setDistance(Double distance) {
+	public void setDistance(Integer distance) {
 		this.distance = distance;
 	}
 
@@ -160,6 +161,14 @@ public class JourneyRequestJpaEntity {
 		return Collections.unmodifiableSet(proposals);
 	}
 
+	public JourneyRequestStatusJpaEntity getStatus() {
+		return status;
+	}
+
+	public void setStatus(JourneyRequestStatusJpaEntity status) {
+		this.status = status;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -192,11 +201,4 @@ public class JourneyRequestJpaEntity {
 				+ ", client id=" + client.getId() + "]";
 	}
 
-	public JourneyRequestStatusJpaEntity getStatus() {
-		return status;
-	}
-
-	public void setStatus(JourneyRequestStatusJpaEntity status) {
-		this.status = status;
-	}
 }

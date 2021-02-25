@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
@@ -17,11 +18,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.excentria_it.wamya.application.port.in.AutoCompleteDepartmentUseCase;
+import com.excentria_it.wamya.application.port.in.AutoCompletePlaceForTransporterUseCase;
 import com.excentria_it.wamya.common.annotation.WebAdapter;
 import com.excentria_it.wamya.common.utils.LocaleUtils;
-import com.excentria_it.wamya.domain.AutoCompleteDepartmentsDto;
-import com.excentria_it.wamya.domain.AutoCompleteDepartmentsResult;
+import com.excentria_it.wamya.domain.AutoCompletePlaceDto;
+import com.excentria_it.wamya.domain.AutoCompletePlaceResult;
 
 import lombok.RequiredArgsConstructor;
 
@@ -33,23 +34,23 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping(path = "/departments", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AutoCompleteDepartmentController {
 
-	private final AutoCompleteDepartmentUseCase autoCompleteDepartmentUseCase;
+	private final AutoCompletePlaceForTransporterUseCase autoCompleteDepartmentUseCase;
 
 	@GetMapping
 	@ResponseStatus(HttpStatus.OK)
-	public AutoCompleteDepartmentsResult autoCompleteDepartment(
-			@NotEmpty @RequestParam(name = "country") String countryCode,
-			@Size(min = 3) @RequestParam(name = "input") String input, Locale locale) {
+	public AutoCompletePlaceResult autoCompleteDepartment(@NotEmpty @RequestParam(name = "country") String countryCode,
+			@Size(min = 3) @RequestParam(name = "input") String input,
+			@RequestParam(name = "limit", defaultValue = "5") @Min(value = 1) Integer limit, Locale locale) {
 
 		Locale supportedLocale = LocaleUtils.getSupporedLocale(locale);
 
-		List<AutoCompleteDepartmentsDto> autoCompleteDepartmentDtos = autoCompleteDepartmentUseCase
-				.autoCompleteDepartment(input, countryCode, supportedLocale.toString());
+		List<AutoCompletePlaceDto> autoCompletePlaceDtos = autoCompleteDepartmentUseCase.autoCompleteDepartment(input,
+				countryCode, limit, supportedLocale.toString());
 
-		if (autoCompleteDepartmentDtos == null || autoCompleteDepartmentDtos.isEmpty()) {
-			return new AutoCompleteDepartmentsResult(0, Collections.<AutoCompleteDepartmentsDto>emptyList());
+		if (autoCompletePlaceDtos == null || autoCompletePlaceDtos.isEmpty()) {
+			return new AutoCompletePlaceResult(0, Collections.<AutoCompletePlaceDto>emptyList());
 		}
-		return new AutoCompleteDepartmentsResult(autoCompleteDepartmentDtos.size(), autoCompleteDepartmentDtos);
+		return new AutoCompletePlaceResult(autoCompletePlaceDtos.size(), autoCompletePlaceDtos);
 
 	}
 }

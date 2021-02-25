@@ -17,9 +17,9 @@ public class JourneyProposalDto {
 
 	private StatusDto status;
 
-	private TransporterDto transporterDto;
+	private TransporterDto transporter;
 
-	private VehiculeDto vehiculeDto;
+	private VehiculeDto vehicule;
 
 	@AllArgsConstructor
 	@NoArgsConstructor

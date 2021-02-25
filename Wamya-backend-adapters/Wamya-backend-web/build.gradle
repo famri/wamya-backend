@@ -37,7 +37,7 @@ dependencies {
   	//implementation ('org.springframework.boot:spring-boot-starter-security');
     //implementation "org.springframework.security:spring-security-oauth2-core:${springSecurityVersion}"
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
-    
+    implementation 'org.apache.commons:commons-text:1.9'
     
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'

@@ -1,9 +1,9 @@
-server.port: 8080
+server.port: 7777
 
 spring:
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     generate-ddl: true 
     database-platform: H2
     open-in-view: false
@@ -20,17 +20,10 @@ spring:
   datasource:
     platform: h2    
     driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:wamya_db;DB_CLOSE_ON_EXIT=FALSE
+    url: jdbc:h2:mem:wamya_db
     username: sa
     password: password
 
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
-      settings:
-        trace: false
-        web-allow-others: false
 
 log4jdbc:
   trim:
@@ -42,6 +35,8 @@ log4jdbc:
       maxlinelength: 0
              
 logging:
+  file: 
+    name: D:/PROJECTS/wamya/log/persistence.log
   level:
     jdbc:
       sqlonly: fatal

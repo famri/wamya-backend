@@ -52,8 +52,13 @@ dependencies {
     testRuntimeOnly 	'org.junit.vintage:junit-vintage-engine:5.6.2'
   	testRuntimeOnly 	'org.junit.platform:junit-platform-launcher:1.6.2'
     testImplementation 	'org.mockito:mockito-junit-jupiter:3.3.3'
+    testImplementation 	'org.mockito:mockito-core:3.3.3'
+ 
     testImplementation 	'com.tngtech.archunit:archunit:0.9.3'
     testImplementation 	'de.adesso:junit-insights:1.1.0'
+    
+    testImplementation 'org.powermock:powermock-module-junit4:2.0.9'
+	testImplementation 'org.powermock:powermock-api-mockito2:2.0.9'
     
     testImplementation 'com.h2database:h2'
     testImplementation (project(':Wamya-backend-testdata')){

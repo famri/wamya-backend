@@ -37,7 +37,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @WebMvcTest(controllers = SearchJourneyRequestsController.class)
 public class SearchJourneyRequestsControllerTests {
 
-	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter
+			.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
 
 	@Autowired
 	private MockMvcSupport api;
@@ -62,11 +63,11 @@ public class SearchJourneyRequestsControllerTests {
 		MvcResult mvcResult = api
 				.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
 						.authorities("SCOPE_journey:read"))
-				.perform(get("/journey-requests").param("departure", command.getDeparturePlaceRegionId())
-						.param("arrival",
-								command.getArrivalPlaceRegionIds()
-										.toArray(new String[command.getArrivalPlaceRegionIds().size()]))
-						.param("fromDate", command.getStartDateTime().format(DATE_TIME_FORMATTER))
+				.perform(get("/journey-requests").param("departure", command.getDeparturePlaceDepartmentId().toString())
+						.param("arrival", command.getArrivalPlaceDepartmentIds().stream().map(id -> id.toString())
+								.toArray(String[]::new)
+
+						).param("fromDate", command.getStartDateTime().format(DATE_TIME_FORMATTER))
 						.param("toDate", command.getEndDateTime().format(DATE_TIME_FORMATTER)).param("lang", "fr_FR")
 						.param("engine",
 								command.getEngineTypes().stream().map(e -> e.toString()).collect(Collectors.toSet())
@@ -85,7 +86,7 @@ public class SearchJourneyRequestsControllerTests {
 
 	}
 
-	@Test
+	 @Test
 	void givenValidInputAndBadAuthority_WhenSearch_ThenReturnForbidden() throws Exception {
 
 		SearchJourneyRequestsCommand command = JourneyRequestTestData.defaultSearchJourneyRequestsCommandBuilder()
@@ -99,11 +100,11 @@ public class SearchJourneyRequestsControllerTests {
 		MvcResult mvcResult = api
 				.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
 						.authorities("SCOPE_journey:write"))
-				.perform(get("/journey-requests").param("departure", command.getDeparturePlaceRegionId())
-						.param("arrival",
-								command.getArrivalPlaceRegionIds()
-										.toArray(new String[command.getArrivalPlaceRegionIds().size()]))
-						.param("fromDate", command.getStartDateTime().format(DATE_TIME_FORMATTER))
+				.perform(get("/journey-requests").param("departure", command.getDeparturePlaceDepartmentId().toString())
+						.param("arrival", command.getArrivalPlaceDepartmentIds().stream().map(id -> id.toString())
+								.toArray(String[]::new)
+
+						).param("fromDate", command.getStartDateTime().format(DATE_TIME_FORMATTER))
 						.param("toDate", command.getEndDateTime().format(DATE_TIME_FORMATTER)).param("lang", "en")
 						.param("engine",
 								command.getEngineTypes().stream().map(e -> e.toString()).collect(Collectors.toSet())
@@ -120,7 +121,7 @@ public class SearchJourneyRequestsControllerTests {
 
 	}
 
-	@Test
+	 @Test
 	void givenValidInputWithNoSortCriterion_WhenSearch_ThenReturnSearchResult() throws Exception {
 
 		SearchJourneyRequestsCommand command = JourneyRequestTestData.defaultSearchJourneyRequestsCommandBuilder()
@@ -134,11 +135,11 @@ public class SearchJourneyRequestsControllerTests {
 		MvcResult mvcResult = api
 				.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
 						.authorities("SCOPE_journey:read"))
-				.perform(get("/journey-requests").param("departure", command.getDeparturePlaceRegionId())
-						.param("arrival",
-								command.getArrivalPlaceRegionIds()
-										.toArray(new String[command.getArrivalPlaceRegionIds().size()]))
-						.param("fromDate", command.getStartDateTime().format(DATE_TIME_FORMATTER))
+				.perform(get("/journey-requests").param("departure", command.getDeparturePlaceDepartmentId().toString())
+						.param("arrival", command.getArrivalPlaceDepartmentIds().stream().map(id -> id.toString())
+								.toArray(String[]::new)
+
+						).param("fromDate", command.getStartDateTime().format(DATE_TIME_FORMATTER))
 						.param("toDate", command.getEndDateTime().format(DATE_TIME_FORMATTER))
 						.param("engine",
 								command.getEngineTypes().stream().map(e -> e.toString()).collect(Collectors.toSet())
@@ -155,7 +156,7 @@ public class SearchJourneyRequestsControllerTests {
 
 	}
 
-	@Test
+	 @Test
 	void givenValidInputWithNoSortCriterionDirection_WhenSearch_ThenReturnSearchResult() throws Exception {
 
 		SearchJourneyRequestsCommand command = JourneyRequestTestData.defaultSearchJourneyRequestsCommandBuilder()
@@ -169,11 +170,11 @@ public class SearchJourneyRequestsControllerTests {
 		MvcResult mvcResult = api
 				.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
 						.authorities("SCOPE_journey:read"))
-				.perform(get("/journey-requests").param("departure", command.getDeparturePlaceRegionId())
-						.param("arrival",
-								command.getArrivalPlaceRegionIds()
-										.toArray(new String[command.getArrivalPlaceRegionIds().size()]))
-						.param("fromDate", command.getStartDateTime().format(DATE_TIME_FORMATTER))
+				.perform(get("/journey-requests").param("departure", command.getDeparturePlaceDepartmentId().toString())
+						.param("arrival", command.getArrivalPlaceDepartmentIds().stream().map(id -> id.toString())
+								.toArray(String[]::new)
+
+						).param("fromDate", command.getStartDateTime().format(DATE_TIME_FORMATTER))
 						.param("toDate", command.getEndDateTime().format(DATE_TIME_FORMATTER))
 						.param("engine",
 								command.getEngineTypes().stream().map(e -> e.toString()).collect(Collectors.toSet())
@@ -204,11 +205,11 @@ public class SearchJourneyRequestsControllerTests {
 
 		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
 				.authorities("SCOPE_journey:read"))
-				.perform(get("/journey-requests").param("departure", command.getDeparturePlaceRegionId())
-						.param("arrival",
-								command.getArrivalPlaceRegionIds()
-										.toArray(new String[command.getArrivalPlaceRegionIds().size()]))
-						.param("fromDate", command.getStartDateTime().format(DATE_TIME_FORMATTER))
+				.perform(get("/journey-requests").param("departure", command.getDeparturePlaceDepartmentId().toString())
+						.param("arrival", command.getArrivalPlaceDepartmentIds().stream().map(id -> id.toString())
+								.toArray(String[]::new)
+
+						).param("fromDate", command.getStartDateTime().format(DATE_TIME_FORMATTER))
 						.param("toDate", command.getEndDateTime().format(DATE_TIME_FORMATTER)).param("lang", "en")
 						.param("engine",
 								command.getEngineTypes().stream().map(e -> e.toString()).collect(Collectors.toSet())

@@ -1,5 +1,6 @@
 package com.excentria_it.wamya.domain;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 
 import lombok.AllArgsConstructor;
@@ -19,7 +20,11 @@ public class CreateJourneyRequestDto {
 
 	private PlaceDto arrivalPlace;
 
-	private Double distance;
+	private Integer distance;
+
+	private Integer hours;
+
+	private Integer minutes;
 
 	private Instant dateTime;
 
@@ -30,7 +35,7 @@ public class CreateJourneyRequestDto {
 	private String description;
 
 	private String status;
-	
+
 	private Instant creationDateTime;
 
 	@AllArgsConstructor
@@ -45,14 +50,16 @@ public class CreateJourneyRequestDto {
 
 	@AllArgsConstructor
 	@Data
-
 	public static class PlaceDto {
 
-		private String placeId;
+		private Long id;
 
-		private String placeRegionId;
+		private PlaceType type;
 
-		private String placeName;
+		private BigDecimal latitude;
+
+		private BigDecimal longitude;
+
 	}
 
 	@AllArgsConstructor

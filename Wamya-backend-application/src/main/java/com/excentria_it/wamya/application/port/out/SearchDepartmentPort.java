@@ -2,10 +2,11 @@ package com.excentria_it.wamya.application.port.out;
 
 import java.util.List;
 
-import com.excentria_it.wamya.domain.AutoCompleteDepartmentsDto;
+import com.excentria_it.wamya.domain.AutoCompleteDepartmentDto;
 
 public interface SearchDepartmentPort {
 
-	List<AutoCompleteDepartmentsDto> searchDepartment(String input, Long countryId, String language);
-	
+	List<AutoCompleteDepartmentDto> searchDepartmentByName(String input, Long countryId, Integer limit,
+			String locale);
+
 }
