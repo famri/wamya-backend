@@ -29,7 +29,7 @@ public interface LoadClientJourneyRequestsUseCase {
 		@NotNull
 		private Integer pageSize;
 
-		@Sort(fields = { "creation-date-time", "date-time", "end-date-time" })
+		@Sort(fields = { "creation-date-time", "date-time" })
 		private SortCriterion sortingCriterion;
 
 		@Period(value = { "y1", "m6", "m3", "m1", "w2", "w1" })

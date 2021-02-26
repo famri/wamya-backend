@@ -16,7 +16,7 @@ public class PeriodCriterion {
 	private ZonedDateTime higherEdge;
 
 	public enum PeriodValue {
-		Y1, M6, M3, M1, W2, W1;
+		Y1, M6, M3, M1, W1;
 
 		public ZonedDateTime calculateLowerEdge(ZonedDateTime higherEdge) {
 
@@ -34,9 +34,7 @@ public class PeriodCriterion {
 			case M1:
 				lowerEdge = higherEdge.minusMonths(1);
 				break;
-			case W2:
-				lowerEdge = higherEdge.minusWeeks(2);
-				break;
+
 			case W1:
 				lowerEdge = higherEdge.minusWeeks(1);
 				break;
