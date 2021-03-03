@@ -2,8 +2,8 @@ package com.excentria_it.wamya.application.service;
 
 import java.math.BigDecimal;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import javax.transaction.Transactional;
 
@@ -34,9 +34,9 @@ public class FavoriteGeoPlacesService implements LoadFavoriteGeoPlacesUseCase, C
 	@Override
 	public UserFavoriteGeoPlaces loadFavoriteGeoPlaces(String username, String locale) {
 
-		Set<GeoPlaceDto> geoPlaces = loadFavoriteGeoPlacePort.loadFavoriteGeoPlaces(username, locale);
+		List<GeoPlaceDto> geoPlaces = loadFavoriteGeoPlacePort.loadFavoriteGeoPlaces(username, locale);
 		if (geoPlaces.isEmpty()) {
-			return new UserFavoriteGeoPlaces(0, Collections.emptySet());
+			return new UserFavoriteGeoPlaces(0, Collections.emptyList());
 		} else {
 			return new UserFavoriteGeoPlaces(geoPlaces.size(), geoPlaces);
 		}

@@ -2,6 +2,7 @@ package com.excentria_it.wamya.application.port.in;
 
 import java.time.ZonedDateTime;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -30,12 +31,14 @@ public interface CreateJourneyRequestUseCase {
 		private Long departurePlaceId;
 
 		@NotNull
+		@NotEmpty
 		private String departurePlaceType;
 
 		@NotNull
 		private Long arrivalPlaceId;
 
 		@NotNull
+		@NotEmpty
 		private String arrivalPlaceType;
 
 		@NotNull
@@ -43,13 +46,14 @@ public interface CreateJourneyRequestUseCase {
 		@JsonFormat(shape = Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
 		private ZonedDateTime dateTime;
 
-		private Long engineTypeId;
 		@NotNull
+		private Long engineTypeId;
 
 		@NotNull
 		private Integer workers;
 
 		@NotNull
+		@NotEmpty
 		private String description;
 
 	}

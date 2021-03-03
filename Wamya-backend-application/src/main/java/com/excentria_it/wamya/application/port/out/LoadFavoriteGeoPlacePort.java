@@ -1,11 +1,11 @@
 package com.excentria_it.wamya.application.port.out;
 
-import java.util.Set;
+import java.util.List;
 
 import com.excentria_it.wamya.domain.GeoPlaceDto;
 
 public interface LoadFavoriteGeoPlacePort {
 
-	Set<GeoPlaceDto> loadFavoriteGeoPlaces(String userName, String locale);
+	List<GeoPlaceDto> loadFavoriteGeoPlaces(String userName, String locale);
 
 }

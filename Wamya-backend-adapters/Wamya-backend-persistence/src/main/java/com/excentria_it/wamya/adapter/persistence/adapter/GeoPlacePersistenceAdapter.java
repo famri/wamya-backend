@@ -2,8 +2,11 @@ package com.excentria_it.wamya.adapter.persistence.adapter;
 
 import java.math.BigDecimal;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
+
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 
 import com.excentria_it.wamya.adapter.persistence.entity.ClientJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.DepartmentJpaEntity;
@@ -36,21 +39,22 @@ public class GeoPlacePersistenceAdapter implements LoadFavoriteGeoPlacePort, Cre
 	private final GeoPlaceMapper geoPlaceMapper;
 
 	@Override
-	public Set<GeoPlaceDto> loadFavoriteGeoPlaces(String username, String locale) {
+	public List<GeoPlaceDto> loadFavoriteGeoPlaces(String username, String locale) {
 
-		Set<GeoPlaceJpaEntity> geoPlaces;
-
+		List<GeoPlaceJpaEntity> geoPlaces;
+		Sort sort = Sort.by(Direction.ASC, "name");
 		if (username.contains("@")) {
-			geoPlaces = geoPlaceRepository.findByClient_Email(username);
+
+			geoPlaces = geoPlaceRepository.findByClient_Email(username, sort);
 		} else if (username.contains("_")) {
 
 			String[] userMobilePhone = username.split("_");
 
 			geoPlaces = geoPlaceRepository.findByClient_Icc_ValueAndClient_MobileNumber(userMobilePhone[0],
-					userMobilePhone[1]);
+					userMobilePhone[1], sort);
 		} else {
 			log.error(String.format("Could not find client by email or mobile number: %s", username));
-			return Collections.emptySet();
+			return Collections.emptyList();
 		}
 
 		return geoPlaceMapper.mapToDomainEntities(geoPlaces, locale);

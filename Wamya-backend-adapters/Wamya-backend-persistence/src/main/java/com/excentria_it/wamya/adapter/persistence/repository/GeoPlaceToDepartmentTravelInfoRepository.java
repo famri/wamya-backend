@@ -10,6 +10,6 @@ import com.excentria_it.wamya.domain.JourneyTravelInfo;
 
 public interface GeoPlaceToDepartmentTravelInfoRepository
 		extends JpaRepository<GeoPlaceToDepartmentTravelInfoJpaEntity, Long> {
-	@Query(value = "SELECT g.distance AS distance, g.hours AS hours, g.minutes AS minutes FROM GeoPlaceToDepartmentTravelInfoJpaEntity g JOIN g.geoPlace p JOIN g.department d WHERE p.id = ?1 AND d.id = ?2")
+	@Query(value = "SELECT new com.excentria_it.wamya.domain.JourneyTravelInfo(g.distance, g.hours, g.minutes) FROM GeoPlaceToDepartmentTravelInfoJpaEntity g JOIN g.geoPlace p JOIN g.department d WHERE p.id = ?1 AND d.id = ?2")
 	Optional<JourneyTravelInfo> findByGeoPlace_IdAndDepartment_Id(Long geoPlaceId, Long departmentId);
 }

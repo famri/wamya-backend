@@ -1,6 +1,6 @@
 package com.excentria_it.wamya.domain;
 
-import java.util.Set;
+import java.util.List;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
@@ -9,20 +9,21 @@ import lombok.Value;
 @Value
 @JsonDeserialize(builder = UserFavoriteGeoPlaces.Builder.class)
 public class UserFavoriteGeoPlaces {
+
 	private Integer totalElements;
-	private Set<GeoPlaceDto> content;
+	private List<GeoPlaceDto> content;
 
 	static class Builder {
 		Integer totalElements;
 
-		Set<GeoPlaceDto> content;
+		List<GeoPlaceDto> content;
 
 		Builder withTotalElements(Integer totalElements) {
 			this.totalElements = totalElements;
 			return this;
 		}
 
-		Builder withContent(Set<GeoPlaceDto> content) {
+		Builder withContent(List<GeoPlaceDto> content) {
 			this.content = content;
 			return this;
 		}

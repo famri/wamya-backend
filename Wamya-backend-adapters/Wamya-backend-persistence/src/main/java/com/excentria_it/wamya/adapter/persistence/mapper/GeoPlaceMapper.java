@@ -1,7 +1,7 @@
 package com.excentria_it.wamya.adapter.persistence.mapper;
 
 import java.util.Collections;
-import java.util.Set;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -20,13 +20,13 @@ public class GeoPlaceMapper {
 						geoPlaceJpaEntity.getDepartment().getName(locale)));
 	}
 
-	public Set<GeoPlaceDto> mapToDomainEntities(Set<GeoPlaceJpaEntity> geoPlaceJpaEntities, String locale) {
+	public List<GeoPlaceDto> mapToDomainEntities(List<GeoPlaceJpaEntity> geoPlaceJpaEntities, String locale) {
 		if (CollectionUtils.isEmpty(geoPlaceJpaEntities)) {
-			return Collections.emptySet();
+			return Collections.emptyList();
 		}
 		return geoPlaceJpaEntities.stream()
 				.map(g -> new GeoPlaceDto(g.getId(), g.getName(), g.getLatitude(), g.getLongitude(),
 						new DepartmentDto(g.getDepartment().getId(), g.getDepartment().getName(locale))))
-				.collect(Collectors.toSet());
+				.collect(Collectors.toList());
 	}
 }

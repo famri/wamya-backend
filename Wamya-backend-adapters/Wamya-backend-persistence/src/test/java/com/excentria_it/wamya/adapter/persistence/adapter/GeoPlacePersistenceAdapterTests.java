@@ -10,6 +10,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -18,6 +19,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Sort;
 
 import com.excentria_it.wamya.adapter.persistence.entity.ClientJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.DepartmentJpaEntity;
@@ -49,11 +51,11 @@ public class GeoPlacePersistenceAdapterTests {
 		// given
 		GeoPlaceJpaEntity geoPlace = defaultGeoPlaceJpaEntity();
 		GeoPlaceDto geoPlaceDto = defaultGeoPlaceDto();
-		given(geoPlaceRepository.findByClient_Email(any(String.class))).willReturn(Set.of(geoPlace));
-		Set<GeoPlaceDto> expectedResponse = Set.of(geoPlaceDto);
-		given(geoPlaceMapper.mapToDomainEntities(any(Set.class), any(String.class))).willReturn(expectedResponse);
+		given(geoPlaceRepository.findByClient_Email(any(String.class), any(Sort.class))).willReturn(List.of(geoPlace));
+		List<GeoPlaceDto> expectedResponse = List.of(geoPlaceDto);
+		given(geoPlaceMapper.mapToDomainEntities(any(List.class), any(String.class))).willReturn(expectedResponse);
 		// When
-		Set<GeoPlaceDto> geoPlaces = geoPlacePersistenceAdapter.loadFavoriteGeoPlaces(TestConstants.DEFAULT_EMAIL,
+		List<GeoPlaceDto> geoPlaces = geoPlacePersistenceAdapter.loadFavoriteGeoPlaces(TestConstants.DEFAULT_EMAIL,
 				"fr_FR");
 		// then
 		assertEquals(expectedResponse, geoPlaces);
@@ -65,13 +67,13 @@ public class GeoPlacePersistenceAdapterTests {
 		// given
 		GeoPlaceJpaEntity geoPlace = defaultGeoPlaceJpaEntity();
 		GeoPlaceDto geoPlaceDto = defaultGeoPlaceDto();
-		given(geoPlaceRepository.findByClient_Icc_ValueAndClient_MobileNumber(any(String.class), any(String.class)))
-				.willReturn(Set.of(geoPlace));
-		Set<GeoPlaceDto> expectedResponse = Set.of(geoPlaceDto);
-		given(geoPlaceMapper.mapToDomainEntities(any(Set.class), any(String.class))).willReturn(expectedResponse);
+		given(geoPlaceRepository.findByClient_Icc_ValueAndClient_MobileNumber(any(String.class), any(String.class),
+				any(Sort.class))).willReturn(List.of(geoPlace));
+		List<GeoPlaceDto> expectedResponse = List.of(geoPlaceDto);
+		given(geoPlaceMapper.mapToDomainEntities(any(List.class), any(String.class))).willReturn(expectedResponse);
 		// When
 
-		Set<GeoPlaceDto> geoPlaces = geoPlacePersistenceAdapter
+		List<GeoPlaceDto> geoPlaces = geoPlacePersistenceAdapter
 				.loadFavoriteGeoPlaces(TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME, "fr_FR");
 		// then
 		assertEquals(expectedResponse, geoPlaces);
@@ -83,7 +85,7 @@ public class GeoPlacePersistenceAdapterTests {
 		// given
 
 		// When
-		Set<GeoPlaceDto> geoPlaces = geoPlacePersistenceAdapter.loadFavoriteGeoPlaces("THIS IS A BAD USERNAME",
+		List<GeoPlaceDto> geoPlaces = geoPlacePersistenceAdapter.loadFavoriteGeoPlaces("THIS IS A BAD USERNAME",
 				"fr_FR");
 		// then
 		assertThat(geoPlaces).isEmpty();

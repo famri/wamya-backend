@@ -4,7 +4,7 @@ import static com.excentria_it.wamya.test.data.common.GeoPlaceJpaTestData.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Collections;
-import java.util.Set;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
@@ -36,9 +36,9 @@ public class GeoPlaceMapperTests {
 	void testMapToDomainEntities() {
 		// given
 		GeoPlaceJpaEntity geoPlaceJpaEntity = defaultGeoPlaceJpaEntity();
-		Set<GeoPlaceJpaEntity> geoPlaceJpaEntitySet = Set.of(geoPlaceJpaEntity);
+		List<GeoPlaceJpaEntity> geoPlaceJpaEntitySet = List.of(geoPlaceJpaEntity);
 		// when
-		Set<GeoPlaceDto> geoPlaceDtoSet = geoPlaceMapper.mapToDomainEntities(geoPlaceJpaEntitySet, "fr_FR");
+		List<GeoPlaceDto> geoPlaceDtoSet = geoPlaceMapper.mapToDomainEntities(geoPlaceJpaEntitySet, "fr_FR");
 		// then
 
 		assertTrue(geoPlaceDtoSet.stream().map(gd -> gd.getId()).collect(Collectors.toSet())
@@ -69,7 +69,7 @@ public class GeoPlaceMapperTests {
 		// given
 
 		// when
-		Set<GeoPlaceDto> geoPlaceDtoSet = geoPlaceMapper.mapToDomainEntities(Collections.emptySet(), "fr_FR");
+		List<GeoPlaceDto> geoPlaceDtoSet = geoPlaceMapper.mapToDomainEntities(Collections.emptyList(), "fr_FR");
 		// then
 
 		assertTrue(geoPlaceDtoSet.isEmpty());
@@ -80,7 +80,7 @@ public class GeoPlaceMapperTests {
 		// given
 
 		// when
-		Set<GeoPlaceDto> geoPlaceDtoSet = geoPlaceMapper.mapToDomainEntities(null, "fr_FR");
+		List<GeoPlaceDto> geoPlaceDtoSet = geoPlaceMapper.mapToDomainEntities(null, "fr_FR");
 		// then
 
 		assertTrue(geoPlaceDtoSet.isEmpty());

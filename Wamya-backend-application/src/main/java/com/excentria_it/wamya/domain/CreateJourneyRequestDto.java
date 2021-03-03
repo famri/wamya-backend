@@ -39,6 +39,7 @@ public class CreateJourneyRequestDto {
 	private Instant creationDateTime;
 
 	@AllArgsConstructor
+	@NoArgsConstructor
 	@Data
 	public static class EngineTypeDto {
 
@@ -49,6 +50,7 @@ public class CreateJourneyRequestDto {
 	}
 
 	@AllArgsConstructor
+	@NoArgsConstructor
 	@Data
 	public static class PlaceDto {
 
@@ -63,6 +65,7 @@ public class CreateJourneyRequestDto {
 	}
 
 	@AllArgsConstructor
+	@NoArgsConstructor
 	@Data
 	public static class ClientDto {
 

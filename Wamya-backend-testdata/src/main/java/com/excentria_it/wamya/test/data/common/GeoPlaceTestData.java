@@ -1,7 +1,7 @@
 package com.excentria_it.wamya.test.data.common;
 
 import java.math.BigDecimal;
-import java.util.Set;
+import java.util.List;
 
 import com.excentria_it.wamya.application.port.in.CreateFavoriteGeoPlaceUseCase.CreateFavoriteGeoPlaceCommand;
 import com.excentria_it.wamya.application.port.in.CreateFavoriteGeoPlaceUseCase.CreateFavoriteGeoPlaceCommand.CreateFavoriteGeoPlaceCommandBuilder;
@@ -16,9 +16,9 @@ public class GeoPlaceTestData {
 	private static final GeoPlaceDto g2 = new GeoPlaceDto(1L, "GeoPlace2", new BigDecimal(36.1111),
 			new BigDecimal(10.1111), new DepartmentDto(2L, "Department2"));
 
-	public static Set<GeoPlaceDto> defaultGeoPlaceDtoSet() {
+	public static List<GeoPlaceDto> defaultGeoPlaceDtoList() {
 
-		return Set.of(g1, g2);
+		return List.of(g1, g2);
 	}
 
 	public static GeoPlaceDto defaultGeoPlaceDto() {
@@ -32,6 +32,6 @@ public class GeoPlaceTestData {
 	}
 
 	public static UserFavoriteGeoPlaces defaultUserFavoriteGeoPlaces() {
-		return new UserFavoriteGeoPlaces(2, Set.of(g1, g2));
+		return new UserFavoriteGeoPlaces(2, List.of(g1, g2));
 	}
 }

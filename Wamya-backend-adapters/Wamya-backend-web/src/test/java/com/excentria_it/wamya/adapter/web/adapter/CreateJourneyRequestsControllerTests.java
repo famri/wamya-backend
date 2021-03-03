@@ -1,6 +1,7 @@
 package com.excentria_it.wamya.adapter.web.adapter;
 
 import static com.c4_soft.springaddons.security.oauth2.test.mockmvc.MockAuthenticationRequestPostProcessor.*;
+import static com.excentria_it.wamya.adapter.web.helper.ResponseBodyMatchers.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
@@ -56,7 +57,9 @@ public class CreateJourneyRequestsControllerTests {
 				.authorities("SCOPE_journey:write"))
 				.perform(post("/journey-requests").contentType(MediaType.APPLICATION_JSON_VALUE)
 						.content(createJourneyRequestJson))
-				.andExpect(status().isCreated()).andReturn();
+				.andExpect(status().isCreated())
+				.andExpect(responseBody().containsObjectAsJson(journeyRequest, CreateJourneyRequestDto.class))
+				.andReturn();
 
 		ArgumentCaptor<CreateJourneyRequestCommand> captor = ArgumentCaptor.forClass(CreateJourneyRequestCommand.class);
 

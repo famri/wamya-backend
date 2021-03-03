@@ -9,8 +9,8 @@ import static org.mockito.Mockito.*;
 
 import java.math.BigDecimal;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,7 +46,7 @@ public class FavoriteGeoPlacesServiceTests {
 	void givenEmptyUserFavoritePlaces_WhenLoadFavoriteGeoPlace_ThenReturnUserFavoriteGeoPlacesWithEmptyContent() {
 		// given
 		given(loadFavoriteGeoPlacePort.loadFavoriteGeoPlaces(any(String.class), any(String.class)))
-				.willReturn(Collections.emptySet());
+				.willReturn(Collections.emptyList());
 		// when
 
 		UserFavoriteGeoPlaces userFavoriteGeoPlaces = favoriteGeoPlacesService
@@ -59,7 +59,7 @@ public class FavoriteGeoPlacesServiceTests {
 	@Test
 	void givenUserFavoritePlaces_WhenLoadFavoriteGeoPlace_ThenReturnUserFavoriteGeoPlacesWithEmptyContent() {
 		// given
-		Set<GeoPlaceDto> geoPlaces = defaultGeoPlaceDtoSet();
+		List<GeoPlaceDto> geoPlaces = defaultGeoPlaceDtoList();
 		given(loadFavoriteGeoPlacePort.loadFavoriteGeoPlaces(any(String.class), any(String.class)))
 				.willReturn(geoPlaces);
 		// when
