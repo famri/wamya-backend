@@ -66,19 +66,12 @@ public class TransporterJpaEntity extends UserAccountJpaEntity {
 	public TransporterJpaEntity(Long id, Long oauthId, Gender gender, String firstname, String lastname,
 			LocalDate dateOfBirth, String email, String emailValidationCode, Boolean isValidatedEmail,
 			InternationalCallingCodeJpaEntity icc, String mobileNumber, String mobileNumberValidationCode,
-			Boolean isValidatedMobileNumber, Boolean receiveNewsletter, Instant creationDateTime, String photoUrl,
-			Double globalRating, Set<VehiculeJpaEntity> vehicules, Set<RatingJpaEntity> ratings,
-			Set<CommentJpaEntity> comments, Set<JourneyProposalJpaEntity> proposals) {
+			Boolean isValidatedMobileNumber, Boolean receiveNewsletter, Instant creationDateTime, String photoUrl) {
 
 		super(id, oauthId, gender, firstname, lastname, dateOfBirth, email, emailValidationCode, isValidatedEmail, icc,
 				mobileNumber, mobileNumberValidationCode, isValidatedMobileNumber, receiveNewsletter, creationDateTime,
-				photoUrl);
+				photoUrl,null);
 
-		this.globalRating = globalRating;
-		this.vehicules = vehicules;
-		this.ratings = ratings;
-		this.comments = comments;
-		this.proposals = proposals;
 	}
 
 	public Set<VehiculeJpaEntity> getVehicules() {

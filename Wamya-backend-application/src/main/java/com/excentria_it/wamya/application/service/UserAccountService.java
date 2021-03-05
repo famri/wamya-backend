@@ -96,7 +96,8 @@ public class UserAccountService implements CreateUserAccountUseCase {
 				.mobilePhoneNumber(new MobilePhoneNumber(command.getIcc(), command.getMobileNumber()))
 				.isValidatedMobileNumber(false).mobileNumberValidationCode(mobileNumberValidationCode)
 				.isValidatedMobileNumber(false).userPassword(encodedPassword)
-				.creationDateTime(ZonedDateTime.now(ZoneOffset.UTC)).receiveNewsletter(command.getReceiveNewsletter())
+				.creationDateTime(ZonedDateTime.now(
+						ZoneOffset.UTC)).receiveNewsletter(command.getReceiveNewsletter())
 				.globalRating(5.0).build();
 
 		createUserAccountPort.createUserAccount(userAccount);

@@ -1,6 +1,6 @@
 package com.excentria_it.wamya.adapter.web.adapter;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
@@ -9,8 +9,9 @@ import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,12 +44,13 @@ public class SearchJourneyRequestsController {
 	public JourneyRequestsSearchResult searchJourneyRequests(
 			@RequestParam(name = "departure") Long departurePlaceRegionId,
 			@RequestParam(name = "arrival") Set<Long> arrivalPlaceRegionIds,
-			@RequestParam(name = "fromDate") @DateTimeFormat(iso = ISO.DATE_TIME) ZonedDateTime startDateTime,
-			@RequestParam(name = "toDate") @DateTimeFormat(iso = ISO.DATE_TIME) ZonedDateTime endDateTime,
+			@RequestParam(name = "fromDate") @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS") LocalDateTime startDateTime,
+			@RequestParam(name = "toDate") @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS") LocalDateTime endDateTime,
 			@RequestParam(name = "engine") Set<Long> engineTypeIds,
 			@RequestParam(name = "page", defaultValue = "0") Integer pageNumber,
 			@RequestParam(name = "size", defaultValue = "25") Integer pageSize,
-			@RequestParam(name = "sort") Optional<String> sort, Locale locale) {
+			@RequestParam(name = "sort") Optional<String> sort,
+			final @AuthenticationPrincipal JwtAuthenticationToken principal, Locale locale) {
 
 		Locale supportedLocale = LocaleUtils.getSupporedLocale(locale);
 
@@ -61,7 +63,8 @@ public class SearchJourneyRequestsController {
 
 		validateInput(command);
 
-		return searchJourneyRequestsUseCase.searchJourneyRequests(command, supportedLocale.toString());
+		return searchJourneyRequestsUseCase.searchJourneyRequests(command, principal.getName(),
+				supportedLocale.toString());
 
 	}
 

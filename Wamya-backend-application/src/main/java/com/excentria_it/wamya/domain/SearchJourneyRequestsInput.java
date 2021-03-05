@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Builder
-public class SearchJourneyRequestsCriteria {
+public class SearchJourneyRequestsInput {
 
 	private Long departurePlaceDepartmentId;
 

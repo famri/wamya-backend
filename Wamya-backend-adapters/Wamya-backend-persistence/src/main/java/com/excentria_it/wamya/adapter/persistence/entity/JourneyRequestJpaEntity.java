@@ -48,8 +48,6 @@ public class JourneyRequestJpaEntity {
 	@ManyToOne
 	private EngineTypeJpaEntity engineType;
 
-	private Integer distance;
-
 	private Instant dateTime;
 
 	private Integer workers;
@@ -58,6 +56,12 @@ public class JourneyRequestJpaEntity {
 	private String description;
 
 	private Instant creationDateTime;
+
+	private Integer distance;
+
+	private Integer hours;
+
+	private Integer minutes;
 
 	@ManyToOne
 	private JourneyRequestStatusJpaEntity status;
@@ -115,6 +119,22 @@ public class JourneyRequestJpaEntity {
 
 	public void setDistance(Integer distance) {
 		this.distance = distance;
+	}
+
+	public Integer getHours() {
+		return hours;
+	}
+
+	public void setHours(Integer hours) {
+		this.hours = hours;
+	}
+
+	public Integer getMinutes() {
+		return minutes;
+	}
+
+	public void setMinutes(Integer minutes) {
+		this.minutes = minutes;
 	}
 
 	public Instant getDateTime() {

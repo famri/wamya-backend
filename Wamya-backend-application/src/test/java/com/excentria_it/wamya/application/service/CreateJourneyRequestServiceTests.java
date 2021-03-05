@@ -10,7 +10,9 @@ import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.*;
 
 import java.math.BigDecimal;
-import java.time.ZoneOffset;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -26,10 +28,11 @@ import com.excentria_it.wamya.application.port.in.CreateJourneyRequestUseCase.Cr
 import com.excentria_it.wamya.application.port.out.CreateJourneyRequestPort;
 import com.excentria_it.wamya.application.port.out.LoadPlaceGeoCoordinatesPort;
 import com.excentria_it.wamya.application.port.out.LoadUserAccountPort;
+import com.excentria_it.wamya.application.utils.DateTimeHelper;
 import com.excentria_it.wamya.common.exception.UserAccountNotFoundException;
 import com.excentria_it.wamya.common.exception.UserMobileNumberValidationException;
-import com.excentria_it.wamya.domain.CreateJourneyRequestDto;
 import com.excentria_it.wamya.domain.GeoCoordinates;
+import com.excentria_it.wamya.domain.JourneyRequestInputOutput;
 import com.excentria_it.wamya.domain.JourneyTravelInfo;
 import com.excentria_it.wamya.domain.PlaceType;
 import com.excentria_it.wamya.domain.UserAccount;
@@ -46,6 +49,8 @@ public class CreateJourneyRequestServiceTests {
 	private JourneyTravelInfoService journeyTravelInfoService;
 	@Mock
 	private LoadPlaceGeoCoordinatesPort loadPlaceGeoCoordinatesPort;
+	@Mock
+	private DateTimeHelper dateTimeHelper;
 	@Spy
 	@InjectMocks
 	private CreateJourneyRequestService createJourneyRequestsService;
@@ -56,8 +61,8 @@ public class CreateJourneyRequestServiceTests {
 		CreateJourneyRequestCommandBuilder commandBuilder = defaultCreateJourneyRequestCommandBuilder();
 		CreateJourneyRequestCommand command = commandBuilder.build();
 
-		ArgumentCaptor<CreateJourneyRequestDto> journeyRequestCaptor = ArgumentCaptor
-				.forClass(CreateJourneyRequestDto.class);
+		ArgumentCaptor<JourneyRequestInputOutput> journeyRequestCaptor = ArgumentCaptor
+				.forClass(JourneyRequestInputOutput.class);
 		UserAccount userAccount = alreadyValidatedEmailUserAccount();
 		given(loadUserAccountPort.loadUserAccountByEmail(any(String.class))).willReturn(Optional.of(userAccount));
 
@@ -66,6 +71,19 @@ public class CreateJourneyRequestServiceTests {
 				any(PlaceType.class))).willReturn(jti);
 		given(loadPlaceGeoCoordinatesPort.loadPlaceGeoCoordinates(any(Long.class), any(PlaceType.class)))
 				.willReturn(Optional.of(new GeoCoordinates(new BigDecimal(36.8015), new BigDecimal(10.1788))));
+
+		ZoneId userZoneId = ZoneId.of("Africa/Tunis");
+		given(dateTimeHelper.findUserZoneId(any(String.class))).willReturn(userZoneId);
+		Instant now = Instant.now();
+		given(dateTimeHelper.systemToUserLocalDateTime(any(Instant.class), any(ZoneId.class)))
+				.willReturn(now.atZone(userZoneId).toLocalDateTime());
+		given(dateTimeHelper.userLocalToSystemDateTime(any(LocalDateTime.class), any(ZoneId.class)))
+				.willReturn(command.getDateTime().atZone(userZoneId).toInstant());
+
+		JourneyRequestInputOutput journeyRequest = defaultJourneyRequestInputOutputBuilder().creationDateTime(now)
+				.build();
+		given(createJourneyRequestPort.createJourneyRequest(any(JourneyRequestInputOutput.class), any(String.class),
+				any(String.class))).willReturn(journeyRequest);
 
 		// when
 		createJourneyRequestsService.createJourneyRequest(command, TestConstants.DEFAULT_EMAIL, "en_US");
@@ -86,7 +104,7 @@ public class CreateJourneyRequestServiceTests {
 				.isEqualTo(command.getArrivalPlaceType().toUpperCase());
 
 		assertThat(journeyRequestCaptor.getValue().getDateTime())
-				.isEqualTo(command.getDateTime().withZoneSameInstant(ZoneOffset.UTC).toInstant());
+				.isEqualTo(command.getDateTime().atZone(userZoneId).toInstant());
 
 		assertThat(journeyRequestCaptor.getValue().getEngineType().getId()).isEqualTo(command.getEngineTypeId());
 
@@ -108,16 +126,28 @@ public class CreateJourneyRequestServiceTests {
 		CreateJourneyRequestCommandBuilder commandBuilder = defaultCreateJourneyRequestCommandBuilder();
 		CreateJourneyRequestCommand command = commandBuilder.build();
 
-		ArgumentCaptor<CreateJourneyRequestDto> journeyRequestCaptor = ArgumentCaptor
-				.forClass(CreateJourneyRequestDto.class);
+		ArgumentCaptor<JourneyRequestInputOutput> journeyRequestCaptor = ArgumentCaptor
+				.forClass(JourneyRequestInputOutput.class);
 		UserAccount userAccount = alreadyValidatedEmailUserAccount();
 		given(loadUserAccountPort.loadUserAccountByEmail(any(String.class))).willReturn(Optional.of(userAccount));
 
 		Optional<JourneyTravelInfo> jti = Optional.of(defaultJourneyTravelInfo());
 		given(journeyTravelInfoService.loadTravelInfo(any(Long.class), any(PlaceType.class), any(Long.class),
 				any(PlaceType.class))).willReturn(jti);
-//		given(loadPlaceGeoCoordinatesPort.loadPlaceGeoCoordinates(any(Long.class), any(PlaceType.class)))
-//				.willReturn(Optional.of(new GeoCoordinates(new BigDecimal(36.8015), new BigDecimal(10.1788))));
+
+		ZoneId userZoneId = ZoneId.of("Africa/Tunis");
+		given(dateTimeHelper.findUserZoneId(any(String.class))).willReturn(userZoneId);
+		Instant now = Instant.now();
+		given(dateTimeHelper.systemToUserLocalDateTime(any(Instant.class), any(ZoneId.class)))
+				.willReturn(now.atZone(userZoneId).toLocalDateTime());
+		given(dateTimeHelper.userLocalToSystemDateTime(any(LocalDateTime.class), any(ZoneId.class)))
+				.willReturn(command.getDateTime().atZone(userZoneId).toInstant());
+
+		JourneyRequestInputOutput journeyRequest = defaultJourneyRequestInputOutputBuilder().creationDateTime(now)
+				.build();
+		given(createJourneyRequestPort.createJourneyRequest(any(JourneyRequestInputOutput.class), any(String.class),
+				any(String.class))).willReturn(journeyRequest);
+
 		command.setDeparturePlaceType("geo-place");
 		command.setArrivalPlaceType("geo-place");
 		// when
@@ -139,7 +169,7 @@ public class CreateJourneyRequestServiceTests {
 				.isEqualTo(command.getArrivalPlaceType().toUpperCase().replace("-", "_"));
 
 		assertThat(journeyRequestCaptor.getValue().getDateTime())
-				.isEqualTo(command.getDateTime().withZoneSameInstant(ZoneOffset.UTC).toInstant());
+				.isEqualTo(command.getDateTime().atZone(userZoneId).toInstant());
 
 		assertThat(journeyRequestCaptor.getValue().getEngineType().getId()).isEqualTo(command.getEngineTypeId());
 
@@ -167,7 +197,7 @@ public class CreateJourneyRequestServiceTests {
 				() -> createJourneyRequestsService.createJourneyRequest(command, TestConstants.DEFAULT_EMAIL, "en_US"));
 
 		// then
-		then(createJourneyRequestPort).should(never()).createJourneyRequest(any(CreateJourneyRequestDto.class),
+		then(createJourneyRequestPort).should(never()).createJourneyRequest(any(JourneyRequestInputOutput.class),
 				any(String.class), any(String.class));
 
 	}
@@ -186,7 +216,7 @@ public class CreateJourneyRequestServiceTests {
 				() -> createJourneyRequestsService.createJourneyRequest(command, TestConstants.DEFAULT_EMAIL, "en_US"));
 
 		// then
-		then(createJourneyRequestPort).should(never()).createJourneyRequest(any(CreateJourneyRequestDto.class),
+		then(createJourneyRequestPort).should(never()).createJourneyRequest(any(JourneyRequestInputOutput.class),
 				any(String.class), any(String.class));
 
 	}
@@ -197,8 +227,8 @@ public class CreateJourneyRequestServiceTests {
 		CreateJourneyRequestCommandBuilder commandBuilder = defaultCreateJourneyRequestCommandBuilder();
 		CreateJourneyRequestCommand command = commandBuilder.build();
 
-		ArgumentCaptor<CreateJourneyRequestDto> journeyRequestCaptor = ArgumentCaptor
-				.forClass(CreateJourneyRequestDto.class);
+		ArgumentCaptor<JourneyRequestInputOutput> journeyRequestCaptor = ArgumentCaptor
+				.forClass(JourneyRequestInputOutput.class);
 		UserAccount userAccount = alreadyValidatedEmailUserAccount();
 		given(loadUserAccountPort.loadUserAccountByIccAndMobileNumber(any(String.class), any(String.class)))
 				.willReturn(Optional.of(userAccount));
@@ -207,6 +237,18 @@ public class CreateJourneyRequestServiceTests {
 				any(PlaceType.class))).willReturn(jti);
 		given(loadPlaceGeoCoordinatesPort.loadPlaceGeoCoordinates(any(Long.class), any(PlaceType.class)))
 				.willReturn(Optional.of(new GeoCoordinates(new BigDecimal(36.8015), new BigDecimal(10.1788))));
+		ZoneId userZoneId = ZoneId.of("Africa/Tunis");
+		given(dateTimeHelper.findUserZoneId(any(String.class))).willReturn(userZoneId);
+		Instant now = Instant.now();
+		given(dateTimeHelper.systemToUserLocalDateTime(any(Instant.class), any(ZoneId.class)))
+				.willReturn(now.atZone(userZoneId).toLocalDateTime());
+		given(dateTimeHelper.userLocalToSystemDateTime(any(LocalDateTime.class), any(ZoneId.class)))
+				.willReturn(command.getDateTime().atZone(userZoneId).toInstant());
+
+		JourneyRequestInputOutput journeyRequest = defaultJourneyRequestInputOutputBuilder().creationDateTime(now)
+				.build();
+		given(createJourneyRequestPort.createJourneyRequest(any(JourneyRequestInputOutput.class), any(String.class),
+				any(String.class))).willReturn(journeyRequest);
 
 		// when
 		createJourneyRequestsService.createJourneyRequest(command, TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME,
@@ -225,7 +267,7 @@ public class CreateJourneyRequestServiceTests {
 				.isEqualTo(command.getArrivalPlaceType().toUpperCase());
 
 		assertThat(journeyRequestCaptor.getValue().getDateTime())
-				.isEqualTo(command.getDateTime().withZoneSameInstant(ZoneOffset.UTC).toInstant());
+				.isEqualTo(command.getDateTime().atZone(userZoneId).toInstant());
 
 		assertThat(journeyRequestCaptor.getValue().getEngineType().getId()).isEqualTo(command.getEngineTypeId());
 
@@ -256,7 +298,7 @@ public class CreateJourneyRequestServiceTests {
 				.createJourneyRequest(command, TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME, "en_US"));
 
 		// then
-		then(createJourneyRequestPort).should(never()).createJourneyRequest(any(CreateJourneyRequestDto.class),
+		then(createJourneyRequestPort).should(never()).createJourneyRequest(any(JourneyRequestInputOutput.class),
 				any(String.class), any(String.class));
 
 	}
@@ -267,8 +309,8 @@ public class CreateJourneyRequestServiceTests {
 		CreateJourneyRequestCommandBuilder commandBuilder = defaultCreateJourneyRequestCommandBuilder();
 		CreateJourneyRequestCommand command = commandBuilder.build();
 
-		ArgumentCaptor<CreateJourneyRequestDto> journeyRequestCaptor = ArgumentCaptor
-				.forClass(CreateJourneyRequestDto.class);
+		ArgumentCaptor<JourneyRequestInputOutput> journeyRequestCaptor = ArgumentCaptor
+				.forClass(JourneyRequestInputOutput.class);
 		UserAccount userAccount = alreadyValidatedEmailUserAccount();
 		given(loadUserAccountPort.loadUserAccountByIccAndMobileNumber(any(String.class), any(String.class)))
 				.willReturn(Optional.of(userAccount));
@@ -277,6 +319,19 @@ public class CreateJourneyRequestServiceTests {
 				any(PlaceType.class))).willReturn(Optional.empty());
 		given(loadPlaceGeoCoordinatesPort.loadPlaceGeoCoordinates(any(Long.class), any(PlaceType.class)))
 				.willReturn(Optional.of(new GeoCoordinates(new BigDecimal(36.8015), new BigDecimal(10.1788))));
+		
+		ZoneId userZoneId = ZoneId.of("Africa/Tunis");
+		given(dateTimeHelper.findUserZoneId(any(String.class))).willReturn(userZoneId);
+		Instant now = Instant.now();
+		given(dateTimeHelper.systemToUserLocalDateTime(any(Instant.class), any(ZoneId.class)))
+				.willReturn(now.atZone(userZoneId).toLocalDateTime());
+		given(dateTimeHelper.userLocalToSystemDateTime(any(LocalDateTime.class), any(ZoneId.class)))
+				.willReturn(command.getDateTime().atZone(userZoneId).toInstant());
+
+		JourneyRequestInputOutput journeyRequest = defaultJourneyRequestInputOutputBuilder().creationDateTime(now)
+				.build();
+		given(createJourneyRequestPort.createJourneyRequest(any(JourneyRequestInputOutput.class), any(String.class),
+				any(String.class))).willReturn(journeyRequest);
 		// when
 		createJourneyRequestsService.createJourneyRequest(command, TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME,
 				"en_US");
@@ -294,7 +349,7 @@ public class CreateJourneyRequestServiceTests {
 				.isEqualTo(command.getArrivalPlaceType().toUpperCase());
 
 		assertThat(journeyRequestCaptor.getValue().getDateTime())
-				.isEqualTo(command.getDateTime().withZoneSameInstant(ZoneOffset.UTC).toInstant());
+				.isEqualTo(command.getDateTime().atZone(userZoneId).toInstant());
 
 		assertThat(journeyRequestCaptor.getValue().getEngineType().getId()).isEqualTo(command.getEngineTypeId());
 

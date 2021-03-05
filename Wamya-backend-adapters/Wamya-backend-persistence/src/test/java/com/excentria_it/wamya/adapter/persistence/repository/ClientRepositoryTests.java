@@ -3,7 +3,6 @@ package com.excentria_it.wamya.adapter.persistence.repository;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.*;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,7 +15,6 @@ import org.springframework.test.context.ActiveProfiles;
 
 import com.excentria_it.wamya.adapter.persistence.entity.ClientJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.InternationalCallingCodeJpaEntity;
-import com.excentria_it.wamya.adapter.persistence.entity.JourneyRequestJpaEntity;
 
 @DataJpaTest
 @ActiveProfiles(profiles = { "persistence-local" })
@@ -72,14 +70,11 @@ public class ClientRepositoryTests {
 	private List<ClientJpaEntity> givenClients(InternationalCallingCodeJpaEntity icc) {
 		List<ClientJpaEntity> clients = List.of(
 				new ClientJpaEntity(null, null, null, "Client1", null, null, "client1@gmail.com", null, null, icc,
-						"22111111", null, null, null, null, "https://path/to/client1/photo",
-						new HashSet<JourneyRequestJpaEntity>()),
+						"22111111", null, null, null, null, "https://path/to/client1/photo"),
 				new ClientJpaEntity(null, null, null, "Client2", null, null, "client2@gmail.com", null, null, icc,
-						"22222222", null, null, null, null, "https://path/to/client2/photo",
-						new HashSet<JourneyRequestJpaEntity>()),
+						"22222222", null, null, null, null, "https://path/to/client2/photo"),
 				new ClientJpaEntity(null, null, null, "Client3", null, null, "client3@gmail.com", null, null, icc,
-						"22333333", null, null, null, null, "https://path/to/client3/photo",
-						new HashSet<JourneyRequestJpaEntity>()));
+						"22333333", null, null, null, null, "https://path/to/client3/photo"));
 
 		return clientRepository.saveAll(clients);
 	}

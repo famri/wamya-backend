@@ -1,7 +1,5 @@
 package com.excentria_it.wamya.test.data.common;
 
-import java.util.HashSet;
-
 import com.excentria_it.wamya.adapter.persistence.entity.ClientJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.TransporterJpaEntity;
 import com.excentria_it.wamya.domain.UserAccount;
@@ -12,26 +10,28 @@ public class UserAccountJpaEntityTestData {
 
 	public static final TransporterJpaEntity defaultExistentTransporterJpaEntity() {
 
-		return new TransporterJpaEntity(1L, userAccount.getOauthId(), userAccount.getGender(),
+		TransporterJpaEntity t = new TransporterJpaEntity(1L, userAccount.getOauthId(), userAccount.getGender(),
 				userAccount.getFirstname(), userAccount.getLastname(), userAccount.getDateOfBirth(),
 				userAccount.getEmail(), userAccount.getEmailValidationCode(), userAccount.getIsValidatedEmail(),
 				InternationalCallingCodeJpaEntityTestData.defaultExistentInternationalCallingCodeJpaEntity(),
 				userAccount.getMobilePhoneNumber().getMobileNumber(), userAccount.getMobileNumberValidationCode(),
 				userAccount.getIsValidatedMobileNumber(), userAccount.getReceiveNewsletter(),
-				userAccount.getCreationDateTime().toInstant(), userAccount.getPhotoUrl(), 5.0, new HashSet<>(),
-				new HashSet<>(), new HashSet<>(), new HashSet<>());
+				userAccount.getCreationDateTime().toInstant(), userAccount.getPhotoUrl());
+		t.setGlobalRating(4.3);
+		return t;
 	}
 
 	public static final TransporterJpaEntity defaultNewTransporterJpaEntity() {
 
-		return new TransporterJpaEntity(null, userAccount.getOauthId(), userAccount.getGender(),
+		TransporterJpaEntity t = new TransporterJpaEntity(null, userAccount.getOauthId(), userAccount.getGender(),
 				userAccount.getFirstname(), userAccount.getLastname(), userAccount.getDateOfBirth(),
 				userAccount.getEmail(), userAccount.getEmailValidationCode(), userAccount.getIsValidatedEmail(),
 				InternationalCallingCodeJpaEntityTestData.defaultExistentInternationalCallingCodeJpaEntity(),
 				userAccount.getMobilePhoneNumber().getMobileNumber(), userAccount.getMobileNumberValidationCode(),
 				userAccount.getIsValidatedMobileNumber(), userAccount.getReceiveNewsletter(),
-				userAccount.getCreationDateTime().toInstant(), userAccount.getPhotoUrl(), 5.0, new HashSet<>(),
-				new HashSet<>(), new HashSet<>(), new HashSet<>());
+				userAccount.getCreationDateTime().toInstant(), userAccount.getPhotoUrl());
+		t.setGlobalRating(5.0);
+		return t;
 	}
 
 	public static final ClientJpaEntity defaultExistentClientJpaEntity() {
@@ -42,7 +42,7 @@ public class UserAccountJpaEntityTestData {
 				InternationalCallingCodeJpaEntityTestData.defaultExistentInternationalCallingCodeJpaEntity(),
 				userAccount.getMobilePhoneNumber().getMobileNumber(), userAccount.getMobileNumberValidationCode(),
 				userAccount.getIsValidatedMobileNumber(), userAccount.getReceiveNewsletter(),
-				userAccount.getCreationDateTime().toInstant(), userAccount.getPhotoUrl(), new HashSet<>());
+				userAccount.getCreationDateTime().toInstant(), userAccount.getPhotoUrl());
 
 	}
 
@@ -53,6 +53,6 @@ public class UserAccountJpaEntityTestData {
 				InternationalCallingCodeJpaEntityTestData.defaultExistentInternationalCallingCodeJpaEntity(),
 				userAccount.getMobilePhoneNumber().getMobileNumber(), userAccount.getMobileNumberValidationCode(),
 				userAccount.getIsValidatedMobileNumber(), userAccount.getReceiveNewsletter(),
-				userAccount.getCreationDateTime().toInstant(), userAccount.getPhotoUrl(), new HashSet<>());
+				userAccount.getCreationDateTime().toInstant(), userAccount.getPhotoUrl());
 	}
 }

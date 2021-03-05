@@ -2,8 +2,9 @@ package com.excentria_it.wamya.adapter.persistence.entity;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -14,6 +15,7 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -55,7 +57,7 @@ public abstract class UserAccountJpaEntity {
 
 	protected Boolean isValidatedEmail;
 
-	@ManyToOne
+	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.DETACH, CascadeType.REFRESH })
 	@JoinColumn(name = "icc_id")
 	protected InternationalCallingCodeJpaEntity icc;
 
@@ -70,6 +72,10 @@ public abstract class UserAccountJpaEntity {
 	protected Instant creationDateTime;
 
 	protected String photoUrl;
+
+	@OneToMany(cascade = { CascadeType.PERSIST, CascadeType.DETACH, CascadeType.REFRESH, CascadeType.REMOVE })
+	@JoinColumn(name = "user_id")
+	protected Set<UserPreferenceJpaEntity> preferences;
 
 	public Long getId() {
 		return id;

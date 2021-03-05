@@ -33,11 +33,11 @@ import com.excentria_it.wamya.common.exception.JourneyRequestExpiredException;
 import com.excentria_it.wamya.common.exception.JourneyRequestNotFoundException;
 import com.excentria_it.wamya.common.exception.OperationDeniedException;
 import com.excentria_it.wamya.domain.ClientJourneyRequestDto;
-import com.excentria_it.wamya.domain.CreateJourneyRequestDto.CreateJourneyRequestDtoBuilder;
 import com.excentria_it.wamya.domain.JourneyProposalDto;
 import com.excentria_it.wamya.domain.JourneyProposalDto.StatusCode;
 import com.excentria_it.wamya.domain.JourneyProposalDto.StatusDto;
 import com.excentria_it.wamya.domain.JourneyProposalDto.VehiculeDto;
+import com.excentria_it.wamya.domain.JourneyRequestInputOutput.JourneyRequestInputOutputBuilder;
 import com.excentria_it.wamya.domain.JourneyRequestProposals;
 import com.excentria_it.wamya.domain.LoadJourneyProposalsCriteria;
 import com.excentria_it.wamya.domain.MakeProposalDto;
@@ -73,12 +73,12 @@ public class JourneyProposalServiceTests {
 		// given
 		MakeProposalCommand makeProposalCommand = new MakeProposalCommand(JOURNEY_PRICE, VEHICULE_ID);
 
-		CreateJourneyRequestDtoBuilder createJourneyRequestDtoBuilder = defaultCreateJourneyRequestDtoBuilder();
+		JourneyRequestInputOutputBuilder journeyRequestInputOutputBuilder = defaultJourneyRequestInputOutputBuilder();
 
-		createJourneyRequestDtoBuilder.dateTime(ZonedDateTime.now(ZoneOffset.UTC).plusDays(1).toInstant());
+		journeyRequestInputOutputBuilder.dateTime(ZonedDateTime.now(ZoneOffset.UTC).plusDays(1).toInstant());
 
 		given(loadJourneyRequestPort.loadJourneyRequestById(any(Long.class)))
-				.willReturn(Optional.of(createJourneyRequestDtoBuilder.build()));
+				.willReturn(Optional.of(journeyRequestInputOutputBuilder.build()));
 		given(loadTransporterPort.loadTransporterVehicules(any(String.class)))
 				.willReturn(Set.of(new VehiculeDto(VEHICULE_ID, CONSTRUCTOR_NAME, MODEL_NAME, PHOTO_URL)));
 		given(makeProposalPort.makeProposal(any(String.class), any(Double.class), any(Long.class), any(Long.class),
@@ -111,12 +111,12 @@ public class JourneyProposalServiceTests {
 	void givenMakeProposalCommandAndExpiredJourneyRequest_WhenMakeProposal_ThenThrowJourneyRequestExpiredException() {
 		// given
 		MakeProposalCommand makeProposalCommand = new MakeProposalCommand(JOURNEY_PRICE, VEHICULE_ID);
-		CreateJourneyRequestDtoBuilder createJourneyRequestDtoBuilder = defaultCreateJourneyRequestDtoBuilder();
+		JourneyRequestInputOutputBuilder journeyRequestInputOutputBuilder = defaultJourneyRequestInputOutputBuilder();
 
-		createJourneyRequestDtoBuilder.dateTime(ZonedDateTime.now(ZoneOffset.UTC).minusDays(2).toInstant());
+		journeyRequestInputOutputBuilder.dateTime(ZonedDateTime.now(ZoneOffset.UTC).minusDays(2).toInstant());
 
 		given(loadJourneyRequestPort.loadJourneyRequestById(any(Long.class)))
-				.willReturn(Optional.of(createJourneyRequestDtoBuilder.build()));
+				.willReturn(Optional.of(journeyRequestInputOutputBuilder.build()));
 
 		// when // then
 		assertThrows(JourneyRequestExpiredException.class, () -> journeyProposalService
@@ -129,12 +129,12 @@ public class JourneyProposalServiceTests {
 		// given
 		MakeProposalCommand makeProposalCommand = new MakeProposalCommand(JOURNEY_PRICE, VEHICULE_ID);
 
-		CreateJourneyRequestDtoBuilder createJourneyRequestDtoBuilder = defaultCreateJourneyRequestDtoBuilder();
+		JourneyRequestInputOutputBuilder journeyRequestInputOutputBuilder = defaultJourneyRequestInputOutputBuilder();
 
-		createJourneyRequestDtoBuilder.dateTime(ZonedDateTime.now(ZoneOffset.UTC).plusDays(1).toInstant());
+		journeyRequestInputOutputBuilder.dateTime(ZonedDateTime.now(ZoneOffset.UTC).plusDays(1).toInstant());
 
 		given(loadJourneyRequestPort.loadJourneyRequestById(any(Long.class)))
-				.willReturn(Optional.of(createJourneyRequestDtoBuilder.build()));
+				.willReturn(Optional.of(journeyRequestInputOutputBuilder.build()));
 		given(loadTransporterPort.loadTransporterVehicules(any(String.class)))
 				.willReturn(Collections.<VehiculeDto>emptySet());
 
@@ -149,12 +149,12 @@ public class JourneyProposalServiceTests {
 		// given
 		MakeProposalCommand makeProposalCommand = new MakeProposalCommand(JOURNEY_PRICE, VEHICULE_ID);
 
-		CreateJourneyRequestDtoBuilder createJourneyRequestDtoBuilder = defaultCreateJourneyRequestDtoBuilder();
+		JourneyRequestInputOutputBuilder journeyRequestInputOutputBuilder = defaultJourneyRequestInputOutputBuilder();
 
-		createJourneyRequestDtoBuilder.dateTime(ZonedDateTime.now(ZoneOffset.UTC).plusDays(1).toInstant());
+		journeyRequestInputOutputBuilder.dateTime(ZonedDateTime.now(ZoneOffset.UTC).plusDays(1).toInstant());
 
 		given(loadJourneyRequestPort.loadJourneyRequestById(any(Long.class)))
-				.willReturn(Optional.of(createJourneyRequestDtoBuilder.build()));
+				.willReturn(Optional.of(journeyRequestInputOutputBuilder.build()));
 		given(loadTransporterPort.loadTransporterVehicules(any(String.class)))
 				.willReturn(Set.of(new VehiculeDto(VEHICULE_ID + 2, CONSTRUCTOR_NAME, MODEL_NAME, PHOTO_URL)));
 
@@ -169,12 +169,12 @@ public class JourneyProposalServiceTests {
 		// given
 		MakeProposalCommand makeProposalCommand = defaultMakeProposalCommandBuilder().build();
 
-		CreateJourneyRequestDtoBuilder createJourneyRequestDtoBuilder = defaultCreateJourneyRequestDtoBuilder();
+		JourneyRequestInputOutputBuilder journeyRequestInputOutputBuilder = defaultJourneyRequestInputOutputBuilder();
 
-		createJourneyRequestDtoBuilder.dateTime(ZonedDateTime.now(ZoneOffset.UTC).plusDays(1).toInstant());
+		journeyRequestInputOutputBuilder.dateTime(ZonedDateTime.now(ZoneOffset.UTC).plusDays(1).toInstant());
 
 		given(loadJourneyRequestPort.loadJourneyRequestById(any(Long.class)))
-				.willReturn(Optional.of(createJourneyRequestDtoBuilder.build()));
+				.willReturn(Optional.of(journeyRequestInputOutputBuilder.build()));
 		given(loadTransporterPort.loadTransporterVehicules(any(String.class), any(String.class)))
 				.willReturn(Set.of(new VehiculeDto(VEHICULE_ID + 2, CONSTRUCTOR_NAME, MODEL_NAME, PHOTO_URL)));
 

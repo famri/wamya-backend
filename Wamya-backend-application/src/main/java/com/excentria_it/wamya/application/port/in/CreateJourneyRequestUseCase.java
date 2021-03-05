@@ -1,12 +1,11 @@
 package com.excentria_it.wamya.application.port.in;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.format.annotation.DateTimeFormat.ISO;
 
 import com.excentria_it.wamya.domain.CreateJourneyRequestDto;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -42,9 +41,9 @@ public interface CreateJourneyRequestUseCase {
 		private String arrivalPlaceType;
 
 		@NotNull
-		@DateTimeFormat(iso = ISO.DATE_TIME)
-		@JsonFormat(shape = Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
-		private ZonedDateTime dateTime;
+		@DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
+		@JsonFormat(shape = Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
+		private LocalDateTime dateTime;
 
 		@NotNull
 		private Long engineTypeId;

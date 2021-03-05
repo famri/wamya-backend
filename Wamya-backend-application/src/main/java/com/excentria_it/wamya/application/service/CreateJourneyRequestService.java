@@ -2,7 +2,8 @@ package com.excentria_it.wamya.application.service;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.ZoneOffset;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Optional;
 
 import javax.transaction.Transactional;
@@ -11,6 +12,7 @@ import com.excentria_it.wamya.application.port.in.CreateJourneyRequestUseCase;
 import com.excentria_it.wamya.application.port.out.CreateJourneyRequestPort;
 import com.excentria_it.wamya.application.port.out.LoadPlaceGeoCoordinatesPort;
 import com.excentria_it.wamya.application.port.out.LoadUserAccountPort;
+import com.excentria_it.wamya.application.utils.DateTimeHelper;
 import com.excentria_it.wamya.application.utils.PlaceUtils;
 import com.excentria_it.wamya.common.annotation.UseCase;
 import com.excentria_it.wamya.common.exception.UserAccountNotFoundException;
@@ -19,6 +21,9 @@ import com.excentria_it.wamya.domain.CreateJourneyRequestDto;
 import com.excentria_it.wamya.domain.CreateJourneyRequestDto.EngineTypeDto;
 import com.excentria_it.wamya.domain.CreateJourneyRequestDto.PlaceDto;
 import com.excentria_it.wamya.domain.GeoCoordinates;
+import com.excentria_it.wamya.domain.JourneyRequestInputOutput;
+import com.excentria_it.wamya.domain.JourneyRequestInputOutput.EngineType;
+import com.excentria_it.wamya.domain.JourneyRequestInputOutput.Place;
 import com.excentria_it.wamya.domain.JourneyTravelInfo;
 import com.excentria_it.wamya.domain.PlaceType;
 import com.excentria_it.wamya.domain.UserAccount;
@@ -39,6 +44,8 @@ public class CreateJourneyRequestService implements CreateJourneyRequestUseCase 
 	private final JourneyTravelInfoService journeyTravelInfoService;
 
 	private final LoadPlaceGeoCoordinatesPort loadPlaceGeoCoordinatesPort;
+
+	private final DateTimeHelper dateTimeHelper;
 
 	@Override
 	public CreateJourneyRequestDto createJourneyRequest(CreateJourneyRequestCommand command, String username,
@@ -74,15 +81,17 @@ public class CreateJourneyRequestService implements CreateJourneyRequestUseCase 
 			arrivalPlaceLatitude = null;
 			arrivalPlaceLongitude = null;
 		}
+		ZoneId userZoneId = dateTimeHelper.findUserZoneId(username);
+		Instant journeyDateTime = dateTimeHelper.userLocalToSystemDateTime(command.getDateTime(), userZoneId);
 
-		CreateJourneyRequestDto journeyRequest = CreateJourneyRequestDto.builder()
-				.departurePlace(new PlaceDto(command.getDeparturePlaceId(), departurePlaceType, departurePlaceLatitude,
+		JourneyRequestInputOutput journeyRequest = JourneyRequestInputOutput.builder()
+				.departurePlace(new Place(command.getDeparturePlaceId(), departurePlaceType, departurePlaceLatitude,
 						departurePlaceLongitude))
-				.arrivalPlace(new PlaceDto(command.getArrivalPlaceId(), arrivalPlaceType, arrivalPlaceLatitude,
+				.arrivalPlace(new Place(command.getArrivalPlaceId(), arrivalPlaceType, arrivalPlaceLatitude,
 						arrivalPlaceLongitude))
-				.dateTime(command.getDateTime().withZoneSameInstant(ZoneOffset.UTC).toInstant())
-				.creationDateTime(Instant.now()).engineType(new EngineTypeDto(command.getEngineTypeId(), null))
-				.workers(command.getWorkers()).description(command.getDescription()).build();
+				.dateTime(journeyDateTime).creationDateTime(Instant.now())
+				.engineType(new EngineType(command.getEngineTypeId(), null)).workers(command.getWorkers())
+				.description(command.getDescription()).build();
 
 		Optional<JourneyTravelInfo> journeyTravelInfo = journeyTravelInfoService.loadTravelInfo(
 				command.getDeparturePlaceId(), departurePlaceType, command.getArrivalPlaceId(), arrivalPlaceType);
@@ -101,7 +110,20 @@ public class CreateJourneyRequestService implements CreateJourneyRequestUseCase 
 			journeyRequest.setMinutes(null);
 
 		}
-		return createJourneyRequestPort.createJourneyRequest(journeyRequest, username, locale);
+		JourneyRequestInputOutput createdJourneyRequest = createJourneyRequestPort.createJourneyRequest(journeyRequest,
+				username, locale);
+		LocalDateTime creationLocalDateTime = dateTimeHelper
+				.systemToUserLocalDateTime(createdJourneyRequest.getCreationDateTime(), userZoneId);
+
+		return CreateJourneyRequestDto.builder()
+				.departurePlace(new PlaceDto(command.getDeparturePlaceId(), departurePlaceType, departurePlaceLatitude,
+						departurePlaceLongitude))
+				.arrivalPlace(new PlaceDto(command.getArrivalPlaceId(), arrivalPlaceType, arrivalPlaceLatitude,
+						arrivalPlaceLongitude))
+				.dateTime(command.getDateTime()).creationDateTime(creationLocalDateTime)
+				.engineType(new EngineTypeDto(command.getEngineTypeId(), journeyRequest.getEngineType().getName()))
+				.workers(command.getWorkers()).description(command.getDescription()).build();
+
 	}
 
 	private void checkUserMobileNumberIsVerified(String username) {

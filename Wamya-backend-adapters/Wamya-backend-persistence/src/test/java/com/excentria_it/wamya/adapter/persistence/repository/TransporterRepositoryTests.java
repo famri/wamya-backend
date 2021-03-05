@@ -4,10 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.*;
 
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,7 +18,6 @@ import com.excentria_it.wamya.adapter.persistence.entity.ConstructorJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.EngineTypeJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.EngineTypeJpaEntity.EngineTypeCode;
 import com.excentria_it.wamya.adapter.persistence.entity.InternationalCallingCodeJpaEntity;
-import com.excentria_it.wamya.adapter.persistence.entity.JourneyProposalJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.LocalizedEngineTypeJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.LocalizedId;
 import com.excentria_it.wamya.adapter.persistence.entity.ModelJpaEntity;
@@ -195,17 +192,25 @@ public class TransporterRepositoryTests {
 	private List<TransporterJpaEntity> givenTransporters(List<List<VehiculeJpaEntity>> vehicules,
 			InternationalCallingCodeJpaEntity icc) {
 
-		List<TransporterJpaEntity> transporters = List.of(
-				new TransporterJpaEntity(null, null, null, "Transporter1", null, null, "transport1@gmail.com", null,
-						null, icc, "22000001", null, null, null, null, "https://path/to/transporter1/photo", null,
-						Set.copyOf(vehicules.get(0)), null, null, new HashSet<JourneyProposalJpaEntity>()),
-				new TransporterJpaEntity(null, null, null, "Transporter2", null, null, "transport2@gmail.com", null,
-						null, icc, "22000002", null, null, null, null, "https://path/to/transporter2/photo", null,
-						Set.copyOf(vehicules.get(1)), null, null, new HashSet<JourneyProposalJpaEntity>()),
-				new TransporterJpaEntity(null, null, null, "Transporter3", null, null, "transport3@gmail.com", null,
-						null, icc, "22000003", null, null, null, null, "https://path/to/transporter3/photo", null,
-						Set.copyOf(vehicules.get(2)), null, null, new HashSet<JourneyProposalJpaEntity>()));
+		TransporterJpaEntity t1 = new TransporterJpaEntity(null, null, null, "Transporter1", null, null,
+				"transport1@gmail.com", null, null, icc, "22000001", null, null, null, null,
+				"https://path/to/transporter1/photo");
+		vehicules.get(0).forEach(v -> t1.addVehicule(v));
+		
+		TransporterJpaEntity t2 = new TransporterJpaEntity(null, null, null, "Transporter2", null, null,
+				"transport2@gmail.com", null, null, icc, "22000002", null, null, null, null,
+				"https://path/to/transporter2/photo");
+		vehicules.get(1).forEach(v -> t2.addVehicule(v));
+
+		TransporterJpaEntity t3 = new TransporterJpaEntity(null, null, null, "Transporter3", null, null,
+				"transport3@gmail.com", null, null, icc, "22000003", null, null, null, null,
+				"https://path/to/transporter3/photo");
+		vehicules.get(2).forEach(v -> t3.addVehicule(v));
+
+		List<TransporterJpaEntity> transporters = List.of(t1, t2, t3);
+
 		return transporterRepository.saveAll(transporters);
+
 	}
 
 	private List<List<VehiculeJpaEntity>> givenVehicules(List<List<EngineTypeJpaEntity>> engineTypes,

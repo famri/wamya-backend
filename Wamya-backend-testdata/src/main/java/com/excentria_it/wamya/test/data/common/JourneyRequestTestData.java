@@ -1,10 +1,13 @@
 package com.excentria_it.wamya.test.data.common;
 
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.excentria_it.wamya.application.port.in.CreateJourneyRequestUseCase.CreateJourneyRequestCommand;
 import com.excentria_it.wamya.application.port.in.CreateJourneyRequestUseCase.CreateJourneyRequestCommand.CreateJourneyRequestCommandBuilder;
@@ -19,13 +22,20 @@ import com.excentria_it.wamya.domain.ClientJourneyRequestDto;
 import com.excentria_it.wamya.domain.ClientJourneyRequests;
 import com.excentria_it.wamya.domain.CreateJourneyRequestDto;
 import com.excentria_it.wamya.domain.CreateJourneyRequestDto.CreateJourneyRequestDtoBuilder;
+import com.excentria_it.wamya.domain.JourneyRequestInputOutput;
+import com.excentria_it.wamya.domain.JourneyRequestInputOutput.JourneyRequestInputOutputBuilder;
 import com.excentria_it.wamya.domain.JourneyRequestSearchDto;
+import com.excentria_it.wamya.domain.JourneyRequestSearchDto.Client;
+import com.excentria_it.wamya.domain.JourneyRequestSearchDto.EngineType;
+import com.excentria_it.wamya.domain.JourneyRequestSearchDto.Place;
+import com.excentria_it.wamya.domain.JourneyRequestSearchOutput;
+import com.excentria_it.wamya.domain.JourneyRequestsSearchOutputResult;
 import com.excentria_it.wamya.domain.JourneyRequestsSearchResult;
 import com.excentria_it.wamya.domain.LoadClientJourneyRequestsCriteria;
 import com.excentria_it.wamya.domain.LoadClientJourneyRequestsCriteria.LoadClientJourneyRequestsCriteriaBuilder;
 import com.excentria_it.wamya.domain.PlaceType;
-import com.excentria_it.wamya.domain.SearchJourneyRequestsCriteria;
-import com.excentria_it.wamya.domain.SearchJourneyRequestsCriteria.SearchJourneyRequestsCriteriaBuilder;
+import com.excentria_it.wamya.domain.SearchJourneyRequestsInput;
+import com.excentria_it.wamya.domain.SearchJourneyRequestsInput.SearchJourneyRequestsInputBuilder;
 
 public class JourneyRequestTestData {
 
@@ -64,13 +74,13 @@ public class JourneyRequestTestData {
 		}
 
 		@Override
-		public ZonedDateTime getDateTime() {
-			return startDate;
+		public Instant getDateTime() {
+			return startDate.toInstant();
 		}
 
 		@Override
-		public ZonedDateTime getCreationDateTime() {
-			return endDate.minusDays(1);
+		public Instant getCreationDateTime() {
+			return endDate.minusDays(1).toInstant();
 		}
 
 		@Override
@@ -122,13 +132,13 @@ public class JourneyRequestTestData {
 		}
 
 		@Override
-		public ZonedDateTime getDateTime() {
-			return startDate;
+		public Instant getDateTime() {
+			return startDate.toInstant();
 		}
 
 		@Override
-		public ZonedDateTime getCreationDateTime() {
-			return endDate.minusDays(1);
+		public Instant getCreationDateTime() {
+			return endDate.minusDays(1).toInstant();
 		}
 
 		@Override
@@ -149,9 +159,9 @@ public class JourneyRequestTestData {
 		}
 
 	});
-	private static List<JourneyRequestSearchDto> journeyRequestSearchDtos =
+	private static List<JourneyRequestSearchOutput> journeyRequestSearchOutputList =
 
-			List.of(new JourneyRequestSearchDto() {
+			List.of(new JourneyRequestSearchOutput() {
 
 				@Override
 				public Long getId() {
@@ -186,8 +196,8 @@ public class JourneyRequestTestData {
 				}
 
 				@Override
-				public ZonedDateTime getDateTime() {
-					return startDate;
+				public Instant getDateTime() {
+					return startDate.toInstant();
 				}
 
 				@Override
@@ -213,7 +223,19 @@ public class JourneyRequestTestData {
 
 					return 250D;
 				}
-			}, new JourneyRequestSearchDto() {
+
+				@Override
+				public Integer getHours() {
+
+					return 2;
+				}
+
+				@Override
+				public Integer getMinutes() {
+
+					return 30;
+				}
+			}, new JourneyRequestSearchOutput() {
 
 				@Override
 				public Long getId() {
@@ -248,8 +270,8 @@ public class JourneyRequestTestData {
 				}
 
 				@Override
-				public ZonedDateTime getDateTime() {
-					return startDate;
+				public Instant getDateTime() {
+					return startDate.toInstant();
 				}
 
 				@Override
@@ -275,22 +297,42 @@ public class JourneyRequestTestData {
 
 					return 220D;
 				}
+
+				@Override
+				public Integer getHours() {
+
+					return 3;
+				}
+
+				@Override
+				public Integer getMinutes() {
+
+					return 15;
+				}
 			});
+
+	public static JourneyRequestsSearchResult defaultJourneyRequestsSearchResult(ZoneId userZoneId) {
+		JourneyRequestsSearchOutputResult searchOutput = defaultJourneyRequestsSearchOutputResult();
+		return new JourneyRequestsSearchResult(searchOutput.getTotalPages(), searchOutput.getTotalElements(),
+				searchOutput.getPageNumber(), searchOutput.getPageSize(), searchOutput.isHasNext(),
+				searchOutput.getContent().stream().map(j -> mapToJourneyRequestSearchDto(j, userZoneId))
+						.collect(Collectors.toList()));
+	}
 
 	public static SearchJourneyRequestsCommandBuilder defaultSearchJourneyRequestsCommandBuilder() {
 		ZonedDateTime startDate = ZonedDateTime.now(ZoneOffset.UTC);
 		ZonedDateTime endDate = startDate.plusDays(1);
 		return SearchJourneyRequestsCommand.builder().departurePlaceDepartmentId(1L)
-				.arrivalPlaceDepartmentIds(Set.of(2L, 3L)).startDateTime(startDate).endDateTime(endDate)
-				.engineTypes(Set.of(1L, 2L)).pageNumber(0).pageSize(2)
+				.arrivalPlaceDepartmentIds(Set.of(2L, 3L)).startDateTime(startDate.toLocalDateTime())
+				.endDateTime(endDate.toLocalDateTime()).engineTypes(Set.of(1L, 2L)).pageNumber(0).pageSize(2)
 				.sortingCriterion(new SortCriterion("min-price", "desc"));
 
 	}
 
-	public static SearchJourneyRequestsCriteriaBuilder defaultSearchJourneyRequestsCriteriaBuilder() {
+	public static SearchJourneyRequestsInputBuilder defaultSearchJourneyRequestsInputBuilder() {
 		ZonedDateTime startDate = ZonedDateTime.now(ZoneOffset.UTC);
 		ZonedDateTime endDate = startDate.plusDays(1);
-		return SearchJourneyRequestsCriteria.builder().departurePlaceDepartmentId(1L)
+		return SearchJourneyRequestsInput.builder().departurePlaceDepartmentId(1L)
 				.arrivalPlaceDepartmentIds(Set.of(2L, 3L)).startDateTime(startDate.toInstant())
 				.endDateTime(endDate.toInstant()).engineTypes(Set.of(1L, 2L)).pageNumber(0).pageSize(2)
 				.sortingCriterion(new SortCriterion("min-price", "desc")).locale("en_US");
@@ -302,8 +344,9 @@ public class JourneyRequestTestData {
 		ZonedDateTime endDate = startDate.plusDays(1);
 
 		return SearchJourneyRequestsCommand.builder().departurePlaceDepartmentId(1L)
-				.arrivalPlaceDepartmentIds(Set.of(SearchJourneyRequestsCommand.ANY_ARRIVAL_REGION))
-				.startDateTime(startDate).endDateTime(endDate).engineTypes(Set.of(1L, 2L)).pageNumber(0).pageSize(2)
+				.arrivalPlaceDepartmentIds(Set.of(SearchJourneyRequestsCommand.ANY_ARRIVAL_DEPARTMENT))
+				.startDateTime(startDate.toLocalDateTime()).endDateTime(endDate.toLocalDateTime())
+				.engineTypes(Set.of(1L, 2L)).pageNumber(0).pageSize(2)
 				.sortingCriterion(new SortCriterion("min-price", "desc"));
 
 	}
@@ -312,8 +355,8 @@ public class JourneyRequestTestData {
 
 		return CreateJourneyRequestCommand.builder().departurePlaceId(1L).departurePlaceType(PlaceType.LOCALITY.name())
 
-				.arrivalPlaceId(2L).arrivalPlaceType(PlaceType.LOCALITY.name()).dateTime(startDate).engineTypeId(1L)
-				.workers(2).description("Need a transporter URGENT!!!");
+				.arrivalPlaceId(2L).arrivalPlaceType(PlaceType.LOCALITY.name()).dateTime(startDate.toLocalDateTime())
+				.engineTypeId(1L).workers(2).description("Need a transporter URGENT!!!");
 
 	}
 
@@ -323,7 +366,7 @@ public class JourneyRequestTestData {
 						new BigDecimal(10.1788)))
 				.arrivalPlace(new CreateJourneyRequestDto.PlaceDto(2L, PlaceType.LOCALITY, new BigDecimal(37.8015),
 						new BigDecimal(11.1788)))
-				.dateTime(startDate.toInstant())
+				.dateTime(startDate.toLocalDateTime())
 				.engineType(new CreateJourneyRequestDto.EngineTypeDto(1L, "EngineType1")).workers(2)
 				.description("Need a transporter URGENT!!!").build();
 	}
@@ -334,9 +377,19 @@ public class JourneyRequestTestData {
 						new BigDecimal(10.1788)))
 				.arrivalPlace(new CreateJourneyRequestDto.PlaceDto(2L, PlaceType.LOCALITY, new BigDecimal(37.8015),
 						new BigDecimal(11.1788)))
-				.dateTime(startDate.toInstant())
+				.dateTime(startDate.toLocalDateTime())
 				.engineType(new CreateJourneyRequestDto.EngineTypeDto(1L, "EngineType1")).workers(2)
 				.description("Need a transporter URGENT!!!");
+	}
+
+	public static JourneyRequestInputOutputBuilder defaultJourneyRequestInputOutputBuilder() {
+		return JourneyRequestInputOutput.builder().id(1L)
+				.departurePlace(new JourneyRequestInputOutput.Place(1L, PlaceType.LOCALITY, new BigDecimal(36.8015),
+						new BigDecimal(10.1788)))
+				.arrivalPlace(new JourneyRequestInputOutput.Place(2L, PlaceType.LOCALITY, new BigDecimal(37.8015),
+						new BigDecimal(11.1788)))
+				.dateTime(startDate.toInstant()).engineType(new JourneyRequestInputOutput.EngineType(1L, "EngineType1"))
+				.workers(2).description("Need a transporter URGENT!!!");
 	}
 
 	public static LoadClientJourneyRequestsCriteriaBuilder defaultLoadClientJourneyRequestsCriteriaBuilder() {
@@ -347,13 +400,13 @@ public class JourneyRequestTestData {
 
 	}
 
-	public static List<JourneyRequestSearchDto> defaultJourneyRequestSearchDtoList() {
-		return journeyRequestSearchDtos;
+	public static List<JourneyRequestSearchOutput> defaultJourneyRequestSearchOutputList() {
+		return journeyRequestSearchOutputList;
 	}
 
-	public static JourneyRequestsSearchResult defaultJourneyRequestsSearchResult() {
+	public static JourneyRequestsSearchOutputResult defaultJourneyRequestsSearchOutputResult() {
 
-		return new JourneyRequestsSearchResult(5, 10, 0, 2, true, journeyRequestSearchDtos);
+		return new JourneyRequestsSearchOutputResult(5, 10, 0, 2, true, journeyRequestSearchOutputList);
 	}
 
 	public static LoadJourneyRequestsCommandBuilder defaultLoadJourneyRequestsCommandBuilder() {
@@ -376,4 +429,22 @@ public class JourneyRequestTestData {
 		return clientJourneyRequestDtos;
 	}
 
+	private static JourneyRequestSearchDto mapToJourneyRequestSearchDto(JourneyRequestSearchOutput jrso,
+			ZoneId userZoneId) {
+
+		return JourneyRequestSearchDto.builder().id(jrso.getId())
+				.departurePlace(new Place(jrso.getDeparturePlace().getId(), jrso.getDeparturePlace().getType(),
+						jrso.getDeparturePlace().getName(), jrso.getDeparturePlace().getLatitude(),
+						jrso.getDeparturePlace().getLongitude(), jrso.getDeparturePlace().getDepartmentId()))
+				.arrivalPlace(new Place(jrso.getArrivalPlace().getId(), jrso.getArrivalPlace().getType(),
+						jrso.getArrivalPlace().getName(), jrso.getArrivalPlace().getLatitude(),
+						jrso.getArrivalPlace().getLongitude(), jrso.getArrivalPlace().getDepartmentId()))
+				.engineType(new EngineType(jrso.getEngineType().getId(), jrso.getEngineType().getName()))
+				.distance(jrso.getDistance()).hours(jrso.getHours()).minutes(jrso.getMinutes())
+				.dateTime(jrso.getDateTime().atZone(userZoneId).toLocalDateTime()).workers(jrso.getWorkers())
+				.description(jrso.getDescription()).client(new Client(jrso.getClient().getId(),
+						jrso.getClient().getFirstname(), jrso.getClient().getPhotoUrl()))
+				.minPrice(jrso.getMinPrice()).build();
+
+	}
 }

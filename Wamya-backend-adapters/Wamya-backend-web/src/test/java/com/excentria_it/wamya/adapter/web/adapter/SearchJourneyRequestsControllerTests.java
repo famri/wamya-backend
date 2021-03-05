@@ -9,6 +9,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,7 +39,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class SearchJourneyRequestsControllerTests {
 
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter
-			.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+			.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
 
 	@Autowired
 	private MockMvcSupport api;
@@ -55,10 +56,11 @@ public class SearchJourneyRequestsControllerTests {
 		SearchJourneyRequestsCommand command = JourneyRequestTestData.defaultSearchJourneyRequestsCommandBuilder()
 				.build();
 
-		JourneyRequestsSearchResult expectedResult = JourneyRequestTestData.defaultJourneyRequestsSearchResult();
+		JourneyRequestsSearchResult expectedResult = JourneyRequestTestData
+				.defaultJourneyRequestsSearchResult(ZoneId.of("Africa/Tunis"));
 
 		given(searchJourneyRequestsUseCase.searchJourneyRequests(any(SearchJourneyRequestsCommand.class),
-				any(String.class))).willReturn(expectedResult);
+				any(String.class), any(String.class))).willReturn(expectedResult);
 
 		MvcResult mvcResult = api
 				.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
@@ -86,16 +88,17 @@ public class SearchJourneyRequestsControllerTests {
 
 	}
 
-	 @Test
+	@Test
 	void givenValidInputAndBadAuthority_WhenSearch_ThenReturnForbidden() throws Exception {
 
 		SearchJourneyRequestsCommand command = JourneyRequestTestData.defaultSearchJourneyRequestsCommandBuilder()
 				.build();
 
-		JourneyRequestsSearchResult expectedResult = JourneyRequestTestData.defaultJourneyRequestsSearchResult();
+		JourneyRequestsSearchResult expectedResult = JourneyRequestTestData
+				.defaultJourneyRequestsSearchResult(ZoneId.of("Africa/Tunis"));
 
 		given(searchJourneyRequestsUseCase.searchJourneyRequests(any(SearchJourneyRequestsCommand.class),
-				any(String.class))).willReturn(expectedResult);
+				any(String.class), any(String.class))).willReturn(expectedResult);
 
 		MvcResult mvcResult = api
 				.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
@@ -117,20 +120,22 @@ public class SearchJourneyRequestsControllerTests {
 				.andExpect(status().isForbidden())
 
 				.andReturn();
-		then(searchJourneyRequestsUseCase).should(never()).searchJourneyRequests(eq(command), eq("en"));
+		then(searchJourneyRequestsUseCase).should(never())
+				.searchJourneyRequests(any(SearchJourneyRequestsCommand.class), any(String.class), any(String.class));
 
 	}
 
-	 @Test
+	@Test
 	void givenValidInputWithNoSortCriterion_WhenSearch_ThenReturnSearchResult() throws Exception {
 
 		SearchJourneyRequestsCommand command = JourneyRequestTestData.defaultSearchJourneyRequestsCommandBuilder()
 				.sortingCriterion(null).build();
 
-		JourneyRequestsSearchResult expectedResult = JourneyRequestTestData.defaultJourneyRequestsSearchResult();
+		JourneyRequestsSearchResult expectedResult = JourneyRequestTestData
+				.defaultJourneyRequestsSearchResult(ZoneId.of("Africa/Tunis"));
 
 		given(searchJourneyRequestsUseCase.searchJourneyRequests(any(SearchJourneyRequestsCommand.class),
-				any(String.class))).willReturn(expectedResult);
+				any(String.class), any(String.class))).willReturn(expectedResult);
 
 		MvcResult mvcResult = api
 				.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
@@ -156,16 +161,17 @@ public class SearchJourneyRequestsControllerTests {
 
 	}
 
-	 @Test
+	@Test
 	void givenValidInputWithNoSortCriterionDirection_WhenSearch_ThenReturnSearchResult() throws Exception {
 
 		SearchJourneyRequestsCommand command = JourneyRequestTestData.defaultSearchJourneyRequestsCommandBuilder()
 				.build();
 
-		JourneyRequestsSearchResult expectedResult = JourneyRequestTestData.defaultJourneyRequestsSearchResult();
+		JourneyRequestsSearchResult expectedResult = JourneyRequestTestData
+				.defaultJourneyRequestsSearchResult(ZoneId.of("Africa/Tunis"));
 
 		given(searchJourneyRequestsUseCase.searchJourneyRequests(any(SearchJourneyRequestsCommand.class),
-				any(String.class))).willReturn(expectedResult);
+				any(String.class), any(String.class))).willReturn(expectedResult);
 
 		MvcResult mvcResult = api
 				.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
@@ -198,10 +204,11 @@ public class SearchJourneyRequestsControllerTests {
 		SearchJourneyRequestsCommand command = JourneyRequestTestData.defaultSearchJourneyRequestsCommandBuilder()
 				.sortingCriterion(new SortCriterion("dummy-field", "up")).build();
 
-		JourneyRequestsSearchResult expectedResult = JourneyRequestTestData.defaultJourneyRequestsSearchResult();
+		JourneyRequestsSearchResult expectedResult = JourneyRequestTestData
+				.defaultJourneyRequestsSearchResult(ZoneId.of("Africa/Tunis"));
 
 		given(searchJourneyRequestsUseCase.searchJourneyRequests(any(SearchJourneyRequestsCommand.class),
-				any(String.class))).willReturn(expectedResult);
+				any(String.class), any(String.class))).willReturn(expectedResult);
 
 		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
 				.authorities("SCOPE_journey:read"))
@@ -225,7 +232,8 @@ public class SearchJourneyRequestsControllerTests {
 
 				.andReturn();
 
-		then(searchJourneyRequestsUseCase).should(never()).searchJourneyRequests(eq(command), eq("en"));
+		then(searchJourneyRequestsUseCase).should(never())
+				.searchJourneyRequests(any(SearchJourneyRequestsCommand.class), any(String.class), any(String.class));
 
 	}
 

@@ -39,11 +39,11 @@ import com.excentria_it.wamya.common.utils.LocaleUtils;
 import com.excentria_it.wamya.common.utils.ParameterUtils;
 import com.excentria_it.wamya.domain.ClientJourneyRequestDto;
 import com.excentria_it.wamya.domain.ClientJourneyRequests;
-import com.excentria_it.wamya.domain.CreateJourneyRequestDto;
-import com.excentria_it.wamya.domain.JourneyRequestSearchDto;
-import com.excentria_it.wamya.domain.JourneyRequestsSearchResult;
+import com.excentria_it.wamya.domain.JourneyRequestInputOutput;
+import com.excentria_it.wamya.domain.JourneyRequestSearchOutput;
+import com.excentria_it.wamya.domain.JourneyRequestsSearchOutputResult;
 import com.excentria_it.wamya.domain.LoadClientJourneyRequestsCriteria;
-import com.excentria_it.wamya.domain.SearchJourneyRequestsCriteria;
+import com.excentria_it.wamya.domain.SearchJourneyRequestsInput;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -73,13 +73,13 @@ public class JourneyRequestsPersistenceAdapter implements SearchJourneyRequestsP
 	private final LocalizedPlaceJpaEntityResolver localizedPlaceResolver;
 
 	@Override
-	public JourneyRequestsSearchResult searchJourneyRequests(SearchJourneyRequestsCriteria command) {
+	public JourneyRequestsSearchOutputResult searchJourneyRequests(SearchJourneyRequestsInput command) {
 
 		Sort sort = convertToSort(command.getSortingCriterion());
 
 		Pageable pagingSort = PageRequest.of(command.getPageNumber(), command.getPageSize(), sort);
 
-		Page<JourneyRequestSearchDto> journeyRequestsPage = null;
+		Page<JourneyRequestSearchOutput> journeyRequestsPage = null;
 
 		if (isArrivalPlaceRegionAgnostic(command)) {
 			journeyRequestsPage = journeyRequestRepository
@@ -94,15 +94,10 @@ public class JourneyRequestsPersistenceAdapter implements SearchJourneyRequestsP
 							command.getLocale(), pagingSort);
 		}
 
-		if (journeyRequestsPage != null) {
+		return new JourneyRequestsSearchOutputResult(journeyRequestsPage.getTotalPages(),
+				journeyRequestsPage.getTotalElements(), journeyRequestsPage.getNumber(), journeyRequestsPage.getSize(),
+				journeyRequestsPage.hasNext(), journeyRequestsPage.getContent());
 
-			return new JourneyRequestsSearchResult(journeyRequestsPage.getTotalPages(),
-					journeyRequestsPage.getTotalElements(), journeyRequestsPage.getNumber(),
-					journeyRequestsPage.getSize(), journeyRequestsPage.hasNext(), journeyRequestsPage.getContent());
-		}
-
-		return new JourneyRequestsSearchResult(0, 0, command.getPageNumber(), command.getPageSize(), false,
-				Collections.<JourneyRequestSearchDto>emptyList());
 	}
 
 	protected Sort convertToSort(SortCriterion sortingCriterion) {
@@ -115,7 +110,7 @@ public class JourneyRequestsPersistenceAdapter implements SearchJourneyRequestsP
 	}
 
 	@Override
-	public CreateJourneyRequestDto createJourneyRequest(CreateJourneyRequestDto journeyRequest, String username,
+	public JourneyRequestInputOutput createJourneyRequest(JourneyRequestInputOutput journeyRequest, String username,
 			String locale) {
 
 		Optional<DepartmentJpaEntity> departureDepartmentJpaEntity = departmentResolver.resolveDepartment(
@@ -221,23 +216,24 @@ public class JourneyRequestsPersistenceAdapter implements SearchJourneyRequestsP
 
 		journeyRequest.setId(journeyRequestJpaEntity.getId());
 		journeyRequest.setStatus(journeyRequestStatusJpaEntity.getValue(locale));
+		journeyRequest.getEngineType().setName(engineTypeJpaEntity.get().getName(locale));
 
 		return journeyRequest;
 	}
 
-	protected boolean isArrivalPlaceRegionAgnostic(SearchJourneyRequestsCriteria command) {
+	protected boolean isArrivalPlaceRegionAgnostic(SearchJourneyRequestsInput command) {
 		return command.getArrivalPlaceDepartmentIds().stream().anyMatch(p -> p.equals(-1L));
 	}
 
 	@Override
-	public Optional<CreateJourneyRequestDto> loadJourneyRequestById(Long id) {
+	public Optional<JourneyRequestInputOutput> loadJourneyRequestById(Long id) {
 		Optional<JourneyRequestJpaEntity> journeyRequestJpaEntityOptional = journeyRequestRepository.findById(id);
 		if (journeyRequestJpaEntityOptional.isEmpty())
 			return Optional.empty();
 
-		CreateJourneyRequestDto createJourneyRequestDto = journeyRequestMapper
+		JourneyRequestInputOutput journeyRequestInputOutput = journeyRequestMapper
 				.mapToDomainEntity(journeyRequestJpaEntityOptional.get(), LocaleUtils.defaultLocale.toString());
-		return Optional.ofNullable(createJourneyRequestDto);
+		return Optional.ofNullable(journeyRequestInputOutput);
 	}
 
 	@Override

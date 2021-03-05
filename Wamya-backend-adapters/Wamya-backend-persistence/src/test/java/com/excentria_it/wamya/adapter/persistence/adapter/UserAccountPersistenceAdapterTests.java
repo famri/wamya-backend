@@ -1,11 +1,16 @@
 package com.excentria_it.wamya.adapter.persistence.adapter;
 
+import static com.excentria_it.wamya.test.data.common.UserPreferenceJpaTestData.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,9 +22,11 @@ import com.excentria_it.wamya.adapter.persistence.entity.ClientJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.InternationalCallingCodeJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.TransporterJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.UserAccountJpaEntity;
+import com.excentria_it.wamya.adapter.persistence.entity.UserPreferenceJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.mapper.ClientMapper;
 import com.excentria_it.wamya.adapter.persistence.mapper.TransporterMapper;
 import com.excentria_it.wamya.adapter.persistence.mapper.UserAccountMapper;
+import com.excentria_it.wamya.adapter.persistence.mapper.UserPreferenceMapper;
 import com.excentria_it.wamya.adapter.persistence.repository.ClientRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.InternationalCallingCodeRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.TransporterRepository;
@@ -28,6 +35,7 @@ import com.excentria_it.wamya.common.exception.UnsupportedInternationalCallingCo
 import com.excentria_it.wamya.common.exception.UserAccountNotFoundException;
 import com.excentria_it.wamya.domain.UserAccount;
 import com.excentria_it.wamya.domain.UserAccount.UserAccountBuilder;
+import com.excentria_it.wamya.domain.UserPreference;
 import com.excentria_it.wamya.test.data.common.InternationalCallingCodeJpaEntityTestData;
 import com.excentria_it.wamya.test.data.common.TestConstants;
 import com.excentria_it.wamya.test.data.common.UserAccountJpaEntityTestData;
@@ -50,6 +58,8 @@ public class UserAccountPersistenceAdapterTests {
 	private TransporterMapper transporterMapper;
 	@Mock
 	private ClientMapper clientMapper;
+	@Mock
+	private UserPreferenceMapper userPreferenceMapper;
 
 	@InjectMocks
 	private UserAccountPersistenceAdapter userAccountPersistenceAdapter;
@@ -82,7 +92,8 @@ public class UserAccountPersistenceAdapterTests {
 
 		TransporterJpaEntity transporterJpaEntity = UserAccountJpaEntityTestData.defaultNewTransporterJpaEntity();
 
-		given(transporterMapper.mapToJpaEntity(userAccount, iccEntity.get())).willReturn(transporterJpaEntity);
+		given(transporterMapper.mapToJpaEntity(any(UserAccount.class), any(InternationalCallingCodeJpaEntity.class)))
+				.willReturn(transporterJpaEntity);
 		given(transporterRepository.save(transporterJpaEntity)).willReturn(transporterJpaEntity);
 
 		userAccountPersistenceAdapter.createUserAccount(userAccount);
@@ -103,7 +114,8 @@ public class UserAccountPersistenceAdapterTests {
 
 		ClientJpaEntity clientJpaEntity = UserAccountJpaEntityTestData.defaultNewClientJpaEntity();
 
-		given(clientMapper.mapToJpaEntity(userAccount, iccEntity.get())).willReturn(clientJpaEntity);
+		given(clientMapper.mapToJpaEntity(any(UserAccount.class), any(InternationalCallingCodeJpaEntity.class)))
+				.willReturn(clientJpaEntity);
 		given(clientRepository.save(clientJpaEntity)).willReturn(clientJpaEntity);
 
 		userAccountPersistenceAdapter.createUserAccount(userAccount);
@@ -228,7 +240,8 @@ public class UserAccountPersistenceAdapterTests {
 		given(iccRepository.findByValue(userAccount.getMobilePhoneNumber().getInternationalCallingCode()))
 				.willReturn(iccEntityOptional);
 
-		given(userAccountMapper.mapToJpaEntity(userAccount, iccEntity)).willReturn(userAccountJpaEntityOptional.get());
+		given(userAccountMapper.mapToJpaEntity(any(UserAccount.class), any(InternationalCallingCodeJpaEntity.class)))
+				.willReturn(userAccountJpaEntityOptional.get());
 
 		// when
 		userAccountPersistenceAdapter.updateUserAccount(userAccount);
@@ -280,4 +293,126 @@ public class UserAccountPersistenceAdapterTests {
 
 	}
 
+	@Test
+	void loadUserPreferencesByIccAndMobileNumber() {
+		// given
+		Set<UserPreferenceJpaEntity> userPereferencesJpaEntities = defaultUserPreferenceJpaEntities();
+
+		given(userAccountRepository.loadUserPreferencesByMobilePhoneNumber(any(String.class), any(String.class)))
+				.willReturn(userPereferencesJpaEntities);
+
+		List<UserPreference> userPreferences = new ArrayList<>();
+		int i = 0;
+		for (UserPreferenceJpaEntity e : userPereferencesJpaEntities) {
+			userPreferences.add(new UserPreference(e.getId(), e.getKey(), e.getValue()));
+			given(userPreferenceMapper.mapToDomainEntity(e)).willReturn(userPreferences.get(i));
+		}
+
+		String[] mobileNumber = TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME.split("_");
+		// when
+
+		Set<UserPreference> result = userAccountPersistenceAdapter
+				.loadUserPreferencesByIccAndMobileNumber(mobileNumber[0], mobileNumber[1]);
+		// then
+		assertThat(result).containsAll(userPreferences);
+
+	}
+
+	@Test
+	void loadUserPreferencesByEmail() {
+		// given
+		Set<UserPreferenceJpaEntity> userPereferencesJpaEntities = defaultUserPreferenceJpaEntities();
+
+		given(userAccountRepository.loadUserPreferencesByEmail(any(String.class)))
+				.willReturn(userPereferencesJpaEntities);
+
+		List<UserPreference> userPreferences = new ArrayList<>();
+		int i = 0;
+		for (UserPreferenceJpaEntity e : userPereferencesJpaEntities) {
+			userPreferences.add(new UserPreference(e.getId(), e.getKey(), e.getValue()));
+			given(userPreferenceMapper.mapToDomainEntity(e)).willReturn(userPreferences.get(i));
+		}
+
+		// when
+
+		Set<UserPreference> result = userAccountPersistenceAdapter
+				.loadUserPreferencesByEmail(TestConstants.DEFAULT_EMAIL);
+		// then
+		assertThat(result).containsAll(userPreferences);
+
+	}
+
+	@Test
+	void loadUserPreferenceByIccAndMobileNumberAndKey() {
+		// given
+		UserPreferenceJpaEntity userPereferencesJpaEntity = defaultUserTimeZonePreferenceJpaEntity();
+		UserPreference userPreference = new UserPreference(userPereferencesJpaEntity.getId(),
+				userPereferencesJpaEntity.getKey(), userPereferencesJpaEntity.getValue());
+		given(userAccountRepository.loadUserPreferencesByMobilePhoneNumberAndKey(any(String.class), any(String.class),
+				any(String.class))).willReturn(Optional.of(userPereferencesJpaEntity));
+
+		given(userPreferenceMapper.mapToDomainEntity(userPereferencesJpaEntity)).willReturn(userPreference);
+
+		String[] mobileNumber = TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME.split("_");
+		// when
+
+		Optional<UserPreference> result = userAccountPersistenceAdapter
+				.loadUserPreferenceByIccAndMobileNumberAndKey(mobileNumber[0], mobileNumber[1], "timezone");
+		// then
+		assertEquals(result.get(), userPreference);
+
+	}
+
+	@Test
+	void loadUserPreferenceByIccAndMobileNumberAndKeyWithEmptyEntity() {
+		// given
+
+		given(userAccountRepository.loadUserPreferencesByMobilePhoneNumberAndKey(any(String.class), any(String.class),
+				any(String.class))).willReturn(Optional.empty());
+
+		String[] mobileNumber = TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME.split("_");
+		// when
+
+		Optional<UserPreference> result = userAccountPersistenceAdapter
+				.loadUserPreferenceByIccAndMobileNumberAndKey(mobileNumber[0], mobileNumber[1], "timezone");
+		// then
+		assertThat(result).isEmpty();
+
+	}
+
+	@Test
+	void loadUserPreferenceByEmailAndKey() {
+		// given
+		UserPreferenceJpaEntity userPereferencesJpaEntity = defaultUserTimeZonePreferenceJpaEntity();
+		UserPreference userPreference = new UserPreference(userPereferencesJpaEntity.getId(),
+				userPereferencesJpaEntity.getKey(), userPereferencesJpaEntity.getValue());
+		given(userAccountRepository.loadUserPreferencesByEmailAndKey(any(String.class), any(String.class)))
+				.willReturn(Optional.of(userPereferencesJpaEntity));
+
+		given(userPreferenceMapper.mapToDomainEntity(userPereferencesJpaEntity)).willReturn(userPreference);
+
+		// when
+
+		Optional<UserPreference> result = userAccountPersistenceAdapter
+				.loadUserPreferenceByEmailAndKey(TestConstants.DEFAULT_EMAIL, "timezone");
+		// then
+		assertEquals(result.get(), userPreference);
+
+	}
+
+	@Test
+	void loadUserPreferenceByEmailAndKeyWithEmptyEntity() {
+		// given
+
+		given(userAccountRepository.loadUserPreferencesByEmailAndKey(any(String.class), any(String.class)))
+				.willReturn(Optional.empty());
+
+		// when
+
+		Optional<UserPreference> result = userAccountPersistenceAdapter
+				.loadUserPreferenceByEmailAndKey(TestConstants.DEFAULT_EMAIL, "timezone");
+		// then
+		assertThat(result).isEmpty();
+
+	}
 }

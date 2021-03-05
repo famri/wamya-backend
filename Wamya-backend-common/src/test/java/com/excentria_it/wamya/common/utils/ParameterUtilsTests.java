@@ -207,28 +207,6 @@ public class ParameterUtilsTests {
 	}
 
 	@Test
-	void testParameterToPeriodCriterionWith2Weeks() {
-		ZonedDateTime ldt = ZonedDateTime.now(ZoneOffset.UTC);
-
-		ZonedDateTime expectedLowerEdge = ldt.minusWeeks(2);
-
-		PeriodCriterion pc = ParameterUtils.parameterToPeriodCriterion(Optional.of("w2"), "w2");
-
-		assertEquals("W2", pc.getValue());
-
-		assertEquals(ldt.getYear(), pc.getHigherEdge().getYear());
-		assertEquals(ldt.getMonth(), pc.getHigherEdge().getMonth());
-		assertEquals(ldt.getDayOfMonth(), pc.getHigherEdge().getDayOfMonth());
-		assertTrue(ldt.isBefore(pc.getHigherEdge()) || ldt.equals(pc.getHigherEdge()));
-
-		assertEquals(expectedLowerEdge.getYear(), pc.getLowerEdge().getYear());
-		assertEquals(expectedLowerEdge.getMonth(), pc.getLowerEdge().getMonth());
-		assertEquals(expectedLowerEdge.getDayOfMonth(), pc.getLowerEdge().getDayOfMonth());
-		assertTrue(expectedLowerEdge.isBefore(pc.getLowerEdge()) || expectedLowerEdge.equals(pc.getLowerEdge()));
-
-	}
-
-	@Test
 	void testParameterToPeriodCriterionWith1Week() {
 		ZonedDateTime ldt = ZonedDateTime.now(ZoneOffset.UTC);
 

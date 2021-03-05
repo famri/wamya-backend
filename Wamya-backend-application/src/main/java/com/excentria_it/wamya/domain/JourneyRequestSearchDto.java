@@ -1,42 +1,44 @@
 package com.excentria_it.wamya.domain;
 
 import java.math.BigDecimal;
-import java.time.ZonedDateTime;
-
-import org.springframework.beans.factory.annotation.Value;
+import java.time.LocalDateTime;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
-public interface JourneyRequestSearchDto {
+@AllArgsConstructor
+@Data
+@Builder
+public class JourneyRequestSearchDto {
 
-	Long getId();
+	private Long id;
 
-	@Value("#{new  com.excentria_it.wamya.domain.JourneyRequestSearchDto.PlaceDto(target.departurePlaceId, target.departurePlaceType, target.departurePlaceName, target.departurePlaceLatitude, target.departurePlaceLongitude, target.departurePlaceDepartmentId)}")
-	PlaceDto getDeparturePlace();
+	private Place departurePlace;
 
-	@Value("#{new com.excentria_it.wamya.domain.JourneyRequestSearchDto.PlaceDto(target.arrivalPlaceId, target.arrivalPlaceType,  target.arrivalPlaceName, target.arrivalPlaceLatitude, target.arrivalPlaceLongitude, target.arrivalPlaceDepartmentId)}")
-	PlaceDto getArrivalPlace();
+	private Place arrivalPlace;
 
-	@Value("#{new com.excentria_it.wamya.domain.JourneyRequestSearchDto.EngineTypeDto(target.engineTypeId, target.engineTypeName)}")
-	EngineTypeDto getEngineType();
+	private EngineType engineType;
 
-	Integer getDistance();
+	private Integer distance;
 
-	ZonedDateTime getDateTime();
+	private Integer hours;
 
-	Integer getWorkers();
+	private Integer minutes;
 
-	String getDescription();
+	private LocalDateTime dateTime;
 
-	@Value("#{new com.excentria_it.wamya.domain.JourneyRequestSearchDto.ClientDto(target.clientId, target.clientFirstname, target.clientPhotoUrl)}")
-	ClientDto getClient();
+	private Integer workers;
 
-	Double getMinPrice();
+	private String description;
+
+	private Client client;
+
+	private Double minPrice;
 
 	@AllArgsConstructor
 	@Data
-	class EngineTypeDto {
+	public static class EngineType {
 
 		private Long id;
 
@@ -46,14 +48,14 @@ public interface JourneyRequestSearchDto {
 
 	@AllArgsConstructor
 	@Data
-	class PlaceDto {
+	public static class Place {
 
 		private Long id;
 
 		private String type;
-		
+
 		private String name;
-		
+
 		private BigDecimal latitude;
 
 		private BigDecimal longitude;
@@ -63,7 +65,7 @@ public interface JourneyRequestSearchDto {
 
 	@AllArgsConstructor
 	@Data
-	class ClientDto {
+	public static class Client {
 
 		private Long id;
 

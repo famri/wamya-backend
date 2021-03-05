@@ -13,27 +13,27 @@ import org.springframework.core.convert.support.DefaultConversionService;
 
 @Configuration
 public class PersistenceConfiguration {
-	public class TimestampToZonedDateTimeConverter implements Converter<Timestamp, ZonedDateTime> {
+	public class TimestampToZonedDateTimeConverter implements Converter<Timestamp, Instant> {
 		@Override
-		public ZonedDateTime convert(Timestamp timestatmp) {
-			return timestatmp.toInstant().atZone(ZoneOffset.UTC);
+		public Instant convert(Timestamp timestatmp) {
+			return timestatmp.toInstant();
 
 		}
 	}
 
-	public class InstantToZonedDateTimeConverter implements Converter<Instant, ZonedDateTime> {
-		@Override
-		public ZonedDateTime convert(Instant instant) {
-			return instant.atZone(ZoneOffset.UTC);
-
-		}
-	}
+//	public class InstantToZonedDateTimeConverter implements Converter<Instant, ZonedDateTime> {
+//		@Override
+//		public ZonedDateTime convert(Instant instant) {
+//			return instant.atZone(ZoneOffset.UTC);
+//
+//		}
+//	}
 
 	@EventListener(ApplicationReadyEvent.class)
 	public void config() {
 		DefaultConversionService conversionService = (DefaultConversionService) DefaultConversionService
 				.getSharedInstance();
 		conversionService.addConverter(new TimestampToZonedDateTimeConverter());
-		conversionService.addConverter(new InstantToZonedDateTimeConverter());
+	//	conversionService.addConverter(new InstantToZonedDateTimeConverter());
 	}
 }

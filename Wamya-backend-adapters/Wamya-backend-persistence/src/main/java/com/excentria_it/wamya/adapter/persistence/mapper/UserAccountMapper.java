@@ -1,7 +1,8 @@
 package com.excentria_it.wamya.adapter.persistence.mapper;
 
+import java.time.Instant;
 import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
+import java.util.Set;
 
 import org.springframework.stereotype.Component;
 
@@ -9,13 +10,15 @@ import com.excentria_it.wamya.adapter.persistence.entity.ClientJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.InternationalCallingCodeJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.TransporterJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.UserAccountJpaEntity;
+import com.excentria_it.wamya.adapter.persistence.entity.UserPreferenceJpaEntity;
 import com.excentria_it.wamya.domain.UserAccount;
 import com.excentria_it.wamya.domain.UserAccount.MobilePhoneNumber;
 
 @Component
 public class UserAccountMapper {
 
-	public UserAccountJpaEntity mapToJpaEntity(UserAccount userAccount, InternationalCallingCodeJpaEntity icc) {
+	public UserAccountJpaEntity mapToJpaEntity(UserAccount userAccount, InternationalCallingCodeJpaEntity icc
+		) {
 		if (userAccount == null)
 			return null;
 		if (userAccount.getIsTransporter()) {
@@ -27,8 +30,8 @@ public class UserAccountMapper {
 					userAccount.getMobileNumberValidationCode(), userAccount.getIsValidatedMobileNumber(),
 					userAccount.getReceiveNewsletter(),
 					userAccount.getCreationDateTime() != null ? userAccount.getCreationDateTime().toInstant()
-							: ZonedDateTime.now(ZoneOffset.UTC).toInstant(),
-					userAccount.getPhotoUrl(), null, null, null, null, null);
+							: Instant.now(),
+					userAccount.getPhotoUrl());
 
 		} else {
 			return new ClientJpaEntity(userAccount.getId(), userAccount.getOauthId(), userAccount.getGender(),
@@ -38,8 +41,8 @@ public class UserAccountMapper {
 					userAccount.getMobileNumberValidationCode(), userAccount.getIsValidatedMobileNumber(),
 					userAccount.getReceiveNewsletter(),
 					userAccount.getCreationDateTime() != null ? userAccount.getCreationDateTime().toInstant()
-							: ZonedDateTime.now(ZoneOffset.UTC).toInstant(),
-					userAccount.getPhotoUrl(), null);
+							: Instant.now(),
+					userAccount.getPhotoUrl());
 		}
 
 	}

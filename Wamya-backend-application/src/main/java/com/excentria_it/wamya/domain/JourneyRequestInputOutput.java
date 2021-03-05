@@ -1,7 +1,7 @@
 package com.excentria_it.wamya.domain;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,13 +12,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Builder
-public class CreateJourneyRequestDto {
+public class JourneyRequestInputOutput {
 
 	private Long id;
 
-	private PlaceDto departurePlace;
+	private Place departurePlace;
 
-	private PlaceDto arrivalPlace;
+	private Place arrivalPlace;
 
 	private Integer distance;
 
@@ -26,9 +26,9 @@ public class CreateJourneyRequestDto {
 
 	private Integer minutes;
 
-	private LocalDateTime dateTime;
+	private Instant dateTime;
 
-	private EngineTypeDto engineType;
+	private EngineType engineType;
 
 	private Integer workers;
 
@@ -36,23 +36,22 @@ public class CreateJourneyRequestDto {
 
 	private String status;
 
-	private LocalDateTime creationDateTime;
+	private Instant creationDateTime;
 
 	@AllArgsConstructor
 	@NoArgsConstructor
 	@Data
-	public static class EngineTypeDto {
+	public static class EngineType {
 
 		private Long id;
 
 		private String name;
-
 	}
 
 	@AllArgsConstructor
 	@NoArgsConstructor
 	@Data
-	public static class PlaceDto {
+	public static class Place {
 
 		private Long id;
 
@@ -67,7 +66,7 @@ public class CreateJourneyRequestDto {
 	@AllArgsConstructor
 	@NoArgsConstructor
 	@Data
-	public static class ClientDto {
+	public static class Client {
 
 		private Long id;
 

@@ -47,7 +47,7 @@ public class UserAccount {
 	private ZonedDateTime creationDateTime;
 
 	private String photoUrl;
-	
+
 	private Double globalRating;
 
 	@NoArgsConstructor

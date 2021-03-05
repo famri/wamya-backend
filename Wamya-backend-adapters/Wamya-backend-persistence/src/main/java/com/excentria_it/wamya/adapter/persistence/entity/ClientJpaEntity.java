@@ -40,14 +40,11 @@ public class ClientJpaEntity extends UserAccountJpaEntity {
 	public ClientJpaEntity(Long id, Long oauthId, Gender gender, String firstname, String lastname,
 			LocalDate dateOfBirth, String email, String emailValidationCode, Boolean isValidatedEmail,
 			InternationalCallingCodeJpaEntity icc, String mobileNumber, String mobileNumberValidationCode,
-			Boolean isValidatedMobileNumber, Boolean receiveNewsletter, Instant creationDateTime, String photoUrl,
-			Set<JourneyRequestJpaEntity> journeyRequests) {
+			Boolean isValidatedMobileNumber, Boolean receiveNewsletter, Instant creationDateTime, String photoUrl) {
 
 		super(id, oauthId, gender, firstname, lastname, dateOfBirth, email, emailValidationCode, isValidatedEmail, icc,
 				mobileNumber, mobileNumberValidationCode, isValidatedMobileNumber, receiveNewsletter, creationDateTime,
-				photoUrl);
-
-		this.journeyRequests = journeyRequests;
+				photoUrl, null);
 
 	}
 

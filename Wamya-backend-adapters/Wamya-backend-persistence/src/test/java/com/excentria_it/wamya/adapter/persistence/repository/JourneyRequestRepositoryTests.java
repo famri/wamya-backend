@@ -9,7 +9,6 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -51,7 +50,7 @@ import com.excentria_it.wamya.adapter.persistence.entity.PlaceJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.TransporterJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.VehiculeJpaEntity;
 import com.excentria_it.wamya.domain.ClientJourneyRequestDto;
-import com.excentria_it.wamya.domain.JourneyRequestSearchDto;
+import com.excentria_it.wamya.domain.JourneyRequestSearchOutput;
 import com.excentria_it.wamya.domain.PlaceType;
 
 @DataJpaTest
@@ -140,7 +139,7 @@ public class JourneyRequestRepositoryTests {
 
 		// When
 
-		Page<JourneyRequestSearchDto> journeyRequests = journeyRequestRepository
+		Page<JourneyRequestSearchOutput> journeyRequests = journeyRequestRepository
 				.findByDeparturePlace_DepartmentIdAndArrivalPlace_DepartmentIdInAndEngineType_IdInAndDateBetween(
 						departurePlaces.get(0).getDepartment().getId(),
 						Set.of(arrivalPlaces.get(0).getDepartment().getId(),
@@ -169,11 +168,15 @@ public class JourneyRequestRepositoryTests {
 		assertTrue(Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()).containsAll(journeyRequests
 				.getContent().stream().map(jr -> jr.getEngineType().getId()).collect(Collectors.toSet())));
 
-		assertTrue(journeyRequests.getContent().get(0).getDateTime().isAfter(searchStartAndEndDates.get(0)));
-		assertTrue(journeyRequests.getContent().get(0).getDateTime().isBefore(searchStartAndEndDates.get(1)));
+		assertTrue(journeyRequests.getContent().get(0).getDateTime()
+				.compareTo(searchStartAndEndDates.get(0).toInstant()) >= 0);
+		assertTrue(journeyRequests.getContent().get(0).getDateTime()
+				.compareTo(searchStartAndEndDates.get(1).toInstant()) <= 0);
 
-		assertTrue(journeyRequests.getContent().get(1).getDateTime().isAfter(searchStartAndEndDates.get(0)));
-		assertTrue(journeyRequests.getContent().get(1).getDateTime().isBefore(searchStartAndEndDates.get(1)));
+		assertTrue(journeyRequests.getContent().get(1).getDateTime()
+				.compareTo(searchStartAndEndDates.get(0).toInstant()) >= 0);
+		assertTrue(journeyRequests.getContent().get(1).getDateTime()
+				.compareTo(searchStartAndEndDates.get(1).toInstant()) <= 0);
 
 		assertTrue(
 				journeyRequests.getContent().get(0).getMinPrice() >= journeyRequests.getContent().get(1).getMinPrice());
@@ -214,7 +217,7 @@ public class JourneyRequestRepositoryTests {
 
 		// When
 
-		Page<JourneyRequestSearchDto> journeyRequests = journeyRequestRepository
+		Page<JourneyRequestSearchOutput> journeyRequests = journeyRequestRepository
 				.findByDeparturePlace_DepartmentIdAndEngineType_IdInAndDateBetween(
 						departurePlaces.get(0).getDepartment().getId(),
 						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()),
@@ -241,11 +244,15 @@ public class JourneyRequestRepositoryTests {
 		assertTrue(Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()).containsAll(journeyRequests
 				.getContent().stream().map(jr -> jr.getEngineType().getId()).collect(Collectors.toSet())));
 
-		assertTrue(journeyRequests.getContent().get(0).getDateTime().isAfter(searchStartAndEndDates.get(0)));
-		assertTrue(journeyRequests.getContent().get(0).getDateTime().isBefore(searchStartAndEndDates.get(1)));
+		assertTrue(journeyRequests.getContent().get(0).getDateTime()
+				.compareTo(searchStartAndEndDates.get(0).toInstant()) >= 0);
+		assertTrue(journeyRequests.getContent().get(0).getDateTime()
+				.compareTo(searchStartAndEndDates.get(1).toInstant()) <= 0);
 
-		assertTrue(journeyRequests.getContent().get(1).getDateTime().isAfter(searchStartAndEndDates.get(0)));
-		assertTrue(journeyRequests.getContent().get(1).getDateTime().isBefore(searchStartAndEndDates.get(1)));
+		assertTrue(journeyRequests.getContent().get(1).getDateTime()
+				.compareTo(searchStartAndEndDates.get(0).toInstant()) >= 0);
+		assertTrue(journeyRequests.getContent().get(1).getDateTime()
+				.compareTo(searchStartAndEndDates.get(1).toInstant()) <= 0);
 
 		assertTrue(
 				journeyRequests.getContent().get(0).getMinPrice() >= journeyRequests.getContent().get(1).getMinPrice());
@@ -286,7 +293,7 @@ public class JourneyRequestRepositoryTests {
 
 		// When
 
-		Page<JourneyRequestSearchDto> journeyRequests = journeyRequestRepository
+		Page<JourneyRequestSearchOutput> journeyRequests = journeyRequestRepository
 				.findByDeparturePlace_DepartmentIdAndArrivalPlace_DepartmentIdInAndEngineType_IdInAndDateBetween(
 						departurePlaces.get(0).getDepartment().getId(),
 						Set.of(arrivalPlaces.get(0).getDepartment().getId(),
@@ -312,8 +319,10 @@ public class JourneyRequestRepositoryTests {
 		assertTrue(Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()).containsAll(journeyRequests
 				.getContent().stream().map(jr -> jr.getEngineType().getId()).collect(Collectors.toSet())));
 
-		assertTrue(journeyRequests.getContent().get(0).getDateTime().isAfter(searchStartAndEndDates.get(0)));
-		assertTrue(journeyRequests.getContent().get(0).getDateTime().isBefore(searchStartAndEndDates.get(1)));
+		assertTrue(journeyRequests.getContent().get(0).getDateTime()
+				.compareTo(searchStartAndEndDates.get(0).toInstant()) >= 0);
+		assertTrue(journeyRequests.getContent().get(0).getDateTime()
+				.compareTo(searchStartAndEndDates.get(1).toInstant()) <= 0);
 
 		assertEquals(createdJourneyRequests.get(1).getProposals().stream()
 				.sorted((p1, p2) -> p1.getPrice().compareTo(p2.getPrice())).collect(Collectors.toList()).get(0)
@@ -355,7 +364,7 @@ public class JourneyRequestRepositoryTests {
 
 		// When
 
-		Page<JourneyRequestSearchDto> journeyRequests = journeyRequestRepository
+		Page<JourneyRequestSearchOutput> journeyRequests = journeyRequestRepository
 				.findByDeparturePlace_DepartmentIdAndEngineType_IdInAndDateBetween(
 						departurePlaces.get(0).getDepartment().getId(),
 						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()),
@@ -379,8 +388,10 @@ public class JourneyRequestRepositoryTests {
 		assertTrue(Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()).containsAll(journeyRequests
 				.getContent().stream().map(jr -> jr.getEngineType().getId()).collect(Collectors.toSet())));
 
-		assertTrue(journeyRequests.getContent().get(0).getDateTime().isAfter(searchStartAndEndDates.get(0)));
-		assertTrue(journeyRequests.getContent().get(0).getDateTime().isBefore(searchStartAndEndDates.get(1)));
+		assertTrue(journeyRequests.getContent().get(0).getDateTime()
+				.compareTo(searchStartAndEndDates.get(0).toInstant()) >= 0);
+		assertTrue(journeyRequests.getContent().get(0).getDateTime()
+				.compareTo(searchStartAndEndDates.get(1).toInstant()) <= 0);
 
 		assertEquals(journeyRequests.getContent().get(0).getMinPrice(), 240);
 
@@ -420,7 +431,7 @@ public class JourneyRequestRepositoryTests {
 
 		// When
 
-		Page<JourneyRequestSearchDto> journeyRequests = journeyRequestRepository
+		Page<JourneyRequestSearchOutput> journeyRequests = journeyRequestRepository
 				.findByDeparturePlace_DepartmentIdAndArrivalPlace_DepartmentIdInAndEngineType_IdInAndDateBetween(
 						departurePlaces.get(0).getDepartment().getId(),
 						Set.of(arrivalPlaces.get(0).getDepartment().getId(),
@@ -449,8 +460,15 @@ public class JourneyRequestRepositoryTests {
 		assertTrue(Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()).containsAll(journeyRequests
 				.getContent().stream().map(jr -> jr.getEngineType().getId()).collect(Collectors.toSet())));
 
-		assertTrue(journeyRequests.getContent().get(0).getDateTime().isAfter(searchStartAndEndDates.get(0)));
-		assertTrue(journeyRequests.getContent().get(0).getDateTime().isBefore(searchStartAndEndDates.get(1)));
+		assertTrue(journeyRequests.getContent().get(0).getDateTime()
+				.compareTo(searchStartAndEndDates.get(0).toInstant()) >= 0);
+		assertTrue(journeyRequests.getContent().get(0).getDateTime()
+				.compareTo(searchStartAndEndDates.get(1).toInstant()) <= 0);
+
+		assertTrue(journeyRequests.getContent().get(1).getDateTime()
+				.compareTo(searchStartAndEndDates.get(0).toInstant()) >= 0);
+		assertTrue(journeyRequests.getContent().get(1).getDateTime()
+				.compareTo(searchStartAndEndDates.get(1).toInstant()) <= 0);
 
 		assertTrue(journeyRequests.getContent().get(0).getDateTime()
 				.isAfter(journeyRequests.getContent().get(1).getDateTime()));
@@ -493,7 +511,7 @@ public class JourneyRequestRepositoryTests {
 
 		// When
 
-		Page<JourneyRequestSearchDto> journeyRequests = journeyRequestRepository
+		Page<JourneyRequestSearchOutput> journeyRequests = journeyRequestRepository
 				.findByDeparturePlace_DepartmentIdAndEngineType_IdInAndDateBetween(
 						departurePlaces.get(0).getDepartment().getId(),
 						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()),
@@ -520,8 +538,15 @@ public class JourneyRequestRepositoryTests {
 		assertTrue(Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()).containsAll(journeyRequests
 				.getContent().stream().map(jr -> jr.getEngineType().getId()).collect(Collectors.toSet())));
 
-		assertTrue(journeyRequests.getContent().get(0).getDateTime().isAfter(searchStartAndEndDates.get(0)));
-		assertTrue(journeyRequests.getContent().get(0).getDateTime().isBefore(searchStartAndEndDates.get(1)));
+		assertTrue(journeyRequests.getContent().get(0).getDateTime()
+				.compareTo(searchStartAndEndDates.get(0).toInstant()) >= 0);
+		assertTrue(journeyRequests.getContent().get(0).getDateTime()
+				.compareTo(searchStartAndEndDates.get(1).toInstant()) <= 0);
+
+		assertTrue(journeyRequests.getContent().get(1).getDateTime()
+				.compareTo(searchStartAndEndDates.get(0).toInstant()) >= 0);
+		assertTrue(journeyRequests.getContent().get(1).getDateTime()
+				.compareTo(searchStartAndEndDates.get(1).toInstant()) <= 0);
 
 		assertTrue(journeyRequests.getContent().get(0).getDateTime()
 				.isAfter(journeyRequests.getContent().get(1).getDateTime()));
@@ -562,7 +587,7 @@ public class JourneyRequestRepositoryTests {
 
 		// When
 
-		Page<JourneyRequestSearchDto> journeyRequests = journeyRequestRepository
+		Page<JourneyRequestSearchOutput> journeyRequests = journeyRequestRepository
 				.findByDeparturePlace_DepartmentIdAndArrivalPlace_DepartmentIdInAndEngineType_IdInAndDateBetween(
 						departurePlaces.get(0).getDepartment().getId(),
 						Set.of(arrivalPlaces.get(0).getDepartment().getId(),
@@ -591,8 +616,15 @@ public class JourneyRequestRepositoryTests {
 		assertTrue(Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()).containsAll(journeyRequests
 				.getContent().stream().map(jr -> jr.getEngineType().getId()).collect(Collectors.toSet())));
 
-		assertTrue(journeyRequests.getContent().get(0).getDateTime().isAfter(searchStartAndEndDates.get(0)));
-		assertTrue(journeyRequests.getContent().get(0).getDateTime().isBefore(searchStartAndEndDates.get(1)));
+		assertTrue(journeyRequests.getContent().get(0).getDateTime()
+				.compareTo(searchStartAndEndDates.get(0).toInstant()) >= 0);
+		assertTrue(journeyRequests.getContent().get(0).getDateTime()
+				.compareTo(searchStartAndEndDates.get(1).toInstant()) <= 0);
+
+		assertTrue(journeyRequests.getContent().get(1).getDateTime()
+				.compareTo(searchStartAndEndDates.get(0).toInstant()) >= 0);
+		assertTrue(journeyRequests.getContent().get(1).getDateTime()
+				.compareTo(searchStartAndEndDates.get(1).toInstant()) <= 0);
 
 		assertTrue(
 				journeyRequests.getContent().get(0).getDistance() >= journeyRequests.getContent().get(1).getDistance());
@@ -633,7 +665,7 @@ public class JourneyRequestRepositoryTests {
 
 		// When
 
-		Page<JourneyRequestSearchDto> journeyRequests = journeyRequestRepository
+		Page<JourneyRequestSearchOutput> journeyRequests = journeyRequestRepository
 				.findByDeparturePlace_DepartmentIdAndEngineType_IdInAndDateBetween(
 						departurePlaces.get(0).getDepartment().getId(),
 						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()),
@@ -660,8 +692,15 @@ public class JourneyRequestRepositoryTests {
 		assertTrue(Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()).containsAll(journeyRequests
 				.getContent().stream().map(jr -> jr.getEngineType().getId()).collect(Collectors.toSet())));
 
-		assertTrue(journeyRequests.getContent().get(0).getDateTime().isAfter(searchStartAndEndDates.get(0)));
-		assertTrue(journeyRequests.getContent().get(0).getDateTime().isBefore(searchStartAndEndDates.get(1)));
+		assertTrue(journeyRequests.getContent().get(0).getDateTime()
+				.compareTo(searchStartAndEndDates.get(0).toInstant()) >= 0);
+		assertTrue(journeyRequests.getContent().get(0).getDateTime()
+				.compareTo(searchStartAndEndDates.get(1).toInstant()) <= 0);
+
+		assertTrue(journeyRequests.getContent().get(1).getDateTime()
+				.compareTo(searchStartAndEndDates.get(0).toInstant()) >= 0);
+		assertTrue(journeyRequests.getContent().get(1).getDateTime()
+				.compareTo(searchStartAndEndDates.get(1).toInstant()) <= 0);
 
 		assertTrue(
 				journeyRequests.getContent().get(0).getDistance() >= journeyRequests.getContent().get(1).getDistance());
@@ -717,11 +756,9 @@ public class JourneyRequestRepositoryTests {
 				.findById(journeyRequests.getContent().get(0).getId()).get();
 
 		assertEquals(clients.get(0).getEmail(), clientJourneyRequest.getClient().getEmail());
-		assertTrue(journeyRequests.getContent().get(0).getCreationDateTime().isAfter(lowerEdge)
-				|| journeyRequests.getContent().get(0).getCreationDateTime().isEqual(lowerEdge));
+		assertTrue(journeyRequests.getContent().get(0).getCreationDateTime().compareTo(lowerEdge.toInstant()) >= 0);
 
-		assertTrue(journeyRequests.getContent().get(0).getCreationDateTime().isBefore(higherEdge)
-				|| journeyRequests.getContent().get(0).getCreationDateTime().isEqual(higherEdge));
+		assertTrue(journeyRequests.getContent().get(0).getCreationDateTime().compareTo(higherEdge.toInstant()) <= 0);
 
 	}
 
@@ -778,11 +815,9 @@ public class JourneyRequestRepositoryTests {
 		assertEquals(clients.get(0).getMobileNumber(), clientJourneyRequest.getClient().getMobileNumber());
 		assertEquals(clients.get(0).getIcc().getValue(), clientJourneyRequest.getClient().getIcc().getValue());
 
-		assertTrue(journeyRequests.getContent().get(0).getCreationDateTime().isAfter(lowerEdge)
-				|| journeyRequests.getContent().get(0).getCreationDateTime().isEqual(lowerEdge));
+		assertTrue(journeyRequests.getContent().get(0).getCreationDateTime().compareTo(lowerEdge.toInstant()) >= 0);
 
-		assertTrue(journeyRequests.getContent().get(0).getCreationDateTime().isBefore(higherEdge)
-				|| journeyRequests.getContent().get(0).getCreationDateTime().isEqual(higherEdge));
+		assertTrue(journeyRequests.getContent().get(0).getCreationDateTime().compareTo(higherEdge.toInstant()) <= 0);
 
 	}
 
@@ -1210,29 +1245,31 @@ public class JourneyRequestRepositoryTests {
 	private List<ClientJpaEntity> givenClients(InternationalCallingCodeJpaEntity icc) {
 		List<ClientJpaEntity> clients = List.of(
 				new ClientJpaEntity(null, null, null, "Client1", null, null, "client1@gmail.com", null, null, icc,
-						"22111111", null, null, null, null, "https://path/to/client1/photo",
-						new HashSet<JourneyRequestJpaEntity>()),
+						"22111111", null, null, null, null, "https://path/to/client1/photo"),
 				new ClientJpaEntity(null, null, null, "Client2", null, null, "client2@gmail.com", null, null, icc,
-						"22222222", null, null, null, null, "https://path/to/client2/photo",
-						new HashSet<JourneyRequestJpaEntity>()),
+						"22222222", null, null, null, null, "https://path/to/client2/photo"),
 				new ClientJpaEntity(null, null, null, "Client3", null, null, "client3@gmail.com", null, null, icc,
-						"22333333", null, null, null, null, "https://path/to/client3/photo",
-						new HashSet<JourneyRequestJpaEntity>()));
+						"22333333", null, null, null, null, "https://path/to/client3/photo"));
 
 		return clientRepository.saveAll(clients);
 	}
 
 	private List<TransporterJpaEntity> givenTransporters(List<List<VehiculeJpaEntity>> vehicules) {
-		List<TransporterJpaEntity> transporters = List.of(
-				new TransporterJpaEntity(null, null, null, "Transporter1", null, null, null, null, null, null, null,
-						null, null, null, null, "https://path/to/transporter1/photo", null,
-						Set.copyOf(vehicules.get(0)), null, null, new HashSet<JourneyProposalJpaEntity>()),
-				new TransporterJpaEntity(null, null, null, "Transporter2", null, null, null, null, null, null, null,
-						null, null, null, null, "https://path/to/transporter2/photo", null,
-						Set.copyOf(vehicules.get(1)), null, null, new HashSet<JourneyProposalJpaEntity>()),
-				new TransporterJpaEntity(null, null, null, "Transporter3", null, null, null, null, null, null, null,
-						null, null, null, null, "https://path/to/transporter3/photo", null,
-						Set.copyOf(vehicules.get(2)), null, null, new HashSet<JourneyProposalJpaEntity>()));
+
+		TransporterJpaEntity t1 = new TransporterJpaEntity(null, null, null, "Transporter1", null, null, null, null,
+				null, null, null, null, null, null, null, "https://path/to/transporter1/photo");
+		vehicules.get(0).forEach(v -> t1.addVehicule(v));
+
+		TransporterJpaEntity t2 = new TransporterJpaEntity(null, null, null, "Transporter2", null, null, null, null,
+				null, null, null, null, null, null, null, "https://path/to/transporter2/photo");
+		vehicules.get(1).forEach(v -> t2.addVehicule(v));
+
+		TransporterJpaEntity t3 = new TransporterJpaEntity(null, null, null, "Transporter3", null, null, null, null,
+				null, null, null, null, null, null, null, "https://path/to/transporter3/photo");
+		vehicules.get(2).forEach(v -> t1.addVehicule(v));
+
+		List<TransporterJpaEntity> transporters = List.of(t1, t2, t3);
+
 		return transporterRepository.saveAll(transporters);
 	}
 

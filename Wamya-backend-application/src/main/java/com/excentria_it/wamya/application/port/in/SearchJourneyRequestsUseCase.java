@@ -1,19 +1,14 @@
 package com.excentria_it.wamya.application.port.in;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.format.annotation.DateTimeFormat.ISO;
-
 import com.excentria_it.wamya.common.SortCriterion;
 import com.excentria_it.wamya.common.annotation.Sort;
 import com.excentria_it.wamya.domain.JourneyRequestsSearchResult;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,7 +17,8 @@ import lombok.NoArgsConstructor;
 
 public interface SearchJourneyRequestsUseCase {
 
-	JourneyRequestsSearchResult searchJourneyRequests(SearchJourneyRequestsCommand command, String locale);
+	JourneyRequestsSearchResult searchJourneyRequests(SearchJourneyRequestsCommand command, String username,
+			String locale);
 
 	@Data
 	@NoArgsConstructor
@@ -30,7 +26,7 @@ public interface SearchJourneyRequestsUseCase {
 	@Builder
 	class SearchJourneyRequestsCommand {
 
-		public static final Long ANY_ARRIVAL_REGION = -1L;
+		public static final Long ANY_ARRIVAL_DEPARTMENT = -1L;
 
 		@NotNull
 		private Long departurePlaceDepartmentId;
@@ -40,13 +36,14 @@ public interface SearchJourneyRequestsUseCase {
 		private Set<Long> arrivalPlaceDepartmentIds;
 
 		@NotNull
-		@DateTimeFormat(iso = ISO.DATE_TIME)
-		@JsonFormat(shape = Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
-		private ZonedDateTime startDateTime;
+//		@DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
+//		@JsonFormat(shape = Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
+		private LocalDateTime startDateTime;
+
 		@NotNull
-		@DateTimeFormat(iso = ISO.DATE_TIME)
-		@JsonFormat(shape = Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
-		private ZonedDateTime endDateTime;
+//		@DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
+//		@JsonFormat(shape = Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
+		private LocalDateTime endDateTime;
 
 		@NotNull
 		@NotEmpty

@@ -11,7 +11,7 @@ import com.excentria_it.wamya.adapter.persistence.entity.ClientJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.EngineTypeJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.JourneyRequestJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.PlaceJpaEntity;
-import com.excentria_it.wamya.domain.CreateJourneyRequestDto;
+import com.excentria_it.wamya.domain.JourneyRequestInputOutput;
 
 public class JourneyRequestMapperTests {
 
@@ -19,7 +19,7 @@ public class JourneyRequestMapperTests {
 
 	@Test
 	void testMapToJpaEntity() {
-		CreateJourneyRequestDto journeyRequest = defaultCreateJourneyRequestDto();
+		JourneyRequestInputOutput journeyRequest = defaultJourneyRequestInputOutputBuilder().build();
 		PlaceJpaEntity departurePlaceJpaEntity = defaultDeparturePlaceJpaEntity();
 		PlaceJpaEntity arrivalPlaceJpaEntity = defaultArrivalPlaceJpaEntity();
 		EngineTypeJpaEntity engineTypeJpaEntity = defaultEngineTypeJpaEntity();
@@ -50,7 +50,7 @@ public class JourneyRequestMapperTests {
 
 	@Test
 	void testMapToJpaEntityFromNullDomainEntity() {
-		CreateJourneyRequestDto journeyRequest = null;
+		JourneyRequestInputOutput journeyRequest = null;
 		PlaceJpaEntity departurePlaceJpaEntity = defaultDeparturePlaceJpaEntity();
 		PlaceJpaEntity arrivalPlaceJpaEntity = defaultArrivalPlaceJpaEntity();
 		EngineTypeJpaEntity engineTypeJpaEntity = defaultEngineTypeJpaEntity();
@@ -65,8 +65,9 @@ public class JourneyRequestMapperTests {
 
 	@Test
 	void testMapToDoaminEntity() {
+
 		JourneyRequestJpaEntity journeyRequestJpaEntity = defaultExistentJourneyRequestJpaEntity();
-		CreateJourneyRequestDto journeyRequest = journeyRequestMapper.mapToDomainEntity(journeyRequestJpaEntity,
+		JourneyRequestInputOutput journeyRequest = journeyRequestMapper.mapToDomainEntity(journeyRequestJpaEntity,
 				"en_US");
 
 		assertEquals(journeyRequestJpaEntity.getId(), journeyRequest.getId());
@@ -95,7 +96,8 @@ public class JourneyRequestMapperTests {
 	@Test
 	void testMapToDoaminEntityFromNullJpaEntity() {
 		JourneyRequestJpaEntity journeyRequestJpaEntity = null;
-		CreateJourneyRequestDto journeyRequest = journeyRequestMapper.mapToDomainEntity(journeyRequestJpaEntity, "en");
+		JourneyRequestInputOutput journeyRequest = journeyRequestMapper.mapToDomainEntity(journeyRequestJpaEntity,
+				"en");
 
 		assertNull(journeyRequest);
 

@@ -5,8 +5,7 @@ import java.util.List;
 import lombok.Value;
 
 @Value
-public class JourneyRequestsSearchResult {
-
+public class JourneyRequestsSearchOutputResult {
 	private int totalPages;
 
 	private long totalElements;
@@ -17,6 +16,5 @@ public class JourneyRequestsSearchResult {
 
 	private boolean hasNext;
 
-	private List<JourneyRequestSearchDto> content;
-
+	private List<JourneyRequestSearchOutput> content;
 }

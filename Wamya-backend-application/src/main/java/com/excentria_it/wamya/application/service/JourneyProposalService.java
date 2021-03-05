@@ -28,6 +28,7 @@ import com.excentria_it.wamya.domain.CreateJourneyRequestDto;
 import com.excentria_it.wamya.domain.JourneyProposalDto;
 import com.excentria_it.wamya.domain.JourneyProposalDto.StatusCode;
 import com.excentria_it.wamya.domain.JourneyProposalDto.VehiculeDto;
+import com.excentria_it.wamya.domain.JourneyRequestInputOutput;
 import com.excentria_it.wamya.domain.JourneyRequestProposals;
 import com.excentria_it.wamya.domain.LoadJourneyProposalsCriteria;
 import com.excentria_it.wamya.domain.MakeProposalDto;
@@ -96,14 +97,14 @@ public class JourneyProposalService implements MakeProposalUseCase, LoadProposal
 
 	private void checkExistentJourneyRequest(Long journeyRequestId) {
 
-		Optional<CreateJourneyRequestDto> journeyRequestOptional = loadJourneyRequestPort
+		Optional<JourneyRequestInputOutput> journeyRequestOptional = loadJourneyRequestPort
 				.loadJourneyRequestById(journeyRequestId);
 
 		if (journeyRequestOptional.isEmpty()) {
 			throw new JourneyRequestNotFoundException("Journey request not found.");
 		}
 
-		CreateJourneyRequestDto journeyRequest = journeyRequestOptional.get();
+		JourneyRequestInputOutput journeyRequest = journeyRequestOptional.get();
 		ZonedDateTime now = ZonedDateTime.now(ZoneOffset.UTC);
 		if (now.toInstant().isAfter(journeyRequest.getDateTime())) {
 			throw new JourneyRequestExpiredException(String.format("Journey request expired: %d", journeyRequestId));

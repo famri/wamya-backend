@@ -1,7 +1,7 @@
 package com.excentria_it.wamya.domain;
 
 import java.math.BigDecimal;
-import java.time.ZonedDateTime;
+import java.time.Instant;
 
 import org.springframework.beans.factory.annotation.Value;
 
@@ -23,9 +23,9 @@ public interface ClientJourneyRequestDto {
 
 	Integer getDistance();
 
-	ZonedDateTime getDateTime();
+	Instant getDateTime();
 
-	ZonedDateTime getCreationDateTime();
+	Instant getCreationDateTime();
 
 	Integer getWorkers();
 
@@ -50,9 +50,9 @@ public interface ClientJourneyRequestDto {
 		private Long id;
 
 		private String type;
-		
+
 		private String name;
-		
+
 		private BigDecimal latitude;
 
 		private BigDecimal longitude;
