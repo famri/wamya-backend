@@ -2,7 +2,8 @@ package com.excentria_it.wamya.adapter.persistence.mapper;
 
 import java.time.Instant;
 import java.time.ZoneOffset;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
@@ -10,6 +11,7 @@ import com.excentria_it.wamya.adapter.persistence.entity.ClientJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.InternationalCallingCodeJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.TransporterJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.UserAccountJpaEntity;
+import com.excentria_it.wamya.adapter.persistence.entity.UserPreferenceId;
 import com.excentria_it.wamya.adapter.persistence.entity.UserPreferenceJpaEntity;
 import com.excentria_it.wamya.domain.UserAccount;
 import com.excentria_it.wamya.domain.UserAccount.MobilePhoneNumber;
@@ -17,10 +19,15 @@ import com.excentria_it.wamya.domain.UserAccount.MobilePhoneNumber;
 @Component
 public class UserAccountMapper {
 
-	public UserAccountJpaEntity mapToJpaEntity(UserAccount userAccount, InternationalCallingCodeJpaEntity icc
-		) {
+	public UserAccountJpaEntity mapToJpaEntity(UserAccount userAccount, InternationalCallingCodeJpaEntity icc) {
 		if (userAccount == null)
 			return null;
+
+		Map<String, UserPreferenceJpaEntity> preferences = new HashMap<>();
+		
+		userAccount.getPreferences().forEach((k, v) -> preferences.put(k,
+				new UserPreferenceJpaEntity(new UserPreferenceId(userAccount.getId(), k), v, null)));
+		
 		if (userAccount.getIsTransporter()) {
 
 			return new TransporterJpaEntity(userAccount.getId(), userAccount.getOauthId(), userAccount.getGender(),
@@ -31,7 +38,7 @@ public class UserAccountMapper {
 					userAccount.getReceiveNewsletter(),
 					userAccount.getCreationDateTime() != null ? userAccount.getCreationDateTime().toInstant()
 							: Instant.now(),
-					userAccount.getPhotoUrl());
+					userAccount.getPhotoUrl(),preferences);
 
 		} else {
 			return new ClientJpaEntity(userAccount.getId(), userAccount.getOauthId(), userAccount.getGender(),
@@ -42,7 +49,7 @@ public class UserAccountMapper {
 					userAccount.getReceiveNewsletter(),
 					userAccount.getCreationDateTime() != null ? userAccount.getCreationDateTime().toInstant()
 							: Instant.now(),
-					userAccount.getPhotoUrl());
+					userAccount.getPhotoUrl(),preferences);
 		}
 
 	}
@@ -50,6 +57,10 @@ public class UserAccountMapper {
 	public UserAccount mapToDomainEntity(UserAccountJpaEntity userAccountJpaEntity) {
 		if (userAccountJpaEntity == null)
 			return null;
+
+		Map<String, String> preferences = new HashMap<>();
+
+		userAccountJpaEntity.getPreferences().forEach((k, v) -> preferences.put(k, v.getValue()));
 
 		return UserAccount.builder().id(userAccountJpaEntity.getId()).gender(userAccountJpaEntity.getGender())
 				.isTransporter(userAccountJpaEntity instanceof TransporterJpaEntity)
@@ -63,6 +74,6 @@ public class UserAccountMapper {
 				.isValidatedMobileNumber(userAccountJpaEntity.getIsValidatedMobileNumber())
 				.receiveNewsletter(userAccountJpaEntity.getReceiveNewsletter())
 				.creationDateTime(userAccountJpaEntity.getCreationDateTime().atZone(ZoneOffset.UTC))
-				.photoUrl(userAccountJpaEntity.getPhotoUrl()).build();
+				.photoUrl(userAccountJpaEntity.getPhotoUrl()).preferences(preferences).build();
 	}
 }

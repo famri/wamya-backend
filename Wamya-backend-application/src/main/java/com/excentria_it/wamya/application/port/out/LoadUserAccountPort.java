@@ -12,11 +12,11 @@ public interface LoadUserAccountPort {
 
 	Optional<UserAccount> loadUserAccountByEmail(String email);
 
-	Set<UserPreference> loadUserPreferencesByIccAndMobileNumber(String icc, String mobileNumber);
-
-	Set<UserPreference> loadUserPreferencesByEmail(String email);
-
-	Optional<UserPreference> loadUserPreferenceByIccAndMobileNumberAndKey(String icc, String mobileNumber, String key);
-
-	Optional<UserPreference> loadUserPreferenceByEmailAndKey(String email, String key);
+//	Set<UserPreference> loadUserPreferencesByIccAndMobileNumber(String icc, String mobileNumber);
+//
+//	Set<UserPreference> loadUserPreferencesByEmail(String email);
+//
+//	Optional<UserPreference> loadUserPreferenceByIccAndMobileNumberAndKey(String icc, String mobileNumber, String key);
+//
+//	Optional<UserPreference> loadUserPreferenceByEmailAndKey(String email, String key);
 }

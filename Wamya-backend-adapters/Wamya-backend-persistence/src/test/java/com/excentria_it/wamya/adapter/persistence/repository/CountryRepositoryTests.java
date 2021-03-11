@@ -1,5 +1,6 @@
 package com.excentria_it.wamya.adapter.persistence.repository;
 
+import static com.excentria_it.wamya.test.data.common.CountryJpaTestData.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.*;
 
@@ -33,7 +34,13 @@ public class CountryRepositoryTests {
 	private DepartmentRepository departmentRepository;
 
 	@Autowired
+	private TimeZoneRepository timeZoneRepository;
+
+	@Autowired
 	private DelegationRepository delegationRepository;
+
+	@Autowired
+	private InternationalCallingCodeRepository iccRepository;
 
 	@BeforeEach
 	void cleanDatabase() {
@@ -53,6 +60,51 @@ public class CountryRepositoryTests {
 		// then
 		assertEquals(country.getId(), countryDtoOptional.get().getId());
 		assertEquals(country.getName("fr_FR"), countryDtoOptional.get().getName());
+	}
+
+	@Test
+	void testFindAllByLocale() {
+		// given
+		List<CountryJpaEntity> countries = defaultCountryJpaEntitiesWithoutDepartments();
+		List<DepartmentJpaEntity> departments = defaultCountryDepartmentsJpaEntities();
+		departments.forEach(d -> d.setId(null));
+		
+
+		for (CountryJpaEntity c : countries) {
+			c.getTimeZones().forEach(t -> {
+				t.setId(null);
+				timeZoneRepository.save(t);
+			});
+
+			c.getIcc().setId(null);
+			iccRepository.save(c.getIcc());
+
+			c.getDepartments().forEach(d -> {
+				d.setId(null);
+			});
+
+			c = countryRepository.saveAndFlush(c);
+
+		}
+		
+		countries.get(0).addDepartment(departments.get(0));
+		countries.get(0).addDepartment(departments.get(1));
+		
+		countries.get(1).addDepartment(departments.get(2));
+		countries.get(1).addDepartment(departments.get(3));
+		
+		for (CountryJpaEntity c : countries) {
+			c = countryRepository.save(c);
+		}
+		
+		countries.sort((c1, c2) -> c1.getName("fr_FR").compareTo(c2.getName("fr_FR")));
+
+		// when
+
+		List<CountryJpaEntity> result = countryRepository.findAllByLocale("fr_FR");
+
+		// then
+		assertEquals(countries, result);
 	}
 
 	private List<List<DelegationJpaEntity>> givenDelegations() {
@@ -103,7 +155,7 @@ public class CountryRepositoryTests {
 
 	}
 
-	List<DepartmentJpaEntity> givenDepartments(List<List<DelegationJpaEntity>> delegations) {
+	private List<DepartmentJpaEntity> givenDepartments(List<List<DelegationJpaEntity>> delegations) {
 		DepartmentJpaEntity d1 = new DepartmentJpaEntity();
 		d1.setPossibleNames("BenArous, Ben Arous, BinArous, Bin Arous");
 		delegations.get(0).forEach(dl -> d1.addDelegation(dl));

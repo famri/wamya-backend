@@ -3,16 +3,20 @@ package com.excentria_it.wamya.adapter.persistence.entity;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.MapKey;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
@@ -23,7 +27,7 @@ import lombok.NoArgsConstructor;
 
 @Generated
 @Entity
-@Table(name = "country", uniqueConstraints = @UniqueConstraint(columnNames = { "code" }))
+@Table(name = "country", uniqueConstraints = @UniqueConstraint(columnNames = { "code", "flagPath" }))
 @NoArgsConstructor
 @SequenceGenerator(name = CountryJpaEntity.COUNTRY_SEQ)
 public class CountryJpaEntity {
@@ -35,6 +39,17 @@ public class CountryJpaEntity {
 
 	private String code;
 
+	@Column(length = 255)
+	private String flagPath;
+
+	@OneToOne
+	@JoinColumn(name = "icc_id")
+	private InternationalCallingCodeJpaEntity icc;
+
+	@OneToMany
+	@JoinColumn(name = "country_id")
+	private List<TimeZoneJpaEntity> timeZones;
+
 	@OneToMany(mappedBy = "country", cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST,
 			CascadeType.REFRESH }, orphanRemoval = true)
 	@MapKey(name = "localizedId.locale")
@@ -43,10 +58,14 @@ public class CountryJpaEntity {
 	@OneToMany(mappedBy = "country")
 	private Set<DepartmentJpaEntity> departments = new HashSet<>();
 
-	public CountryJpaEntity(String code, Map<String, LocalizedCountryJpaEntity> localizations,
+	public CountryJpaEntity(String code, String flagPath, InternationalCallingCodeJpaEntity icc,
+			List<TimeZoneJpaEntity> timeZones, Map<String, LocalizedCountryJpaEntity> localizations,
 			Set<DepartmentJpaEntity> departments) {
 
 		this.code = code;
+		this.flagPath = flagPath;
+		this.icc = icc;
+		this.timeZones = timeZones;
 		this.localizations = localizations;
 		departments.forEach(d -> this.addDepartment(d));
 	}
@@ -87,6 +106,30 @@ public class CountryJpaEntity {
 
 	public Map<String, LocalizedCountryJpaEntity> getLocalizations() {
 		return localizations;
+	}
+
+	public String getFlagPath() {
+		return flagPath;
+	}
+
+	public void setFlagPath(String flagPath) {
+		this.flagPath = flagPath;
+	}
+
+	public InternationalCallingCodeJpaEntity getIcc() {
+		return icc;
+	}
+
+	public void setIcc(InternationalCallingCodeJpaEntity icc) {
+		this.icc = icc;
+	}
+
+	public List<TimeZoneJpaEntity> getTimeZones() {
+		return timeZones;
+	}
+
+	public void setTimeZones(List<TimeZoneJpaEntity> timeZones) {
+		this.timeZones = timeZones;
 	}
 
 	@Override

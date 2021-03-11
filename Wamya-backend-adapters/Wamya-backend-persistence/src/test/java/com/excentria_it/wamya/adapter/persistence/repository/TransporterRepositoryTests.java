@@ -194,17 +194,17 @@ public class TransporterRepositoryTests {
 
 		TransporterJpaEntity t1 = new TransporterJpaEntity(null, null, null, "Transporter1", null, null,
 				"transport1@gmail.com", null, null, icc, "22000001", null, null, null, null,
-				"https://path/to/transporter1/photo");
+				"https://path/to/transporter1/photo",null);
 		vehicules.get(0).forEach(v -> t1.addVehicule(v));
-		
+
 		TransporterJpaEntity t2 = new TransporterJpaEntity(null, null, null, "Transporter2", null, null,
 				"transport2@gmail.com", null, null, icc, "22000002", null, null, null, null,
-				"https://path/to/transporter2/photo");
+				"https://path/to/transporter2/photo",null);
 		vehicules.get(1).forEach(v -> t2.addVehicule(v));
 
 		TransporterJpaEntity t3 = new TransporterJpaEntity(null, null, null, "Transporter3", null, null,
 				"transport3@gmail.com", null, null, icc, "22000003", null, null, null, null,
-				"https://path/to/transporter3/photo");
+				"https://path/to/transporter3/photo",null);
 		vehicules.get(2).forEach(v -> t3.addVehicule(v));
 
 		List<TransporterJpaEntity> transporters = List.of(t1, t2, t3);
@@ -472,8 +472,8 @@ public class TransporterRepositoryTests {
 	}
 
 	private InternationalCallingCodeJpaEntity givenIcc(String code) {
-		InternationalCallingCodeJpaEntity icc = InternationalCallingCodeJpaEntity.builder().value(code)
-				.countryName("Some country").flagPath("https://path/to/some/country/flag").enabled(true).build();
+		InternationalCallingCodeJpaEntity icc = InternationalCallingCodeJpaEntity.builder().value(code).enabled(true)
+				.build();
 		return internationalCallingCodeRepository.save(icc);
 	}
 

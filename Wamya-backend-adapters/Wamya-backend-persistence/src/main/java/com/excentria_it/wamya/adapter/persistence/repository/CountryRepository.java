@@ -1,5 +1,6 @@
 package com.excentria_it.wamya.adapter.persistence.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,4 +14,7 @@ public interface CountryRepository extends JpaRepository<CountryJpaEntity, Long>
 	Optional<CountryDto> findByCodeAndLocale(String countryCode, String locale);
 
 	Optional<CountryJpaEntity> findByCode(String countryCode);
+
+	@Query(value = "SELECT c FROM CountryJpaEntity c JOIN FETCH c.localizations l JOIN FETCH c.icc icc JOIN FETCH c.timeZones tz WHERE KEY(l) = ?1 ORDER BY VALUE(l).name ASC")
+	List<CountryJpaEntity> findAllByLocale(String locale);
 }

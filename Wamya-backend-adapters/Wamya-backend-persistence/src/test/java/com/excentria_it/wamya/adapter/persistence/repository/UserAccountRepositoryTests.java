@@ -63,7 +63,36 @@ public class UserAccountRepositoryTests {
 		assertEquals(TestConstants.DEFAULT_EMAIL, entityOptional.get().getEmail());
 
 	}
+	
+	@Test
+	public void givenAUserAccountWithEmailAndEmptyPreferences_WhenFindByEmailWithUserPreferences_ThenReturnUserAccount() {
 
+		// Given
+		givenAUserAccountWithEmailAndMobilePhoneAndPassword();
+
+		// When
+		Optional<UserAccountJpaEntity> entityOptional = userAccountRepository.findByEmailWithUserPreferences(TestConstants.DEFAULT_EMAIL);
+		// Then
+		assertTrue(entityOptional.isPresent());
+		assertEquals(TestConstants.DEFAULT_EMAIL, entityOptional.get().getEmail());
+
+	}
+
+	@Test
+	public void givenAUserAccountWithMobilePhoneAndEmptyPreferences_WhenFindByMobilePhoneNumberWithUserPreferences_ThenReturnUserAccount() {
+
+		// Given
+		givenAUserAccountWithEmailAndMobilePhoneAndPassword();
+
+		// When
+		Optional<UserAccountJpaEntity> entityOptional = userAccountRepository.findByMobilePhoneNumberWithUserPreferences(
+				InternationalCallingCodeJpaEntityTestData.defaultExistentInternationalCallingCodeJpaEntity().getValue(),
+				TestConstants.DEFAULT_MOBILE_NUMBER);
+		// Then
+		assertTrue(entityOptional.isPresent());
+		assertEquals(TestConstants.DEFAULT_INTERNATIONAL_CALLING_CODE, entityOptional.get().getIcc().getValue());
+
+	}
 	private void givenAUserAccountWithEmailAndMobilePhoneAndPassword() {
 		InternationalCallingCodeJpaEntity iccEntity = InternationalCallingCodeJpaEntityTestData
 				.defaultNewInternationalCallingCodeJpaEntity();
@@ -76,5 +105,7 @@ public class UserAccountRepositoryTests {
 		userAccountRepository.save(userAccountEntity);
 
 	}
+	
+
 
 }

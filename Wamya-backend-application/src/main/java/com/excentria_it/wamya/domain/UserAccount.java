@@ -2,6 +2,7 @@ package com.excentria_it.wamya.domain;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
+import java.util.Map;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -49,6 +50,8 @@ public class UserAccount {
 	private String photoUrl;
 
 	private Double globalRating;
+
+	private Map<String, String> preferences;
 
 	@NoArgsConstructor
 	@AllArgsConstructor

@@ -1,16 +1,12 @@
 package com.excentria_it.wamya.adapter.persistence.adapter;
 
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import com.excentria_it.wamya.adapter.persistence.entity.InternationalCallingCodeJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.UserAccountJpaEntity;
-import com.excentria_it.wamya.adapter.persistence.entity.UserPreferenceJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.mapper.ClientMapper;
 import com.excentria_it.wamya.adapter.persistence.mapper.TransporterMapper;
 import com.excentria_it.wamya.adapter.persistence.mapper.UserAccountMapper;
-import com.excentria_it.wamya.adapter.persistence.mapper.UserPreferenceMapper;
 import com.excentria_it.wamya.adapter.persistence.repository.ClientRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.InternationalCallingCodeRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.TransporterRepository;
@@ -22,7 +18,6 @@ import com.excentria_it.wamya.common.annotation.PersistenceAdapter;
 import com.excentria_it.wamya.common.exception.UnsupportedInternationalCallingCode;
 import com.excentria_it.wamya.common.exception.UserAccountNotFoundException;
 import com.excentria_it.wamya.domain.UserAccount;
-import com.excentria_it.wamya.domain.UserPreference;
 
 import lombok.RequiredArgsConstructor;
 
@@ -45,8 +40,6 @@ public class UserAccountPersistenceAdapter
 
 	private final ClientMapper clientMapper;
 
-	private final UserPreferenceMapper userPreferenceMapper;
-
 	@Override
 	public Long createUserAccount(UserAccount userAccount) throws UnsupportedInternationalCallingCode {
 
@@ -59,6 +52,7 @@ public class UserAccountPersistenceAdapter
 
 		UserAccountJpaEntity result;
 		if (userAccount.getIsTransporter()) {
+
 			result = transporterRepository.save(transporterMapper.mapToJpaEntity(userAccount, iccEntity.get()));
 		} else {
 			result = clientRepository.save(clientMapper.mapToJpaEntity(userAccount, iccEntity.get()));
@@ -127,39 +121,6 @@ public class UserAccountPersistenceAdapter
 		UserAccount userAccount = userAccountMapper.mapToDomainEntity(entity);
 
 		return Optional.ofNullable(userAccount);
-	}
-
-	@Override
-	public Set<UserPreference> loadUserPreferencesByIccAndMobileNumber(String icc, String mobileNumber) {
-
-		return userAccountRepository.loadUserPreferencesByMobilePhoneNumber(icc, mobileNumber).stream()
-				.map(p -> userPreferenceMapper.mapToDomainEntity(p)).collect(Collectors.toSet());
-	}
-
-	@Override
-	public Set<UserPreference> loadUserPreferencesByEmail(String email) {
-		return userAccountRepository.loadUserPreferencesByEmail(email).stream()
-				.map(p -> userPreferenceMapper.mapToDomainEntity(p)).collect(Collectors.toSet());
-	}
-
-	@Override
-	public Optional<UserPreference> loadUserPreferenceByIccAndMobileNumberAndKey(String icc, String mobileNumber,
-			String key) {
-		Optional<UserPreferenceJpaEntity> userPreference = userAccountRepository
-				.loadUserPreferencesByMobilePhoneNumberAndKey(icc, mobileNumber, key);
-		if (userPreference.isEmpty())
-			return Optional.empty();
-		return Optional.of(userPreferenceMapper.mapToDomainEntity(userPreference.get()));
-
-	}
-
-	@Override
-	public Optional<UserPreference> loadUserPreferenceByEmailAndKey(String email, String key) {
-		Optional<UserPreferenceJpaEntity> userPreference = userAccountRepository.loadUserPreferencesByEmailAndKey(email,
-				key);
-		if (userPreference.isEmpty())
-			return Optional.empty();
-		return Optional.of(userPreferenceMapper.mapToDomainEntity(userPreference.get()));
 	}
 
 }

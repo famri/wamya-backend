@@ -2,7 +2,8 @@ package com.excentria_it.wamya.adapter.persistence.entity;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -15,6 +16,7 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.MapKey;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -22,7 +24,6 @@ import javax.persistence.Table;
 import com.excentria_it.wamya.common.annotation.Generated;
 import com.excentria_it.wamya.domain.Gender;
 
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
 @Generated
@@ -30,7 +31,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "user_account")
 @Inheritance(strategy = InheritanceType.JOINED)
 @NoArgsConstructor
-@AllArgsConstructor
+
 @SequenceGenerator(name = UserAccountJpaEntity.USER_SEQ, initialValue = 1, allocationSize = 5)
 public abstract class UserAccountJpaEntity {
 
@@ -73,9 +74,43 @@ public abstract class UserAccountJpaEntity {
 
 	protected String photoUrl;
 
-	@OneToMany(cascade = { CascadeType.PERSIST, CascadeType.DETACH, CascadeType.REFRESH, CascadeType.REMOVE })
-	@JoinColumn(name = "user_id")
-	protected Set<UserPreferenceJpaEntity> preferences;
+	@OneToMany(mappedBy = "userAccount", cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST,
+			CascadeType.REFRESH }, orphanRemoval = true)
+	@MapKey(name = "userPreferenceId.key")
+	protected Map<String, UserPreferenceJpaEntity> preferences = new HashMap<>();
+
+	public UserAccountJpaEntity(Long id, Long oauthId, Gender gender, String firstname, String lastname,
+			LocalDate dateOfBirth, String email, String emailValidationCode, Boolean isValidatedEmail,
+			InternationalCallingCodeJpaEntity icc, String mobileNumber, String mobileNumberValidationCode,
+			Boolean isValidatedMobileNumber, Boolean receiveNewsletter, Instant creationDateTime, String photoUrl,
+			Map<String, UserPreferenceJpaEntity> preferences) {
+		super();
+		this.id = id;
+		this.oauthId = oauthId;
+		this.gender = gender;
+		this.firstname = firstname;
+		this.lastname = lastname;
+		this.dateOfBirth = dateOfBirth;
+		this.email = email;
+		this.emailValidationCode = emailValidationCode;
+		this.isValidatedEmail = isValidatedEmail;
+		this.icc = icc;
+		this.mobileNumber = mobileNumber;
+		this.mobileNumberValidationCode = mobileNumberValidationCode;
+		this.isValidatedMobileNumber = isValidatedMobileNumber;
+		this.receiveNewsletter = receiveNewsletter;
+		this.creationDateTime = creationDateTime;
+		this.photoUrl = photoUrl;
+		if (preferences != null) {
+			preferences.forEach((k, v) -> v.setUserAccount(this));
+		}
+
+		this.preferences = preferences;
+	}
+
+	public String getPreferenceValue(String key) {
+		return this.preferences.get(key).getValue();
+	}
 
 	public Long getId() {
 		return id;
@@ -203,6 +238,10 @@ public abstract class UserAccountJpaEntity {
 
 	public void setPhotoUrl(String photoUrl) {
 		this.photoUrl = photoUrl;
+	}
+
+	public Map<String, UserPreferenceJpaEntity> getPreferences() {
+		return preferences;
 	}
 
 	@Override

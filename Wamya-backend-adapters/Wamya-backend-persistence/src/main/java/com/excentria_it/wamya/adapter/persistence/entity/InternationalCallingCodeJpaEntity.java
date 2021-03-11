@@ -1,6 +1,5 @@
 package com.excentria_it.wamya.adapter.persistence.entity;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -17,8 +16,7 @@ import lombok.NoArgsConstructor;
 
 @Generated
 @Entity
-@Table(name = "international_calling_code", uniqueConstraints = @UniqueConstraint(columnNames = { "id", "value",
-		"countryName", "flagPath" }))
+@Table(name = "international_calling_code", uniqueConstraints = @UniqueConstraint(columnNames = { "id", "value" }))
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -31,11 +29,6 @@ public class InternationalCallingCodeJpaEntity {
 
 	private String value;
 
-	private String countryName;
-
-	@Column(length = 255)
-	private String flagPath;
-
 	private Boolean enabled;
 
 	public String getValue() {
@@ -44,22 +37,6 @@ public class InternationalCallingCodeJpaEntity {
 
 	public void setValue(String value) {
 		this.value = value;
-	}
-
-	public String getCountryName() {
-		return countryName;
-	}
-
-	public void setCountryName(String countryName) {
-		this.countryName = countryName;
-	}
-
-	public String getFlagPath() {
-		return flagPath;
-	}
-
-	public void setFlagPath(String flagPath) {
-		this.flagPath = flagPath;
 	}
 
 	public Boolean getEnabled() {
@@ -72,6 +49,10 @@ public class InternationalCallingCodeJpaEntity {
 
 	public Long getId() {
 		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	@Override
@@ -100,8 +81,7 @@ public class InternationalCallingCodeJpaEntity {
 
 	@Override
 	public String toString() {
-		return "InternationalCallingCodeJpaEntity [id=" + id + ", value=" + value + ", countryName=" + countryName
-				+ ", flagPath=" + flagPath + ", enabled=" + enabled + "]";
+		return "InternationalCallingCodeJpaEntity [id=" + id + ", value=" + value + ", enabled=" + enabled + "]";
 	}
 
 }

@@ -112,15 +112,16 @@ public class CreateJourneyRequestService implements CreateJourneyRequestUseCase 
 		}
 		JourneyRequestInputOutput createdJourneyRequest = createJourneyRequestPort.createJourneyRequest(journeyRequest,
 				username, locale);
+		
 		LocalDateTime creationLocalDateTime = dateTimeHelper
 				.systemToUserLocalDateTime(createdJourneyRequest.getCreationDateTime(), userZoneId);
 
-		return CreateJourneyRequestDto.builder()
+		return CreateJourneyRequestDto.builder().id(createdJourneyRequest.getId())
 				.departurePlace(new PlaceDto(command.getDeparturePlaceId(), departurePlaceType, departurePlaceLatitude,
 						departurePlaceLongitude))
 				.arrivalPlace(new PlaceDto(command.getArrivalPlaceId(), arrivalPlaceType, arrivalPlaceLatitude,
 						arrivalPlaceLongitude))
-				.dateTime(command.getDateTime()).creationDateTime(creationLocalDateTime)
+				.dateTime(command.getDateTime()).creationDateTime(creationLocalDateTime).status(createdJourneyRequest.getStatus())
 				.engineType(new EngineTypeDto(command.getEngineTypeId(), journeyRequest.getEngineType().getName()))
 				.workers(command.getWorkers()).description(command.getDescription()).build();
 

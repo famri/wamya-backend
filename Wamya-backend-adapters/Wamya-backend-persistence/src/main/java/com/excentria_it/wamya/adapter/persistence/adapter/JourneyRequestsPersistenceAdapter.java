@@ -1,5 +1,6 @@
 package com.excentria_it.wamya.adapter.persistence.adapter;
 
+import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -204,7 +205,9 @@ public class JourneyRequestsPersistenceAdapter implements SearchJourneyRequestsP
 		} else {
 			arrivalPlaceJpaEntity = arrivalPlaceOptional.get();
 		}
-
+		
+		journeyRequest.setCreationDateTime(Instant.now());
+		
 		JourneyRequestJpaEntity journeyRequestJpaEntity = journeyRequestMapper.mapToJpaEntity(journeyRequest,
 				departurePlaceJpaEntity, arrivalPlaceJpaEntity, engineTypeJpaEntity.get(), clientJpaEntity);
 

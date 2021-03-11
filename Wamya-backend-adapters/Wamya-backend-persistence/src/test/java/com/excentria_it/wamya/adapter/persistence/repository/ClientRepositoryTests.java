@@ -70,18 +70,18 @@ public class ClientRepositoryTests {
 	private List<ClientJpaEntity> givenClients(InternationalCallingCodeJpaEntity icc) {
 		List<ClientJpaEntity> clients = List.of(
 				new ClientJpaEntity(null, null, null, "Client1", null, null, "client1@gmail.com", null, null, icc,
-						"22111111", null, null, null, null, "https://path/to/client1/photo"),
+						"22111111", null, null, null, null, "https://path/to/client1/photo",null),
 				new ClientJpaEntity(null, null, null, "Client2", null, null, "client2@gmail.com", null, null, icc,
-						"22222222", null, null, null, null, "https://path/to/client2/photo"),
+						"22222222", null, null, null, null, "https://path/to/client2/photo",null),
 				new ClientJpaEntity(null, null, null, "Client3", null, null, "client3@gmail.com", null, null, icc,
-						"22333333", null, null, null, null, "https://path/to/client3/photo"));
+						"22333333", null, null, null, null, "https://path/to/client3/photo",null));
 
 		return clientRepository.saveAll(clients);
 	}
 
 	private InternationalCallingCodeJpaEntity givenIcc(String code) {
-		InternationalCallingCodeJpaEntity icc = InternationalCallingCodeJpaEntity.builder().value(code)
-				.countryName("Some country").flagPath("https://path/to/some/country/flag").enabled(true).build();
+		InternationalCallingCodeJpaEntity icc = InternationalCallingCodeJpaEntity.builder().value(code).enabled(true)
+				.build();
 		return internationalCallingCodeRepository.save(icc);
 	}
 }

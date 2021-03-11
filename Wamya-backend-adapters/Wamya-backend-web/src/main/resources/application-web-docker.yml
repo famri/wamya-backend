@@ -9,6 +9,7 @@ app:
   auth-server: auth-server
   
 spring:
+  mvc.static-path-pattern: /content/**
   security:
     oauth2:
       resourceserver:

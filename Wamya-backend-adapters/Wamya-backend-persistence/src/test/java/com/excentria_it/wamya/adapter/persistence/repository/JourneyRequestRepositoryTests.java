@@ -47,6 +47,7 @@ import com.excentria_it.wamya.adapter.persistence.entity.LocalizedPlaceJpaEntity
 import com.excentria_it.wamya.adapter.persistence.entity.ModelJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.PlaceId;
 import com.excentria_it.wamya.adapter.persistence.entity.PlaceJpaEntity;
+import com.excentria_it.wamya.adapter.persistence.entity.TimeZoneJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.TransporterJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.VehiculeJpaEntity;
 import com.excentria_it.wamya.domain.ClientJourneyRequestDto;
@@ -84,6 +85,9 @@ public class JourneyRequestRepositoryTests {
 
 	@Autowired
 	private InternationalCallingCodeRepository internationalCallingCodeRepository;
+
+	@Autowired
+	private TimeZoneRepository timeZoneRepository;
 
 	@Autowired
 	private DepartmentRepository departmentRepository;
@@ -1245,11 +1249,11 @@ public class JourneyRequestRepositoryTests {
 	private List<ClientJpaEntity> givenClients(InternationalCallingCodeJpaEntity icc) {
 		List<ClientJpaEntity> clients = List.of(
 				new ClientJpaEntity(null, null, null, "Client1", null, null, "client1@gmail.com", null, null, icc,
-						"22111111", null, null, null, null, "https://path/to/client1/photo"),
+						"22111111", null, null, null, null, "https://path/to/client1/photo",null),
 				new ClientJpaEntity(null, null, null, "Client2", null, null, "client2@gmail.com", null, null, icc,
-						"22222222", null, null, null, null, "https://path/to/client2/photo"),
+						"22222222", null, null, null, null, "https://path/to/client2/photo",null),
 				new ClientJpaEntity(null, null, null, "Client3", null, null, "client3@gmail.com", null, null, icc,
-						"22333333", null, null, null, null, "https://path/to/client3/photo"));
+						"22333333", null, null, null, null, "https://path/to/client3/photo",null));
 
 		return clientRepository.saveAll(clients);
 	}
@@ -1257,15 +1261,15 @@ public class JourneyRequestRepositoryTests {
 	private List<TransporterJpaEntity> givenTransporters(List<List<VehiculeJpaEntity>> vehicules) {
 
 		TransporterJpaEntity t1 = new TransporterJpaEntity(null, null, null, "Transporter1", null, null, null, null,
-				null, null, null, null, null, null, null, "https://path/to/transporter1/photo");
+				null, null, null, null, null, null, null, "https://path/to/transporter1/photo",null);
 		vehicules.get(0).forEach(v -> t1.addVehicule(v));
 
 		TransporterJpaEntity t2 = new TransporterJpaEntity(null, null, null, "Transporter2", null, null, null, null,
-				null, null, null, null, null, null, null, "https://path/to/transporter2/photo");
+				null, null, null, null, null, null, null, "https://path/to/transporter2/photo",null);
 		vehicules.get(1).forEach(v -> t2.addVehicule(v));
 
 		TransporterJpaEntity t3 = new TransporterJpaEntity(null, null, null, "Transporter3", null, null, null, null,
-				null, null, null, null, null, null, null, "https://path/to/transporter3/photo");
+				null, null, null, null, null, null, null, "https://path/to/transporter3/photo",null);
 		vehicules.get(2).forEach(v -> t1.addVehicule(v));
 
 		List<TransporterJpaEntity> transporters = List.of(t1, t2, t3);
@@ -1341,8 +1345,8 @@ public class JourneyRequestRepositoryTests {
 	}
 
 	private InternationalCallingCodeJpaEntity givenIcc(String code) {
-		InternationalCallingCodeJpaEntity icc = InternationalCallingCodeJpaEntity.builder().value(code)
-				.countryName("Some country").flagPath("https://path/to/some/country/flag").enabled(true).build();
+		InternationalCallingCodeJpaEntity icc = InternationalCallingCodeJpaEntity.builder().value(code).enabled(true)
+				.build();
 		return internationalCallingCodeRepository.save(icc);
 	}
 
@@ -1393,8 +1397,19 @@ public class JourneyRequestRepositoryTests {
 		if (countryFromDb.isPresent()) {
 			return countryFromDb.get();
 		}
-		CountryJpaEntity country = new CountryJpaEntity("TN", new HashMap<String, LocalizedCountryJpaEntity>(),
-				Collections.<DepartmentJpaEntity>emptySet());
+
+		InternationalCallingCodeJpaEntity icc = new InternationalCallingCodeJpaEntity();
+		icc.setValue("+216");
+		icc.setEnabled(true);
+		icc = internationalCallingCodeRepository.save(icc);
+
+		TimeZoneJpaEntity timeZone = new TimeZoneJpaEntity();
+		timeZone.setName("Africa/Tunis");
+		timeZone.setGmtOffset("GMT+01:00");
+		timeZone = timeZoneRepository.save(timeZone);
+
+		CountryJpaEntity country = new CountryJpaEntity("TN", "/path/to/country/flag", icc, List.of(timeZone),
+				new HashMap<String, LocalizedCountryJpaEntity>(), Collections.<DepartmentJpaEntity>emptySet());
 
 		return countryRepository.save(country);
 

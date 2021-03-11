@@ -1,57 +1,38 @@
 package com.excentria_it.wamya.adapter.persistence.entity;
 
+import javax.persistence.Cacheable;
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.SequenceGenerator;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.MapsId;
 import javax.persistence.Table;
 
 import com.excentria_it.wamya.common.annotation.Generated;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 @Generated
 @Entity
 @Table(name = "user_preference")
-@Inheritance(strategy = InheritanceType.JOINED)
+
 @NoArgsConstructor
-
-@SequenceGenerator(name = UserPreferenceJpaEntity.PREFERENCE_SEQ, initialValue = 1, allocationSize = 5)
+@AllArgsConstructor
+@Builder
+@Cacheable
 public class UserPreferenceJpaEntity {
-	public static final String PREFERENCE_SEQ = "preference_seq";
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = PREFERENCE_SEQ)
-	private Long id;
-
-	private String key;
+	@EmbeddedId
+	private UserPreferenceId userPreferenceId;
 
 	private String value;
 
-	public UserPreferenceJpaEntity(String key, String value) {
-		super();
-		this.key = key;
-		this.value = value;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getKey() {
-		return key;
-	}
-
-	public void setKey(String key) {
-		this.key = key;
-	}
+	@ManyToOne
+	@MapsId("id")
+	@JoinColumn(name = "id")
+	private UserAccountJpaEntity userAccount;
 
 	public String getValue() {
 		return value;
@@ -61,11 +42,27 @@ public class UserPreferenceJpaEntity {
 		this.value = value;
 	}
 
+	public UserPreferenceId getUserPreferenceId() {
+		return userPreferenceId;
+	}
+
+	public void setUserPreferenceId(UserPreferenceId userPreferenceId) {
+		this.userPreferenceId = userPreferenceId;
+	}
+
+	public UserAccountJpaEntity getUserAccount() {
+		return userAccount;
+	}
+
+	public void setUserAccount(UserAccountJpaEntity userAccount) {
+		this.userAccount = userAccount;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((userPreferenceId == null) ? 0 : userPreferenceId.hashCode());
 		return result;
 	}
 
@@ -78,17 +75,16 @@ public class UserPreferenceJpaEntity {
 		if (getClass() != obj.getClass())
 			return false;
 		UserPreferenceJpaEntity other = (UserPreferenceJpaEntity) obj;
-		if (id == null) {
-
+		if (userPreferenceId == null) {
 			return false;
-		} else if (!id.equals(other.id))
+		} else if (!userPreferenceId.equals(other.userPreferenceId))
 			return false;
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return "UserPreferenceJpaEntity [id=" + id + ", key=" + key + ", value=" + value + "]";
+		return "UserPreferenceJpaEntity [userPreferenceId=" + userPreferenceId + ", value=" + value + "]";
 	}
 
 }

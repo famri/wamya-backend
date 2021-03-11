@@ -4,6 +4,8 @@ import static com.excentria_it.wamya.test.data.common.TestConstants.*;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.excentria_it.wamya.application.port.in.CreateUserAccountUseCase.CreateUserAccountCommand;
 import com.excentria_it.wamya.application.port.in.CreateUserAccountUseCase.CreateUserAccountCommand.CreateUserAccountCommandBuilder;
@@ -15,13 +17,14 @@ import com.excentria_it.wamya.domain.UserAccount.UserAccountBuilder;
 public class UserAccountTestData {
 
 	public static UserAccountBuilder defaultUserAccountBuilder() {
-
+		Map<String,String> preferences = new HashMap<>();
+		preferences.put("timezone", "Africa/Tunis");
 		return UserAccount.builder().id(1L).isTransporter(false).gender(Gender.MAN).firstname(DEFAULT_FIRSTNAME)
 				.lastname(DEFAULT_LASTNAME).dateOfBirth(DEFAULT_DATE_OF_BIRTH).email(DEFAULT_EMAIL)
 				.emailValidationCode(DEFAULT_VALIDATION_CODE).isValidatedEmail(true)
 				.mobilePhoneNumber(defaultMobilePhoneNumber()).mobileNumberValidationCode(DEFAULT_VALIDATION_CODE)
 				.isValidatedMobileNumber(true).userPassword(DEFAULT_ENCODED_PASSWORD).receiveNewsletter(true)
-				.creationDateTime(ZonedDateTime.now(ZoneOffset.UTC));
+				.creationDateTime(ZonedDateTime.now(ZoneOffset.UTC)).preferences(preferences);
 
 	}
 

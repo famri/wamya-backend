@@ -4,6 +4,7 @@ import static com.excentria_it.wamya.test.data.common.ConstructorTestData.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
+import static org.mockito.Mockito.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -37,7 +38,7 @@ public class ConstructorPersistenceAdapterTests {
 		// when
 
 		Optional<ConstructorDto> constructorDtoOptional = constructorPersistenceAdapter.loadConstructorById(1L);
-		//then
+		// then
 		then(constructorRepository).should(times(1)).findConstructorById(eq(1L));
 		assertEquals(constructorDto, constructorDtoOptional.get());
 
@@ -52,11 +53,12 @@ public class ConstructorPersistenceAdapterTests {
 
 		// when
 
-		List<LoadConstructorsDto>  constructorDtosResult = constructorPersistenceAdapter.loadAllConstructors();
-		//then
+		List<LoadConstructorsDto> constructorDtosResult = constructorPersistenceAdapter.loadAllConstructors();
+		// then
 		then(constructorRepository).should(times(1)).findAllBy(any(Sort.class));
-		
+
 		assertEquals(constructorDtos, constructorDtosResult);
 
 	}
+
 }
