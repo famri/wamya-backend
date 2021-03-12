@@ -106,7 +106,7 @@ services:
   wamya:
     container_name: wamya
     build: Wamya-backend-configuration
-    mem_limit: 1024m
+    mem_limit: 2048m
 #    deploy:
 #      resources:
 #        limits:

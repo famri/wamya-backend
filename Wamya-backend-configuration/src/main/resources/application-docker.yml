@@ -9,15 +9,14 @@ app:
 eureka:
   client:
     eureka-connection-idle-timeout-seconds: 4
-    serviceUrl:
-      defaultZone: "http://${app.eureka-username}:${app.eureka-password}@${app.eureka-server}:8761/eureka/"
-    initialInstanceInfoReplicationIntervalSeconds: 5
-    registryFetchIntervalSeconds: 30
+    service-url:
+      default-zone: "http://${app.eureka-username}:${app.eureka-password}@${app.eureka-server}:8761/eureka/"
+    initial-instance-info-replication-interval-seconds: 5
+    registry-fetch-interval-seconds: 30
   instance:
-    leaseRenewalIntervalInSeconds: 5
-    leaseExpirationDurationInSeconds: 8
-#    preferIpAddress: true
-    
+    lease-expiration-duration-in-seconds: 5
+    lease-renewal-interval-in-seconds: 30
+       
 ribbon.ServerListRefreshInterval: 30000
 ribbon.NFLoadBalancerPingInterval: 5
 

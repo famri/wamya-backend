@@ -20,8 +20,10 @@ public class TransporterMapper {
 
 		Map<String, UserPreferenceJpaEntity> preferences = new HashMap<>();
 
-		userAccount.getPreferences().forEach((k, v) -> preferences.put(k,
-				new UserPreferenceJpaEntity(new UserPreferenceId(userAccount.getId(), k), v, null)));
+		if (userAccount.getPreferences() != null) {
+			userAccount.getPreferences().forEach((k, v) -> preferences.put(k,
+					new UserPreferenceJpaEntity(new UserPreferenceId(userAccount.getId(), k), v, null)));
+		}
 
 		return new TransporterJpaEntity(userAccount.getId(), userAccount.getOauthId(), userAccount.getGender(),
 				userAccount.getFirstname(), userAccount.getLastname(), userAccount.getDateOfBirth(),
