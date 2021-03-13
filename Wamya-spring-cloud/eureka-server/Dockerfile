@@ -4,4 +4,4 @@ EXPOSE 8761
 
 COPY build/libs/*.jar app.jar
 
-ENTRYPOINT ["java","-jar","/app.jar"]
+ENTRYPOINT ["java","-Xms256m","-Xms350m","-jar","/app.jar"]

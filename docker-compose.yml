@@ -21,7 +21,7 @@ services:
   eureka:
     container_name: eureka
     build: Wamya-spring-cloud/eureka-server
-    mem_limit: 512m
+    mem_limit: 1024m
 #    deploy:
 #      resources:
 #        limits:
@@ -65,7 +65,7 @@ services:
     ports:
       - "9595:9595" 
     build: Wamya-spring-cloud/authorization-server
-    entrypoint: ["java", "-Djava.security.egd=file:/dev/./urandom", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:9595", "-jar", "/app.jar"]
+    entrypoint: ["java", "-Djava.security.egd=file:/dev/./urandom", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:9595", "-Xms256m","-Xmx350m", "-jar", "/app.jar"]
     mem_limit: 512m
 #    deploy:
 #      resources:
@@ -106,7 +106,7 @@ services:
   wamya:
     container_name: wamya
     build: Wamya-backend-configuration
-    mem_limit: 2048m
+    mem_limit: 512m
 #    deploy:
 #      resources:
 #        limits:
@@ -123,7 +123,7 @@ services:
       - POSTGRES_PASSWORD=wamya
       - RABBITMQ_USER=dev
       - RABBITMQ_PASS=dev      
-    entrypoint: ["java", "-Djava.security.egd=file:/dev/./urandom", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:9090", "-jar", "/wamya-backend.jar"]
+    entrypoint: ["java", "-Djava.security.egd=file:/dev/./urandom", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:9090", "-Xms256m","-Xmx350m", "-jar", "/wamya-backend.jar"]
     depends_on:
       - "database"
 
@@ -225,7 +225,7 @@ services:
       - SMS_GATEWAY_PASSWORD=user
       - RABBITMQ_USER=dev
       - RABBITMQ_PASS=dev  
-    entrypoint: ["java", "-Djava.security.egd=file:/dev/./urandom", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:9595", "-jar", "/messaging-gateway.jar"]
+    entrypoint: ["java", "-Djava.security.egd=file:/dev/./urandom", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:9595", "-Xms128m","-Xmx250m", "-jar", "/messaging-gateway.jar"]
     depends_on:
       - "kannel"
       - "rabbitmq"
