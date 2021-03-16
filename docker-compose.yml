@@ -7,7 +7,7 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=docker
     build: Wamya-spring-cloud/gateway
-    mem_limit: 350m
+    mem_limit: 512m
 #    deploy:
 #      resources:
 #        limits:
