@@ -565,6 +565,54 @@ public class JourneyRequestsPersistenceAdapterTests {
 	}
 
 	@Test
+	void testTrueIsExistentJourneyRequestByIdAndClientEmail() {
+		// given
+		given(journeyRequestRepository.existsByIdAndClient_Email(any(Long.class), any(String.class))).willReturn(true);
+		// when
+		boolean result = journeyRequestsPersistenceAdapter.isExistentJourneyRequestByIdAndClientEmail(1L,
+				TestConstants.DEFAULT_EMAIL);
+		// then
+		assertTrue(result);
+	}
+
+	@Test
+	void testTrueIsExistentJourneyRequestByIdAndClientMobileNumberAndIcc() {
+		// given
+		given(journeyRequestRepository.existsByIdAndClient_Icc_ValueAndClient_MobileNumber(any(Long.class),
+				any(String.class), any(String.class))).willReturn(true);
+		// when
+		String[] mobileNumber = TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME.split("_");
+		boolean result = journeyRequestsPersistenceAdapter.isExistentJourneyRequestByIdAndClientMobileNumberAndIcc(1L,
+				mobileNumber[0], mobileNumber[1]);
+		// then
+		assertTrue(result);
+	}
+
+	@Test
+	void testFalseIsExistentJourneyRequestByIdAndClientEmail() {
+		// given
+		given(journeyRequestRepository.existsByIdAndClient_Email(any(Long.class), any(String.class))).willReturn(false);
+		// when
+		boolean result = journeyRequestsPersistenceAdapter.isExistentJourneyRequestByIdAndClientEmail(1L,
+				TestConstants.DEFAULT_EMAIL);
+		// then
+		assertFalse(result);
+	}
+
+	@Test
+	void testFalseIsExistentJourneyRequestByIdAndClientMobileNumberAndIcc() {
+		// given
+		given(journeyRequestRepository.existsByIdAndClient_Icc_ValueAndClient_MobileNumber(any(Long.class),
+				any(String.class), any(String.class))).willReturn(false);
+		// when
+		String[] mobileNumber = TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME.split("_");
+		boolean result = journeyRequestsPersistenceAdapter.isExistentJourneyRequestByIdAndClientMobileNumberAndIcc(1L,
+				mobileNumber[0], mobileNumber[1]);
+		// then
+		assertFalse(result);
+	}
+
+	@Test
 	void testConvertToSort() {
 
 		Sort sort1 = journeyRequestsPersistenceAdapter.convertToSort(new SortCriterion("min-price", "desc"));

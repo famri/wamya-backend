@@ -523,8 +523,55 @@ public class RestApiExceptionHandlerTest {
 		then(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 	}
 
+	@Test
+	void whenHandleOperationDeniedException_thenStatusIsNotFound() {
+		// given
+		OperationDeniedException exception = givenOperationDeniedException();
+
+		// When
+		ResponseEntity<ApiError> responseEntity = restApiExceptionHandler.handleOperationDeniedException(exception);
+
+		// Then
+		then(responseEntity.getBody() instanceof ApiError);
+		then(((ApiError) responseEntity.getBody()).getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
+		then(((ApiError) responseEntity.getBody()).getErrorCode()).isEqualTo(ErrorCode.VALIDATION_ERROR);
+		then(((ApiError) responseEntity.getBody()).getErrors()).containsExactly(SOME_MESSAGE);
+		then(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+	}
+
+	@Test
+	void whenHandleJourneyProposalNotFoundException_thenStatusIsBadREquest() {
+		// given
+		JourneyProposalNotFoundException exception = givenJourneyProposalNotFoundException();
+
+		// When
+		ResponseEntity<ApiError> responseEntity = restApiExceptionHandler
+				.handleJourneyProposalNotFoundException(exception);
+
+		// Then
+		then(responseEntity.getBody() instanceof ApiError);
+		then(((ApiError) responseEntity.getBody()).getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
+		then(((ApiError) responseEntity.getBody()).getErrorCode()).isEqualTo(ErrorCode.OBJECT_NOT_FOUND);
+		then(((ApiError) responseEntity.getBody()).getErrors()).containsExactly(SOME_MESSAGE);
+		then(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+	}
+
+	private JourneyProposalNotFoundException givenJourneyProposalNotFoundException() {
+		JourneyProposalNotFoundException exception = Mockito.mock(JourneyProposalNotFoundException.class);
+		given(exception.getMessage()).willReturn(SOME_MESSAGE);
+
+		return exception;
+	}
+
 	private DepartmentNotFoundException givenDepartmentNotFoundException() {
 		DepartmentNotFoundException exception = Mockito.mock(DepartmentNotFoundException.class);
+		given(exception.getMessage()).willReturn(SOME_MESSAGE);
+
+		return exception;
+	}
+
+	private OperationDeniedException givenOperationDeniedException() {
+		OperationDeniedException exception = Mockito.mock(OperationDeniedException.class);
 		given(exception.getMessage()).willReturn(SOME_MESSAGE);
 
 		return exception;

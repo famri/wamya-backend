@@ -205,9 +205,9 @@ public class JourneyRequestsPersistenceAdapter implements SearchJourneyRequestsP
 		} else {
 			arrivalPlaceJpaEntity = arrivalPlaceOptional.get();
 		}
-		
+
 		journeyRequest.setCreationDateTime(Instant.now());
-		
+
 		JourneyRequestJpaEntity journeyRequestJpaEntity = journeyRequestMapper.mapToJpaEntity(journeyRequest,
 				departurePlaceJpaEntity, arrivalPlaceJpaEntity, engineTypeJpaEntity.get(), clientJpaEntity);
 
@@ -281,5 +281,17 @@ public class JourneyRequestsPersistenceAdapter implements SearchJourneyRequestsP
 	public Optional<ClientJourneyRequestDto> loadJourneyRequestByIdAndClientMobileNumberAndIcc(Long id,
 			String mobileNumber, String icc) {
 		return journeyRequestRepository.findByIdAndClient_MobileNumberAndClient_IccValue(id, mobileNumber, icc);
+	}
+
+	@Override
+	public boolean isExistentJourneyRequestByIdAndClientEmail(Long journeyRequestId, String clientUsername) {
+		return journeyRequestRepository.existsByIdAndClient_Email(journeyRequestId, clientUsername);
+	}
+
+	@Override
+	public boolean isExistentJourneyRequestByIdAndClientMobileNumberAndIcc(Long journeyRequestId, String icc,
+			String mobileNumber) {
+		return journeyRequestRepository.existsByIdAndClient_Icc_ValueAndClient_MobileNumber(journeyRequestId, icc,
+				mobileNumber);
 	}
 }

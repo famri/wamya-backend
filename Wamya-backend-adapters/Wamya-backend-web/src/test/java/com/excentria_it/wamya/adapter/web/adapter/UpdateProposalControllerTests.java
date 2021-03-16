@@ -17,21 +17,22 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.test.context.ActiveProfiles;
 
 import com.c4_soft.springaddons.security.oauth2.test.mockmvc.MockMvcSupport;
-import com.excentria_it.wamya.application.port.in.AcceptProposalUseCase;
-import com.excentria_it.wamya.application.port.in.AcceptProposalUseCase.AcceptProposalCommand;
+import com.excentria_it.wamya.application.port.in.UpdateProposalUseCase;
+import com.excentria_it.wamya.application.port.in.UpdateProposalUseCase.UpdateProposalCommand;
 import com.excentria_it.wamya.common.exception.RestApiExceptionHandler;
+import com.excentria_it.wamya.domain.JourneyProposalDto.StatusCode;
 import com.excentria_it.wamya.test.data.common.TestConstants;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @ActiveProfiles(profiles = { "web-local" })
-@Import(value = { AcceptProposalController.class, RestApiExceptionHandler.class, MockMvcSupport.class })
-@WebMvcTest(controllers = AcceptProposalController.class)
-public class AcceptProposalControllerTests {
+@Import(value = { UpdateProposalController.class, RestApiExceptionHandler.class, MockMvcSupport.class })
+@WebMvcTest(controllers = UpdateProposalController.class)
+public class UpdateProposalControllerTests {
 	@Autowired
 	private MockMvcSupport api;
 
 	@MockBean
-	private AcceptProposalUseCase acceptProposalUseCase;
+	private UpdateProposalUseCase updateProposalUseCase;
 
 	@Autowired
 	private ObjectMapper objectMapper;
@@ -39,7 +40,7 @@ public class AcceptProposalControllerTests {
 	@Test
 	void givenValidInput_WhenAcceptProposal_ThenSucceed() throws Exception {
 
-		AcceptProposalCommand command = new AcceptProposalCommand("accepted");
+		UpdateProposalCommand command = new UpdateProposalCommand("accepted");
 
 		String commandJson = objectMapper.writeValueAsString(command);
 
@@ -49,8 +50,8 @@ public class AcceptProposalControllerTests {
 						.contentType(MediaType.APPLICATION_JSON_VALUE).content(commandJson))
 				.andExpect(status().isNoContent()).andReturn();
 
-		then(acceptProposalUseCase).should(times(1)).acceptProposal(eq(1L), eq(1L), eq(TestConstants.DEFAULT_EMAIL),
-				eq("en_US"));
+		then(updateProposalUseCase).should(times(1)).updateProposal(eq(1L), eq(1L), eq(StatusCode.ACCEPTED),
+				eq(TestConstants.DEFAULT_EMAIL));
 
 	}
 }

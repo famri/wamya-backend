@@ -12,4 +12,9 @@ public interface LoadJourneyRequestPort {
 
 	Optional<ClientJourneyRequestDto> loadJourneyRequestByIdAndClientMobileNumberAndIcc(Long id, String mobileNumber,
 			String icc);
+
+	boolean isExistentJourneyRequestByIdAndClientEmail(Long journeyRequestId, String clientUsername);
+
+	boolean isExistentJourneyRequestByIdAndClientMobileNumberAndIcc(Long journeyRequestId, String string,
+			String string2);
 }

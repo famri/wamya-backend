@@ -9,23 +9,21 @@ import javax.transaction.Transactional;
 
 import org.apache.commons.collections4.CollectionUtils;
 
-import com.excentria_it.wamya.application.port.in.AcceptProposalUseCase;
 import com.excentria_it.wamya.application.port.in.LoadProposalsUseCase;
 import com.excentria_it.wamya.application.port.in.MakeProposalUseCase;
+import com.excentria_it.wamya.application.port.in.UpdateProposalUseCase;
 import com.excentria_it.wamya.application.port.out.AcceptProposalPort;
 import com.excentria_it.wamya.application.port.out.LoadJourneyRequestPort;
 import com.excentria_it.wamya.application.port.out.LoadProposalsPort;
 import com.excentria_it.wamya.application.port.out.LoadTransporterVehiculesPort;
 import com.excentria_it.wamya.application.port.out.MakeProposalPort;
+import com.excentria_it.wamya.application.port.out.RejectProposalPort;
 import com.excentria_it.wamya.common.annotation.UseCase;
 import com.excentria_it.wamya.common.exception.InvalidTransporterVehiculeException;
 import com.excentria_it.wamya.common.exception.JourneyProposalNotFoundException;
 import com.excentria_it.wamya.common.exception.JourneyRequestExpiredException;
 import com.excentria_it.wamya.common.exception.JourneyRequestNotFoundException;
-import com.excentria_it.wamya.common.exception.OperationDeniedException;
 import com.excentria_it.wamya.domain.ClientJourneyRequestDto;
-import com.excentria_it.wamya.domain.CreateJourneyRequestDto;
-import com.excentria_it.wamya.domain.JourneyProposalDto;
 import com.excentria_it.wamya.domain.JourneyProposalDto.StatusCode;
 import com.excentria_it.wamya.domain.JourneyProposalDto.VehiculeDto;
 import com.excentria_it.wamya.domain.JourneyRequestInputOutput;
@@ -38,7 +36,7 @@ import lombok.RequiredArgsConstructor;
 @UseCase
 @Transactional
 @RequiredArgsConstructor
-public class JourneyProposalService implements MakeProposalUseCase, LoadProposalsUseCase, AcceptProposalUseCase {
+public class JourneyProposalService implements MakeProposalUseCase, LoadProposalsUseCase, UpdateProposalUseCase {
 
 	private final MakeProposalPort makeProposalPort;
 
@@ -49,6 +47,8 @@ public class JourneyProposalService implements MakeProposalUseCase, LoadProposal
 	private final LoadProposalsPort loadPropsalsPort;
 
 	private final AcceptProposalPort acceptProposalPort;
+
+	private final RejectProposalPort rejectProposalPort;
 
 	@Override
 	public MakeProposalDto makeProposal(MakeProposalCommand command, Long journeyRequestId, String transporterUsername,
@@ -131,42 +131,43 @@ public class JourneyProposalService implements MakeProposalUseCase, LoadProposal
 	}
 
 	@Override
-	public void acceptProposal(Long journeyRequestId, Long proposalId, String clientUsername, String locale) {
+	public void updateProposal(Long journeyRequestId, Long proposalId, StatusCode status, String clientUsername) {
 
-		checkClientJourneyRequestsProposal(clientUsername, journeyRequestId, proposalId, locale);
+		checkClientJourneyRequestsProposal(clientUsername, journeyRequestId, proposalId);
 
-		acceptProposalPort.acceptProposal(journeyRequestId, proposalId);
+		if (StatusCode.ACCEPTED.equals(status)) {
+			acceptProposalPort.acceptProposal(journeyRequestId, proposalId);
+		} else {
+			rejectProposalPort.rejectProposal(journeyRequestId, proposalId);
+		}
 
 	}
 
-	private void checkClientJourneyRequestsProposal(String clientUsername, Long journeyRequestId, Long proposalId,
-			String locale) {
+	private void checkClientJourneyRequestsProposal(String clientUsername, Long journeyRequestId, Long proposalId) {
 
-		Optional<ClientJourneyRequestDto> journeyRequestOptional = null;
+		boolean journeyRequestExists = false;
+
 		if (clientUsername.contains("@")) {
-			journeyRequestOptional = loadJourneyRequestPort.loadJourneyRequestByIdAndClientEmail(journeyRequestId,
+
+			journeyRequestExists = loadJourneyRequestPort.isExistentJourneyRequestByIdAndClientEmail(journeyRequestId,
 					clientUsername);
 		} else {
 
 			String[] mobileNumber = clientUsername.split("_");
-			journeyRequestOptional = loadJourneyRequestPort.loadJourneyRequestByIdAndClientMobileNumberAndIcc(
+
+			journeyRequestExists = loadJourneyRequestPort.isExistentJourneyRequestByIdAndClientMobileNumberAndIcc(
 					journeyRequestId, mobileNumber[1], mobileNumber[0]);
 		}
 
-		if (journeyRequestOptional.isEmpty()) {
+		if (!journeyRequestExists) {
 			throw new JourneyRequestNotFoundException(String.format("Journey request not found: %d", journeyRequestId));
 		}
 
-		Optional<JourneyProposalDto> journeyProposalDto = loadPropsalsPort
-				.loadJourneyProposalByIdAndJourneyRequestId(proposalId, journeyRequestId, locale);
+		boolean journeyProposalExists = loadPropsalsPort.isExistentJourneyProposalByIdAndJourneyRequestIdAndStatusCode(
+				proposalId, journeyRequestId, StatusCode.SUBMITTED);
 
-		if (journeyProposalDto.isEmpty()) {
+		if (!journeyProposalExists) {
 			throw new JourneyProposalNotFoundException(String.format("Journey proposal not found: %d", proposalId));
-		}
-
-		if (journeyProposalDto.get().getStatus() == null
-				|| !StatusCode.SUBMITTED.equals(journeyProposalDto.get().getStatus().getCode())) {
-			throw new OperationDeniedException(String.format("Journey proposal %d could not be modified.", proposalId));
 		}
 
 	}

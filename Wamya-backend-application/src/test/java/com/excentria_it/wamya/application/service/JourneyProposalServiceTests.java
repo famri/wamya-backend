@@ -27,15 +27,13 @@ import com.excentria_it.wamya.application.port.out.LoadJourneyRequestPort;
 import com.excentria_it.wamya.application.port.out.LoadProposalsPort;
 import com.excentria_it.wamya.application.port.out.LoadTransporterVehiculesPort;
 import com.excentria_it.wamya.application.port.out.MakeProposalPort;
+import com.excentria_it.wamya.application.port.out.RejectProposalPort;
 import com.excentria_it.wamya.common.exception.InvalidTransporterVehiculeException;
 import com.excentria_it.wamya.common.exception.JourneyProposalNotFoundException;
 import com.excentria_it.wamya.common.exception.JourneyRequestExpiredException;
 import com.excentria_it.wamya.common.exception.JourneyRequestNotFoundException;
-import com.excentria_it.wamya.common.exception.OperationDeniedException;
 import com.excentria_it.wamya.domain.ClientJourneyRequestDto;
-import com.excentria_it.wamya.domain.JourneyProposalDto;
 import com.excentria_it.wamya.domain.JourneyProposalDto.StatusCode;
-import com.excentria_it.wamya.domain.JourneyProposalDto.StatusDto;
 import com.excentria_it.wamya.domain.JourneyProposalDto.VehiculeDto;
 import com.excentria_it.wamya.domain.JourneyRequestInputOutput.JourneyRequestInputOutputBuilder;
 import com.excentria_it.wamya.domain.JourneyRequestProposals;
@@ -55,6 +53,9 @@ public class JourneyProposalServiceTests {
 	private LoadProposalsPort loadPropsalsPort;
 	@Mock
 	private AcceptProposalPort acceptProposalPort;
+	@Mock
+	private RejectProposalPort rejectProposalPort;
+
 	@InjectMocks
 	private JourneyProposalService journeyProposalService;
 
@@ -247,85 +248,60 @@ public class JourneyProposalServiceTests {
 	}
 
 	@Test
-	void givenClientEmailAndEmptyClientJourneyRequest_WhenAcceptProposal_ThenThrowJourneyRequestNotFoundException() {
+	void givenClientEmailAndInexistentClientJourneyRequest_WhenAcceptProposal_ThenThrowJourneyRequestNotFoundException() {
 
 		// given
-		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class)))
-				.willReturn(Optional.empty());
+		given(loadJourneyRequestPort.isExistentJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class)))
+				.willReturn(false);
 
 		// when //then
 		assertThrows(JourneyRequestNotFoundException.class,
-				() -> journeyProposalService.acceptProposal(1L, 1L, TestConstants.DEFAULT_EMAIL, "en_US"));
+				() -> journeyProposalService.updateProposal(1L, 1L, StatusCode.ACCEPTED, TestConstants.DEFAULT_EMAIL));
 
 	}
 
 	@Test
-	void givenClientMobileNumberAndEmptyClientJourneyRequest_WhenAcceptProposal_ThenThrowJourneyRequestNotFoundException() {
+	void givenClientMobileNumberAndInexistentClientJourneyRequest_WhenAcceptProposal_ThenThrowJourneyRequestNotFoundException() {
 
 		// given
-		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientMobileNumberAndIcc(any(Long.class),
-				any(String.class), any(String.class))).willReturn(Optional.empty());
+		given(loadJourneyRequestPort.isExistentJourneyRequestByIdAndClientMobileNumberAndIcc(any(Long.class),
+				any(String.class), any(String.class))).willReturn(false);
 
 		// when //then
-		assertThrows(JourneyRequestNotFoundException.class, () -> journeyProposalService.acceptProposal(1L, 1L,
-				TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME, "en_US"));
+		assertThrows(JourneyRequestNotFoundException.class, () -> journeyProposalService.updateProposal(1L, 1L,
+				StatusCode.ACCEPTED, TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME));
 
 	}
 
 	@Test
-	void givenClientEmailAndEmptyClientJourneyProposal_WhenAcceptProposal_ThenThrowJourneyProposalNotFoundException() {
+	void givenClientEmailAndInexistentJourneyProposal_WhenAcceptProposal_ThenThrowJourneyProposalNotFoundException() {
 
 		// given
-		ClientJourneyRequestDto journeyRequest = defaultClientJourneyRequestDto();
-		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class)))
-				.willReturn(Optional.of(journeyRequest));
+		given(loadJourneyRequestPort.isExistentJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class)))
+				.willReturn(true);
 
-		given(loadPropsalsPort.loadJourneyProposalByIdAndJourneyRequestId(any(Long.class), any(Long.class),
-				any(String.class))).willReturn(Optional.empty());
+		given(loadPropsalsPort.isExistentJourneyProposalByIdAndJourneyRequestIdAndStatusCode(any(Long.class),
+				any(Long.class), any(StatusCode.class))).willReturn(false);
 
 		// when //then
 		assertThrows(JourneyProposalNotFoundException.class,
-				() -> journeyProposalService.acceptProposal(1L, 1L, TestConstants.DEFAULT_EMAIL, "en_US"));
+				() -> journeyProposalService.updateProposal(1L, 1L, StatusCode.ACCEPTED, TestConstants.DEFAULT_EMAIL));
 
 	}
 
 	@Test
-	void givenNullJourneyProposalStatus_WhenAcceptProposal_ThenThrowOperationDeniedException() {
+	void givenClientMobileNumberAndInexistentJourneyProposal_WhenAcceptProposal_ThenThrowJourneyProposalNotFoundException() {
 
 		// given
-		ClientJourneyRequestDto journeyRequest = defaultClientJourneyRequestDto();
-		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class)))
-				.willReturn(Optional.of(journeyRequest));
+		given(loadJourneyRequestPort.isExistentJourneyRequestByIdAndClientMobileNumberAndIcc(any(Long.class),
+				any(String.class), any(String.class))).willReturn(true);
 
-		JourneyProposalDto journeyProposalDto = defaultJourneyProposalDto();
-		journeyProposalDto.setStatus(null);
-
-		given(loadPropsalsPort.loadJourneyProposalByIdAndJourneyRequestId(any(Long.class), any(Long.class),
-				any(String.class))).willReturn(Optional.of(journeyProposalDto));
+		given(loadPropsalsPort.isExistentJourneyProposalByIdAndJourneyRequestIdAndStatusCode(any(Long.class),
+				any(Long.class), any(StatusCode.class))).willReturn(false);
 
 		// when //then
-		assertThrows(OperationDeniedException.class,
-				() -> journeyProposalService.acceptProposal(1L, 1L, TestConstants.DEFAULT_EMAIL, "en_US"));
-
-	}
-
-	@Test
-	void givenJourneyProposalStatusIsNotSubmitted_WhenAcceptProposal_ThenThrowOperationDeniedException() {
-
-		// given
-		ClientJourneyRequestDto journeyRequest = defaultClientJourneyRequestDto();
-		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class)))
-				.willReturn(Optional.of(journeyRequest));
-
-		JourneyProposalDto journeyProposalDto = defaultJourneyProposalDto();
-		journeyProposalDto.setStatus(new StatusDto(StatusCode.CANCELED, "cancled"));
-
-		given(loadPropsalsPort.loadJourneyProposalByIdAndJourneyRequestId(any(Long.class), any(Long.class),
-				any(String.class))).willReturn(Optional.of(journeyProposalDto));
-
-		// when //then
-		assertThrows(OperationDeniedException.class,
-				() -> journeyProposalService.acceptProposal(1L, 1L, TestConstants.DEFAULT_EMAIL, "en_US"));
+		assertThrows(JourneyProposalNotFoundException.class, () -> journeyProposalService.updateProposal(1L, 1L,
+				StatusCode.ACCEPTED, TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME));
 
 	}
 
@@ -333,19 +309,92 @@ public class JourneyProposalServiceTests {
 	void givenValidParameters_WhenAcceptProposal_ThenSucceed() {
 
 		// given
-		ClientJourneyRequestDto journeyRequest = defaultClientJourneyRequestDto();
-		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class)))
-				.willReturn(Optional.of(journeyRequest));
 
-		JourneyProposalDto journeyProposalDto = defaultJourneyProposalDto();
-		journeyProposalDto.setStatus(new StatusDto(StatusCode.SUBMITTED, "submitted"));
-		given(loadPropsalsPort.loadJourneyProposalByIdAndJourneyRequestId(any(Long.class), any(Long.class),
-				any(String.class))).willReturn(Optional.of(journeyProposalDto));
+		given(loadJourneyRequestPort.isExistentJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class)))
+				.willReturn(true);
+
+		given(loadPropsalsPort.isExistentJourneyProposalByIdAndJourneyRequestIdAndStatusCode(any(Long.class),
+				any(Long.class), any(StatusCode.class))).willReturn(true);
 
 		// when
-		journeyProposalService.acceptProposal(1L, 1L, TestConstants.DEFAULT_EMAIL, "en_US");
+		journeyProposalService.updateProposal(1L, 1L, StatusCode.ACCEPTED, TestConstants.DEFAULT_EMAIL);
 		// then
 		then(acceptProposalPort).should(times(1)).acceptProposal(eq(1L), eq(1L));
+	}
+
+	@Test
+	void givenClientEmailAndInexistentClientJourneyRequest_WhenRejectProposal_ThenThrowJourneyRequestNotFoundException() {
+
+		// given
+		given(loadJourneyRequestPort.isExistentJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class)))
+				.willReturn(false);
+
+		// when //then
+		assertThrows(JourneyRequestNotFoundException.class,
+				() -> journeyProposalService.updateProposal(1L, 1L, StatusCode.REJECTED, TestConstants.DEFAULT_EMAIL));
+
+	}
+
+	@Test
+	void givenClientMobileNumberAndInexistentClientJourneyRequest_WhenRejectProposal_ThenThrowJourneyRequestNotFoundException() {
+
+		// given
+		given(loadJourneyRequestPort.isExistentJourneyRequestByIdAndClientMobileNumberAndIcc(any(Long.class),
+				any(String.class), any(String.class))).willReturn(false);
+
+		// when //then
+		assertThrows(JourneyRequestNotFoundException.class, () -> journeyProposalService.updateProposal(1L, 1L,
+				StatusCode.REJECTED, TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME));
+
+	}
+
+	@Test
+	void givenClientEmailAndInexistentJourneyProposal_WhenRejectProposal_ThenThrowJourneyProposalNotFoundException() {
+
+		// given
+		given(loadJourneyRequestPort.isExistentJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class)))
+				.willReturn(true);
+
+		given(loadPropsalsPort.isExistentJourneyProposalByIdAndJourneyRequestIdAndStatusCode(any(Long.class),
+				any(Long.class), any(StatusCode.class))).willReturn(false);
+
+		// when //then
+		assertThrows(JourneyProposalNotFoundException.class,
+				() -> journeyProposalService.updateProposal(1L, 1L, StatusCode.REJECTED, TestConstants.DEFAULT_EMAIL));
+
+	}
+
+	@Test
+	void givenClientMobileNumberAndInexistentJourneyProposal_WhenRejectProposal_ThenThrowJourneyProposalNotFoundException() {
+
+		// given
+		given(loadJourneyRequestPort.isExistentJourneyRequestByIdAndClientMobileNumberAndIcc(any(Long.class),
+				any(String.class), any(String.class))).willReturn(true);
+
+		given(loadPropsalsPort.isExistentJourneyProposalByIdAndJourneyRequestIdAndStatusCode(any(Long.class),
+				any(Long.class), any(StatusCode.class))).willReturn(false);
+
+		// when //then
+		assertThrows(JourneyProposalNotFoundException.class, () -> journeyProposalService.updateProposal(1L, 1L,
+				StatusCode.REJECTED, TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME));
+
+	}
+
+	@Test
+	void givenValidParameters_WhenRejectProposal_ThenSucceed() {
+
+		// given
+
+		given(loadJourneyRequestPort.isExistentJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class)))
+				.willReturn(true);
+
+		given(loadPropsalsPort.isExistentJourneyProposalByIdAndJourneyRequestIdAndStatusCode(any(Long.class),
+				any(Long.class), any(StatusCode.class))).willReturn(true);
+
+		// when
+		journeyProposalService.updateProposal(1L, 1L, StatusCode.REJECTED, TestConstants.DEFAULT_EMAIL);
+		// then
+		then(rejectProposalPort).should(times(1)).rejectProposal(eq(1L), eq(1L));
 	}
 
 }

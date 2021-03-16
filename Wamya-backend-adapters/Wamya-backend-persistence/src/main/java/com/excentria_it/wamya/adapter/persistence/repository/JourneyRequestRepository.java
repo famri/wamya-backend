@@ -38,4 +38,8 @@ public interface JourneyRequestRepository extends JpaRepository<JourneyRequestJp
 
 	Optional<ClientJourneyRequestDto> findByIdAndClient_MobileNumberAndClient_IccValue(Long journeyRequestId,
 			String clientMobileNumber, String clientIccValue);
+
+	boolean existsByIdAndClient_Email(Long journeyRequestId, String clientUsername);
+
+	boolean existsByIdAndClient_Icc_ValueAndClient_MobileNumber(Long journeyRequestId, String icc, String mobileNumber);
 }

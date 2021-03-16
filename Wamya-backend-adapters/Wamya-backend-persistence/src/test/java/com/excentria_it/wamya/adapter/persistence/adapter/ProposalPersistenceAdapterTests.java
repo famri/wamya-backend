@@ -40,6 +40,7 @@ import com.excentria_it.wamya.adapter.persistence.repository.JourneyRequestRepos
 import com.excentria_it.wamya.adapter.persistence.repository.TransporterRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.VehiculeRepository;
 import com.excentria_it.wamya.domain.JourneyProposalDto;
+import com.excentria_it.wamya.domain.JourneyProposalDto.StatusCode;
 import com.excentria_it.wamya.domain.JourneyRequestProposals;
 import com.excentria_it.wamya.domain.LoadJourneyProposalsCriteria;
 import com.excentria_it.wamya.test.data.common.JourneyProposalJpaEntityTestData;
@@ -191,22 +192,6 @@ public class ProposalPersistenceAdapterTests {
 	}
 
 	@Test
-	void givenNullJourneyProposalJpaEntity_WhenLoadJourneyProposalByIdAndJourneyRequestId_ThenReturnEmptyJourneyProposalDto() {
-		// given
-
-		given(journeyProposalRepository.findByIdAndJourneyRequest_Id(any(Long.class), any(Long.class)))
-				.willReturn(null);
-
-		// when
-		Optional<JourneyProposalDto> journeyProposalDtoOptional = proposalPersistenceAdapter
-				.loadJourneyProposalByIdAndJourneyRequestId(1L, 1L, "en_US");
-
-		// then
-
-		assertTrue(journeyProposalDtoOptional.isEmpty());
-	}
-
-	@Test
 	void givenEmptyJourneyProposalJpaEntity_WhenLoadJourneyProposalByIdAndJourneyRequestId_ThenReturnEmptyJourneyProposalDto() {
 		// given
 
@@ -238,16 +223,6 @@ public class ProposalPersistenceAdapterTests {
 
 		// then
 		assertEquals(journeyProposalDto, journeyProposalDtoOptional.get());
-	}
-
-	@Test
-	void givenNullJourneyRequestByID_WhenAcceptProposal_ThenReturnFalse() {
-		// given
-		given(journeyRequestRepository.findById(any(Long.class))).willReturn(null);
-		// when
-		boolean result = proposalPersistenceAdapter.acceptProposal(1L, 1L);
-		// then
-		assertFalse(result);
 	}
 
 	@Test
@@ -287,7 +262,7 @@ public class ProposalPersistenceAdapterTests {
 		journeyRequestJpaEntity.addProposal(proposal2);
 
 		given(journeyRequestRepository.findById(any(Long.class))).willReturn(Optional.of(journeyRequestJpaEntity));
-		
+
 		given(journeyProposalStatusRepository.findByCode(JourneyProposalStatusCode.ACCEPTED)).willReturn(
 				defaultJourneyProposalStatusJpaEntityBuilder().code(JourneyProposalStatusCode.ACCEPTED).build());
 		given(journeyProposalStatusRepository.findByCode(JourneyProposalStatusCode.REJECTED)).willReturn(
@@ -300,6 +275,80 @@ public class ProposalPersistenceAdapterTests {
 		assertTrue(result);
 		assertEquals(proposal1.getStatus().getCode(), JourneyProposalStatusCode.ACCEPTED);
 		assertEquals(proposal2.getStatus().getCode(), JourneyProposalStatusCode.REJECTED);
+	}
+
+	@Test
+	void givenEmptyJourneyRequestByID_WhenRejectProposal_ThenReturnFalse() {
+		// given
+		given(journeyRequestRepository.findById(any(Long.class))).willReturn(Optional.empty());
+		// when
+		boolean result = proposalPersistenceAdapter.rejectProposal(1L, 1L);
+		// then
+		assertFalse(result);
+	}
+
+	@Test
+	void givenProposalIdNotInJourneyRequestProposalIds_WhenRejectProposal_ThenReturnFalse() {
+
+		// given
+		JourneyRequestJpaEntity journeyRequestJpaEntity = defaultExistentJourneyRequestJpaEntity();
+		given(journeyRequestRepository.findById(any(Long.class))).willReturn(Optional.of(journeyRequestJpaEntity));
+
+		// when
+		boolean result = proposalPersistenceAdapter.rejectProposal(1L, 1L);
+
+		// then
+		assertFalse(result);
+
+	}
+
+	@Test
+	void givenProposalInJourneyRequestProposalIds_WhenRejectProposal_ThenReturnTrue() {
+
+		// given
+		JourneyRequestJpaEntity journeyRequestJpaEntity = defaultExistentJourneyRequestJpaEntity();
+		JourneyProposalJpaEntity proposal1 = defaultJourneyProposalJpaEntityBuilder().id(1L).build();
+		JourneyProposalJpaEntity proposal2 = defaultJourneyProposalJpaEntityBuilder().id(2L).build();
+
+		journeyRequestJpaEntity.addProposal(proposal1);
+		journeyRequestJpaEntity.addProposal(proposal2);
+
+		given(journeyRequestRepository.findById(any(Long.class))).willReturn(Optional.of(journeyRequestJpaEntity));
+
+		given(journeyProposalStatusRepository.findByCode(JourneyProposalStatusCode.REJECTED)).willReturn(
+				defaultJourneyProposalStatusJpaEntityBuilder().code(JourneyProposalStatusCode.REJECTED).build());
+		// when
+		boolean result = proposalPersistenceAdapter.rejectProposal(1L, 1L);
+
+		// then
+		then(journeyRequestRepository).should(times(1)).save(journeyRequestJpaEntity);
+		assertTrue(result);
+		assertEquals(proposal1.getStatus().getCode(), JourneyProposalStatusCode.REJECTED);
+		assertEquals(proposal2.getStatus().getCode(), JourneyProposalStatusCode.SUBMITTED);
+	}
+
+	@Test
+	void testTrueIsExistentJourneyProposalByIdAndJourneyRequestIdAndStatusCode() {
+		// given
+		given(journeyProposalRepository.existsByIdAndJourneyRequestIdAndStatusCode(any(Long.class), any(Long.class),
+				any(JourneyProposalStatusCode.class))).willReturn(true);
+		// when
+		boolean result = proposalPersistenceAdapter.isExistentJourneyProposalByIdAndJourneyRequestIdAndStatusCode(1L,
+				1L, StatusCode.SUBMITTED);
+		// then
+		assertTrue(result);
+	}
+
+	@Test
+	void testFalseIsExistentJourneyProposalByIdAndJourneyRequestIdAndStatusCode() {
+		// given
+		given(journeyProposalRepository.existsByIdAndJourneyRequestIdAndStatusCode(any(Long.class), any(Long.class),
+				any(JourneyProposalStatusCode.class))).willReturn(false);
+		// when
+		boolean result = proposalPersistenceAdapter.isExistentJourneyProposalByIdAndJourneyRequestIdAndStatusCode(1L,
+				1L, StatusCode.SUBMITTED);
+		// then
+		assertFalse(result);
 	}
 
 	private Page<JourneyProposalJpaEntity> createPageFromJourneyProposalJpaEntities(

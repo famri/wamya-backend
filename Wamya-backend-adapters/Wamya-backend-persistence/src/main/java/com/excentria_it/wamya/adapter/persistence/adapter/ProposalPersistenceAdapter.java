@@ -27,10 +27,12 @@ import com.excentria_it.wamya.adapter.persistence.repository.VehiculeRepository;
 import com.excentria_it.wamya.application.port.out.AcceptProposalPort;
 import com.excentria_it.wamya.application.port.out.LoadProposalsPort;
 import com.excentria_it.wamya.application.port.out.MakeProposalPort;
+import com.excentria_it.wamya.application.port.out.RejectProposalPort;
 import com.excentria_it.wamya.common.SortCriterion;
 import com.excentria_it.wamya.common.annotation.PersistenceAdapter;
 import com.excentria_it.wamya.common.utils.ParameterUtils;
 import com.excentria_it.wamya.domain.JourneyProposalDto;
+import com.excentria_it.wamya.domain.JourneyProposalDto.StatusCode;
 import com.excentria_it.wamya.domain.JourneyRequestProposals;
 import com.excentria_it.wamya.domain.LoadJourneyProposalsCriteria;
 import com.excentria_it.wamya.domain.MakeProposalDto;
@@ -39,7 +41,8 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @PersistenceAdapter
-public class ProposalPersistenceAdapter implements MakeProposalPort, LoadProposalsPort, AcceptProposalPort {
+public class ProposalPersistenceAdapter
+		implements MakeProposalPort, LoadProposalsPort, AcceptProposalPort, RejectProposalPort {
 
 	private final JourneyProposalRepository journeyProposalRepository;
 
@@ -119,7 +122,7 @@ public class ProposalPersistenceAdapter implements MakeProposalPort, LoadProposa
 		Optional<JourneyProposalJpaEntity> journeyProposalJpaEntity = journeyProposalRepository
 				.findByIdAndJourneyRequest_Id(proposalId, journeyRequestId);
 
-		if (journeyProposalJpaEntity == null || journeyProposalJpaEntity.isEmpty())
+		if (journeyProposalJpaEntity.isEmpty())
 			return Optional.empty();
 
 		return Optional.of(journeyProposalMapper.mapToDomainEntity(journeyProposalJpaEntity.get(), locale));
@@ -130,7 +133,7 @@ public class ProposalPersistenceAdapter implements MakeProposalPort, LoadProposa
 
 		Optional<JourneyRequestJpaEntity> journeyRequestOptional = journeyRequestRepository.findById(journeyRequestId);
 
-		if (journeyRequestOptional == null || journeyRequestOptional.isEmpty())
+		if (journeyRequestOptional.isEmpty())
 			return false;
 
 		Set<JourneyProposalJpaEntity> journeyProposals = journeyRequestOptional.get().getProposals();
@@ -157,10 +160,41 @@ public class ProposalPersistenceAdapter implements MakeProposalPort, LoadProposa
 		return true;
 	}
 
+	@Override
+	public boolean rejectProposal(Long journeyRequestId, Long proposalId) {
+		Optional<JourneyRequestJpaEntity> journeyRequestOptional = journeyRequestRepository.findById(journeyRequestId);
+
+		if (journeyRequestOptional.isEmpty())
+			return false;
+
+		Set<JourneyProposalJpaEntity> journeyProposals = journeyRequestOptional.get().getProposals();
+		boolean proposalExists = journeyProposals.stream().anyMatch(p -> p.getId().equals(proposalId));
+
+		if (!proposalExists)
+			return false;
+
+		JourneyProposalStatusJpaEntity rejectedStatus = journeyProposalStatusRepository
+				.findByCode(JourneyProposalStatusCode.REJECTED);
+
+		journeyProposals.stream().filter(p -> p.getId().equals(proposalId)).forEach(p -> p.setStatus(rejectedStatus));
+
+		journeyRequestRepository.save(journeyRequestOptional.get());
+
+		return true;
+	}
+
 	private Sort convertToSort(SortCriterion sortingCriterion) {
 
 		return Sort.by(Direction.valueOf(sortingCriterion.getDirection().toUpperCase()),
 				ParameterUtils.kebabToCamelCase(sortingCriterion.getField()));
 	}
 
+	@Override
+	public boolean isExistentJourneyProposalByIdAndJourneyRequestIdAndStatusCode(Long proposalId, Long journeyRequestId,
+			StatusCode statusCode) {
+
+		return journeyProposalRepository.existsByIdAndJourneyRequestIdAndStatusCode(proposalId, journeyRequestId,
+				JourneyProposalStatusCode.valueOf(statusCode.name()));
+
+	}
 }

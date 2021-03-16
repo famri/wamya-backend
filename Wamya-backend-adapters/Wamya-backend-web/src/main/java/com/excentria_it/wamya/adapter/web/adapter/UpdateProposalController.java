@@ -1,7 +1,5 @@
 package com.excentria_it.wamya.adapter.web.adapter;
 
-import java.util.Locale;
-
 import javax.validation.Valid;
 
 import org.springframework.http.HttpStatus;
@@ -16,10 +14,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.excentria_it.wamya.application.port.in.AcceptProposalUseCase;
-import com.excentria_it.wamya.application.port.in.AcceptProposalUseCase.AcceptProposalCommand;
+import com.excentria_it.wamya.application.port.in.UpdateProposalUseCase;
+import com.excentria_it.wamya.application.port.in.UpdateProposalUseCase.UpdateProposalCommand;
 import com.excentria_it.wamya.common.annotation.WebAdapter;
-import com.excentria_it.wamya.common.utils.LocaleUtils;
+import com.excentria_it.wamya.domain.JourneyProposalDto.StatusCode;
 
 import lombok.RequiredArgsConstructor;
 
@@ -28,18 +26,19 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
 @RequestMapping(path = "/journey-requests", produces = MediaType.APPLICATION_JSON_VALUE)
-public class AcceptProposalController {
+public class UpdateProposalController {
 
-	private final AcceptProposalUseCase acceptProposalUseCase;
+	private final UpdateProposalUseCase updateProposalUseCase;
 
 	@PatchMapping(path = "/{journeyRequestId}/proposals/{proposalId}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void acceptProposal(@PathVariable("journeyRequestId") Long journeyRequestId,
-			@PathVariable("proposalId") Long proposalId, @Valid @RequestBody AcceptProposalCommand command,
-			final @AuthenticationPrincipal JwtAuthenticationToken principal, Locale locale) {
-		Locale supportedLocale = LocaleUtils.getSupporedLocale(locale);
-		acceptProposalUseCase.acceptProposal(journeyRequestId, proposalId, principal.getName(),
-				supportedLocale.toString());
+			@PathVariable("proposalId") Long proposalId, @Valid @RequestBody UpdateProposalCommand command,
+			final @AuthenticationPrincipal JwtAuthenticationToken principal) {
+
+		StatusCode status = StatusCode.valueOf(command.getStatus().toUpperCase());
+
+		updateProposalUseCase.updateProposal(journeyRequestId, proposalId, status, principal.getName());
 
 	}
 

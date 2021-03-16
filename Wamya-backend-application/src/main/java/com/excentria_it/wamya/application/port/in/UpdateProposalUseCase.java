@@ -3,21 +3,22 @@ package com.excentria_it.wamya.application.port.in;
 import javax.validation.constraints.NotNull;
 
 import com.excentria_it.wamya.common.annotation.Among;
+import com.excentria_it.wamya.domain.JourneyProposalDto.StatusCode;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-public interface AcceptProposalUseCase {
+public interface UpdateProposalUseCase {
 
-	void acceptProposal(Long journeyRequestId, Long proposalId, String clientUsername, String locale);
+	void updateProposal(Long journeyRequestId, Long proposalId, StatusCode status, String clientUsername);
 
 	@Data
 	@NoArgsConstructor
 	@AllArgsConstructor
-	class AcceptProposalCommand {
+	class UpdateProposalCommand {
 		@NotNull
-		@Among(value = "accepted")
+		@Among(value = { "accepted", "rejected" })
 		private String status;
 	}
 }

@@ -321,4 +321,24 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 		return new ResponseEntity<ApiError>(apiError, new HttpHeaders(), apiError.getStatus());
 	}
 
+	@ExceptionHandler({ OperationDeniedException.class })
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public ResponseEntity<ApiError> handleOperationDeniedException(OperationDeniedException exception) {
+
+		log.error("Exception at " + exception.getClass() + ": ", exception);
+		final String error = exception.getMessage();
+		final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ErrorCode.VALIDATION_ERROR, error);
+		return new ResponseEntity<ApiError>(apiError, new HttpHeaders(), apiError.getStatus());
+	}
+
+	@ExceptionHandler({ JourneyProposalNotFoundException.class })
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public ResponseEntity<ApiError> handleJourneyProposalNotFoundException(JourneyProposalNotFoundException exception) {
+
+		log.error("Exception at " + exception.getClass() + ": ", exception);
+		final String error = exception.getMessage();
+		final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ErrorCode.OBJECT_NOT_FOUND, error);
+		return new ResponseEntity<ApiError>(apiError, new HttpHeaders(), apiError.getStatus());
+	}
+
 }
