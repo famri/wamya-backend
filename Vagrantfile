@@ -9,33 +9,32 @@ VAGRANT_USER = "vagrant"
 #A shell script to install docker and docker-compose 
 $bootstrap = <<-'INSTALL_DOCKER'
 
-apt-get remove -qq -y docker docker-engine docker.io containerd runc
+ apt-get remove docker docker-engine docker.io containerd runc
 
  apt-get update -qq -y
 
- apt-get install -qq -y --force-yes \
- apt-transport-https=1.9.4ubuntu0.1 \
- ca-certificates=20190110ubuntu0.19.10.1 \
- curl=7.65.3-1ubuntu3.1 \
- gnupg-agent=2.2.12-1ubuntu3 \
- software-properties-common=0.98.5
+ apt-get install -qq -y --allow-unauthenticated \
+ apt-transport-https \
+ ca-certificates \
+ curl \
+ gnupg \
+ lsb-release
 
- curl -fsSL https://download.docker.com/linux/ubuntu/gpg |  apt-key add -
-
- add-apt-repository \
- "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
- $(lsb_release -cs) \
- stable"
+ curl -fsSL https://download.docker.com/linux/ubuntu/gpg |  gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
  
+ echo \
+  "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+  
  apt-get update -qq -y
 
- apt-get install -qq -y docker-ce=5:19.03.12~3-0~ubuntu-eoan docker-ce-cli=5:19.03.12~3-0~ubuntu-eoan containerd.io
+ apt-get install -qq -y docker-ce docker-ce-cli containerd.io
 
  gpasswd -a "$1" docker 
 
  sleep 5
 
- curl -fsSL "https://github.com/docker/compose/releases/download/1.26.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+ curl -fsSL "https://github.com/docker/compose/releases/download/1.28.5/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 
  chmod +x /usr/local/bin/docker-compose
 
@@ -65,10 +64,10 @@ DATABASE_VOLUME
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.disksize.size = '50GB'
   config.vm.define "dev_env" do |dev|
-		dev.vm.box = "ubuntu/eoan64"
+		dev.vm.box = "ubuntu/groovy64"
 		dev.vm.boot_timeout = 600
 	  	dev.vm.provider "virtualbox" do |vb|
-	  	  vb.memory = "2048"
+	  	  vb.memory = "5120"
 	  	  vb.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
 	  	end
 	  	
