@@ -1,9 +1,12 @@
 package com.excentria_it.wamya.application.port.in;
 
+import java.util.List;
+
 import javax.validation.constraints.NotNull;
 
 import com.excentria_it.wamya.common.SortCriterion;
 import com.excentria_it.wamya.common.annotation.Sort;
+import com.excentria_it.wamya.common.domain.StatusCode;
 import com.excentria_it.wamya.domain.JourneyRequestProposals;
 
 import lombok.AllArgsConstructor;
@@ -35,5 +38,7 @@ public interface LoadProposalsUseCase {
 
 		@NotNull
 		private String clientUsername;
+
+		private List<StatusCode> statusCodes;
 	}
 }

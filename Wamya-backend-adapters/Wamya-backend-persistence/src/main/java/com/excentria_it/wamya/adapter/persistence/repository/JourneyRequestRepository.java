@@ -39,7 +39,10 @@ public interface JourneyRequestRepository extends JpaRepository<JourneyRequestJp
 	Optional<ClientJourneyRequestDto> findByIdAndClient_MobileNumberAndClient_IccValue(Long journeyRequestId,
 			String clientMobileNumber, String clientIccValue);
 
-	boolean existsByIdAndClient_Email(Long journeyRequestId, String clientUsername);
+	@Query(value = "SELECT CASE WHEN COUNT(j) > 0 THEN true ELSE false END FROM JourneyRequestJpaEntity j JOIN j.client c WHERE j.id = ?1 AND j.dateTime > CURRENT_TIMESTAMP AND c.email = ?2")
+	boolean existsAndNotExpiredByIdAndClient_Email(Long journeyRequestId, String clientUsername);
 
-	boolean existsByIdAndClient_Icc_ValueAndClient_MobileNumber(Long journeyRequestId, String icc, String mobileNumber);
+	@Query(value = "SELECT CASE WHEN COUNT(j) > 0 THEN true ELSE false END FROM JourneyRequestJpaEntity j JOIN j.client c JOIN c.icc i WHERE j.id = ?1 AND j.dateTime > CURRENT_TIMESTAMP AND c.mobileNumber = ?3 AND i.value = ?2")
+	boolean existsAndNotExpiredByIdAndClient_Icc_ValueAndClient_MobileNumber(Long journeyRequestId, String icc,
+			String mobileNumber);
 }

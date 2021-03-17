@@ -11,10 +11,12 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.*;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,8 +41,8 @@ import com.excentria_it.wamya.adapter.persistence.repository.JourneyProposalStat
 import com.excentria_it.wamya.adapter.persistence.repository.JourneyRequestRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.TransporterRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.VehiculeRepository;
+import com.excentria_it.wamya.common.domain.StatusCode;
 import com.excentria_it.wamya.domain.JourneyProposalDto;
-import com.excentria_it.wamya.domain.JourneyProposalDto.StatusCode;
 import com.excentria_it.wamya.domain.JourneyRequestProposals;
 import com.excentria_it.wamya.domain.LoadJourneyProposalsCriteria;
 import com.excentria_it.wamya.test.data.common.JourneyProposalJpaEntityTestData;
@@ -148,7 +150,7 @@ public class ProposalPersistenceAdapterTests {
 				.willReturn(journeyProposalDto);
 
 		LoadJourneyProposalsCriteria criteria = JourneyProposalTestData.defaultLoadJourneyProposalsCriteriaBuilder()
-				.build();
+				.statusCodes(Collections.emptyList()).build();
 
 		// when
 		JourneyRequestProposals result = proposalPersistenceAdapter.loadJourneyProposals(criteria, "en_US");
@@ -166,10 +168,18 @@ public class ProposalPersistenceAdapterTests {
 	}
 
 	@Test
-	void givenNullJourneyProposalJpaEntityPage_WhenLoadJourneyProposals_ThenReturnEmptyJourneyRequestProposals() {
+	void givenLoadJourneyProposalsCriteriaWithStatusCodes_WhenLoadJourneyProposals_ThenScceed() {
 		// given
 
-		given(journeyProposalRepository.findByJourneyRequest_Id(any(Long.class), any(Pageable.class))).willReturn(null);
+		Page<JourneyProposalJpaEntity> page = createPageFromJourneyProposalJpaEntities(
+				List.of(JourneyProposalJpaEntityTestData.defaultJourneyProposalJpaEntity()));
+
+		given(journeyProposalRepository.findByJourneyRequest_IdAndStatus_CodeIn(any(Long.class), any(List.class),
+				any(Pageable.class))).willReturn(page);
+
+		JourneyProposalDto journeyProposalDto = JourneyProposalTestData.defaultJourneyProposalDto();
+		given(journeyProposalMapper.mapToDomainEntity(any(JourneyProposalJpaEntity.class), any(String.class)))
+				.willReturn(journeyProposalDto);
 
 		LoadJourneyProposalsCriteria criteria = JourneyProposalTestData.defaultLoadJourneyProposalsCriteriaBuilder()
 				.build();
@@ -179,7 +189,62 @@ public class ProposalPersistenceAdapterTests {
 
 		// then
 
+		then(journeyProposalRepository).should(times(1)).findByJourneyRequest_IdAndStatus_CodeIn(
+				eq(criteria.getJourneyRequestId()), eq(criteria.getStatusCodes().stream()
+						.map(s -> JourneyProposalStatusCode.valueOf(s.name())).collect(Collectors.toList())),
+				any(Pageable.class));
+
+		assertThat(result.getPageNumber()).isEqualTo(criteria.getPageNumber());
+
+		assertThat(result.getPageSize()).isEqualTo(criteria.getPageSize());
+
+		assertThat(result.getContent()).containsExactlyInAnyOrder(journeyProposalDto);
+	}
+
+	@Test
+	void givenNullJourneyProposalJpaEntityPage_WhenLoadJourneyProposals_ThenReturnEmptyJourneyRequestProposals() {
+		// given
+
+		given(journeyProposalRepository.findByJourneyRequest_Id(any(Long.class), any(Pageable.class))).willReturn(null);
+
+		LoadJourneyProposalsCriteria criteria = JourneyProposalTestData.defaultLoadJourneyProposalsCriteriaBuilder()
+				.statusCodes(Collections.emptyList()).build();
+
+		// when
+		JourneyRequestProposals result = proposalPersistenceAdapter.loadJourneyProposals(criteria, "en_US");
+
+		// then
+
 		then(journeyProposalRepository).should(times(1)).findByJourneyRequest_Id(eq(criteria.getJourneyRequestId()),
+				any(Pageable.class));
+
+		assertThat(result.getPageNumber()).isEqualTo(criteria.getPageNumber());
+
+		assertThat(result.getPageSize()).isEqualTo(criteria.getPageSize());
+		assertThat(result.getTotalElements()).isEqualTo(0L);
+		assertThat(result.getTotalPages()).isEqualTo(0L);
+		assertThat(result.isHasNext()).isEqualTo(false);
+		assertThat(result.getContent()).isEmpty();
+	}
+
+	@Test
+	void givenNullJourneyProposalJpaEntityPageAndCriteriaWithStatusCode_WhenLoadJourneyProposals_ThenReturnEmptyJourneyRequestProposals() {
+		// given
+
+		given(journeyProposalRepository.findByJourneyRequest_IdAndStatus_CodeIn(any(Long.class), any(List.class),
+				any(Pageable.class))).willReturn(null);
+
+		LoadJourneyProposalsCriteria criteria = JourneyProposalTestData.defaultLoadJourneyProposalsCriteriaBuilder()
+				.build();
+
+		// when
+		JourneyRequestProposals result = proposalPersistenceAdapter.loadJourneyProposals(criteria, "en_US");
+
+		// then
+
+		then(journeyProposalRepository).should(times(1)).findByJourneyRequest_IdAndStatus_CodeIn(
+				eq(criteria.getJourneyRequestId()), eq(criteria.getStatusCodes().stream()
+						.map(s -> JourneyProposalStatusCode.valueOf(s.name())).collect(Collectors.toList())),
 				any(Pageable.class));
 
 		assertThat(result.getPageNumber()).isEqualTo(criteria.getPageNumber());

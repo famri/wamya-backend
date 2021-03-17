@@ -7,8 +7,8 @@ import com.excentria_it.wamya.application.port.in.LoadProposalsUseCase.LoadPropo
 import com.excentria_it.wamya.application.port.in.MakeProposalUseCase.MakeProposalCommand;
 import com.excentria_it.wamya.application.port.in.MakeProposalUseCase.MakeProposalCommand.MakeProposalCommandBuilder;
 import com.excentria_it.wamya.common.SortCriterion;
+import com.excentria_it.wamya.common.domain.StatusCode;
 import com.excentria_it.wamya.domain.JourneyProposalDto;
-import com.excentria_it.wamya.domain.JourneyProposalDto.StatusCode;
 import com.excentria_it.wamya.domain.JourneyProposalDto.StatusDto;
 import com.excentria_it.wamya.domain.JourneyProposalDto.TransporterDto;
 import com.excentria_it.wamya.domain.JourneyProposalDto.VehiculeDto;
@@ -50,7 +50,8 @@ public class JourneyProposalTestData {
 
 	public static final LoadJourneyProposalsCriteriaBuilder defaultLoadJourneyProposalsCriteriaBuilder() {
 		return LoadJourneyProposalsCriteria.builder().clientUsername(TestConstants.DEFAULT_EMAIL).journeyRequestId(1L)
-				.pageNumber(0).pageSize(25).sortingCriterion(new SortCriterion("price", "asc"));
+				.pageNumber(0).pageSize(25).sortingCriterion(new SortCriterion("price", "asc"))
+				.statusCodes(List.of(StatusCode.SUBMITTED, StatusCode.ACCEPTED));
 	}
 
 	public static MakeProposalDto defaultMakeProposalDto() {

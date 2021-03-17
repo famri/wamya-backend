@@ -1,5 +1,7 @@
 package com.excentria_it.wamya.domain;
 
+import com.excentria_it.wamya.common.domain.StatusCode;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -62,7 +64,4 @@ public class JourneyProposalDto {
 
 	}
 
-	public enum StatusCode {
-		SUBMITTED, CANCELED, REJECTED, ACCEPTED;
-	}
 }

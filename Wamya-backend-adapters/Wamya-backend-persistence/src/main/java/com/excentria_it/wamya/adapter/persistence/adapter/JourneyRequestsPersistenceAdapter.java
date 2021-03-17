@@ -284,14 +284,14 @@ public class JourneyRequestsPersistenceAdapter implements SearchJourneyRequestsP
 	}
 
 	@Override
-	public boolean isExistentJourneyRequestByIdAndClientEmail(Long journeyRequestId, String clientUsername) {
-		return journeyRequestRepository.existsByIdAndClient_Email(journeyRequestId, clientUsername);
+	public boolean isExistentAndNotExpiredJourneyRequestByIdAndClientEmail(Long journeyRequestId, String clientUsername) {
+		return journeyRequestRepository.existsAndNotExpiredByIdAndClient_Email(journeyRequestId, clientUsername);
 	}
 
 	@Override
-	public boolean isExistentJourneyRequestByIdAndClientMobileNumberAndIcc(Long journeyRequestId, String icc,
+	public boolean isExistentAndNotExpiredJourneyRequestByIdAndClientMobileNumberAndIcc(Long journeyRequestId, String icc,
 			String mobileNumber) {
-		return journeyRequestRepository.existsByIdAndClient_Icc_ValueAndClient_MobileNumber(journeyRequestId, icc,
+		return journeyRequestRepository.existsAndNotExpiredByIdAndClient_Icc_ValueAndClient_MobileNumber(journeyRequestId, icc,
 				mobileNumber);
 	}
 }

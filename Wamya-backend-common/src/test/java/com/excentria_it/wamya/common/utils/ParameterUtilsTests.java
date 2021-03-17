@@ -1,15 +1,18 @@
 package com.excentria_it.wamya.common.utils;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
 import com.excentria_it.wamya.common.PeriodCriterion;
 import com.excentria_it.wamya.common.SortCriterion;
+import com.excentria_it.wamya.common.domain.StatusCode;
 
 public class ParameterUtilsTests {
 
@@ -246,5 +249,41 @@ public class ParameterUtilsTests {
 		String res4 = ParameterUtils.kebabToCamelCase(str4);
 		assertEquals("MinPRicE", res4);
 
+	}
+
+	@Test
+	void testParseProposalStatusFilter() {
+		Optional<String> filter = Optional.of("status:accepted,submitted");
+		List<StatusCode> statusCodes = ParameterUtils.parseProposalStatusFilter(filter);
+		assertThat(
+				List.of(StatusCode.ACCEPTED, StatusCode.SUBMITTED).containsAll(statusCodes) && statusCodes.size() == 2);
+	}
+
+	@Test
+	void testParseProposalStatusFilterFromEmptyFilter() {
+		Optional<String> filter = Optional.empty();
+		List<StatusCode> statusCodes = ParameterUtils.parseProposalStatusFilter(filter);
+		assertThat(statusCodes.isEmpty());
+	}
+
+	@Test
+	void testParseProposalStatusFilterFromFilterWithNoColumn() {
+		Optional<String> filter = Optional.of("status=accepted,submitted");
+		List<StatusCode> statusCodes = ParameterUtils.parseProposalStatusFilter(filter);
+		assertThat(statusCodes.isEmpty());
+	}
+
+	@Test
+	void testParseProposalStatusFilterFromFilterWithOneBadStatusCodes() {
+		Optional<String> filter = Optional.of("status:badcode,submitted");
+		List<StatusCode> statusCodes = ParameterUtils.parseProposalStatusFilter(filter);
+		assertThat(List.of(StatusCode.SUBMITTED).containsAll(statusCodes) && statusCodes.size() == 1);
+	}
+	
+	@Test
+	void testParseProposalStatusFilterFromFilterWithAllBadStatusCodes() {
+		Optional<String> filter = Optional.of("status:badcode1,badcode2");
+		List<StatusCode> statusCodes = ParameterUtils.parseProposalStatusFilter(filter);
+		assertThat(statusCodes.isEmpty());
 	}
 }

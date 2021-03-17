@@ -1,5 +1,6 @@
 package com.excentria_it.wamya.adapter.persistence.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -13,6 +14,9 @@ import com.excentria_it.wamya.adapter.persistence.entity.JourneyProposalStatusJp
 public interface JourneyProposalRepository extends JpaRepository<JourneyProposalJpaEntity, Long> {
 
 	Page<JourneyProposalJpaEntity> findByJourneyRequest_Id(Long journeyRequestId, Pageable pageable);
+
+	Page<JourneyProposalJpaEntity> findByJourneyRequest_IdAndStatus_CodeIn(Long journeyRequestId,
+			List<JourneyProposalStatusCode> statusCodes, Pageable pageable);
 
 	Optional<JourneyProposalJpaEntity> findByIdAndJourneyRequest_Id(Long proposalId, Long journeyRequestId);
 

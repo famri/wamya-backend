@@ -19,8 +19,8 @@ import org.springframework.test.context.ActiveProfiles;
 import com.c4_soft.springaddons.security.oauth2.test.mockmvc.MockMvcSupport;
 import com.excentria_it.wamya.application.port.in.UpdateProposalUseCase;
 import com.excentria_it.wamya.application.port.in.UpdateProposalUseCase.UpdateProposalCommand;
+import com.excentria_it.wamya.common.domain.StatusCode;
 import com.excentria_it.wamya.common.exception.RestApiExceptionHandler;
-import com.excentria_it.wamya.domain.JourneyProposalDto.StatusCode;
 import com.excentria_it.wamya.test.data.common.TestConstants;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

@@ -2,11 +2,15 @@ package com.excentria_it.wamya.common.utils;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import com.excentria_it.wamya.common.PeriodCriterion;
 import com.excentria_it.wamya.common.PeriodCriterion.PeriodValue;
 import com.excentria_it.wamya.common.SortCriterion;
+import com.excentria_it.wamya.common.domain.StatusCode;
 
 public class ParameterUtils {
 
@@ -69,5 +73,28 @@ public class ParameterUtils {
 			}
 		}
 		return kebabStyleSting;
+	}
+
+	public static List<StatusCode> parseProposalStatusFilter(Optional<String> filter) {
+		if (filter.isEmpty())
+			return Collections.emptyList();
+		String[] filterTokens = filter.get().split(":");
+		if (filterTokens.length != 2) {
+			return Collections.emptyList();
+		}
+
+		String[] filterValues = filterTokens[1].split(",");
+
+		List<StatusCode> result = new ArrayList<>();
+		for (int i = 0; i < filterValues.length; i++) {
+			try {
+				StatusCode statusCode = StatusCode.valueOf(filterValues[i].toUpperCase());
+				result.add(statusCode);
+			} catch (IllegalArgumentException e) {
+				continue;
+			}
+		}
+		return result.isEmpty() ? Collections.emptyList() : result;
+
 	}
 }

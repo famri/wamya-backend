@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.excentria_it.wamya.application.port.in.UpdateProposalUseCase;
 import com.excentria_it.wamya.application.port.in.UpdateProposalUseCase.UpdateProposalCommand;
 import com.excentria_it.wamya.common.annotation.WebAdapter;
-import com.excentria_it.wamya.domain.JourneyProposalDto.StatusCode;
+import com.excentria_it.wamya.common.domain.StatusCode;
 
 import lombok.RequiredArgsConstructor;
 
@@ -32,7 +32,7 @@ public class UpdateProposalController {
 
 	@PatchMapping(path = "/{journeyRequestId}/proposals/{proposalId}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void acceptProposal(@PathVariable("journeyRequestId") Long journeyRequestId,
+	public void updateProposal(@PathVariable("journeyRequestId") Long journeyRequestId,
 			@PathVariable("proposalId") Long proposalId, @Valid @RequestBody UpdateProposalCommand command,
 			final @AuthenticationPrincipal JwtAuthenticationToken principal) {
 

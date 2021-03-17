@@ -19,12 +19,12 @@ import com.excentria_it.wamya.application.port.out.LoadTransporterVehiculesPort;
 import com.excentria_it.wamya.application.port.out.MakeProposalPort;
 import com.excentria_it.wamya.application.port.out.RejectProposalPort;
 import com.excentria_it.wamya.common.annotation.UseCase;
+import com.excentria_it.wamya.common.domain.StatusCode;
 import com.excentria_it.wamya.common.exception.InvalidTransporterVehiculeException;
 import com.excentria_it.wamya.common.exception.JourneyProposalNotFoundException;
 import com.excentria_it.wamya.common.exception.JourneyRequestExpiredException;
 import com.excentria_it.wamya.common.exception.JourneyRequestNotFoundException;
 import com.excentria_it.wamya.domain.ClientJourneyRequestDto;
-import com.excentria_it.wamya.domain.JourneyProposalDto.StatusCode;
 import com.excentria_it.wamya.domain.JourneyProposalDto.VehiculeDto;
 import com.excentria_it.wamya.domain.JourneyRequestInputOutput;
 import com.excentria_it.wamya.domain.JourneyRequestProposals;
@@ -72,7 +72,7 @@ public class JourneyProposalService implements MakeProposalUseCase, LoadProposal
 		LoadJourneyProposalsCriteria criteria = LoadJourneyProposalsCriteria.builder()
 				.journeyRequestId(command.getJourneyRequestId()).clientUsername(command.getClientUsername())
 				.pageNumber(command.getPageNumber()).pageSize(command.getPageSize())
-				.sortingCriterion(command.getSortingCriterion()).build();
+				.sortingCriterion(command.getSortingCriterion()).statusCodes(command.getStatusCodes()).build();
 
 		return loadPropsalsPort.loadJourneyProposals(criteria, locale);
 	}
@@ -149,13 +149,13 @@ public class JourneyProposalService implements MakeProposalUseCase, LoadProposal
 
 		if (clientUsername.contains("@")) {
 
-			journeyRequestExists = loadJourneyRequestPort.isExistentJourneyRequestByIdAndClientEmail(journeyRequestId,
+			journeyRequestExists = loadJourneyRequestPort.isExistentAndNotExpiredJourneyRequestByIdAndClientEmail(journeyRequestId,
 					clientUsername);
 		} else {
 
 			String[] mobileNumber = clientUsername.split("_");
 
-			journeyRequestExists = loadJourneyRequestPort.isExistentJourneyRequestByIdAndClientMobileNumberAndIcc(
+			journeyRequestExists = loadJourneyRequestPort.isExistentAndNotExpiredJourneyRequestByIdAndClientMobileNumberAndIcc(
 					journeyRequestId, mobileNumber[1], mobileNumber[0]);
 		}
 

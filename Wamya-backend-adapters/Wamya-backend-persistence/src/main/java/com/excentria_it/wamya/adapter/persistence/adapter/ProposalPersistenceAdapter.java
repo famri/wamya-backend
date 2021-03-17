@@ -30,9 +30,9 @@ import com.excentria_it.wamya.application.port.out.MakeProposalPort;
 import com.excentria_it.wamya.application.port.out.RejectProposalPort;
 import com.excentria_it.wamya.common.SortCriterion;
 import com.excentria_it.wamya.common.annotation.PersistenceAdapter;
+import com.excentria_it.wamya.common.domain.StatusCode;
 import com.excentria_it.wamya.common.utils.ParameterUtils;
 import com.excentria_it.wamya.domain.JourneyProposalDto;
-import com.excentria_it.wamya.domain.JourneyProposalDto.StatusCode;
 import com.excentria_it.wamya.domain.JourneyRequestProposals;
 import com.excentria_it.wamya.domain.LoadJourneyProposalsCriteria;
 import com.excentria_it.wamya.domain.MakeProposalDto;
@@ -99,8 +99,15 @@ public class ProposalPersistenceAdapter
 	public JourneyRequestProposals loadJourneyProposals(LoadJourneyProposalsCriteria criteria, String locale) {
 		Sort sort = convertToSort(criteria.getSortingCriterion());
 		Pageable pagingSort = PageRequest.of(criteria.getPageNumber(), criteria.getPageSize(), sort);
-		Page<JourneyProposalJpaEntity> page = journeyProposalRepository
-				.findByJourneyRequest_Id(criteria.getJourneyRequestId(), pagingSort);
+		Page<JourneyProposalJpaEntity> page = null;
+		if (criteria.getStatusCodes().isEmpty()) {
+			page = journeyProposalRepository.findByJourneyRequest_Id(criteria.getJourneyRequestId(), pagingSort);
+		} else {
+			List<JourneyProposalStatusCode> statusCodes = criteria.getStatusCodes().stream()
+					.map(s -> JourneyProposalStatusCode.valueOf(s.name())).collect(Collectors.toList());
+			page = journeyProposalRepository.findByJourneyRequest_IdAndStatus_CodeIn(criteria.getJourneyRequestId(),
+					statusCodes, pagingSort);
+		}
 
 		if (page == null) {
 			return new JourneyRequestProposals(0, 0, criteria.getPageNumber(), criteria.getPageSize(), false,
