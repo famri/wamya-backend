@@ -132,31 +132,11 @@ public class UserAccountPersistenceAdapterTests {
 		given(userAccountMapper.mapToDomainEntity(userAccountEntity)).willReturn(userAccount);
 
 		// when
-		Optional<UserAccount> result = userAccountPersistenceAdapter.loadUserAccountByIccAndMobileNumber(
-				TestConstants.DEFAULT_INTERNATIONAL_CALLING_CODE, TestConstants.DEFAULT_MOBILE_NUMBER);
+		Optional<UserAccount> result = userAccountPersistenceAdapter
+				.loadUserAccountByUsername(TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME);
 		// then
 		assertEquals(result.get(), userAccount);
 
-	}
-
-	@Test
-	void givenNullMobile_WhenLoadUserAccountByIccAndMobileNumber_ThenReturnOptionalOfNull() {
-		Optional<UserAccount> result = userAccountPersistenceAdapter
-				.loadUserAccountByIccAndMobileNumber(TestConstants.DEFAULT_INTERNATIONAL_CALLING_CODE, null);
-		assertThat(result.isEmpty()).isTrue();
-	}
-
-	@Test
-	void givenNullIcc_WhenLoadUserAccountByIccAndMobileNumber_ThenReturnOptionalOfNull() {
-		Optional<UserAccount> result = userAccountPersistenceAdapter.loadUserAccountByIccAndMobileNumber(null,
-				TestConstants.DEFAULT_MOBILE_NUMBER);
-		assertThat(result.isEmpty()).isTrue();
-	}
-
-	@Test
-	void givenNullMobileNumberAndNullIcc_WhenLoadUserAccountByIccAndMobileNumber_ThenReturnOptionalOfNull() {
-		Optional<UserAccount> result = userAccountPersistenceAdapter.loadUserAccountByIccAndMobileNumber(null, null);
-		assertThat(result.isEmpty()).isTrue();
 	}
 
 	@Test
@@ -168,8 +148,8 @@ public class UserAccountPersistenceAdapterTests {
 				TestConstants.DEFAULT_MOBILE_NUMBER)).willReturn(Optional.ofNullable(null));
 
 		// when
-		Optional<UserAccount> result = userAccountPersistenceAdapter.loadUserAccountByIccAndMobileNumber(
-				TestConstants.DEFAULT_INTERNATIONAL_CALLING_CODE, TestConstants.DEFAULT_MOBILE_NUMBER);
+		Optional<UserAccount> result = userAccountPersistenceAdapter
+				.loadUserAccountByUsername(TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME);
 		// then
 		assertThat(result.isEmpty()).isTrue();
 
@@ -257,7 +237,7 @@ public class UserAccountPersistenceAdapterTests {
 		given(userAccountMapper.mapToDomainEntity(clientEntity)).willReturn(userAccount);
 
 		// when
-		Optional<UserAccount> result = userAccountPersistenceAdapter.loadUserAccountByEmail(userAccount.getEmail());
+		Optional<UserAccount> result = userAccountPersistenceAdapter.loadUserAccountByUsername(userAccount.getEmail());
 		// then
 		assertEquals(result.get(), userAccount);
 
@@ -265,7 +245,7 @@ public class UserAccountPersistenceAdapterTests {
 
 	@Test
 	void givenNullEmail_WhenLoadUserAccountByIccAndMobileNumber_ThenReturnOptionalOfNull() {
-		Optional<UserAccount> result = userAccountPersistenceAdapter.loadUserAccountByEmail(null);
+		Optional<UserAccount> result = userAccountPersistenceAdapter.loadUserAccountByUsername(null);
 		assertThat(result.isEmpty()).isTrue();
 	}
 
@@ -278,7 +258,7 @@ public class UserAccountPersistenceAdapterTests {
 
 		// when
 		Optional<UserAccount> result = userAccountPersistenceAdapter
-				.loadUserAccountByEmail(TestConstants.DEFAULT_EMAIL);
+				.loadUserAccountByUsername(TestConstants.DEFAULT_EMAIL);
 		// then
 		assertThat(result.isEmpty()).isTrue();
 

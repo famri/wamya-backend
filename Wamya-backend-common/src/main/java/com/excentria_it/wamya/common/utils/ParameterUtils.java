@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import com.excentria_it.wamya.common.FilterCriterion;
 import com.excentria_it.wamya.common.PeriodCriterion;
 import com.excentria_it.wamya.common.PeriodCriterion.PeriodValue;
 import com.excentria_it.wamya.common.SortCriterion;
@@ -62,17 +63,23 @@ public class ParameterUtils {
 
 	}
 
-	public static String kebabToCamelCase(String kebabStyleSting) {
+	public static String kebabToCamelCase(String kebabStyleString) {
 		int idx;
-		while ((idx = kebabStyleSting.indexOf("-")) != -1) {
-			if (idx < kebabStyleSting.length() - 1) {
-				String charToUpper = kebabStyleSting.substring(idx + 1, idx + 2).toUpperCase();
-				kebabStyleSting = kebabStyleSting.substring(0, idx) + charToUpper + kebabStyleSting.substring(idx + 2);
+		while ((idx = kebabStyleString.indexOf("-")) != -1) {
+			if (idx < kebabStyleString.length() - 1) {
+				String charToUpper = kebabStyleString.substring(idx + 1, idx + 2).toUpperCase();
+				kebabStyleString = kebabStyleString.substring(0, idx) + charToUpper
+						+ kebabStyleString.substring(idx + 2);
 			} else {
-				kebabStyleSting = kebabStyleSting.substring(0, idx);
+				kebabStyleString = kebabStyleString.substring(0, idx);
 			}
 		}
-		return kebabStyleSting;
+		return kebabStyleString;
+	}
+
+	public static String kebabToSnakeCase(String kebabStyleString) {
+
+		return kebabStyleString.replace("-", "_");
 	}
 
 	public static List<StatusCode> parseProposalStatusFilter(Optional<String> filter) {
@@ -97,4 +104,27 @@ public class ParameterUtils {
 		return result.isEmpty() ? Collections.emptyList() : result;
 
 	}
+
+	public static FilterCriterion parameterToFilterCriterion(Optional<String> filter) {
+		if (filter == null)
+			return null;
+		String filterStr = filter.orElse(null);
+		if (filterStr == null) {
+			return null;
+		}
+		String field, value;
+
+		String[] filterFieldAndValue = filterStr.split(":");
+
+		if (filterFieldAndValue.length == 2) {
+			field = filterFieldAndValue[0].trim();
+			value = filterFieldAndValue[1].trim();
+
+		} else {
+			return null;
+		}
+
+		return new FilterCriterion(field, value);
+	}
+
 }

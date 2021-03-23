@@ -10,6 +10,7 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
+import com.excentria_it.wamya.common.FilterCriterion;
 import com.excentria_it.wamya.common.PeriodCriterion;
 import com.excentria_it.wamya.common.SortCriterion;
 import com.excentria_it.wamya.common.domain.StatusCode;
@@ -279,11 +280,43 @@ public class ParameterUtilsTests {
 		List<StatusCode> statusCodes = ParameterUtils.parseProposalStatusFilter(filter);
 		assertThat(List.of(StatusCode.SUBMITTED).containsAll(statusCodes) && statusCodes.size() == 1);
 	}
-	
+
 	@Test
 	void testParseProposalStatusFilterFromFilterWithAllBadStatusCodes() {
 		Optional<String> filter = Optional.of("status:badcode1,badcode2");
 		List<StatusCode> statusCodes = ParameterUtils.parseProposalStatusFilter(filter);
 		assertThat(statusCodes.isEmpty());
 	}
+
+	@Test
+	void testParameterToFilterCriterion() {
+		Optional<String> filter = Optional.of("field1:value1");
+		FilterCriterion filterCriterion = ParameterUtils.parameterToFilterCriterion(filter);
+		assertEquals("field1", filterCriterion.getField());
+		assertEquals("value1", filterCriterion.getValue());
+
+	}
+
+	@Test
+	void testParameterToFilterCriterionWithEmptyFilter() {
+		Optional<String> filter = Optional.empty();
+		FilterCriterion filterCriterion = ParameterUtils.parameterToFilterCriterion(filter);
+		assertNull(filterCriterion);
+
+	}
+
+	@Test
+	void testParameterToFilterCriterionWithNullFilter() {
+		FilterCriterion filterCriterion = ParameterUtils.parameterToFilterCriterion(null);
+		assertNull(filterCriterion);
+
+	}
+
+	@Test
+	void testParameterToFilterCriterionWithMissiongColumn() {
+		Optional<String> filter = Optional.of("field1=value1");
+		FilterCriterion filterCriterion = ParameterUtils.parameterToFilterCriterion(filter);
+		assertNull(filterCriterion);
+	}
+
 }

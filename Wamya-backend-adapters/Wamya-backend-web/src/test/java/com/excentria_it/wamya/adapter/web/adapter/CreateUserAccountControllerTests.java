@@ -49,7 +49,7 @@ public class CreateUserAccountControllerTests {
 	@Test
 	void givenValidInput_WhenCreateUserAccount_ThenReturnJwtToken() throws Exception {
 
-		CreateUserAccountCommand command = UserAccountTestData.defaultCustomerUserAccountCommandBuilder().build();
+		CreateUserAccountCommand command = UserAccountTestData.defaultClientUserAccountCommandBuilder().build();
 
 		JwtOAuth2AccessToken oAuth2AccessToken = new JwtOAuth2AccessToken();
 		oAuth2AccessToken.setAccessToken(ACCESS_TOKEN);
@@ -74,8 +74,8 @@ public class CreateUserAccountControllerTests {
 	@Test
 	void givenInvalidInput_WhenCreateUserAccount_ThenReturnBadRequest() throws Exception {
 
-		CreateUserAccountCommand createUserAccountCommand = UserAccountTestData
-				.defaultCustomerUserAccountCommandBuilder().email("invalid email@test.com").build();
+		CreateUserAccountCommand createUserAccountCommand = UserAccountTestData.defaultClientUserAccountCommandBuilder()
+				.email("invalid email@test.com").build();
 
 		String createUserAccountJson = objectMapper.writeValueAsString(createUserAccountCommand);
 
@@ -90,7 +90,7 @@ public class CreateUserAccountControllerTests {
 	@Test
 	void givenExistentUserAccount_WhenCreateUserAccount_ThenReturnExistentUserAccountError() throws Exception {
 
-		CreateUserAccountCommand command = UserAccountTestData.defaultCustomerUserAccountCommandBuilder().build();
+		CreateUserAccountCommand command = UserAccountTestData.defaultClientUserAccountCommandBuilder().build();
 
 		doThrow(UserAccountAlreadyExistsException.class).when(createUserAccountUseCase)
 				.registerUserAccountCreationDemand(eq(command), any(Locale.class));
@@ -107,7 +107,7 @@ public class CreateUserAccountControllerTests {
 	void givenNonExistentInternationalCallingCode_WhenCreateUserAccount_ThenReturnUnsupportedInternationalCallingCodeError()
 			throws Exception {
 
-		CreateUserAccountCommand command = UserAccountTestData.defaultCustomerUserAccountCommandBuilder().build();
+		CreateUserAccountCommand command = UserAccountTestData.defaultClientUserAccountCommandBuilder().build();
 
 		doThrow(UnsupportedInternationalCallingCode.class).when(createUserAccountUseCase)
 				.registerUserAccountCreationDemand(eq(command), any(Locale.class));

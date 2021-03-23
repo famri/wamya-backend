@@ -44,7 +44,6 @@ import com.excentria_it.wamya.domain.UserAccount;
 import com.excentria_it.wamya.domain.UserAccount.MobilePhoneNumber;
 import com.excentria_it.wamya.test.data.common.TestConstants;
 
-
 @ExtendWith(MockitoExtension.class)
 public class UserAccountServiceTest {
 
@@ -79,24 +78,11 @@ public class UserAccountServiceTest {
 	private Locale locale = new Locale("fr");
 
 	@Test
-	void givenExistingMobilePhoneNumber_whenRegisterUserAccountCreationDemand_thenThrowUserAccountAlreadyExistsException() {
+	void givenExistentEmailUsername_whenRegisterUserAccountCreationDemand_thenThrowUserAccountAlreadyExistsException() {
 
-		givenAnExistingMobilePhoneNumber();
+		givenAnExistentEmailUsername();
 
-		CreateUserAccountCommandBuilder commandBuilder = defaultCustomerUserAccountCommandBuilder();
-
-		assertThrows(UserAccountAlreadyExistsException.class,
-				() -> userAccountService.registerUserAccountCreationDemand(commandBuilder.build(), locale));
-
-	}
-
-	@Test
-	void givenExistingEmail_whenRegisterUserAccountCreationDemand_thenThrowUserAccountAlreadyExistsException() {
-
-		givenAnExistingEmail();
-		givenNonExistingMobilePhoneNumber();
-
-		CreateUserAccountCommandBuilder commandBuilder = defaultCustomerUserAccountCommandBuilder();
+		CreateUserAccountCommandBuilder commandBuilder = defaultClientUserAccountCommandBuilder();
 
 		assertThrows(UserAccountAlreadyExistsException.class,
 				() -> userAccountService.registerUserAccountCreationDemand(commandBuilder.build(), locale));
@@ -104,17 +90,30 @@ public class UserAccountServiceTest {
 	}
 
 	@Test
-	void givenNonExistentMobilePhoneNumberAndNonExistentEmail_whenRegisterCustomerUserAccountCreationDemand_thenSucceed() {
+	void givenExistentMobileNumberUsername_whenRegisterUserAccountCreationDemand_thenThrowUserAccountAlreadyExistsException() {
+		givenNonExistentEmailUsername();
+		givenAnExistentMobileNumberUsername();
 
-		givenNonExistingMobilePhoneNumber();
-		givenNonExistingEmail();
+		CreateUserAccountCommandBuilder commandBuilder = defaultClientUserAccountCommandBuilder();
+
+		assertThrows(UserAccountAlreadyExistsException.class,
+				() -> userAccountService.registerUserAccountCreationDemand(commandBuilder.build(), locale));
+
+	}
+
+	@Test
+	void givenNonExistentUsername_whenRegisterCustomerUserAccountCreationDemand_thenSucceed() {
+
+		givenNonExistentEmailUsername();
+		givenNonExistentMobileNumberUsername();
+
 		givenServerUrlProperties();
 
 		String validationCode = givenDefaultGeneratedCode();
 		String uuid = givenDefaultGeneratedUUID();
 		String encodedPassword = givenDefaultEncodedPassword();
 
-		CreateUserAccountCommandBuilder commandBuilder = defaultCustomerUserAccountCommandBuilder();
+		CreateUserAccountCommandBuilder commandBuilder = defaultClientUserAccountCommandBuilder();
 		CreateUserAccountCommand command = commandBuilder.build();
 
 		String emailValidationLink = givenPatchUrl(command.getEmail(), validationCode);
@@ -181,8 +180,9 @@ public class UserAccountServiceTest {
 	@Test
 	void givenNonExistentMobilePhoneNumberAndNonExistentEmail_whenRegisterTransporterUserAccountCreationDemand_thenSucceed() {
 
-		givenNonExistingMobilePhoneNumber();
-		givenNonExistingEmail();
+		givenNonExistentEmailUsername();
+		givenNonExistentMobileNumberUsername();
+
 		givenServerUrlProperties();
 
 		String validationCode = givenDefaultGeneratedCode();
@@ -274,11 +274,10 @@ public class UserAccountServiceTest {
 	@Test
 	void givenSendingSMSValidationCodeFailed_whenRegisterUserAccountCreationDemand_thenReturnAccessToken() {
 
-		givenNonExistingMobilePhoneNumber();
-		givenNonExistingEmail();
+		givenNonExistentEmailUsername();
 		givenDefaultGeneratedCode();
 		givenDefaultGeneratedUUID();
-		CreateUserAccountCommand command = defaultCustomerUserAccountCommandBuilder().build();
+		CreateUserAccountCommand command = defaultClientUserAccountCommandBuilder().build();
 		givenRequestSendingEmailValidationLinkReturns(true);
 		givenRequestSendingSMSValidationCodeReturns(false);
 
@@ -297,11 +296,11 @@ public class UserAccountServiceTest {
 	@Test
 	void givenSendingEmailValidationLinkFailed_whenRegisterUserAccountCreationDemand_thenReturnCreatedUserAccountId() {
 
-		givenNonExistingMobilePhoneNumber();
-		givenNonExistingEmail();
+		// givenNonExistingMobilePhoneNumber();
+		givenNonExistentEmailUsername();
 		givenDefaultGeneratedCode();
 		givenDefaultGeneratedUUID();
-		CreateUserAccountCommand command = defaultCustomerUserAccountCommandBuilder().build();
+		CreateUserAccountCommand command = defaultClientUserAccountCommandBuilder().build();
 		givenRequestSendingEmailValidationLinkReturns(false);
 
 		JwtOAuth2AccessToken oAuth2AccessToken = new JwtOAuth2AccessToken(DEFAULT_ACCESS_TOKEN, "Bearer", null, 36000L,
@@ -320,7 +319,7 @@ public class UserAccountServiceTest {
 	void givenSendMailMessageThrowsInvalidEmailMessageException_whenRequestSendingEmailValidationLink_thenReturnFalse() {
 		givenSendMailMessageThrowsIllegalArgumentException();
 
-		CreateUserAccountCommand command = defaultCustomerUserAccountCommandBuilder().build();
+		CreateUserAccountCommand command = defaultClientUserAccountCommandBuilder().build();
 
 		boolean result = userAccountService.requestSendingEmailValidationLink(command.getEmail(),
 				"SOME VALIDATION CODE", locale);
@@ -331,7 +330,7 @@ public class UserAccountServiceTest {
 	void givenSendSMSMessageThrowsInvalidSMSMessageException_whenRequestSendingSMSValidationCode_thenReturnFalse() {
 		givenSendSMSMessageThrowsIllegalArgumentException();
 
-		CreateUserAccountCommand command = defaultCustomerUserAccountCommandBuilder().build();
+		CreateUserAccountCommand command = defaultClientUserAccountCommandBuilder().build();
 
 		boolean result = userAccountService.requestSendingSMSValidationCode(
 				new MobilePhoneNumber(command.getIcc(), command.getMobileNumber()), "SOME VALIDATION CODE", locale);
@@ -353,30 +352,31 @@ public class UserAccountServiceTest {
 		return DEFAULT_VALIDATION_UUID;
 	}
 
-	private void givenNonExistingMobilePhoneNumber() {
+	private void givenNonExistentEmailUsername() {
 
-		given(loadUserAccountPort.loadUserAccountByIccAndMobileNumber(any(String.class), any(String.class)))
-				.willReturn(Optional.ofNullable(null));
-
-	}
-
-	private void givenAnExistingMobilePhoneNumber() {
-
-		given(loadUserAccountPort.loadUserAccountByIccAndMobileNumber(any(String.class), any(String.class)))
-				.willReturn(Optional.of(notYetValidatedMobileNumberUserAccount()));
+		given(loadUserAccountPort.loadUserAccountByUsername(eq(TestConstants.DEFAULT_EMAIL)))
+				.willReturn(Optional.empty());
 
 	}
 
-	private void givenNonExistingEmail() {
+	private void givenAnExistentEmailUsername() {
 
-		given(loadUserAccountPort.loadUserAccountByEmail(any(String.class))).willReturn(Optional.ofNullable(null));
-
-	}
-
-	private void givenAnExistingEmail() {
-
-		given(loadUserAccountPort.loadUserAccountByEmail(any(String.class)))
+		given(loadUserAccountPort.loadUserAccountByUsername(eq(TestConstants.DEFAULT_EMAIL)))
 				.willReturn(Optional.of(notYetValidatedEmailUserAccount()));
+
+	}
+
+	private void givenNonExistentMobileNumberUsername() {
+
+		given(loadUserAccountPort.loadUserAccountByUsername(eq(TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME)))
+				.willReturn(Optional.empty());
+
+	}
+
+	private void givenAnExistentMobileNumberUsername() {
+
+		given(loadUserAccountPort.loadUserAccountByUsername(eq(TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME)))
+				.willReturn(Optional.of(notYetValidatedMobileNumberUserAccount()));
 
 	}
 

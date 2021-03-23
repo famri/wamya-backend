@@ -34,6 +34,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 						.antMatchers(HttpMethod.POST, "/login/**", "/accounts/**").permitAll()
 						.antMatchers(HttpMethod.GET, "/countries/**", "/locales/**").permitAll()
 						.antMatchers("/user-preferences").hasAnyAuthority("SCOPE_journey:write", "SCOPE_offer:write")
+						.antMatchers("/discussions/me").hasAnyAuthority("SCOPE_journey:write", "SCOPE_offer:write")
 						.antMatchers(HttpMethod.GET, "/localities/**").hasAuthority("SCOPE_journey:write")
 						.antMatchers(HttpMethod.GET, "/departments/**").hasAuthority("SCOPE_offer:write")
 						.antMatchers(HttpMethod.GET, "/profiles/**").hasAuthority("SCOPE_profile:read")

@@ -62,25 +62,6 @@ public class UserAccountPersistenceAdapter
 	}
 
 	@Override
-	public Optional<UserAccount> loadUserAccountByIccAndMobileNumber(String icc, String mobileNumber) {
-
-		if (mobileNumber == null || icc == null)
-			return Optional.ofNullable(null);
-
-		Optional<UserAccountJpaEntity> optionalEntity = userAccountRepository.findByMobilePhoneNumber(icc,
-				mobileNumber);
-
-		if (optionalEntity.isEmpty())
-			return Optional.ofNullable(null);
-
-		UserAccountJpaEntity entity = optionalEntity.get();
-
-		UserAccount userAccount = userAccountMapper.mapToDomainEntity(entity);
-
-		return Optional.ofNullable(userAccount);
-	}
-
-	@Override
 	public void updateUserAccount(UserAccount userAccount) {
 
 		if (userAccount.getId() != null) {
@@ -107,20 +88,34 @@ public class UserAccountPersistenceAdapter
 	}
 
 	@Override
-	public Optional<UserAccount> loadUserAccountByEmail(String email) {
-		if (email == null)
-			return Optional.ofNullable(null);
+	public Optional<UserAccount> loadUserAccountByUsername(String username) {
 
-		Optional<UserAccountJpaEntity> optionalEntity = userAccountRepository.findByEmail(email);
+		if (username == null || (!username.contains("@") && !username.contains("_"))) {
+			return Optional.empty();
+		}
+		if (username.contains("@")) {
+			Optional<UserAccountJpaEntity> optionalEntity = userAccountRepository.findByEmail(username);
+			if (optionalEntity.isEmpty())
+				return Optional.empty();
+			UserAccountJpaEntity entity = optionalEntity.get();
 
-		if (optionalEntity.isEmpty())
-			return Optional.ofNullable(null);
+			UserAccount userAccount = userAccountMapper.mapToDomainEntity(entity);
+			return Optional.of(userAccount);
+		} else {
+			String[] mobileNumber = username.split("_");
+			Optional<UserAccountJpaEntity> optionalEntity = userAccountRepository
+					.findByMobilePhoneNumber(mobileNumber[0], mobileNumber[1]);
 
-		UserAccountJpaEntity entity = optionalEntity.get();
+			if (optionalEntity.isEmpty())
+				return Optional.empty();
 
-		UserAccount userAccount = userAccountMapper.mapToDomainEntity(entity);
+			UserAccountJpaEntity entity = optionalEntity.get();
 
-		return Optional.ofNullable(userAccount);
+			UserAccount userAccount = userAccountMapper.mapToDomainEntity(entity);
+
+			return Optional.of(userAccount);
+		}
+
 	}
 
 }

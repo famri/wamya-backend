@@ -23,6 +23,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MvcResult;
 
 import com.c4_soft.springaddons.security.oauth2.test.mockmvc.MockMvcSupport;
+import com.excentria_it.wamya.adapter.web.utils.ValidationHelper;
 import com.excentria_it.wamya.application.port.in.LoadClientJourneyRequestsUseCase;
 import com.excentria_it.wamya.application.port.in.LoadClientJourneyRequestsUseCase.LoadJourneyRequestsCommand;
 import com.excentria_it.wamya.common.exception.RestApiExceptionHandler;
@@ -32,7 +33,8 @@ import com.excentria_it.wamya.test.data.common.TestConstants;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @ActiveProfiles(profiles = { "web-local" })
-@Import(value = { LoadClientJourneyRequestsController.class, RestApiExceptionHandler.class, MockMvcSupport.class })
+@Import(value = { LoadClientJourneyRequestsController.class, RestApiExceptionHandler.class, MockMvcSupport.class,
+		ValidationHelper.class })
 @WebMvcTest(controllers = LoadClientJourneyRequestsController.class)
 public class LoadClientJourneyRequestsControllerTests {
 	@Autowired

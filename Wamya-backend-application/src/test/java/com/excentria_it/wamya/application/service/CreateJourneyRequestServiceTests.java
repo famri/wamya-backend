@@ -64,7 +64,7 @@ public class CreateJourneyRequestServiceTests {
 		ArgumentCaptor<JourneyRequestInputOutput> journeyRequestCaptor = ArgumentCaptor
 				.forClass(JourneyRequestInputOutput.class);
 		UserAccount userAccount = alreadyValidatedEmailUserAccount();
-		given(loadUserAccountPort.loadUserAccountByEmail(any(String.class))).willReturn(Optional.of(userAccount));
+		given(loadUserAccountPort.loadUserAccountByUsername(any(String.class))).willReturn(Optional.of(userAccount));
 
 		Optional<JourneyTravelInfo> jti = Optional.of(defaultJourneyTravelInfo());
 		given(journeyTravelInfoService.loadTravelInfo(any(Long.class), any(PlaceType.class), any(Long.class),
@@ -129,7 +129,7 @@ public class CreateJourneyRequestServiceTests {
 		ArgumentCaptor<JourneyRequestInputOutput> journeyRequestCaptor = ArgumentCaptor
 				.forClass(JourneyRequestInputOutput.class);
 		UserAccount userAccount = alreadyValidatedEmailUserAccount();
-		given(loadUserAccountPort.loadUserAccountByEmail(any(String.class))).willReturn(Optional.of(userAccount));
+		given(loadUserAccountPort.loadUserAccountByUsername(any(String.class))).willReturn(Optional.of(userAccount));
 
 		Optional<JourneyTravelInfo> jti = Optional.of(defaultJourneyTravelInfo());
 		given(journeyTravelInfoService.loadTravelInfo(any(Long.class), any(PlaceType.class), any(Long.class),
@@ -191,7 +191,7 @@ public class CreateJourneyRequestServiceTests {
 		CreateJourneyRequestCommandBuilder commandBuilder = defaultCreateJourneyRequestCommandBuilder();
 		CreateJourneyRequestCommand command = commandBuilder.build();
 
-		given(loadUserAccountPort.loadUserAccountByEmail(any(String.class))).willReturn(Optional.ofNullable(null));
+		given(loadUserAccountPort.loadUserAccountByUsername(any(String.class))).willReturn(Optional.ofNullable(null));
 		// when
 		assertThrows(UserAccountNotFoundException.class,
 				() -> createJourneyRequestsService.createJourneyRequest(command, TestConstants.DEFAULT_EMAIL, "en_US"));
@@ -210,7 +210,7 @@ public class CreateJourneyRequestServiceTests {
 
 		UserAccount userAccount = notYetValidatedMobileNumberUserAccount();
 
-		given(loadUserAccountPort.loadUserAccountByEmail(any(String.class))).willReturn(Optional.of(userAccount));
+		given(loadUserAccountPort.loadUserAccountByUsername(any(String.class))).willReturn(Optional.of(userAccount));
 		// when
 		assertThrows(UserMobileNumberValidationException.class,
 				() -> createJourneyRequestsService.createJourneyRequest(command, TestConstants.DEFAULT_EMAIL, "en_US"));
@@ -230,8 +230,7 @@ public class CreateJourneyRequestServiceTests {
 		ArgumentCaptor<JourneyRequestInputOutput> journeyRequestCaptor = ArgumentCaptor
 				.forClass(JourneyRequestInputOutput.class);
 		UserAccount userAccount = alreadyValidatedEmailUserAccount();
-		given(loadUserAccountPort.loadUserAccountByIccAndMobileNumber(any(String.class), any(String.class)))
-				.willReturn(Optional.of(userAccount));
+		given(loadUserAccountPort.loadUserAccountByUsername(any(String.class))).willReturn(Optional.of(userAccount));
 		Optional<JourneyTravelInfo> jti = Optional.of(defaultJourneyTravelInfo());
 		given(journeyTravelInfoService.loadTravelInfo(any(Long.class), any(PlaceType.class), any(Long.class),
 				any(PlaceType.class))).willReturn(jti);
@@ -291,8 +290,7 @@ public class CreateJourneyRequestServiceTests {
 
 		UserAccount userAccount = notYetValidatedMobileNumberUserAccount();
 
-		given(loadUserAccountPort.loadUserAccountByIccAndMobileNumber(any(String.class), any(String.class)))
-				.willReturn(Optional.of(userAccount));
+		given(loadUserAccountPort.loadUserAccountByUsername(any(String.class))).willReturn(Optional.of(userAccount));
 		// when
 		assertThrows(UserMobileNumberValidationException.class, () -> createJourneyRequestsService
 				.createJourneyRequest(command, TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME, "en_US"));
@@ -312,14 +310,13 @@ public class CreateJourneyRequestServiceTests {
 		ArgumentCaptor<JourneyRequestInputOutput> journeyRequestCaptor = ArgumentCaptor
 				.forClass(JourneyRequestInputOutput.class);
 		UserAccount userAccount = alreadyValidatedEmailUserAccount();
-		given(loadUserAccountPort.loadUserAccountByIccAndMobileNumber(any(String.class), any(String.class)))
-				.willReturn(Optional.of(userAccount));
+		given(loadUserAccountPort.loadUserAccountByUsername(any(String.class))).willReturn(Optional.of(userAccount));
 
 		given(journeyTravelInfoService.loadTravelInfo(any(Long.class), any(PlaceType.class), any(Long.class),
 				any(PlaceType.class))).willReturn(Optional.empty());
 		given(loadPlaceGeoCoordinatesPort.loadPlaceGeoCoordinates(any(Long.class), any(PlaceType.class)))
 				.willReturn(Optional.of(new GeoCoordinates(new BigDecimal(36.8015), new BigDecimal(10.1788))));
-		
+
 		ZoneId userZoneId = ZoneId.of("Africa/Tunis");
 		given(dateTimeHelper.findUserZoneId(any(String.class))).willReturn(userZoneId);
 		Instant now = Instant.now();

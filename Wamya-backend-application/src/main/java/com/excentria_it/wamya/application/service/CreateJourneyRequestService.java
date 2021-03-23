@@ -112,7 +112,7 @@ public class CreateJourneyRequestService implements CreateJourneyRequestUseCase 
 		}
 		JourneyRequestInputOutput createdJourneyRequest = createJourneyRequestPort.createJourneyRequest(journeyRequest,
 				username, locale);
-		
+
 		LocalDateTime creationLocalDateTime = dateTimeHelper
 				.systemToUserLocalDateTime(createdJourneyRequest.getCreationDateTime(), userZoneId);
 
@@ -121,21 +121,15 @@ public class CreateJourneyRequestService implements CreateJourneyRequestUseCase 
 						departurePlaceLongitude))
 				.arrivalPlace(new PlaceDto(command.getArrivalPlaceId(), arrivalPlaceType, arrivalPlaceLatitude,
 						arrivalPlaceLongitude))
-				.dateTime(command.getDateTime()).creationDateTime(creationLocalDateTime).status(createdJourneyRequest.getStatus())
+				.dateTime(command.getDateTime()).creationDateTime(creationLocalDateTime)
+				.status(createdJourneyRequest.getStatus())
 				.engineType(new EngineTypeDto(command.getEngineTypeId(), journeyRequest.getEngineType().getName()))
 				.workers(command.getWorkers()).description(command.getDescription()).build();
 
 	}
 
 	private void checkUserMobileNumberIsVerified(String username) {
-		Optional<UserAccount> userAccountOptional = null;
-		if (username.contains("@")) {
-			userAccountOptional = loadUserAccountPort.loadUserAccountByEmail(username);
-		} else {
-			String[] mobileNumber = username.split("_");
-			userAccountOptional = loadUserAccountPort.loadUserAccountByIccAndMobileNumber(mobileNumber[0],
-					mobileNumber[1]);
-		}
+		Optional<UserAccount> userAccountOptional = loadUserAccountPort.loadUserAccountByUsername(username);
 
 		if (userAccountOptional.isEmpty()) {
 			throw new UserAccountNotFoundException("User " + username + " does not exist.");

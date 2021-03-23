@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import javax.transaction.Transactional;
 
@@ -96,8 +96,7 @@ public class UserAccountService implements CreateUserAccountUseCase {
 				.mobilePhoneNumber(new MobilePhoneNumber(command.getIcc(), command.getMobileNumber()))
 				.isValidatedMobileNumber(false).mobileNumberValidationCode(mobileNumberValidationCode)
 				.isValidatedMobileNumber(false).userPassword(encodedPassword)
-				.creationDateTime(ZonedDateTime.now(
-						ZoneOffset.UTC)).receiveNewsletter(command.getReceiveNewsletter())
+				.creationDateTime(ZonedDateTime.now(ZoneOffset.UTC)).receiveNewsletter(command.getReceiveNewsletter())
 				.globalRating(5.0).build();
 
 		createUserAccountPort.createUserAccount(userAccount);
@@ -114,23 +113,20 @@ public class UserAccountService implements CreateUserAccountUseCase {
 
 	public void checkExistingAccount(CreateUserAccountCommand command) {
 
-		MobilePhoneNumber mobilePhoneNumber = new MobilePhoneNumber(command.getIcc(), command.getMobileNumber());
-		try {
-
-			loadUserAccountPort.loadUserAccountByIccAndMobileNumber(command.getIcc(), command.getMobileNumber()).get();
-			throw new UserAccountAlreadyExistsException(String
-					.format("Mobile number already registred for another account %s", mobilePhoneNumber.toString()));
-		} catch (NoSuchElementException e) {
-			// It's OK Account does not exist
-		}
-		try {
-
-			loadUserAccountPort.loadUserAccountByEmail(command.getEmail()).get();
+		Optional<UserAccount> userAccountOptional = loadUserAccountPort.loadUserAccountByUsername(command.getEmail());
+		if (userAccountOptional.isPresent()) {
 			throw new UserAccountAlreadyExistsException(
 					String.format("Email already registred for another account %s", command.getEmail()));
-		} catch (NoSuchElementException e) {
-			// It's OK Account does not exist
 		}
+
+		userAccountOptional = loadUserAccountPort
+				.loadUserAccountByUsername(command.getIcc() + "_" + command.getMobileNumber());
+		if (userAccountOptional.isPresent()) {
+			throw new UserAccountAlreadyExistsException(
+					String.format("Mobile number already registred for another account %s %s", command.getIcc(),
+							command.getMobileNumber()));
+		}
+
 	}
 
 	protected String patchURL(String url, String protocol, String host, String port, String email,

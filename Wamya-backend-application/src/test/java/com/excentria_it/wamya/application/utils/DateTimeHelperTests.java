@@ -1,6 +1,5 @@
 package com.excentria_it.wamya.application.utils;
 
-import static com.excentria_it.wamya.test.data.common.UserAccountTestData.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
@@ -8,8 +7,6 @@ import static org.mockito.BDDMockito.*;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -18,35 +15,23 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.excentria_it.wamya.application.port.out.LoadUserAccountPort;
-import com.excentria_it.wamya.domain.UserAccount;
+import com.excentria_it.wamya.application.port.out.LoadUserPreferencesPort;
+import com.excentria_it.wamya.domain.UserPreference;
 import com.excentria_it.wamya.test.data.common.TestConstants;
 
 @ExtendWith(MockitoExtension.class)
 public class DateTimeHelperTests {
 	@Mock
-	private LoadUserAccountPort loadUserAccountPort;
+	private LoadUserPreferencesPort loadUserPreferencesPort;
 	@InjectMocks
 	private DateTimeHelper dateTimeHelper;
 
 	@Test
-	void testFindUserZoneIdByEmail() {
+	void testFindUserZoneIdByUsername() {
 		// given
-		UserAccount userAccount = defaultUserAccountBuilder().preferences(Map.of("timezone", "Africa/Tunis")).build();
-		given(loadUserAccountPort.loadUserAccountByEmail(any(String.class))).willReturn(Optional.of(userAccount));
-
-		// when
-		ZoneId userZoneId = dateTimeHelper.findUserZoneId(TestConstants.DEFAULT_EMAIL);
-		// then
-		assertEquals(ZoneId.of("Africa/Tunis"), userZoneId);
-	}
-
-	@Test
-	void testFindUserZoneIdByMobileNumber() {
-		// given
-		UserAccount userAccount = defaultUserAccountBuilder().preferences(Map.of("timezone", "Africa/Tunis")).build();
-		given(loadUserAccountPort.loadUserAccountByIccAndMobileNumber(any(String.class), any(String.class)))
-				.willReturn(Optional.of(userAccount));
+		UserPreference userPreference = new UserPreference(1L, "timezone", "Africa/Tunis");
+		given(loadUserPreferencesPort.loadUserPreferenceByKeyAndUsername(any(String.class), any(String.class)))
+				.willReturn(Optional.of(userPreference));
 
 		// when
 		ZoneId userZoneId = dateTimeHelper.findUserZoneId(TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME);
@@ -57,45 +42,10 @@ public class DateTimeHelperTests {
 	@Test
 	void testFindUserZoneIdByBadUsername() {
 		// given
-
+		given(loadUserPreferencesPort.loadUserPreferenceByKeyAndUsername(any(String.class), any(String.class)))
+				.willReturn(Optional.empty());
 		// when
 		ZoneId userZoneId = dateTimeHelper.findUserZoneId("A BAD USERNAME");
-		// then
-		assertNull(userZoneId);
-	}
-
-	@Test
-	void testFindUserZoneIdWithEmptyPreference() {
-		// given
-		UserAccount userAccount = defaultUserAccountBuilder().preferences(new HashMap<>()).build();
-		given(loadUserAccountPort.loadUserAccountByEmail(any(String.class))).willReturn(Optional.of(userAccount));
-
-		// when
-		ZoneId userZoneId = dateTimeHelper.findUserZoneId(TestConstants.DEFAULT_EMAIL);
-		// then
-		assertNull(userZoneId);
-	}
-
-	@Test
-	void testFindUserZoneIdWithNullPreferenceValue() {
-		// given
-		UserAccount userAccount = defaultUserAccountBuilder().preferences(Map.of("K", "V")).build();
-		given(loadUserAccountPort.loadUserAccountByEmail(any(String.class))).willReturn(Optional.of(userAccount));
-
-		// when
-		ZoneId userZoneId = dateTimeHelper.findUserZoneId(TestConstants.DEFAULT_EMAIL);
-		// then
-		assertNull(userZoneId);
-	}
-
-	@Test
-	void testFindUserZoneIdWithEmptyPreferenceValue() {
-		// given
-		UserAccount userAccount = defaultUserAccountBuilder().preferences(Map.of("timezone", "")).build();
-		given(loadUserAccountPort.loadUserAccountByEmail(any(String.class))).willReturn(Optional.of(userAccount));
-
-		// when
-		ZoneId userZoneId = dateTimeHelper.findUserZoneId(TestConstants.DEFAULT_EMAIL);
 		// then
 		assertNull(userZoneId);
 	}

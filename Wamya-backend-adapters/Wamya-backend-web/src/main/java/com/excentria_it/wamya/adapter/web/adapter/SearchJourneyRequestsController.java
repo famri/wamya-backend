@@ -5,20 +5,17 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
-import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.excentria_it.wamya.adapter.web.utils.ValidationHelper;
 import com.excentria_it.wamya.application.port.in.SearchJourneyRequestsUseCase;
 import com.excentria_it.wamya.application.port.in.SearchJourneyRequestsUseCase.SearchJourneyRequestsCommand;
 import com.excentria_it.wamya.common.SortCriterion;
@@ -38,7 +35,7 @@ public class SearchJourneyRequestsController {
 
 	private final SearchJourneyRequestsUseCase searchJourneyRequestsUseCase;
 
-	private final LocalValidatorFactoryBean localValidatorFactoryBean;
+	private final ValidationHelper validationHelper;
 
 	@GetMapping
 	public JourneyRequestsSearchResult searchJourneyRequests(
@@ -61,18 +58,11 @@ public class SearchJourneyRequestsController {
 				.startDateTime(startDateTime).endDateTime(endDateTime).engineTypes(engineTypeIds).pageNumber(pageNumber)
 				.pageSize(pageSize).sortingCriterion(sortingCriterion).build();
 
-		validateInput(command);
+		validationHelper.validateInput(command);
 
 		return searchJourneyRequestsUseCase.searchJourneyRequests(command, principal.getName(),
 				supportedLocale.toString());
 
 	}
 
-	protected void validateInput(SearchJourneyRequestsCommand command) {
-		Set<ConstraintViolation<SearchJourneyRequestsCommand>> errors = localValidatorFactoryBean.getValidator()
-				.validate(command);
-		if (!errors.isEmpty()) {
-			throw new ConstraintViolationException(errors);
-		}
-	}
 }

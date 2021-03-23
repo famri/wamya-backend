@@ -234,27 +234,25 @@ public class SendValidationCodeServiceTests {
 
 	private void givenNonExistentEmail() {
 
-		given(loadUserAccountPort.loadUserAccountByEmail(any(String.class))).willReturn(Optional.ofNullable(null));
+		given(loadUserAccountPort.loadUserAccountByUsername(any(String.class))).willReturn(Optional.empty());
 
 	}
 
 	private void givenExistentEmail(UserAccount account) {
 
-		given(loadUserAccountPort.loadUserAccountByEmail(any(String.class))).willReturn(Optional.ofNullable(account));
+		given(loadUserAccountPort.loadUserAccountByUsername(any(String.class))).willReturn(Optional.of(account));
 
 	}
 
 	private void givenExistentMobilePhoneNumber(UserAccount account) {
 
-		given(loadUserAccountPort.loadUserAccountByIccAndMobileNumber(any(String.class), any(String.class)))
-				.willReturn(Optional.ofNullable(account));
+		given(loadUserAccountPort.loadUserAccountByUsername(any(String.class))).willReturn(Optional.of(account));
 
 	}
 
 	private void givenNonExistentMobilePhoneNumber() {
 
-		given(loadUserAccountPort.loadUserAccountByIccAndMobileNumber(any(String.class), any(String.class)))
-				.willReturn(Optional.ofNullable(null));
+		given(loadUserAccountPort.loadUserAccountByUsername(any(String.class))).willReturn(Optional.empty());
 
 	}
 

@@ -94,7 +94,7 @@ public class SendValidationCodeService implements SendValidationCodeUseCase {
 	protected UserAccount checkExistingAccount(SendSMSValidationCodeCommand command) {
 
 		Optional<UserAccount> userAccountOptional = loadUserAccountPort
-				.loadUserAccountByIccAndMobileNumber(command.getIcc(), command.getMobileNumber());
+				.loadUserAccountByUsername(command.getIcc() + "_" + command.getMobileNumber());
 		if (userAccountOptional.isEmpty()) {
 			throw new UserAccountNotFoundException(
 					String.format("No account having mobile phone number %s %s was found.", command.getIcc(),
@@ -105,7 +105,7 @@ public class SendValidationCodeService implements SendValidationCodeUseCase {
 
 	protected UserAccount checkExistingAccount(SendEmailValidationLinkCommand command) {
 
-		Optional<UserAccount> userAccountOptional = loadUserAccountPort.loadUserAccountByEmail(command.getEmail());
+		Optional<UserAccount> userAccountOptional = loadUserAccountPort.loadUserAccountByUsername(command.getEmail());
 		if (userAccountOptional.isEmpty()) {
 			throw new UserAccountNotFoundException(
 					String.format("No account having email %s was found.", command.getEmail()));

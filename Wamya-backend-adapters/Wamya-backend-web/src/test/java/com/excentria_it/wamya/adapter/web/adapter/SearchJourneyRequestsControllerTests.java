@@ -24,6 +24,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MvcResult;
 
 import com.c4_soft.springaddons.security.oauth2.test.mockmvc.MockMvcSupport;
+import com.excentria_it.wamya.adapter.web.utils.ValidationHelper;
 import com.excentria_it.wamya.application.port.in.SearchJourneyRequestsUseCase;
 import com.excentria_it.wamya.application.port.in.SearchJourneyRequestsUseCase.SearchJourneyRequestsCommand;
 import com.excentria_it.wamya.common.SortCriterion;
@@ -34,7 +35,8 @@ import com.excentria_it.wamya.test.data.common.TestConstants;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @ActiveProfiles(value = { "web-local" })
-@Import(value = { SearchJourneyRequestsController.class, RestApiExceptionHandler.class, MockMvcSupport.class })
+@Import(value = { SearchJourneyRequestsController.class, RestApiExceptionHandler.class, MockMvcSupport.class,
+		ValidationHelper.class })
 @WebMvcTest(controllers = SearchJourneyRequestsController.class)
 public class SearchJourneyRequestsControllerTests {
 

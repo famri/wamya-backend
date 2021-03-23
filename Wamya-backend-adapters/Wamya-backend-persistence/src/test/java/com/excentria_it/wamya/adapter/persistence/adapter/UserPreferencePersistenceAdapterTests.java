@@ -1,5 +1,6 @@
 package com.excentria_it.wamya.adapter.persistence.adapter;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
@@ -16,6 +17,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.excentria_it.wamya.adapter.persistence.entity.UserAccountJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.repository.UserAccountRepository;
+import com.excentria_it.wamya.adapter.persistence.repository.UserPreferenceRepository;
+import com.excentria_it.wamya.domain.UserPreference;
 import com.excentria_it.wamya.test.data.common.TestConstants;
 import com.excentria_it.wamya.test.data.common.UserAccountJpaEntityTestData;
 
@@ -23,6 +26,9 @@ import com.excentria_it.wamya.test.data.common.UserAccountJpaEntityTestData;
 public class UserPreferencePersistenceAdapterTests {
 	@Mock
 	private UserAccountRepository userAccountRepository;
+	@Mock
+	private UserPreferenceRepository userPreferenceRepository;
+
 	@InjectMocks
 	private UserPreferencePersistenceAdapter userPreferencePersistenceAdapter;
 
@@ -89,6 +95,56 @@ public class UserPreferencePersistenceAdapterTests {
 		// then
 
 		then(userAccountRepository).should(never()).save(any(UserAccountJpaEntity.class));
+
+	}
+
+	@Test
+	void givenEmailUsernameAndExistentUserPreference_WhenLoadUserPreferenceByKeyAndUsername_ThenReturnUserPreference() {
+
+		// given
+		UserPreference userPreference = new UserPreference(1L, "timezone", "Africa/tunis");
+		given(userPreferenceRepository.findByKeyAndUserAccountEmail(any(String.class), any(String.class)))
+				.willReturn(Optional.of(userPreference));
+		// when
+		Optional<UserPreference> userPreferenceOptional = userPreferencePersistenceAdapter
+				.loadUserPreferenceByKeyAndUsername("timezone", TestConstants.DEFAULT_EMAIL);
+		// Then
+		then(userPreferenceRepository).should(times(1)).findByKeyAndUserAccountEmail(eq("timezone"),
+				eq(TestConstants.DEFAULT_EMAIL));
+		assertEquals(userPreference, userPreferenceOptional.get());
+
+	}
+
+	@Test
+	void givenMobileNumberUsernameAndExistentUserPreference_WhenLoadUserPreferenceByKeyAndUsername_ThenReturnUserPreference() {
+
+		// given
+		UserPreference userPreference = new UserPreference(1L, "timezone", "Africa/tunis");
+		given(userPreferenceRepository.findByKeyAndUserAccountMobileNumber(any(String.class), any(String.class),
+				any(String.class))).willReturn(Optional.of(userPreference));
+		// when
+		Optional<UserPreference> userPreferenceOptional = userPreferencePersistenceAdapter
+				.loadUserPreferenceByKeyAndUsername("timezone", TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME);
+		// Then
+
+		then(userPreferenceRepository).should(times(1)).findByKeyAndUserAccountMobileNumber(eq("timezone"),
+				eq(TestConstants.DEFAULT_INTERNATIONAL_CALLING_CODE), eq(TestConstants.DEFAULT_MOBILE_NUMBER));
+		assertEquals(userPreference, userPreferenceOptional.get());
+
+	}
+
+	@Test
+	void givenBadUsername_WhenLoadUserPreferenceByKeyAndUsername_ThenReturnEmptyUserPreference() {
+
+		// given
+
+		// when
+		Optional<UserPreference> userPreferenceOptional = userPreferencePersistenceAdapter
+				.loadUserPreferenceByKeyAndUsername("timezone", "BAD USERNAME");
+		// Then
+		then(userPreferenceRepository).should(never()).findByKeyAndUserAccountEmail(any(String.class),
+				any(String.class));
+		assertThat(userPreferenceOptional).isEmpty();
 
 	}
 }

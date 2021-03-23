@@ -2,16 +2,11 @@ package com.excentria_it.wamya.adapter.web.adapter;
 
 import java.util.Locale;
 import java.util.Optional;
-import java.util.Set;
-
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
-import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.excentria_it.wamya.adapter.web.utils.ValidationHelper;
 import com.excentria_it.wamya.application.port.in.LoadClientJourneyRequestsUseCase;
 import com.excentria_it.wamya.application.port.in.LoadClientJourneyRequestsUseCase.LoadJourneyRequestsCommand;
 import com.excentria_it.wamya.common.PeriodCriterion;
@@ -39,7 +35,7 @@ public class LoadClientJourneyRequestsController {
 
 	private final LoadClientJourneyRequestsUseCase loadJourneyRequestUseCase;
 
-	private final LocalValidatorFactoryBean localValidatorFactoryBean;
+	private final ValidationHelper validationHelper;
 
 	@GetMapping(path = "/me/journey-requests")
 	@ResponseStatus(HttpStatus.OK)
@@ -57,7 +53,7 @@ public class LoadClientJourneyRequestsController {
 				.pageNumber(pageNumber).pageSize(pageSize).sortingCriterion(sortingCriterion)
 				.periodCriterion(periodCriterion).build();
 
-		validateInput(command);
+		validationHelper.validateInput(command);
 
 		Locale supportedLocale = LocaleUtils.getSupporedLocale(locale);
 
@@ -65,11 +61,4 @@ public class LoadClientJourneyRequestsController {
 
 	}
 
-	protected void validateInput(LoadJourneyRequestsCommand command) {
-		Set<ConstraintViolation<LoadJourneyRequestsCommand>> errors = localValidatorFactoryBean.getValidator()
-				.validate(command);
-		if (!errors.isEmpty()) {
-			throw new ConstraintViolationException(errors);
-		}
-	}
 }

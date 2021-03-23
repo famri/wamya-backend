@@ -66,7 +66,7 @@ public class UserAccountTestData {
 				.userPassword(DEFAULT_RAW_PASSWORD).receiveNewsletter(true);
 	}
 
-	public static CreateUserAccountCommandBuilder defaultCustomerUserAccountCommandBuilder() {
+	public static CreateUserAccountCommandBuilder defaultClientUserAccountCommandBuilder() {
 		return CreateUserAccountCommand.builder().isTransporter(false).gender(Gender.MAN).firstname(DEFAULT_FIRSTNAME)
 				.lastname(DEFAULT_LASTNAME).dateOfBirth(DEFAULT_DATE_OF_BIRTH).email(DEFAULT_EMAIL)
 				.icc(DEFAULT_INTERNATIONAL_CALLING_CODE).mobileNumber(DEFAULT_MOBILE_NUMBER)

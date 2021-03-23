@@ -69,7 +69,7 @@ public class SortCriterionValidatorTests {
 	}
 
 	@Test
-	void givenInvalidSortingCriterionField_WhenIsValid_ThenReturnTrue() {
+	void givenInvalidSortingCriterionField_WhenIsValid_ThenReturnFalse() {
 
 		boolean validationResult = validator.isValid(new SortCriterion("field4", "desc"), null);
 
@@ -77,7 +77,7 @@ public class SortCriterionValidatorTests {
 	}
 
 	@Test
-	void givenInvalidSortingCriterionDirection_WhenIsValid_ThenReturnTrue() {
+	void givenInvalidSortingCriterionDirection_WhenIsValid_ThenReturnFalse() {
 
 		boolean validationResult = validator.isValid(new SortCriterion("field2", "up"), null);
 
@@ -85,7 +85,7 @@ public class SortCriterionValidatorTests {
 	}
 	
 	@Test
-	void givenInvalidSortingCriterionFieldAndDirection_WhenIsValid_ThenReturnTrue() {
+	void givenInvalidSortingCriterionFieldAndDirection_WhenIsValid_ThenReturnFalse() {
 
 		boolean validationResult = validator.isValid(new SortCriterion("field4", "up"), null);
 

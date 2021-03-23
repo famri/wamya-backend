@@ -3,16 +3,11 @@ package com.excentria_it.wamya.adapter.web.adapter;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.Set;
-
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
-import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.excentria_it.wamya.adapter.web.utils.ValidationHelper;
 import com.excentria_it.wamya.application.port.in.LoadProposalsUseCase;
 import com.excentria_it.wamya.application.port.in.LoadProposalsUseCase.LoadProposalsCommand;
 import com.excentria_it.wamya.common.SortCriterion;
@@ -41,7 +37,7 @@ public class LoadProposalsController {
 
 	private final LoadProposalsUseCase loadProposalsUseCase;
 
-	private final LocalValidatorFactoryBean localValidatorFactoryBean;
+	private final ValidationHelper validationHelper;
 
 	@GetMapping(path = "/{journeyRequestId}/proposals")
 	@ResponseStatus(HttpStatus.OK)
@@ -58,7 +54,7 @@ public class LoadProposalsController {
 				.pageNumber(pageNumber).pageSize(pageSize).sortingCriterion(sortingCriterion)
 				.journeyRequestId(journeyRequestId).statusCodes(statusCodes).build();
 
-		validateInput(command);
+		validationHelper.validateInput(command);
 
 		Locale supportedLocale = LocaleUtils.getSupporedLocale(locale);
 
@@ -66,11 +62,4 @@ public class LoadProposalsController {
 
 	}
 
-	protected void validateInput(LoadProposalsCommand command) {
-		Set<ConstraintViolation<LoadProposalsCommand>> errors = localValidatorFactoryBean.getValidator()
-				.validate(command);
-		if (!errors.isEmpty()) {
-			throw new ConstraintViolationException(errors);
-		}
-	}
 }

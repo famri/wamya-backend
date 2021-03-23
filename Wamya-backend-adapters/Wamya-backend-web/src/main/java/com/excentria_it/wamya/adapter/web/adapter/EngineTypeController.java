@@ -40,7 +40,7 @@ public class EngineTypeController {
 				.loadAllEngineTypes(supportedLocale.toString());
 
 		if (loadEngineTypesDtos == null || loadEngineTypesDtos.isEmpty()) {
-			return new LoadEngineTypesResult(0, Collections.<LoadEngineTypesDto>emptyList());
+			return new LoadEngineTypesResult(0, Collections.emptyList());
 		}
 		return new LoadEngineTypesResult(loadEngineTypesDtos.size(), loadEngineTypesDtos);
 
