@@ -43,13 +43,42 @@ public class DiscussionsControllerTests {
 	private LoadDiscussionsUseCase loadDiscussionsUseCase;
 
 	@Test
-	void givenValidInput_WhenLoadDiscussions_ThenReturnLoadDiscussionsResult() throws Exception {
+	void givenFilterInputAndClientScope_WhenLoadDiscussions_ThenReturnLoadDiscussionsResult() throws Exception {
 
 		LoadDiscussionsResult result = defaultLoadDiscussionsResult();
 		given(loadDiscussionsUseCase.loadDiscussions(any(LoadDiscussionsCommand.class))).willReturn(result);
 
 		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
-				.authorities("SCOPE_journey:write")).perform(get("/discussions/me").param("filter", "active:true"))
+				.authorities("SCOPE_journey:write"))
+				.perform(get("/users/me/discussions").param("filter", "active:true").param("sort", "date-time,desc")
+						.param("page", "0").param("size", "25"))
+				.andExpect(status().isOk())
+				.andExpect(responseBody().containsObjectAsJson(result, LoadDiscussionsResult.class));
+
+		ArgumentCaptor<LoadDiscussionsCommand> captor = ArgumentCaptor.forClass(LoadDiscussionsCommand.class);
+
+		then(loadDiscussionsUseCase).should(times(1)).loadDiscussions(captor.capture());
+
+		assertThat(captor.getValue().getFilteringCriterion()).isEqualTo(new FilterCriterion("active", "true"));
+		assertThat(captor.getValue().getSortingCriterion()).isEqualTo(new SortCriterion("date-time", "desc"));
+		assertThat(captor.getValue().getUsername()).isEqualTo(TestConstants.DEFAULT_EMAIL);
+		assertThat(captor.getValue().getPageNumber()).isEqualTo(0);
+		assertThat(captor.getValue().getPageSize()).isEqualTo(25);
+
+	}
+
+	//
+
+	@Test
+	void givenFilterInputAndTransporterScope_WhenLoadDiscussions_ThenReturnLoadDiscussionsResult() throws Exception {
+
+		LoadDiscussionsResult result = defaultLoadDiscussionsResult();
+		given(loadDiscussionsUseCase.loadDiscussions(any(LoadDiscussionsCommand.class))).willReturn(result);
+
+		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
+				.authorities("SCOPE_offer:write"))
+				.perform(get("/users/me/discussions").param("filter", "active:true").param("sort", "date-time,desc")
+						.param("page", "0").param("size", "25"))
 				.andExpect(status().isOk())
 				.andExpect(responseBody().containsObjectAsJson(result, LoadDiscussionsResult.class));
 

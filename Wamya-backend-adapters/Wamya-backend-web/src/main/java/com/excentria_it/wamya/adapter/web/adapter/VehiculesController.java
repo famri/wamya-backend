@@ -27,12 +27,12 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
-@RequestMapping(path = "/users/me", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/users", produces = MediaType.APPLICATION_JSON_VALUE)
 public class VehiculesController {
 
 	private final AddVehiculeUseCase addVehiculeUseCase;
 
-	@PostMapping(path = "/vehicules", consumes = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(path = "/me/vehicules", consumes = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
 	public AddVehiculeDto addTransporterVehicule(@Valid @RequestBody AddVehiculeCommand command,
 			final @AuthenticationPrincipal JwtAuthenticationToken principal, Locale locale) {

@@ -27,12 +27,12 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
-@RequestMapping(path = "/discussions", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/users", produces = MediaType.APPLICATION_JSON_VALUE)
 public class DiscussionsController {
 
 	private final LoadDiscussionsUseCase loadDiscussionsUseCase;
 
-	@GetMapping(path = "/me")
+	@GetMapping(path = "/me/discussions")
 	@ResponseStatus(HttpStatus.OK)
 	public LoadDiscussionsResult loadDiscussions(@RequestParam(name = "page", defaultValue = "0") Integer pageNumber,
 			@RequestParam(name = "size", defaultValue = "25") Integer pageSize,
