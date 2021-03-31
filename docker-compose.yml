@@ -148,6 +148,7 @@ services:
     volumes:
       - ./Messaging-gateway/rabbitmq/conf/definitions.json:/opt/definitions.json:ro
       - ./Messaging-gateway/rabbitmq/conf/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
+      - ./Messaging-gateway/rabbitmq/conf/enabled_plugins:/etc/rabbitmq/enabled_plugins:ro
     
     healthcheck:
       test: ["CMD", "rabbitmqctl", "status"]

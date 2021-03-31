@@ -40,12 +40,36 @@ public class DateTimeHelperTests {
 	}
 
 	@Test
+	void testFindUserZoneIdByUserId() {
+		// given
+		UserPreference userPreference = new UserPreference(1L, "timezone", "Africa/Tunis");
+		given(loadUserPreferencesPort.loadUserPreferenceByKeyAndUserId(any(String.class), any(Long.class)))
+				.willReturn(Optional.of(userPreference));
+
+		// when
+		ZoneId userZoneId = dateTimeHelper.findUserZoneId(1L);
+		// then
+		assertEquals(ZoneId.of("Africa/Tunis"), userZoneId);
+	}
+
+	@Test
 	void testFindUserZoneIdByBadUsername() {
 		// given
 		given(loadUserPreferencesPort.loadUserPreferenceByKeyAndUsername(any(String.class), any(String.class)))
 				.willReturn(Optional.empty());
 		// when
 		ZoneId userZoneId = dateTimeHelper.findUserZoneId("A BAD USERNAME");
+		// then
+		assertNull(userZoneId);
+	}
+
+	@Test
+	void testFindUserZoneIdByBadUserId() {
+		// given
+		given(loadUserPreferencesPort.loadUserPreferenceByKeyAndUserId(any(String.class), any(Long.class)))
+				.willReturn(Optional.empty());
+		// whenL
+		ZoneId userZoneId = dateTimeHelper.findUserZoneId(200L);
 		// then
 		assertNull(userZoneId);
 	}

@@ -147,4 +147,20 @@ public class UserPreferencePersistenceAdapterTests {
 		assertThat(userPreferenceOptional).isEmpty();
 
 	}
+
+	@Test
+	void givenUserIdAndExistentUserPreference_WhenLoadUserPreferenceByKeyAndUserId_ThenReturnUserPreference() {
+		// given
+		UserPreference userPreference = new UserPreference(1L, "timezone", "Africa/tunis");
+		given(userPreferenceRepository.findByKeyAndUserAccountId(any(String.class), any(Long.class)))
+				.willReturn(Optional.of(userPreference));
+		// when
+		Optional<UserPreference> userPreferenceOptional = userPreferencePersistenceAdapter
+				.loadUserPreferenceByKeyAndUserId("timezone", 1L);
+		// Then
+
+		then(userPreferenceRepository).should(times(1)).findByKeyAndUserAccountId(eq("timezone"),
+				eq(1L));
+		assertEquals(userPreference, userPreferenceOptional.get());
+	}
 }

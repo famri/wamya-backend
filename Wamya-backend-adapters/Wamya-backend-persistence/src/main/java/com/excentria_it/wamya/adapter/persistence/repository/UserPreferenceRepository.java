@@ -17,4 +17,7 @@ public interface UserPreferenceRepository extends JpaRepository<UserPreferenceJp
 	Optional<UserPreference> findByKeyAndUserAccountMobileNumber(String preferenceKey, String internationalCallingCode,
 			String mobileNumber);
 
+	@Query(value = "SELECT new com.excentria_it.wamya.domain.UserPreference(p.userPreferenceId.id, p.userPreferenceId.key, p.value) FROM UserPreferenceJpaEntity p JOIN p.userAccount a WHERE  p.userPreferenceId.key = ?1 AND a.id = ?2")
+	Optional<UserPreference> findByKeyAndUserAccountId(String preferenceKey, Long userAccountId);
+
 }

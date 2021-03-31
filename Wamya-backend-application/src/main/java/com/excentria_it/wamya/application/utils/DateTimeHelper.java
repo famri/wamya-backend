@@ -31,6 +31,15 @@ public class DateTimeHelper {
 
 		return ZoneId.of(userPreferenceOptional.get().getValue());
 	}
+	
+	public ZoneId findUserZoneId(Long userId) {
+		Optional<UserPreference> userPreferenceOptional = loadUserPreferencesPort
+				.loadUserPreferenceByKeyAndUserId(USER_TIME_ZONE_KEY, userId);
+		if (userPreferenceOptional.isEmpty())
+			return null;
+
+		return ZoneId.of(userPreferenceOptional.get().getValue());
+	}
 
 	public Instant userLocalToSystemDateTime(LocalDateTime userDateTime, ZoneId userZoneId) {
 		if (userDateTime == null || userZoneId == null)

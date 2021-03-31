@@ -1,6 +1,8 @@
 package com.excentria_it.wamya.adapter.persistence.adapter;
 
 import static com.excentria_it.wamya.test.data.common.DiscussionJpaTestData.*;
+import static com.excentria_it.wamya.test.data.common.DiscussionTestData.*;
+import static com.excentria_it.wamya.test.data.common.UserAccountJpaEntityTestData.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -8,8 +10,8 @@ import static org.mockito.BDDMockito.*;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,11 +22,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
+import com.excentria_it.wamya.adapter.persistence.entity.ClientJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.DiscussionJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.MessageJpaEntity;
+import com.excentria_it.wamya.adapter.persistence.entity.TransporterJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.UserAccountJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.mapper.DiscussionMapper;
-import com.excentria_it.wamya.adapter.persistence.repository.DiscussionsRepository;
+import com.excentria_it.wamya.adapter.persistence.repository.ClientRepository;
+import com.excentria_it.wamya.adapter.persistence.repository.DiscussionRepository;
+import com.excentria_it.wamya.adapter.persistence.repository.TransporterRepository;
 import com.excentria_it.wamya.common.FilterCriterion;
 import com.excentria_it.wamya.common.SortCriterion;
 import com.excentria_it.wamya.domain.LoadDiscussionsOutput;
@@ -35,9 +41,14 @@ import com.excentria_it.wamya.domain.LoadDiscussionsOutputResult;
 @ExtendWith(MockitoExtension.class)
 public class DiscussionsPersistenceAdapterTests {
 	@Mock
-	private DiscussionsRepository discussionsRepository;
+	private DiscussionRepository discussionsRepository;
 	@Mock
 	private DiscussionMapper discussionMapper;
+	@Mock
+	private ClientRepository clientRepository;
+	@Mock
+	private TransporterRepository transporterRepository;
+
 	@InjectMocks
 	private DiscussionsPersistenceAdapter discussionsPersistenceAdapter;
 
@@ -45,16 +56,16 @@ public class DiscussionsPersistenceAdapterTests {
 	void givenTransporterDiscussion_WhenLoadDiscussion_ThenReturnLoadDiscussionsOutputResult() {
 		// given
 		Page<DiscussionJpaEntity> discussionsPage = givenDiscussionsPage();
-		given(discussionsRepository.findByTransporter_IdAndActiveWithMessages(any(Long.class), any(Boolean.class),
+		given(discussionsRepository.findByTransporter_IdAndActive(any(Long.class), any(Boolean.class),
 				any(Pageable.class))).willReturn(discussionsPage);
 
 		DiscussionJpaEntity discussion = discussionsPage.getContent().get(0);
 
 		LoadDiscussionsOutput loadDiscussionsOutput = new LoadDiscussionsOutput(discussion.getId(),
-				discussion.getActive(), discussion.getDateTime(), this.getMessageOutputList(discussion.getMessages()),
-				this.getInterlocutor(discussion.getClient()));
+				discussion.getActive(), discussion.getDateTime(), this.getMessageOutput(discussion.getLatestMessage()),
+				this.getInterlocutor(discussion.getClient()), this.getInterlocutor(discussion.getTransporter()));
 
-		given(discussionMapper.mapToTransporterLoadDiscussionsOutput(discussionsPage.getContent().get(0)))
+		given(discussionMapper.mapToLoadDiscussionsOutput(discussionsPage.getContent().get(0)))
 				.willReturn(loadDiscussionsOutput);
 		// when
 		LoadDiscussionsOutputResult result = discussionsPersistenceAdapter.loadDiscussions(1L, true, 0, 25,
@@ -74,16 +85,16 @@ public class DiscussionsPersistenceAdapterTests {
 	void givenTransporterDiscussionWithEmptyFilter_WhenLoadDiscussion_ThenReturnLoadDiscussionsOutputResult() {
 		// given
 		Page<DiscussionJpaEntity> discussionsPage = givenDiscussionsPage();
-		given(discussionsRepository.findByTransporter_IdWithMessages(any(Long.class), any(Pageable.class)))
+		given(discussionsRepository.findByTransporter_Id(any(Long.class), any(Pageable.class)))
 				.willReturn(discussionsPage);
 
 		DiscussionJpaEntity discussion = discussionsPage.getContent().get(0);
 
 		LoadDiscussionsOutput loadDiscussionsOutput = new LoadDiscussionsOutput(discussion.getId(),
-				discussion.getActive(), discussion.getDateTime(), this.getMessageOutputList(discussion.getMessages()),
-				this.getInterlocutor(discussion.getClient()));
+				discussion.getActive(), discussion.getDateTime(), this.getMessageOutput(discussion.getLatestMessage()),
+				this.getInterlocutor(discussion.getClient()), this.getInterlocutor(discussion.getTransporter()));
 
-		given(discussionMapper.mapToTransporterLoadDiscussionsOutput(discussionsPage.getContent().get(0)))
+		given(discussionMapper.mapToLoadDiscussionsOutput(discussionsPage.getContent().get(0)))
 				.willReturn(loadDiscussionsOutput);
 		// when
 		LoadDiscussionsOutputResult result = discussionsPersistenceAdapter.loadDiscussions(1L, true, 0, 25,
@@ -120,16 +131,16 @@ public class DiscussionsPersistenceAdapterTests {
 	void givenClientDiscussion_WhenLoadDiscussion_ThenReturnLoadDiscussionsOutputResult() {
 		// given
 		Page<DiscussionJpaEntity> discussionsPage = givenDiscussionsPage();
-		given(discussionsRepository.findByClient_IdAndActiveWithMessages(any(Long.class), any(Boolean.class),
-				any(Pageable.class))).willReturn(discussionsPage);
+		given(discussionsRepository.findByClient_IdAndActive(any(Long.class), any(Boolean.class), any(Pageable.class)))
+				.willReturn(discussionsPage);
 
 		DiscussionJpaEntity discussion = discussionsPage.getContent().get(0);
 
 		LoadDiscussionsOutput loadDiscussionsOutput = new LoadDiscussionsOutput(discussion.getId(),
-				discussion.getActive(), discussion.getDateTime(), this.getMessageOutputList(discussion.getMessages()),
-				this.getInterlocutor(discussion.getTransporter()));
+				discussion.getActive(), discussion.getDateTime(), this.getMessageOutput(discussion.getLatestMessage()),
+				this.getInterlocutor(discussion.getClient()), this.getInterlocutor(discussion.getTransporter()));
 
-		given(discussionMapper.mapToClientLoadDiscussionsOutput(discussionsPage.getContent().get(0)))
+		given(discussionMapper.mapToLoadDiscussionsOutput(discussionsPage.getContent().get(0)))
 				.willReturn(loadDiscussionsOutput);
 		// when
 		LoadDiscussionsOutputResult result = discussionsPersistenceAdapter.loadDiscussions(1L, false, 0, 25,
@@ -149,16 +160,14 @@ public class DiscussionsPersistenceAdapterTests {
 	void givenClientDiscussionWithEmptyFilter_WhenLoadDiscussion_ThenReturnLoadDiscussionsOutputResult() {
 		// given
 		Page<DiscussionJpaEntity> discussionsPage = givenDiscussionsPage();
-		given(discussionsRepository.findByClient_IdWithMessages(any(Long.class), any(Pageable.class)))
-				.willReturn(discussionsPage);
+		given(discussionsRepository.findByClient_Id(any(Long.class), any(Pageable.class))).willReturn(discussionsPage);
 
 		DiscussionJpaEntity discussion = discussionsPage.getContent().get(0);
-
 		LoadDiscussionsOutput loadDiscussionsOutput = new LoadDiscussionsOutput(discussion.getId(),
-				discussion.getActive(), discussion.getDateTime(), this.getMessageOutputList(discussion.getMessages()),
-				this.getInterlocutor(discussion.getTransporter()));
+				discussion.getActive(), discussion.getDateTime(), this.getMessageOutput(discussion.getLatestMessage()),
+				this.getInterlocutor(discussion.getClient()), this.getInterlocutor(discussion.getTransporter()));
 
-		given(discussionMapper.mapToClientLoadDiscussionsOutput(discussionsPage.getContent().get(0)))
+		given(discussionMapper.mapToLoadDiscussionsOutput(discussionsPage.getContent().get(0)))
 				.willReturn(loadDiscussionsOutput);
 		// when
 		LoadDiscussionsOutputResult result = discussionsPersistenceAdapter.loadDiscussions(1L, false, 0, 25,
@@ -191,16 +200,126 @@ public class DiscussionsPersistenceAdapterTests {
 
 	}
 
-	private List<MessageOutput> getMessageOutputList(List<MessageJpaEntity> messages) {
-		return messages.stream()
-				.map(m -> MessageOutput.builder().id(m.getId()).authorEmail(m.getAuthor().getEmail())
-						.authorMobileNumber(m.getAuthor().getIcc().getValue() + "_" + m.getAuthor().getMobileNumber())
-						.content(m.getContent()).dateTime(m.getDateTime()).read(m.getRead()).build())
-				.collect(Collectors.toList());
+	@Test
+	void givenExistentDiscussion_WhenLoadDiscussion_ThenReturnLoadDiscussionsOutput() {
+		DiscussionJpaEntity discussionJpaEntity = defaultDiscussionJpaEntity();
+		// given
+		given(discussionsRepository.findByClient_IdAndTransporter_Id(any(Long.class), any(Long.class)))
+				.willReturn(Optional.of(discussionJpaEntity));
+
+		LoadDiscussionsOutput discussionOutput = defaultLoadDiscussionsOutput();
+		given(discussionMapper.mapToLoadDiscussionsOutput(discussionJpaEntity)).willReturn(discussionOutput);
+		// when
+		Optional<LoadDiscussionsOutput> discussionOptional = discussionsPersistenceAdapter.loadDiscusssion(1L, 2L,
+				false);
+
+		// then
+		assertThat(discussionOptional).isNotEmpty();
+
+		assertEquals(discussionOutput, discussionOptional.get());
+	}
+
+	@Test
+	void givenInexistentDiscussion_WhenLoadDiscussion_ThenReturnEmptyOptional() {
+		// given
+		given(discussionsRepository.findByClient_IdAndTransporter_Id(any(Long.class), any(Long.class)))
+				.willReturn(Optional.empty());
+
+		// when
+		Optional<LoadDiscussionsOutput> discussionOptional = discussionsPersistenceAdapter.loadDiscusssion(1L, 2L,
+				false);
+
+		// then
+		assertThat(discussionOptional).isEmpty();
+
+	}
+
+	@Test
+	void givenExistentDiscussion_WhenLoadDiscussionById_ThenReturnLoadDiscussionsOutput() {
+		DiscussionJpaEntity discussionJpaEntity = defaultDiscussionJpaEntity();
+		// given
+		given(discussionsRepository.findById(any(Long.class))).willReturn(Optional.of(discussionJpaEntity));
+
+		LoadDiscussionsOutput discussionOutput = defaultLoadDiscussionsOutput();
+		given(discussionMapper.mapToLoadDiscussionsOutput(discussionJpaEntity)).willReturn(discussionOutput);
+		// when
+		Optional<LoadDiscussionsOutput> discussionOptional = discussionsPersistenceAdapter.loadDiscussionById(1L);
+
+		// then
+		assertThat(discussionOptional).isNotEmpty();
+
+		assertEquals(discussionOutput, discussionOptional.get());
+	}
+
+	@Test
+	void givenInexistentDiscussion_WhenLoadDiscussionById_ThenReturnLoadDiscussionsOutput() {
+		// given
+		given(discussionsRepository.findById(any(Long.class))).willReturn(Optional.empty());
+
+		// when
+		Optional<LoadDiscussionsOutput> discussionOptional = discussionsPersistenceAdapter.loadDiscussionById(1L);
+
+		// then
+		assertThat(discussionOptional).isEmpty();
+
+	}
+
+	@Test
+	void givenInexistentClient_WhenCreateDiscussion_ThenReturnFalse() {
+		// given
+		given(clientRepository.findById(any(Long.class))).willReturn(Optional.empty());
+
+		// when
+		LoadDiscussionsOutput result = discussionsPersistenceAdapter.createDiscussion(1L, 2L, false);
+		// then
+		assertNull(result);
+	}
+
+	@Test
+	void givenInexistentTransporter_WhenCreateDiscussion_ThenReturnFalse() {
+		// given
+		ClientJpaEntity clientJpaEntity = defaultExistentClientJpaEntity();
+		given(clientRepository.findById(any(Long.class))).willReturn(Optional.of(clientJpaEntity));
+		given(transporterRepository.findById(any(Long.class))).willReturn(Optional.empty());
+
+		// when
+		LoadDiscussionsOutput result = discussionsPersistenceAdapter.createDiscussion(1L, 2L, false);
+		// then
+		assertNull(result);
+	}
+
+	@Test
+	void givenExistentClientAndTransporter_WhenCreateDiscussion_ThenReturnLoadDiscussionsOutput() {
+		// given
+		ClientJpaEntity clientJpaEntity = defaultExistentClientJpaEntity();
+		given(clientRepository.findById(any(Long.class))).willReturn(Optional.of(clientJpaEntity));
+
+		TransporterJpaEntity transporterJpaEntity = defaultExistentTransporterJpaEntity();
+		given(transporterRepository.findById(any(Long.class))).willReturn(Optional.of(transporterJpaEntity));
+
+		DiscussionJpaEntity discussionJpaEntity = defaultDiscussionJpaEntity();
+		given(discussionsRepository.save(any(DiscussionJpaEntity.class))).willReturn(discussionJpaEntity);
+
+		LoadDiscussionsOutput loadDiscussionsOutput = defaultLoadDiscussionsOutput();
+		given(discussionMapper.mapToLoadDiscussionsOutput(discussionJpaEntity)).willReturn(loadDiscussionsOutput);
+
+		// when
+		LoadDiscussionsOutput result = discussionsPersistenceAdapter.createDiscussion(1L, 2L, false);
+
+		// then
+		assertEquals(loadDiscussionsOutput, result);
+
+	}
+
+	private MessageOutput getMessageOutput(MessageJpaEntity m) {
+		return MessageOutput.builder().id(m.getId()).authorId(m.getAuthor().getId())
+
+				.content(m.getContent()).dateTime(m.getDateTime()).read(m.getRead()).build();
+
 	}
 
 	private Interlocutor getInterlocutor(UserAccountJpaEntity userAccount) {
-		return Interlocutor.builder().id(userAccount.getId()).email(userAccount.getEmail())
+		return Interlocutor.builder().id(userAccount.getId())
 				.mobileNumber(userAccount.getIcc().getValue() + "_" + userAccount.getMobileNumber())
 				.name(userAccount.getFirstname()).photoUrl(userAccount.getPhotoUrl()).build();
 	}

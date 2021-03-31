@@ -341,4 +341,14 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 		return new ResponseEntity<ApiError>(apiError, new HttpHeaders(), apiError.getStatus());
 	}
 
+	@ExceptionHandler({ DiscussionNotFoundException.class })
+	@ResponseStatus(HttpStatus.NOT_FOUND)
+	public ResponseEntity<ApiError> handleDiscussionNotFoundException(DiscussionNotFoundException exception) {
+
+		log.error("Exception at " + exception.getClass() + ": ", exception);
+		final String error = exception.getMessage();
+		final ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, ErrorCode.OBJECT_NOT_FOUND, error);
+		return new ResponseEntity<ApiError>(apiError, new HttpHeaders(), apiError.getStatus());
+	}
+
 }

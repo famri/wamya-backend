@@ -39,12 +39,18 @@ public class MessageJpaEntity {
 
 	private Instant dateTime;
 
-	public MessageJpaEntity(UserAccountJpaEntity author, Boolean read, String content, Instant dateTime) {
+	@ManyToOne
+	@JoinColumn(name = "discussion_id")
+	private DiscussionJpaEntity discussion;
+
+	public MessageJpaEntity(UserAccountJpaEntity author, Boolean read, String content, Instant dateTime,
+			DiscussionJpaEntity discussion) {
 		super();
 		this.author = author;
 		this.read = read;
 		this.content = content;
 		this.dateTime = dateTime;
+		this.discussion = discussion;
 	}
 
 	public Long getId() {
@@ -87,6 +93,14 @@ public class MessageJpaEntity {
 		this.dateTime = dateTime;
 	}
 
+	public DiscussionJpaEntity getDiscussion() {
+		return discussion;
+	}
+
+	public void setDiscussion(DiscussionJpaEntity discussion) {
+		this.discussion = discussion;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -115,7 +129,7 @@ public class MessageJpaEntity {
 	@Override
 	public String toString() {
 		return "MessageJpaEntity [id=" + id + ", author=" + author + ", read=" + read + ", content=" + content
-				+ ", dateTime=" + dateTime + "]";
+				+ ", dateTime=" + dateTime + ", discussion=" + discussion + "]";
 	}
 
 }

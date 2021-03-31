@@ -118,4 +118,10 @@ public class UserAccountPersistenceAdapter
 
 	}
 
+	@Override
+	public Boolean existsById(Long userId) {
+
+		return userAccountRepository.existsById(userId);
+	}
+
 }

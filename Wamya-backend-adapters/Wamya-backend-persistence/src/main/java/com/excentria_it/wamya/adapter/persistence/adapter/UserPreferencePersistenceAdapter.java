@@ -69,4 +69,9 @@ public class UserPreferencePersistenceAdapter implements SaveUserPreferencePort,
 
 	}
 
+	@Override
+	public Optional<UserPreference> loadUserPreferenceByKeyAndUserId(String preferenceKey, Long userId) {
+		return userPreferenceRepository.findByKeyAndUserAccountId(preferenceKey, userId);
+	}
+
 }

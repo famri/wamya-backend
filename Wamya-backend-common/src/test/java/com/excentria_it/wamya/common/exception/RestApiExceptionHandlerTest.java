@@ -524,7 +524,7 @@ public class RestApiExceptionHandlerTest {
 	}
 
 	@Test
-	void whenHandleOperationDeniedException_thenStatusIsNotFound() {
+	void whenHandleOperationDeniedException_thenStatusIsBadRequest() {
 		// given
 		OperationDeniedException exception = givenOperationDeniedException();
 
@@ -537,6 +537,22 @@ public class RestApiExceptionHandlerTest {
 		then(((ApiError) responseEntity.getBody()).getErrorCode()).isEqualTo(ErrorCode.VALIDATION_ERROR);
 		then(((ApiError) responseEntity.getBody()).getErrors()).containsExactly(SOME_MESSAGE);
 		then(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+	}
+
+	@Test
+	void whenHandleDiscussionNotFoundException_thenStatusIsNotFound() {
+		// given
+		DiscussionNotFoundException exception = givenDiscussionNotFoundException();
+
+		// When
+		ResponseEntity<ApiError> responseEntity = restApiExceptionHandler.handleDiscussionNotFoundException(exception);
+
+		// Then
+		then(responseEntity.getBody() instanceof ApiError);
+		then(((ApiError) responseEntity.getBody()).getStatus()).isEqualTo(HttpStatus.NOT_FOUND);
+		then(((ApiError) responseEntity.getBody()).getErrorCode()).isEqualTo(ErrorCode.OBJECT_NOT_FOUND);
+		then(((ApiError) responseEntity.getBody()).getErrors()).containsExactly(SOME_MESSAGE);
+		then(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 	}
 
 	@Test
@@ -624,6 +640,14 @@ public class RestApiExceptionHandlerTest {
 	private UserAccountAlreadyExistsException givenUserAccountAlreadyExistsException() {
 
 		UserAccountAlreadyExistsException exception = Mockito.mock(UserAccountAlreadyExistsException.class);
+		given(exception.getMessage()).willReturn(SOME_MESSAGE);
+
+		return exception;
+	}
+
+	private DiscussionNotFoundException givenDiscussionNotFoundException() {
+
+		DiscussionNotFoundException exception = Mockito.mock(DiscussionNotFoundException.class);
 		given(exception.getMessage()).willReturn(SOME_MESSAGE);
 
 		return exception;

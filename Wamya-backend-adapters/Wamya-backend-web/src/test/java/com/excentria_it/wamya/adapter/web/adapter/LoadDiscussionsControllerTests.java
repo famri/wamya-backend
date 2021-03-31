@@ -20,6 +20,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.test.context.ActiveProfiles;
 
 import com.c4_soft.springaddons.security.oauth2.test.mockmvc.MockMvcSupport;
+import com.excentria_it.wamya.adapter.web.utils.ValidationHelper;
 import com.excentria_it.wamya.application.port.in.LoadDiscussionsUseCase;
 import com.excentria_it.wamya.application.port.in.LoadDiscussionsUseCase.LoadDiscussionsCommand;
 import com.excentria_it.wamya.common.FilterCriterion;
@@ -27,17 +28,14 @@ import com.excentria_it.wamya.common.SortCriterion;
 import com.excentria_it.wamya.common.exception.RestApiExceptionHandler;
 import com.excentria_it.wamya.domain.LoadDiscussionsResult;
 import com.excentria_it.wamya.test.data.common.TestConstants;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @ActiveProfiles(profiles = { "web-local" })
-@Import(value = { DiscussionsController.class, RestApiExceptionHandler.class, MockMvcSupport.class })
-@WebMvcTest(controllers = DiscussionsController.class)
-public class DiscussionsControllerTests {
+@Import(value = { LoadDiscussionsController.class, RestApiExceptionHandler.class, MockMvcSupport.class,
+		ValidationHelper.class })
+@WebMvcTest(controllers = LoadDiscussionsController.class)
+public class LoadDiscussionsControllerTests {
 	@Autowired
 	private MockMvcSupport api;
-
-	@Autowired
-	private ObjectMapper objectMapper;
 
 	@MockBean
 	private LoadDiscussionsUseCase loadDiscussionsUseCase;

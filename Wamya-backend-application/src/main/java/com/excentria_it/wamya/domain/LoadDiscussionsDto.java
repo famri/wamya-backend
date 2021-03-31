@@ -1,7 +1,6 @@
 package com.excentria_it.wamya.domain;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import com.excentria_it.wamya.domain.LoadDiscussionsOutput.Interlocutor;
 
@@ -21,9 +20,11 @@ public class LoadDiscussionsDto {
 
 	private LocalDateTime dateTime;
 
-	private List<MessageDto> messages;
+	private MessageDto latestMessage;
 
-	private Interlocutor interlocutor;
+	private Interlocutor client;
+
+	private Interlocutor transporter;
 
 	@AllArgsConstructor
 	@NoArgsConstructor
@@ -31,8 +32,7 @@ public class LoadDiscussionsDto {
 	@Builder
 	public static class MessageDto {
 		private Long id;
-		private String authorEmail;
-		private String authorMobileNumber;
+		private Long authorId;
 		private String content;
 		private LocalDateTime dateTime;
 		private Boolean read;

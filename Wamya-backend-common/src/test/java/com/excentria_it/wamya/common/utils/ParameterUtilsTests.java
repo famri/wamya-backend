@@ -319,4 +319,10 @@ public class ParameterUtilsTests {
 		assertNull(filterCriterion);
 	}
 
+	@Test
+	void testKebabToSnakeCase() {
+		String str = ParameterUtils.kebabToSnakeCase("this-is-kebab-case");
+		assertEquals("this_is_kebab_case", str);
+	}
+
 }

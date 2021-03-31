@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.excentria_it.wamya.adapter.web.utils.ValidationHelper;
 import com.excentria_it.wamya.application.port.in.LoadDiscussionsUseCase;
 import com.excentria_it.wamya.application.port.in.LoadDiscussionsUseCase.LoadDiscussionsCommand;
 import com.excentria_it.wamya.common.FilterCriterion;
@@ -28,10 +29,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
 @RequestMapping(path = "/users", produces = MediaType.APPLICATION_JSON_VALUE)
-public class DiscussionsController {
+public class LoadDiscussionsController {
 
 	private final LoadDiscussionsUseCase loadDiscussionsUseCase;
-
+	private final ValidationHelper validationHelper;
+	
 	@GetMapping(path = "/me/discussions")
 	@ResponseStatus(HttpStatus.OK)
 	public LoadDiscussionsResult loadDiscussions(@RequestParam(name = "page", defaultValue = "0") Integer pageNumber,
@@ -45,6 +47,8 @@ public class DiscussionsController {
 		LoadDiscussionsCommand command = LoadDiscussionsCommand.builder().username(principal.getName())
 				.pageNumber(pageNumber).pageSize(pageSize).sortingCriterion(sortingCriterion)
 				.filteringCriterion(filteringCriterion).build();
+		
+		validationHelper.validateInput(command);
 
 		return loadDiscussionsUseCase.loadDiscussions(command);
 

@@ -8,4 +8,6 @@ public interface LoadUserPreferencesPort {
 
 	Optional<UserPreference> loadUserPreferenceByKeyAndUsername(String preferenceKey, String username);
 
+	Optional<UserPreference> loadUserPreferenceByKeyAndUserId(String userTimeZoneKey, Long userId);
+
 }

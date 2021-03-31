@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Import;
 
 @SpringBootConfiguration
 @EnableAutoConfiguration
-@Import(MessagingConfiguration.class)
+@Import({ MessagingConfiguration.class, WebSocketConfiguration.class, WebSocketSecurityConfiguration.class })
 public class MessagingTestConfiguration {
 
 }

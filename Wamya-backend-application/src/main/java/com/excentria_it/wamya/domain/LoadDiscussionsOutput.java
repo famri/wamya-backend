@@ -1,7 +1,6 @@
 package com.excentria_it.wamya.domain;
 
 import java.time.Instant;
-import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,9 +18,11 @@ public class LoadDiscussionsOutput {
 
 	private Instant dateTime;
 
-	private List<MessageOutput> messages;
+	private MessageOutput latestMessage;
 
-	private Interlocutor interlocutor;
+	private Interlocutor client;
+
+	private Interlocutor transporter;
 
 	@AllArgsConstructor
 	@NoArgsConstructor
@@ -29,8 +30,7 @@ public class LoadDiscussionsOutput {
 	@Builder
 	public static class MessageOutput {
 		private Long id;
-		private String authorEmail;
-		private String authorMobileNumber;
+		private Long authorId;
 		private String content;
 		private Instant dateTime;
 		private Boolean read;
@@ -43,7 +43,6 @@ public class LoadDiscussionsOutput {
 	public static class Interlocutor {
 		private Long id;
 		private String name;
-		private String email;
 		private String mobileNumber;
 		private String photoUrl;
 

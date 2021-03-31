@@ -17,13 +17,39 @@ import com.excentria_it.wamya.domain.UserAccount.UserAccountBuilder;
 public class UserAccountTestData {
 
 	public static UserAccountBuilder defaultUserAccountBuilder() {
-		Map<String,String> preferences = new HashMap<>();
+		Map<String, String> preferences = new HashMap<>();
 		preferences.put("timezone", "Africa/Tunis");
 		return UserAccount.builder().id(1L).isTransporter(false).gender(Gender.MAN).firstname(DEFAULT_FIRSTNAME)
 				.lastname(DEFAULT_LASTNAME).dateOfBirth(DEFAULT_DATE_OF_BIRTH).email(DEFAULT_EMAIL)
 				.emailValidationCode(DEFAULT_VALIDATION_CODE).isValidatedEmail(true)
 				.mobilePhoneNumber(defaultMobilePhoneNumber()).mobileNumberValidationCode(DEFAULT_VALIDATION_CODE)
 				.isValidatedMobileNumber(true).userPassword(DEFAULT_ENCODED_PASSWORD).receiveNewsletter(true)
+				.creationDateTime(ZonedDateTime.now(ZoneOffset.UTC)).preferences(preferences);
+
+	}
+
+	public static UserAccountBuilder defaultClientUserAccountBuilder() {
+		Map<String, String> preferences = new HashMap<>();
+		preferences.put("timezone", "Africa/Tunis");
+		return UserAccount.builder().id(1L).isTransporter(false).gender(Gender.MAN).firstname("client1")
+				.lastname("client1").dateOfBirth(DEFAULT_DATE_OF_BIRTH).email("client1@gmail.com")
+				.emailValidationCode(DEFAULT_VALIDATION_CODE).isValidatedEmail(true)
+				.mobilePhoneNumber(new MobilePhoneNumber(DEFAULT_INTERNATIONAL_CALLING_CODE, "96111111"))
+				.mobileNumberValidationCode(DEFAULT_VALIDATION_CODE).isValidatedMobileNumber(true)
+				.userPassword(DEFAULT_ENCODED_PASSWORD).receiveNewsletter(true)
+				.creationDateTime(ZonedDateTime.now(ZoneOffset.UTC)).preferences(preferences);
+
+	}
+
+	public static UserAccountBuilder defaultTransporterUserAccountBuilder() {
+		Map<String, String> preferences = new HashMap<>();
+		preferences.put("timezone", "Africa/Tunis");
+		return UserAccount.builder().id(2L).isTransporter(true).gender(Gender.MAN).firstname("transporter1")
+				.lastname("transporter1").dateOfBirth(DEFAULT_DATE_OF_BIRTH).email("transporter1@gmail.com")
+				.emailValidationCode(DEFAULT_VALIDATION_CODE).isValidatedEmail(true)
+				.mobilePhoneNumber(new MobilePhoneNumber(DEFAULT_INTERNATIONAL_CALLING_CODE, "96222222"))
+				.mobileNumberValidationCode(DEFAULT_VALIDATION_CODE).isValidatedMobileNumber(true)
+				.userPassword(DEFAULT_ENCODED_PASSWORD).receiveNewsletter(true)
 				.creationDateTime(ZonedDateTime.now(ZoneOffset.UTC)).preferences(preferences);
 
 	}

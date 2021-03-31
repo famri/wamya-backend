@@ -6,6 +6,10 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.excentria_it.wamya.application.port.in.CreateDiscussionUseCase.CreateDiscussionCommand;
+import com.excentria_it.wamya.application.port.in.CreateDiscussionUseCase.CreateDiscussionCommand.CreateDiscussionCommandBuilder;
+import com.excentria_it.wamya.application.port.in.FindDiscussionUseCase.FindDiscussionCommand;
+import com.excentria_it.wamya.application.port.in.FindDiscussionUseCase.FindDiscussionCommand.FindDiscussionCommandBuilder;
 import com.excentria_it.wamya.application.port.in.LoadDiscussionsUseCase.LoadDiscussionsCommand;
 import com.excentria_it.wamya.application.port.in.LoadDiscussionsUseCase.LoadDiscussionsCommand.LoadDiscussionsCommandBuilder;
 import com.excentria_it.wamya.common.FilterCriterion;
@@ -24,34 +28,69 @@ public class DiscussionTestData {
 	private static final Instant instant2 = ZonedDateTime.of(2021, 03, 14, 10, 30, 00, 0, ZoneId.of("UTC")).toInstant();
 
 	private static final List<MessageOutput> clientDiscussion1Messages = List.of(
-			new MessageOutput(1L, "client1@gmail.com", "+216_22111111", "Hello!", instant1.plusSeconds(10), false),
-			new MessageOutput(1L, "transporter1@gmail.com", "+216_96111111", "Hi! Can I help you?",
-					instant1.plusSeconds(15), false));
+			new MessageOutput(1L, 1L, "Hello!", instant1.plusSeconds(10), false),
+			new MessageOutput(1L, 2L, "Hi! Can I help you?", instant1.plusSeconds(15), false));
 
 	private static final List<MessageOutput> clientDiscussion2Messages = List.of(
-			new MessageOutput(1L, "client1@gmail.com", "+216_22111111", "Hello!", instant1.plusSeconds(10), false),
-			new MessageOutput(1L, "transporter2@gmail.com", "+216_96222222", "Hello Sir! How can I help you?",
-					instant2.plusSeconds(15), false));
+			new MessageOutput(1L, 1L, "Hello!", instant1.plusSeconds(10), false),
+			new MessageOutput(1L, 3L, "Hello Sir! How can I help you?", instant2.plusSeconds(15), false));
 
-	private static final Interlocutor clientDiscussion1Interlocutor = Interlocutor.builder().id(1L)
-			.email("transporter1@gmail.com").mobileNumber("+216_96111111").name("Transporter 1")
-			.photoUrl("https://path/to/transporter1/photo").build();
+	private static final Interlocutor clientDiscussionClientInterlocutor = Interlocutor.builder().id(1L)
+			.mobileNumber("+216_96111111").name("Client 1").photoUrl("https://path/to/client1/photo").build();
 
-	private static final Interlocutor clientDiscussion2Interlocutor = Interlocutor.builder().id(2L)
-			.email("transporter2@gmail.com").mobileNumber("+216_96222222").name("Transporter 2")
-			.photoUrl("https://path/to/transporter2/photo").build();
+	private static final Interlocutor clientDiscussion1TransporterInterlocutor = Interlocutor.builder().id(2L)
+			.mobileNumber("+216_96222222").name("Transporter 1").photoUrl("https://path/to/transporter1/photo").build();
+
+	private static final Interlocutor clientDiscussion2TransporterInterlocutor = Interlocutor.builder().id(3L)
+			.mobileNumber("+216_96333333").name("Transporter 2").photoUrl("https://path/to/transporter2/photo").build();
 
 	private static final List<LoadDiscussionsOutput> loadDiscussionsOutputList = List.of(
-			new LoadDiscussionsOutput(1L, true, instant1, clientDiscussion1Messages, clientDiscussion1Interlocutor),
-			new LoadDiscussionsOutput(1L, true, instant2, clientDiscussion2Messages, clientDiscussion2Interlocutor));
+			new LoadDiscussionsOutput(1L, true, instant1, clientDiscussion1Messages.get(1),
+					clientDiscussionClientInterlocutor, clientDiscussion1TransporterInterlocutor),
+			new LoadDiscussionsOutput(1L, true, instant2, clientDiscussion2Messages.get(1),
+					clientDiscussionClientInterlocutor, clientDiscussion2TransporterInterlocutor));
 
 	public static LoadDiscussionsOutputResult defaultLoadDiscussionsOutputResult() {
 
 		return new LoadDiscussionsOutputResult(1, 2, 0, 25, false, loadDiscussionsOutputList);
 	}
 
+	public static LoadDiscussionsOutput defaultLoadDiscussionsOutput() {
+
+		return loadDiscussionsOutputList.get(0);
+	}
+
+	public static LoadDiscussionsDto defaultLoadDiscussionsDto() {
+
+		return new LoadDiscussionsDto(loadDiscussionsOutputList.get(0).getId(),
+				loadDiscussionsOutputList.get(0).getActive(),
+				loadDiscussionsOutputList.get(0).getDateTime().atZone(ZoneId.of("Africa/Tunis")).toLocalDateTime(),
+				new MessageDto(loadDiscussionsOutputList.get(0).getLatestMessage().getId(),
+						loadDiscussionsOutputList.get(0).getLatestMessage().getAuthorId(),
+						loadDiscussionsOutputList.get(0).getLatestMessage().getContent(),
+						loadDiscussionsOutputList.get(0).getLatestMessage().getDateTime()
+								.atZone(ZoneId.of("Africa/Tunis")).toLocalDateTime(),
+						loadDiscussionsOutputList.get(0).getLatestMessage().getRead()),
+				new Interlocutor(loadDiscussionsOutputList.get(0).getClient().getId(),
+						loadDiscussionsOutputList.get(0).getClient().getName(),
+						loadDiscussionsOutputList.get(0).getClient().getMobileNumber(),
+						loadDiscussionsOutputList.get(0).getClient().getPhotoUrl()),
+				new Interlocutor(loadDiscussionsOutputList.get(0).getTransporter().getId(),
+						loadDiscussionsOutputList.get(0).getTransporter().getName(),
+						loadDiscussionsOutputList.get(0).getTransporter().getMobileNumber(),
+						loadDiscussionsOutputList.get(0).getTransporter().getPhotoUrl()));
+	}
+
 	public static List<MessageOutput> defaultMessageOutputList() {
 		return clientDiscussion1Messages;
+	}
+
+	public static MessageOutput defaultClient1MessageOutput() {
+		return clientDiscussion1Messages.get(0);
+	}
+
+	public static MessageOutput defaultTransporter1MessageOutput() {
+		return clientDiscussion1Messages.get(1);
 	}
 
 	public static LoadDiscussionsCommandBuilder defaultLoadDiscussionsCommandBuilder() {
@@ -60,21 +99,27 @@ public class DiscussionTestData {
 				.filteringCriterion(new FilterCriterion("active", "true"));
 	}
 
+	public static FindDiscussionCommandBuilder defaultFindDiscussionCommandBuilder() {
+		return FindDiscussionCommand.builder().clientId(1L).transporterId(2L).username("client1@gmail.com");
+
+	}
+
+	public static CreateDiscussionCommandBuilder defaultCreateDiscussionCommandBuilder() {
+		return CreateDiscussionCommand.builder().clientId(1L).transporterId(2L);
+	}
+
 	public static LoadDiscussionsResult defaultLoadDiscussionsResult() {
 
 		return new LoadDiscussionsResult(1, 2, 0, 25, false,
-				loadDiscussionsOutputList
-						.stream().map(
-								ldo -> new LoadDiscussionsDto(ldo.getId(), ldo.getActive(),
-										ldo.getDateTime().atZone(ZoneId.of("Africa/Tunis")).toLocalDateTime(),
-										ldo.getMessages().stream()
-												.map(m -> new MessageDto(m.getId(), m.getAuthorEmail(),
-														m.getAuthorMobileNumber(), m.getContent(),
-														m.getDateTime().atZone(ZoneId.of("Africa/Tunis"))
-																.toLocalDateTime(),
-														m.getRead()))
-												.collect(Collectors.toList()),
-										ldo.getInterlocutor()))
+				loadDiscussionsOutputList.stream()
+						.map(ldo -> new LoadDiscussionsDto(ldo.getId(), ldo.getActive(),
+								ldo.getDateTime().atZone(ZoneId.of("Africa/Tunis")).toLocalDateTime(),
+								new MessageDto(ldo.getLatestMessage().getId(), ldo.getLatestMessage().getAuthorId(),
+										ldo.getLatestMessage().getContent(),
+										ldo.getLatestMessage().getDateTime().atZone(ZoneId.of("Africa/Tunis"))
+												.toLocalDateTime(),
+										ldo.getLatestMessage().getRead()),
+								ldo.getClient(), ldo.getTransporter()))
 						.collect(Collectors.toList()));
 	}
 }

@@ -134,4 +134,11 @@ public class ExceptionsTests {
 		DepartmentNotFoundException exception = new DepartmentNotFoundException(message);
 		assertEquals(exception.getMessage(), message);
 	}
+
+	@Test
+	void testDiscussionNotFoundException() {
+		String message = "SOME MESSAGE";
+		DiscussionNotFoundException exception = new DiscussionNotFoundException(message);
+		assertEquals(exception.getMessage(), message);
+	}
 }

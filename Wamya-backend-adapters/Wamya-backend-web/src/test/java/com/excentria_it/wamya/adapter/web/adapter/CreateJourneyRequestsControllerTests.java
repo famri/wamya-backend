@@ -58,8 +58,7 @@ public class CreateJourneyRequestsControllerTests {
 				.perform(post("/journey-requests").contentType(MediaType.APPLICATION_JSON_VALUE)
 						.content(createJourneyRequestJson))
 				.andExpect(status().isCreated())
-				.andExpect(responseBody().containsObjectAsJson(journeyRequest, CreateJourneyRequestDto.class))
-				.andReturn();
+				.andExpect(responseBody().containsObjectAsJson(journeyRequest, CreateJourneyRequestDto.class));
 
 		ArgumentCaptor<CreateJourneyRequestCommand> captor = ArgumentCaptor.forClass(CreateJourneyRequestCommand.class);
 

@@ -18,15 +18,16 @@ public class DiscussionJpaTestData {
 	private static final TransporterJpaEntity transporter = defaultExistentTransporterJpaEntity();
 
 	private static final List<MessageJpaEntity> messages = List.of(
-			new MessageJpaEntity(client, true, "Hello!", instant1),
-			new MessageJpaEntity(transporter, false, "Hello Sir! How can I help you?", instant1.plusSeconds(5)));
+			new MessageJpaEntity(client, true, "Hello!", instant1, null),
+			new MessageJpaEntity(transporter, false, "Hello Sir! How can I help you?", instant1.plusSeconds(5), null));
 
 	public static DiscussionJpaEntity defaultDiscussionJpaEntity() {
 
 		DiscussionJpaEntity discussion = new DiscussionJpaEntity(client, transporter, true, instant1.plusSeconds(-5),
-				defaultMessageJpaEntityList());
+				null);
 
 		discussion.setId(1L);
+		discussion.setLatestMessage(new MessageJpaEntity(client, true, "Hello!", instant1, discussion));
 		
 		return discussion;
 	}

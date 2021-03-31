@@ -1,16 +1,13 @@
 package com.excentria_it.wamya.adapter.persistence.entity;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -40,9 +37,8 @@ public class DiscussionJpaEntity {
 
 	private Instant dateTime;
 
-	@OneToMany
-	@JoinColumn(name = "discussion_id")
-	private List<MessageJpaEntity> messages = new ArrayList<>();
+	@OneToOne
+	private MessageJpaEntity latestMessage;
 
 	public Long getId() {
 		return id;
@@ -84,22 +80,22 @@ public class DiscussionJpaEntity {
 		this.dateTime = dateTime;
 	}
 
-	public List<MessageJpaEntity> getMessages() {
-		return messages;
+	public MessageJpaEntity getLatestMessage() {
+		return latestMessage;
 	}
 
-	public void setMessages(List<MessageJpaEntity> messages) {
-		this.messages = messages;
+	public void setLatestMessage(MessageJpaEntity latestMessage) {
+		this.latestMessage = latestMessage;
 	}
 
 	public DiscussionJpaEntity(ClientJpaEntity client, TransporterJpaEntity transporter, Boolean active,
-			Instant dateTime, List<MessageJpaEntity> messages) {
+			Instant dateTime, MessageJpaEntity latestMessage) {
 		super();
 		this.client = client;
 		this.transporter = transporter;
 		this.active = active;
 		this.dateTime = dateTime;
-		this.messages = messages;
+		this.latestMessage = latestMessage;
 	}
 
 	@Override
@@ -129,7 +125,7 @@ public class DiscussionJpaEntity {
 	@Override
 	public String toString() {
 		return "DiscussionJpaEntity [id=" + id + ", client=" + client + ", transporter=" + transporter + ", active="
-				+ active + ", dateTime=" + dateTime + "]";
+				+ active + ", dateTime=" + dateTime + ", latestMessage=" + latestMessage + "]";
 	}
 
 }

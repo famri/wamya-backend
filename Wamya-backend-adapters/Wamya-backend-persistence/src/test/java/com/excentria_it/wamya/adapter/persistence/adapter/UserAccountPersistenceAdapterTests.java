@@ -228,7 +228,7 @@ public class UserAccountPersistenceAdapterTests {
 		// given
 		UserAccountJpaEntity clientEntity = UserAccountJpaEntityTestData.defaultExistentClientJpaEntity();
 
-		Optional<UserAccountJpaEntity> clientEntityOptional = Optional.ofNullable(clientEntity);
+		Optional<UserAccountJpaEntity> clientEntityOptional = Optional.of(clientEntity);
 
 		given(userAccountRepository.findByEmail(TestConstants.DEFAULT_EMAIL)).willReturn(clientEntityOptional);
 
@@ -262,6 +262,28 @@ public class UserAccountPersistenceAdapterTests {
 		// then
 		assertThat(result.isEmpty()).isTrue();
 
+	}
+
+	@Test
+	void givenUserExists_WehnExistsById_ThenReturnTrue() {
+
+		given(userAccountRepository.existsById(any(Long.class))).willReturn(true);
+
+		// when
+		Boolean result = userAccountPersistenceAdapter.existsById(1L);
+		// then
+		assertTrue(result);
+	}
+
+	@Test
+	void givenInexistentUser_WehnExistsById_ThenReturnFalse() {
+
+		given(userAccountRepository.existsById(any(Long.class))).willReturn(false);
+
+		// when
+		Boolean result = userAccountPersistenceAdapter.existsById(1L);
+		// then
+		assertFalse(result);
 	}
 
 }

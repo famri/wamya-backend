@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class B2bRestConfiguration {
 
 	@Bean
-	@Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+	@Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
 	public RestTemplate restTemplate(RestTemplateBuilder restTemplateBuilder, ObjectMapper mapper) {
 		RestTemplate restTemplate = restTemplateBuilder.errorHandler(new RestTemplateResponseErrorHandler(mapper))
 				.requestFactory(HttpComponentsClientHttpRequestFactory.class)

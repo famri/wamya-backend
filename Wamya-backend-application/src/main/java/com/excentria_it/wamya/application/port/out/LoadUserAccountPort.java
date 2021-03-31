@@ -8,4 +8,6 @@ public interface LoadUserAccountPort {
 
 	Optional<UserAccount> loadUserAccountByUsername(String username);
 
+	Boolean existsById(Long clientId);
+
 }

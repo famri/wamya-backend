@@ -13,97 +13,47 @@ public class DiscussionMapperTests {
 	private DiscussionMapper discussionMapper = new DiscussionMapper();
 
 	@Test
-	void testMapToTransporterLoadDiscussionsOutput() {
-		DiscussionJpaEntity discussionJpaEntity = defaultDiscussionJpaEntity();
-		LoadDiscussionsOutput loadDiscussionsOutput = discussionMapper
-				.mapToTransporterLoadDiscussionsOutput(discussionJpaEntity);
-
-		assertEquals(discussionJpaEntity.getId(), loadDiscussionsOutput.getId());
-		assertEquals(discussionJpaEntity.getActive(), loadDiscussionsOutput.getActive());
-		assertEquals(discussionJpaEntity.getDateTime(), loadDiscussionsOutput.getDateTime());
-		assertEquals(discussionJpaEntity.getClient().getFirstname(), loadDiscussionsOutput.getInterlocutor().getName());
-		assertEquals(discussionJpaEntity.getClient().getEmail(), loadDiscussionsOutput.getInterlocutor().getEmail());
-		assertEquals(
-				discussionJpaEntity.getClient().getIcc().getValue() + "_"
-						+ discussionJpaEntity.getClient().getMobileNumber(),
-				loadDiscussionsOutput.getInterlocutor().getMobileNumber());
-
-		assertEquals(discussionJpaEntity.getClient().getPhotoUrl(),
-				loadDiscussionsOutput.getInterlocutor().getPhotoUrl());
-
-		assertEquals(discussionJpaEntity.getMessages().size(), loadDiscussionsOutput.getMessages().size());
-
-		for (int i = 0; i < loadDiscussionsOutput.getMessages().size(); i++) {
-
-			assertEquals(discussionJpaEntity.getMessages().get(i).getId(),
-					loadDiscussionsOutput.getMessages().get(i).getId());
-
-			assertEquals(discussionJpaEntity.getMessages().get(i).getRead(),
-					loadDiscussionsOutput.getMessages().get(i).getRead());
-
-			assertEquals(discussionJpaEntity.getMessages().get(i).getContent(),
-					loadDiscussionsOutput.getMessages().get(i).getContent());
-
-			assertEquals(discussionJpaEntity.getMessages().get(i).getDateTime(),
-					loadDiscussionsOutput.getMessages().get(i).getDateTime());
-
-			assertEquals(discussionJpaEntity.getMessages().get(i).getAuthor().getEmail(),
-					loadDiscussionsOutput.getMessages().get(i).getAuthorEmail());
-
-			assertEquals(
-					discussionJpaEntity.getMessages().get(i).getAuthor().getIcc().getValue() + "_"
-							+ discussionJpaEntity.getMessages().get(i).getAuthor().getMobileNumber(),
-					loadDiscussionsOutput.getMessages().get(i).getAuthorMobileNumber());
-
-		}
-	}
-
-	@Test
 	void testMapToClientLoadDiscussionsOutput() {
 		DiscussionJpaEntity discussionJpaEntity = defaultDiscussionJpaEntity();
-		LoadDiscussionsOutput loadDiscussionsOutput = discussionMapper
-				.mapToClientLoadDiscussionsOutput(discussionJpaEntity);
+		LoadDiscussionsOutput loadDiscussionsOutput = discussionMapper.mapToLoadDiscussionsOutput(discussionJpaEntity);
 
 		assertEquals(discussionJpaEntity.getId(), loadDiscussionsOutput.getId());
 		assertEquals(discussionJpaEntity.getActive(), loadDiscussionsOutput.getActive());
 		assertEquals(discussionJpaEntity.getDateTime(), loadDiscussionsOutput.getDateTime());
+
 		assertEquals(discussionJpaEntity.getTransporter().getFirstname(),
-				loadDiscussionsOutput.getInterlocutor().getName());
-		assertEquals(discussionJpaEntity.getTransporter().getEmail(),
-				loadDiscussionsOutput.getInterlocutor().getEmail());
+				loadDiscussionsOutput.getTransporter().getName());
+		assertEquals(discussionJpaEntity.getTransporter().getId(), loadDiscussionsOutput.getTransporter().getId());
 		assertEquals(
 				discussionJpaEntity.getTransporter().getIcc().getValue() + "_"
 						+ discussionJpaEntity.getTransporter().getMobileNumber(),
-				loadDiscussionsOutput.getInterlocutor().getMobileNumber());
+				loadDiscussionsOutput.getTransporter().getMobileNumber());
 
 		assertEquals(discussionJpaEntity.getTransporter().getPhotoUrl(),
-				loadDiscussionsOutput.getInterlocutor().getPhotoUrl());
+				loadDiscussionsOutput.getTransporter().getPhotoUrl());
 
-		assertEquals(discussionJpaEntity.getMessages().size(), loadDiscussionsOutput.getMessages().size());
+		assertEquals(discussionJpaEntity.getClient().getFirstname(), loadDiscussionsOutput.getClient().getName());
+		assertEquals(discussionJpaEntity.getClient().getId(), loadDiscussionsOutput.getClient().getId());
+		assertEquals(
+				discussionJpaEntity.getClient().getIcc().getValue() + "_"
+						+ discussionJpaEntity.getClient().getMobileNumber(),
+				loadDiscussionsOutput.getClient().getMobileNumber());
 
-		for (int i = 0; i < loadDiscussionsOutput.getMessages().size(); i++) {
+		assertEquals(discussionJpaEntity.getClient().getPhotoUrl(), loadDiscussionsOutput.getClient().getPhotoUrl());
 
-			assertEquals(discussionJpaEntity.getMessages().get(i).getId(),
-					loadDiscussionsOutput.getMessages().get(i).getId());
+		assertEquals(discussionJpaEntity.getLatestMessage().getId(), loadDiscussionsOutput.getLatestMessage().getId());
 
-			assertEquals(discussionJpaEntity.getMessages().get(i).getRead(),
-					loadDiscussionsOutput.getMessages().get(i).getRead());
+		assertEquals(discussionJpaEntity.getLatestMessage().getRead(),
+				loadDiscussionsOutput.getLatestMessage().getRead());
 
-			assertEquals(discussionJpaEntity.getMessages().get(i).getContent(),
-					loadDiscussionsOutput.getMessages().get(i).getContent());
+		assertEquals(discussionJpaEntity.getLatestMessage().getContent(),
+				loadDiscussionsOutput.getLatestMessage().getContent());
 
-			assertEquals(discussionJpaEntity.getMessages().get(i).getDateTime(),
-					loadDiscussionsOutput.getMessages().get(i).getDateTime());
+		assertEquals(discussionJpaEntity.getLatestMessage().getDateTime(),
+				loadDiscussionsOutput.getLatestMessage().getDateTime());
 
-			assertEquals(discussionJpaEntity.getMessages().get(i).getAuthor().getEmail(),
-					loadDiscussionsOutput.getMessages().get(i).getAuthorEmail());
-
-			assertEquals(
-					discussionJpaEntity.getMessages().get(i).getAuthor().getIcc().getValue() + "_"
-							+ discussionJpaEntity.getMessages().get(i).getAuthor().getMobileNumber(),
-					loadDiscussionsOutput.getMessages().get(i).getAuthorMobileNumber());
-
-		}
+		assertEquals(discussionJpaEntity.getLatestMessage().getAuthor().getId(),
+				loadDiscussionsOutput.getLatestMessage().getAuthorId());
 
 	}
 }
