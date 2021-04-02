@@ -93,9 +93,9 @@ public class ChatMessageServiceTests {
 				messageOutput.getRead());
 
 		then(sendMessagePort).should(times(1)).sendMessage(eq(toReceiverMessageDto), eq(loadDiscussionsOutput.getId()),
-				eq(loadDiscussionsOutput.getTransporter().getId()));
+				eq(loadDiscussionsOutput.getTransporter().getEmail()));
 		then(sendMessagePort).should(times(1)).sendMessage(eq(toSenderMessageDto), eq(loadDiscussionsOutput.getId()),
-				eq(clientUserAccount.getId()));
+				eq(clientUserAccount.getEmail()));
 
 		assertEquals(messageOutput.getId(), messageDto.getId());
 		assertEquals(messageOutput.getAuthorId(), messageDto.getAuthorId());
@@ -151,9 +151,9 @@ public class ChatMessageServiceTests {
 				messageOutput.getRead());
 
 		then(sendMessagePort).should(times(1)).sendMessage(eq(toReceiverMessageDto), eq(loadDiscussionsOutput.getId()),
-				eq(loadDiscussionsOutput.getClient().getId()));
+				eq(loadDiscussionsOutput.getClient().getEmail()));
 		then(sendMessagePort).should(times(1)).sendMessage(eq(toSenderMessageDto), eq(loadDiscussionsOutput.getId()),
-				eq(transporterUserAccount.getId()));
+				eq(transporterUserAccount.getEmail()));
 
 		assertEquals(messageOutput.getId(), messageDto.getId());
 		assertEquals(messageOutput.getAuthorId(), messageDto.getAuthorId());

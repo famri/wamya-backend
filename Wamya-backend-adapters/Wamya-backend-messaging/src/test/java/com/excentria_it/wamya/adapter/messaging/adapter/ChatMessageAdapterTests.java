@@ -18,6 +18,7 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 
 import com.excentria_it.wamya.domain.ChatMessage;
 import com.excentria_it.wamya.domain.LoadDiscussionsDto.MessageDto;
+import com.excentria_it.wamya.test.data.common.TestConstants;
 
 @ExtendWith(MockitoExtension.class)
 public class ChatMessageAdapterTests {
@@ -35,10 +36,10 @@ public class ChatMessageAdapterTests {
 		MessageDto messageDto = new MessageDto(1L, 1L, "some message",
 				Instant.now().atZone(ZoneId.of("Africa/Tunis")).toLocalDateTime(), false);
 		// When
-		chatMessageAdapter.sendMessage(messageDto, 1L, 2L);
+		chatMessageAdapter.sendMessage(messageDto, 1L, TestConstants.DEFAULT_EMAIL);
 		// Then
-		then(simpMessagingTemplate).should(times(1)).convertAndSendToUser(eq("2"), eq("/queue/messages"),
-				chatMessageCaptor.capture());
+		then(simpMessagingTemplate).should(times(1)).convertAndSendToUser(eq(TestConstants.DEFAULT_EMAIL),
+				eq("/queue/messages"), chatMessageCaptor.capture());
 
 		assertEquals(messageDto, chatMessageCaptor.getValue().getMessageDto());
 		assertEquals(1L, chatMessageCaptor.getValue().getDiscussionId());

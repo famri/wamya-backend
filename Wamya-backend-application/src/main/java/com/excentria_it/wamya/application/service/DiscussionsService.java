@@ -13,12 +13,12 @@ import com.excentria_it.wamya.application.port.out.CreateDiscussionPort;
 import com.excentria_it.wamya.application.port.out.LoadDiscussionsPort;
 import com.excentria_it.wamya.application.port.out.LoadUserAccountPort;
 import com.excentria_it.wamya.application.utils.DateTimeHelper;
+import com.excentria_it.wamya.application.utils.DiscussionUtils;
 import com.excentria_it.wamya.common.annotation.UseCase;
 import com.excentria_it.wamya.common.exception.DiscussionNotFoundException;
 import com.excentria_it.wamya.common.exception.OperationDeniedException;
 import com.excentria_it.wamya.common.exception.UserAccountNotFoundException;
 import com.excentria_it.wamya.domain.LoadDiscussionsDto;
-import com.excentria_it.wamya.domain.LoadDiscussionsDto.MessageDto;
 import com.excentria_it.wamya.domain.LoadDiscussionsOutput;
 import com.excentria_it.wamya.domain.LoadDiscussionsOutputResult;
 import com.excentria_it.wamya.domain.LoadDiscussionsResult;
@@ -64,21 +64,11 @@ public class DiscussionsService implements LoadDiscussionsUseCase, FindDiscussio
 		return new LoadDiscussionsResult(discussionsOutputResult.getTotalPages(),
 				discussionsOutputResult.getTotalElements(), discussionsOutputResult.getPageNumber(),
 				discussionsOutputResult.getPageSize(), discussionsOutputResult.isHasNext(),
-				discussionsOutputResult.getContent().stream().map(d -> this.mapToLoadDiscussionsDto(d, userZoneId)
+				discussionsOutputResult.getContent().stream()
+						.map(d -> DiscussionUtils.mapToLoadDiscussionsDto(dateTimeHelper, d, userZoneId)
 
-				).collect(Collectors.toList()));
+						).collect(Collectors.toList()));
 
-	}
-
-	private LoadDiscussionsDto mapToLoadDiscussionsDto(LoadDiscussionsOutput ldo, ZoneId userZoneId) {
-		return LoadDiscussionsDto.builder().id(ldo.getId()).active(ldo.getActive())
-				.dateTime(dateTimeHelper.systemToUserLocalDateTime(ldo.getDateTime(), userZoneId))
-				.latestMessage(MessageDto.builder().id(ldo.getLatestMessage().getId())
-						.authorId(ldo.getLatestMessage().getAuthorId()).content(ldo.getLatestMessage().getContent())
-						.dateTime(dateTimeHelper.systemToUserLocalDateTime(ldo.getLatestMessage().getDateTime(),
-								userZoneId))
-						.read(ldo.getLatestMessage().getRead()).build())
-				.client(ldo.getClient()).transporter(ldo.getTransporter()).build();
 	}
 
 	@Override
@@ -103,15 +93,14 @@ public class DiscussionsService implements LoadDiscussionsUseCase, FindDiscussio
 							command.getTransporterId()));
 		}
 		ZoneId userZoneId = dateTimeHelper.findUserZoneId(command.getUsername());
-		return mapToLoadDiscussionsDto(result.get(), userZoneId);
+		return DiscussionUtils.mapToLoadDiscussionsDto(dateTimeHelper, result.get(), userZoneId);
 
 	}
 
 	@Override
 	public LoadDiscussionsDto createDiscussion(CreateDiscussionCommand command, String username) {
 
-		Optional<UserAccount> userAccountOptional = loadUserAccountPort
-				.loadUserAccountByUsername(username);
+		Optional<UserAccount> userAccountOptional = loadUserAccountPort.loadUserAccountByUsername(username);
 
 		boolean isTransporter = userAccountOptional.get().getIsTransporter();
 
@@ -133,7 +122,7 @@ public class DiscussionsService implements LoadDiscussionsUseCase, FindDiscussio
 
 		ZoneId userZoneId = dateTimeHelper.findUserZoneId(username);
 
-		return mapToLoadDiscussionsDto(loadDiscussionOutput, userZoneId);
+		return DiscussionUtils.mapToLoadDiscussionsDto(dateTimeHelper, loadDiscussionOutput, userZoneId);
 
 	}
 

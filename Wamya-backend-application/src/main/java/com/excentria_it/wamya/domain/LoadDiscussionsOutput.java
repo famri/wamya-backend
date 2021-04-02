@@ -20,9 +20,9 @@ public class LoadDiscussionsOutput {
 
 	private MessageOutput latestMessage;
 
-	private Interlocutor client;
+	private InterlocutorOutput client;
 
-	private Interlocutor transporter;
+	private InterlocutorOutput transporter;
 
 	@AllArgsConstructor
 	@NoArgsConstructor
@@ -40,9 +40,10 @@ public class LoadDiscussionsOutput {
 	@NoArgsConstructor
 	@Data
 	@Builder
-	public static class Interlocutor {
+	public static class InterlocutorOutput {
 		private Long id;
 		private String name;
+		private String email;
 		private String mobileNumber;
 		private String photoUrl;
 

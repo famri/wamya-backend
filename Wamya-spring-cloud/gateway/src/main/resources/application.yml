@@ -34,7 +34,12 @@ spring.cloud.gateway.routes:
   uri: lb://auth-server
   predicates:
   - Path=/oauth/**
-  
+
+- id: websocket_route
+  uri: lb:ws://wamya-backend
+  predicates:
+  - Path=/wamya-backend/wamya-ws/**
+   
 - id: wamya-backend
   uri: lb://wamya-backend
   predicates:
@@ -59,6 +64,8 @@ spring.cloud.gateway.routes:
   predicates:
   - Path=/eureka/**
 
+
+  
 management.endpoint.health.show-details: "ALWAYS"
 management.endpoints.web.exposure.include: "*"
 

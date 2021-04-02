@@ -15,9 +15,10 @@ import com.excentria_it.wamya.application.port.in.LoadDiscussionsUseCase.LoadDis
 import com.excentria_it.wamya.common.FilterCriterion;
 import com.excentria_it.wamya.common.SortCriterion;
 import com.excentria_it.wamya.domain.LoadDiscussionsDto;
+import com.excentria_it.wamya.domain.LoadDiscussionsDto.InterlocutorDto;
 import com.excentria_it.wamya.domain.LoadDiscussionsDto.MessageDto;
 import com.excentria_it.wamya.domain.LoadDiscussionsOutput;
-import com.excentria_it.wamya.domain.LoadDiscussionsOutput.Interlocutor;
+import com.excentria_it.wamya.domain.LoadDiscussionsOutput.InterlocutorOutput;
 import com.excentria_it.wamya.domain.LoadDiscussionsOutput.MessageOutput;
 import com.excentria_it.wamya.domain.LoadDiscussionsOutputResult;
 import com.excentria_it.wamya.domain.LoadDiscussionsResult;
@@ -35,14 +36,17 @@ public class DiscussionTestData {
 			new MessageOutput(1L, 1L, "Hello!", instant1.plusSeconds(10), false),
 			new MessageOutput(1L, 3L, "Hello Sir! How can I help you?", instant2.plusSeconds(15), false));
 
-	private static final Interlocutor clientDiscussionClientInterlocutor = Interlocutor.builder().id(1L)
-			.mobileNumber("+216_96111111").name("Client 1").photoUrl("https://path/to/client1/photo").build();
+	private static final InterlocutorOutput clientDiscussionClientInterlocutor = InterlocutorOutput.builder().id(1L)
+			.email("client1@gmail.com").mobileNumber("+216_96111111").name("Client 1")
+			.photoUrl("https://path/to/client1/photo").build();
 
-	private static final Interlocutor clientDiscussion1TransporterInterlocutor = Interlocutor.builder().id(2L)
-			.mobileNumber("+216_96222222").name("Transporter 1").photoUrl("https://path/to/transporter1/photo").build();
+	private static final InterlocutorOutput clientDiscussion1TransporterInterlocutor = InterlocutorOutput.builder()
+			.id(2L).email("transporter1@gmail.com").mobileNumber("+216_96222222").name("Transporter 1")
+			.photoUrl("https://path/to/transporter1/photo").build();
 
-	private static final Interlocutor clientDiscussion2TransporterInterlocutor = Interlocutor.builder().id(3L)
-			.mobileNumber("+216_96333333").name("Transporter 2").photoUrl("https://path/to/transporter2/photo").build();
+	private static final InterlocutorOutput clientDiscussion2TransporterInterlocutor = InterlocutorOutput.builder()
+			.id(3L).email("transporter2@gmail.com").mobileNumber("+216_96333333").name("Transporter 2")
+			.photoUrl("https://path/to/transporter2/photo").build();
 
 	private static final List<LoadDiscussionsOutput> loadDiscussionsOutputList = List.of(
 			new LoadDiscussionsOutput(1L, true, instant1, clientDiscussion1Messages.get(1),
@@ -71,11 +75,11 @@ public class DiscussionTestData {
 						loadDiscussionsOutputList.get(0).getLatestMessage().getDateTime()
 								.atZone(ZoneId.of("Africa/Tunis")).toLocalDateTime(),
 						loadDiscussionsOutputList.get(0).getLatestMessage().getRead()),
-				new Interlocutor(loadDiscussionsOutputList.get(0).getClient().getId(),
+				new InterlocutorDto(loadDiscussionsOutputList.get(0).getClient().getId(),
 						loadDiscussionsOutputList.get(0).getClient().getName(),
 						loadDiscussionsOutputList.get(0).getClient().getMobileNumber(),
 						loadDiscussionsOutputList.get(0).getClient().getPhotoUrl()),
-				new Interlocutor(loadDiscussionsOutputList.get(0).getTransporter().getId(),
+				new InterlocutorDto(loadDiscussionsOutputList.get(0).getTransporter().getId(),
 						loadDiscussionsOutputList.get(0).getTransporter().getName(),
 						loadDiscussionsOutputList.get(0).getTransporter().getMobileNumber(),
 						loadDiscussionsOutputList.get(0).getTransporter().getPhotoUrl()));
@@ -119,7 +123,11 @@ public class DiscussionTestData {
 										ldo.getLatestMessage().getDateTime().atZone(ZoneId.of("Africa/Tunis"))
 												.toLocalDateTime(),
 										ldo.getLatestMessage().getRead()),
-								ldo.getClient(), ldo.getTransporter()))
+								new InterlocutorDto(ldo.getClient().getId(), ldo.getClient().getName(),
+										ldo.getClient().getMobileNumber(), ldo.getClient().getPhotoUrl()),
+								new InterlocutorDto(ldo.getTransporter().getId(), ldo.getTransporter().getName(),
+										ldo.getTransporter().getMobileNumber(), ldo.getTransporter().getPhotoUrl())))
 						.collect(Collectors.toList()));
 	}
+
 }

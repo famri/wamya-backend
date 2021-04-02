@@ -17,7 +17,8 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
 
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
-		registry.addEndpoint("/wamya-ws").withSockJS();
+		//TODO update cors config for prod
+		registry.addEndpoint("/wamya-ws").setAllowedOrigins("*");
 	}
 
 	@Override

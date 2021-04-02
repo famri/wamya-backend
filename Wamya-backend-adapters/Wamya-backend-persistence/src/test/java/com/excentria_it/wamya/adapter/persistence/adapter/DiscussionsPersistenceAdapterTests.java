@@ -34,7 +34,7 @@ import com.excentria_it.wamya.adapter.persistence.repository.TransporterReposito
 import com.excentria_it.wamya.common.FilterCriterion;
 import com.excentria_it.wamya.common.SortCriterion;
 import com.excentria_it.wamya.domain.LoadDiscussionsOutput;
-import com.excentria_it.wamya.domain.LoadDiscussionsOutput.Interlocutor;
+import com.excentria_it.wamya.domain.LoadDiscussionsOutput.InterlocutorOutput;
 import com.excentria_it.wamya.domain.LoadDiscussionsOutput.MessageOutput;
 import com.excentria_it.wamya.domain.LoadDiscussionsOutputResult;
 
@@ -63,7 +63,8 @@ public class DiscussionsPersistenceAdapterTests {
 
 		LoadDiscussionsOutput loadDiscussionsOutput = new LoadDiscussionsOutput(discussion.getId(),
 				discussion.getActive(), discussion.getDateTime(), this.getMessageOutput(discussion.getLatestMessage()),
-				this.getInterlocutor(discussion.getClient()), this.getInterlocutor(discussion.getTransporter()));
+				this.getInterlocutorOutput(discussion.getClient()),
+				this.getInterlocutorOutput(discussion.getTransporter()));
 
 		given(discussionMapper.mapToLoadDiscussionsOutput(discussionsPage.getContent().get(0)))
 				.willReturn(loadDiscussionsOutput);
@@ -92,7 +93,8 @@ public class DiscussionsPersistenceAdapterTests {
 
 		LoadDiscussionsOutput loadDiscussionsOutput = new LoadDiscussionsOutput(discussion.getId(),
 				discussion.getActive(), discussion.getDateTime(), this.getMessageOutput(discussion.getLatestMessage()),
-				this.getInterlocutor(discussion.getClient()), this.getInterlocutor(discussion.getTransporter()));
+				this.getInterlocutorOutput(discussion.getClient()),
+				this.getInterlocutorOutput(discussion.getTransporter()));
 
 		given(discussionMapper.mapToLoadDiscussionsOutput(discussionsPage.getContent().get(0)))
 				.willReturn(loadDiscussionsOutput);
@@ -138,7 +140,8 @@ public class DiscussionsPersistenceAdapterTests {
 
 		LoadDiscussionsOutput loadDiscussionsOutput = new LoadDiscussionsOutput(discussion.getId(),
 				discussion.getActive(), discussion.getDateTime(), this.getMessageOutput(discussion.getLatestMessage()),
-				this.getInterlocutor(discussion.getClient()), this.getInterlocutor(discussion.getTransporter()));
+				this.getInterlocutorOutput(discussion.getClient()),
+				this.getInterlocutorOutput(discussion.getTransporter()));
 
 		given(discussionMapper.mapToLoadDiscussionsOutput(discussionsPage.getContent().get(0)))
 				.willReturn(loadDiscussionsOutput);
@@ -165,7 +168,8 @@ public class DiscussionsPersistenceAdapterTests {
 		DiscussionJpaEntity discussion = discussionsPage.getContent().get(0);
 		LoadDiscussionsOutput loadDiscussionsOutput = new LoadDiscussionsOutput(discussion.getId(),
 				discussion.getActive(), discussion.getDateTime(), this.getMessageOutput(discussion.getLatestMessage()),
-				this.getInterlocutor(discussion.getClient()), this.getInterlocutor(discussion.getTransporter()));
+				this.getInterlocutorOutput(discussion.getClient()),
+				this.getInterlocutorOutput(discussion.getTransporter()));
 
 		given(discussionMapper.mapToLoadDiscussionsOutput(discussionsPage.getContent().get(0)))
 				.willReturn(loadDiscussionsOutput);
@@ -318,8 +322,8 @@ public class DiscussionsPersistenceAdapterTests {
 
 	}
 
-	private Interlocutor getInterlocutor(UserAccountJpaEntity userAccount) {
-		return Interlocutor.builder().id(userAccount.getId())
+	private InterlocutorOutput getInterlocutorOutput(UserAccountJpaEntity userAccount) {
+		return InterlocutorOutput.builder().id(userAccount.getId()).email(userAccount.getEmail())
 				.mobileNumber(userAccount.getIcc().getValue() + "_" + userAccount.getMobileNumber())
 				.name(userAccount.getFirstname()).photoUrl(userAccount.getPhotoUrl()).build();
 	}

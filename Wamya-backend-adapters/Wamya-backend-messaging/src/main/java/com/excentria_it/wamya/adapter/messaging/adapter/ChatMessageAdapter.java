@@ -16,8 +16,8 @@ public class ChatMessageAdapter implements SendMessagePort {
 	private final SimpMessageSendingOperations simpMessagingTemplate;
 
 	@Override
-	public void sendMessage(MessageDto messageDto, Long discussionId, Long receiverUserId) {
-		simpMessagingTemplate.convertAndSendToUser(receiverUserId.toString(), "/queue/messages",
+	public void sendMessage(MessageDto messageDto, Long discussionId, String receiverUsername) {
+		simpMessagingTemplate.convertAndSendToUser(receiverUsername, "/queue/messages",
 				new ChatMessage(messageDto, discussionId));
 
 	}

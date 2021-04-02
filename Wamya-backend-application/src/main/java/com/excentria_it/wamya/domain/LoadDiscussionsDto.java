@@ -2,8 +2,6 @@ package com.excentria_it.wamya.domain;
 
 import java.time.LocalDateTime;
 
-import com.excentria_it.wamya.domain.LoadDiscussionsOutput.Interlocutor;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,9 +20,9 @@ public class LoadDiscussionsDto {
 
 	private MessageDto latestMessage;
 
-	private Interlocutor client;
+	private InterlocutorDto client;
 
-	private Interlocutor transporter;
+	private InterlocutorDto transporter;
 
 	@AllArgsConstructor
 	@NoArgsConstructor
@@ -36,5 +34,17 @@ public class LoadDiscussionsDto {
 		private String content;
 		private LocalDateTime dateTime;
 		private Boolean read;
+	}
+
+	@AllArgsConstructor
+	@NoArgsConstructor
+	@Data
+	@Builder
+	public static class InterlocutorDto {
+		private Long id;
+		private String name;
+		private String mobileNumber;
+		private String photoUrl;
+
 	}
 }
