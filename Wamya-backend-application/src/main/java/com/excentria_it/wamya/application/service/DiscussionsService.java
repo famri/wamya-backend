@@ -77,11 +77,11 @@ public class DiscussionsService implements LoadDiscussionsUseCase, FindDiscussio
 		Optional<UserAccount> userAccountOptional = loadUserAccountPort
 				.loadUserAccountByUsername(command.getUsername());
 
-		if (userAccountOptional.get().getId() != command.getClientId()
-				&& userAccountOptional.get().getId() != command.getTransporterId()) {
+		if (!userAccountOptional.get().getOauthId().equals(command.getClientId())
+				&& !userAccountOptional.get().getOauthId().equals(command.getTransporterId())) {
 			throw new DiscussionNotFoundException(
-					String.format("Discussion not found by clientId %d and transporterId %d", command.getClientId(),
-							command.getTransporterId()));
+					String.format("Discussion not found by clientOauthId %d and transporterOauthId %d",
+							command.getClientId(), command.getTransporterId()));
 		}
 		boolean isTransporter = userAccountOptional.get().getIsTransporter();
 
@@ -89,8 +89,8 @@ public class DiscussionsService implements LoadDiscussionsUseCase, FindDiscussio
 				command.getTransporterId(), isTransporter);
 		if (result.isEmpty()) {
 			throw new DiscussionNotFoundException(
-					String.format("Discussion not found by clientId %d and transporterId %d", command.getClientId(),
-							command.getTransporterId()));
+					String.format("Discussion not found by clientOauthId %d and transporterOauthId %d",
+							command.getClientId(), command.getTransporterId()));
 		}
 		ZoneId userZoneId = dateTimeHelper.findUserZoneId(command.getUsername());
 		return DiscussionUtils.mapToLoadDiscussionsDto(dateTimeHelper, result.get(), userZoneId);
@@ -104,14 +104,14 @@ public class DiscussionsService implements LoadDiscussionsUseCase, FindDiscussio
 
 		boolean isTransporter = userAccountOptional.get().getIsTransporter();
 
-		if ((isTransporter && (userAccountOptional.get().getId() != command.getTransporterId()))
-				|| (!isTransporter && (userAccountOptional.get().getId() != command.getClientId()))) {
+		if ((isTransporter && !userAccountOptional.get().getOauthId().equals(command.getTransporterId()))
+				|| (!isTransporter && !userAccountOptional.get().getOauthId().equals(command.getClientId()))) {
 
 			throw new OperationDeniedException("User cannot create a discussion for another user.");
 		}
 
-		if ((isTransporter && !loadUserAccountPort.existsById(command.getClientId()))
-				|| (!isTransporter && !loadUserAccountPort.existsById(command.getTransporterId()))) {
+		if ((isTransporter && !loadUserAccountPort.existsByOauthId(command.getClientId()))
+				|| (!isTransporter && !loadUserAccountPort.existsByOauthId(command.getTransporterId()))) {
 
 			throw new OperationDeniedException(String.format("Cannot create a discussion with inexistent user."));
 

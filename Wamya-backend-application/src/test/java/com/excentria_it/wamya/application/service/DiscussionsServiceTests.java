@@ -66,9 +66,10 @@ public class DiscussionsServiceTests {
 		given(loadDiscussionsPort.loadDiscussions(any(Long.class), any(Boolean.class), any(Integer.class),
 				any(Integer.class), any(FilterCriterion.class), any(SortCriterion.class))).willReturn(expectedResult);
 
+		LoadDiscussionsCommandBuilder commandBuilder = defaultLoadDiscussionsCommandBuilder();
+
 		// when
 
-		LoadDiscussionsCommandBuilder commandBuilder = defaultLoadDiscussionsCommandBuilder();
 		LoadDiscussionsResult loadDiscussionsResult = discussionsService.loadDiscussions(commandBuilder.build());
 
 		// then
@@ -83,10 +84,25 @@ public class DiscussionsServiceTests {
 			assertEquals(expectedResult.getContent().get(i).getId(), loadDiscussionsResult.getContent().get(i).getId());
 			assertEquals(expectedResult.getContent().get(i).getActive(),
 					loadDiscussionsResult.getContent().get(i).getActive());
-			assertEquals(expectedResult.getContent().get(i).getClient(),
-					loadDiscussionsResult.getContent().get(i).getClient());
-			assertEquals(expectedResult.getContent().get(i).getTransporter(),
-					loadDiscussionsResult.getContent().get(i).getTransporter());
+
+			assertEquals(expectedResult.getContent().get(i).getClient().getId(),
+					loadDiscussionsResult.getContent().get(i).getClient().getId());
+			assertEquals(expectedResult.getContent().get(i).getClient().getName(),
+					loadDiscussionsResult.getContent().get(i).getClient().getName());
+			assertEquals(expectedResult.getContent().get(i).getClient().getMobileNumber(),
+					loadDiscussionsResult.getContent().get(i).getClient().getMobileNumber());
+			assertEquals(expectedResult.getContent().get(i).getClient().getPhotoUrl(),
+					loadDiscussionsResult.getContent().get(i).getClient().getPhotoUrl());
+
+			assertEquals(expectedResult.getContent().get(i).getTransporter().getId(),
+					loadDiscussionsResult.getContent().get(i).getTransporter().getId());
+			assertEquals(expectedResult.getContent().get(i).getTransporter().getName(),
+					loadDiscussionsResult.getContent().get(i).getTransporter().getName());
+			assertEquals(expectedResult.getContent().get(i).getTransporter().getMobileNumber(),
+					loadDiscussionsResult.getContent().get(i).getTransporter().getMobileNumber());
+			assertEquals(expectedResult.getContent().get(i).getTransporter().getPhotoUrl(),
+					loadDiscussionsResult.getContent().get(i).getTransporter().getPhotoUrl());
+
 			assertEquals(expectedResult.getContent().get(i).getDateTime(),
 					loadDiscussionsResult.getContent().get(i).getDateTime().atZone(userZoneId).toInstant());
 
@@ -139,10 +155,25 @@ public class DiscussionsServiceTests {
 			assertEquals(expectedResult.getContent().get(i).getId(), loadDiscussionsResult.getContent().get(i).getId());
 			assertEquals(expectedResult.getContent().get(i).getActive(),
 					loadDiscussionsResult.getContent().get(i).getActive());
-			assertEquals(expectedResult.getContent().get(i).getClient(),
-					loadDiscussionsResult.getContent().get(i).getClient());
-			assertEquals(expectedResult.getContent().get(i).getTransporter(),
-					loadDiscussionsResult.getContent().get(i).getTransporter());
+
+			assertEquals(expectedResult.getContent().get(i).getClient().getId(),
+					loadDiscussionsResult.getContent().get(i).getClient().getId());
+			assertEquals(expectedResult.getContent().get(i).getClient().getName(),
+					loadDiscussionsResult.getContent().get(i).getClient().getName());
+			assertEquals(expectedResult.getContent().get(i).getClient().getMobileNumber(),
+					loadDiscussionsResult.getContent().get(i).getClient().getMobileNumber());
+			assertEquals(expectedResult.getContent().get(i).getClient().getPhotoUrl(),
+					loadDiscussionsResult.getContent().get(i).getClient().getPhotoUrl());
+
+			assertEquals(expectedResult.getContent().get(i).getTransporter().getId(),
+					loadDiscussionsResult.getContent().get(i).getTransporter().getId());
+			assertEquals(expectedResult.getContent().get(i).getTransporter().getName(),
+					loadDiscussionsResult.getContent().get(i).getTransporter().getName());
+			assertEquals(expectedResult.getContent().get(i).getTransporter().getMobileNumber(),
+					loadDiscussionsResult.getContent().get(i).getTransporter().getMobileNumber());
+			assertEquals(expectedResult.getContent().get(i).getTransporter().getPhotoUrl(),
+					loadDiscussionsResult.getContent().get(i).getTransporter().getPhotoUrl());
+			
 			assertEquals(expectedResult.getContent().get(i).getDateTime(),
 					loadDiscussionsResult.getContent().get(i).getDateTime().atZone(userZoneId).toInstant());
 
@@ -189,7 +220,7 @@ public class DiscussionsServiceTests {
 		given(loadUserAccountPort.loadUserAccountByUsername(any(String.class)))
 				.willReturn(Optional.of(clientUserAccount));
 
-		LoadDiscussionsOutput loadDiscussionsOutput = defaultLoadDiscussionsOutput();
+		LoadDiscussionsOutput loadDiscussionsOutput = defaultClientLoadDiscussionsOutput();
 		given(loadDiscussionsPort.loadDiscusssion(any(Long.class), any(Long.class), any(Boolean.class)))
 				.willReturn(Optional.of(loadDiscussionsOutput));
 		ZoneId userZoneId = ZoneId.of("Africa/Tunis");
@@ -237,7 +268,7 @@ public class DiscussionsServiceTests {
 	void givenCommandClientIdAndTransporterIdAreDifferentFromAuthenticatedUserId_WhenFindDiscussion_ThenThrowDiscussionNotFoundException() {
 		// given
 		FindDiscussionCommandBuilder commandBuilder = defaultFindDiscussionCommandBuilder();
-		FindDiscussionCommand command = commandBuilder.clientId(100L).transporterId(200L).build();
+		FindDiscussionCommand command = commandBuilder.clientId(400L).transporterId(600L).build();
 		UserAccount clientUserAccount = defaultClientUserAccountBuilder().build();
 
 		given(loadUserAccountPort.loadUserAccountByUsername(any(String.class)))
@@ -275,9 +306,9 @@ public class DiscussionsServiceTests {
 		given(loadUserAccountPort.loadUserAccountByUsername(any(String.class)))
 				.willReturn(Optional.of(clientUserAccount));
 
-		given(loadUserAccountPort.existsById(any(Long.class))).willReturn(true);
+		given(loadUserAccountPort.existsByOauthId(any(Long.class))).willReturn(true);
 
-		LoadDiscussionsOutput loadDiscussionsOutput = defaultLoadDiscussionsOutput();
+		LoadDiscussionsOutput loadDiscussionsOutput = defaultClientLoadDiscussionsOutput();
 		given(createDiscussionPort.createDiscussion(any(Long.class), any(Long.class), any(Boolean.class)))
 				.willReturn(loadDiscussionsOutput);
 
@@ -290,7 +321,7 @@ public class DiscussionsServiceTests {
 		// then
 
 		then(loadUserAccountPort).should(times(1)).loadUserAccountByUsername(TestConstants.DEFAULT_EMAIL);
-		then(loadUserAccountPort).should(times(1)).existsById(command.getTransporterId());
+		then(loadUserAccountPort).should(times(1)).existsByOauthId(command.getTransporterId());
 		then(createDiscussionPort).should(times(1)).createDiscussion(command.getClientId(), command.getTransporterId(),
 				clientUserAccount.getIsTransporter());
 
@@ -324,9 +355,9 @@ public class DiscussionsServiceTests {
 	}
 
 	@Test
-	void givenTransporterAuthenticatedUserIdIsDifferentFromTransporterId_WhenCreateDiscussion_ThenThrowOperationDeniedException() {
+	void givenTransporterAuthenticatedOauthIdIsDifferentFromTransporterId_WhenCreateDiscussion_ThenThrowOperationDeniedException() {
 		CreateDiscussionCommandBuilder commandBuilder = defaultCreateDiscussionCommandBuilder();
-		CreateDiscussionCommand command = commandBuilder.transporterId(200L).build();
+		CreateDiscussionCommand command = commandBuilder.transporterId(600L).build();
 
 		UserAccount transporterUserAccount = defaultTransporterUserAccountBuilder().build();
 
@@ -338,9 +369,9 @@ public class DiscussionsServiceTests {
 	}
 
 	@Test
-	void givenClientAuthenticatedUserIdIsDifferentFromClientId_WhenCreateDiscussion_ThenThrowOperationDeniedException() {
+	void givenClientAuthenticatedOauthIdIsDifferentFromClientId_WhenCreateDiscussion_ThenThrowOperationDeniedException() {
 		CreateDiscussionCommandBuilder commandBuilder = defaultCreateDiscussionCommandBuilder();
-		CreateDiscussionCommand command = commandBuilder.clientId(100L).build();
+		CreateDiscussionCommand command = commandBuilder.clientId(400L).build();
 
 		UserAccount clientUserAccount = defaultClientUserAccountBuilder().build();
 
@@ -360,7 +391,7 @@ public class DiscussionsServiceTests {
 
 		given(loadUserAccountPort.loadUserAccountByUsername(any(String.class)))
 				.willReturn(Optional.of(clientUserAccount));
-		given(loadUserAccountPort.existsById(any(Long.class))).willReturn(false);
+		given(loadUserAccountPort.existsByOauthId(any(Long.class))).willReturn(false);
 
 		assertThrows(OperationDeniedException.class,
 				() -> discussionsService.createDiscussion(command, TestConstants.DEFAULT_EMAIL));
@@ -375,7 +406,7 @@ public class DiscussionsServiceTests {
 
 		given(loadUserAccountPort.loadUserAccountByUsername(any(String.class)))
 				.willReturn(Optional.of(transporterUserAccount));
-		given(loadUserAccountPort.existsById(any(Long.class))).willReturn(false);
+		given(loadUserAccountPort.existsByOauthId(any(Long.class))).willReturn(false);
 
 		assertThrows(OperationDeniedException.class,
 				() -> discussionsService.createDiscussion(command, TestConstants.DEFAULT_EMAIL));

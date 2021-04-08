@@ -25,6 +25,7 @@ public interface DiscussionRepository extends JpaRepository<DiscussionJpaEntity,
 	Page<DiscussionJpaEntity> findByClient_IdAndActive(Long userAccountId, Boolean isActive,
 			Pageable pagingSort);
 
-	Optional<DiscussionJpaEntity> findByClient_IdAndTransporter_Id(Long clientId, Long transporterId);
+	Optional<DiscussionJpaEntity> findByClient_OauthIdAndTransporter_OauthId(Long clientOauthId,
+			Long transporterOauthId);
 
 }

@@ -35,6 +35,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
@@ -57,6 +58,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.excentria_it.wamya.springcloud.authorisationserver.dto.UserPrincipal;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 
@@ -82,6 +84,7 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 	private ClientDetailsService clientDetailsService;
 	private UserDetailsService userDetailsService;
 	private boolean jwtEnabled;
+	private static final String USER_ID = "user_id";
 
 	public AuthorizationServerConfiguration(AuthenticationConfiguration authenticationConfiguration, KeyPair keyPair,
 			DataSource dataSource, ClientDetailsService clientDetailsService, UserDetailsService userDetailsService,
@@ -138,7 +141,7 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 		converter.setKeyPair(this.keyPair);
 
 		DefaultAccessTokenConverter accessTokenConverter = new DefaultAccessTokenConverter();
-		accessTokenConverter.setUserTokenConverter(new SubjectAttributeUserTokenConverter());
+		accessTokenConverter.setUserTokenConverter(new SubjectAttributeUserTokenConverter(userDetailsService));
 
 		converter.setAccessTokenConverter(accessTokenConverter);
 
@@ -247,10 +250,21 @@ class KeyConfig {
  * Specification</a>.
  */
 class SubjectAttributeUserTokenConverter extends DefaultUserAuthenticationConverter {
+	private UserDetailsService userDetailsService;
+
+	public SubjectAttributeUserTokenConverter(UserDetailsService userDetailsService) {
+		super();
+		this.userDetailsService = userDetailsService;
+	}
+
 	@Override
 	public Map<String, ?> convertUserAuthentication(Authentication authentication) {
 		Map<String, Object> response = new LinkedHashMap<String, Object>();
 		response.put("sub", authentication.getName());
+
+		UserDetails userDetails = userDetailsService.loadUserByUsername(authentication.getName());
+		UserPrincipal userPrincipal = (UserPrincipal) userDetails;
+		response.put("user_id", userPrincipal.getOauthId());
 
 		if (authentication.getAuthorities() != null && !authentication.getAuthorities().isEmpty()) {
 			response.put(AUTHORITIES, AuthorityUtils.authorityListToSet(authentication.getAuthorities()));

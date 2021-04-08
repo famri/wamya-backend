@@ -21,16 +21,15 @@ public class DiscussionMapper {
 	}
 
 	public InterlocutorOutput getInterlocutorOutput(UserAccountJpaEntity userAccount) {
-		return InterlocutorOutput.builder().id(userAccount.getId()).name(userAccount.getFirstname())
+		return InterlocutorOutput.builder().id(userAccount.getOauthId()).name(userAccount.getFirstname())
 				.email(userAccount.getEmail())
 				.mobileNumber(userAccount.getIcc().getValue() + "_" + userAccount.getMobileNumber())
 				.photoUrl(userAccount.getPhotoUrl()).build();
 	}
 
 	public MessageOutput getMessageOutput(MessageJpaEntity m) {
-		return MessageOutput.builder().id(m.getId()).authorId(m.getAuthor().getId()).content(m.getContent())
+		return MessageOutput.builder().id(m.getId()).authorId(m.getAuthor().getOauthId()).content(m.getContent())
 				.dateTime(m.getDateTime()).read(m.getRead()).build();
 	}
-
 
 }

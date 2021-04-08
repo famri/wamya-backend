@@ -9,7 +9,9 @@ import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.*;
 
 import java.time.ZoneId;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,18 +20,26 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.excentria_it.wamya.application.port.in.LoadMessagesCommandUseCase.LoadMessagesCommand;
+import com.excentria_it.wamya.application.port.in.LoadMessagesCommandUseCase.LoadMessagesCommand.LoadMessagesCommandBuilder;
 import com.excentria_it.wamya.application.port.in.SendMessageUseCase.SendMessageCommand;
 import com.excentria_it.wamya.application.port.in.SendMessageUseCase.SendMessageCommand.SendMessageCommandBuilder;
 import com.excentria_it.wamya.application.port.out.AddMessageToDiscussionPort;
 import com.excentria_it.wamya.application.port.out.LoadDiscussionsPort;
+import com.excentria_it.wamya.application.port.out.LoadMessagesPort;
 import com.excentria_it.wamya.application.port.out.LoadUserAccountPort;
+import com.excentria_it.wamya.application.port.out.SendMessageNotificationPort;
 import com.excentria_it.wamya.application.port.out.SendMessagePort;
+import com.excentria_it.wamya.application.port.out.UpdateMessagePort;
 import com.excentria_it.wamya.application.utils.DateTimeHelper;
+import com.excentria_it.wamya.application.utils.DiscussionUtils;
 import com.excentria_it.wamya.common.exception.DiscussionNotFoundException;
 import com.excentria_it.wamya.common.exception.OperationDeniedException;
 import com.excentria_it.wamya.domain.LoadDiscussionsDto.MessageDto;
 import com.excentria_it.wamya.domain.LoadDiscussionsOutput;
 import com.excentria_it.wamya.domain.LoadDiscussionsOutput.MessageOutput;
+import com.excentria_it.wamya.domain.LoadMessagesOutputResult;
+import com.excentria_it.wamya.domain.LoadMessagesResult;
 import com.excentria_it.wamya.domain.UserAccount;
 
 @ExtendWith(MockitoExtension.class)
@@ -42,6 +52,14 @@ public class ChatMessageServiceTests {
 	private AddMessageToDiscussionPort addMessageToDiscussionPort;
 	@Mock
 	private SendMessagePort sendMessagePort;
+	@Mock
+	private LoadMessagesPort loadMessagesPort;
+
+	@Mock
+	private UpdateMessagePort updateMessagePort;
+	@Mock
+	private SendMessageNotificationPort sendMessageNotificationPort;
+
 	@Spy
 	private DateTimeHelper dateTimeHelper;
 
@@ -58,7 +76,7 @@ public class ChatMessageServiceTests {
 		given(loadUserAccountPort.loadUserAccountByUsername(any(String.class)))
 				.willReturn(Optional.of(clientUserAccount));
 
-		LoadDiscussionsOutput loadDiscussionsOutput = defaultLoadDiscussionsOutput();
+		LoadDiscussionsOutput loadDiscussionsOutput = defaultClientLoadDiscussionsOutput();
 		given(loadDiscussionsPort.loadDiscussionById(any(Long.class))).willReturn(Optional.of(loadDiscussionsOutput));
 
 		MessageOutput messageOutput = defaultClient1MessageOutput();
@@ -70,7 +88,7 @@ public class ChatMessageServiceTests {
 
 		doReturn(senderZoneId).when(dateTimeHelper).findUserZoneId(clientUserAccount.getEmail());
 
-		doReturn(receiverZoneId).when(dateTimeHelper).findUserZoneId(loadDiscussionsOutput.getTransporter().getId());
+		doReturn(receiverZoneId).when(dateTimeHelper).findUserZoneId(loadDiscussionsOutput.getTransporter().getEmail());
 
 		// when
 		MessageDto messageDto = chatMessageService.sendMessage(command, loadDiscussionsOutput.getId(),
@@ -116,7 +134,7 @@ public class ChatMessageServiceTests {
 		given(loadUserAccountPort.loadUserAccountByUsername(any(String.class)))
 				.willReturn(Optional.of(transporterUserAccount));
 
-		LoadDiscussionsOutput loadDiscussionsOutput = defaultLoadDiscussionsOutput();
+		LoadDiscussionsOutput loadDiscussionsOutput = defaultClientLoadDiscussionsOutput();
 		given(loadDiscussionsPort.loadDiscussionById(any(Long.class))).willReturn(Optional.of(loadDiscussionsOutput));
 
 		MessageOutput messageOutput = defaultTransporter1MessageOutput();
@@ -128,7 +146,7 @@ public class ChatMessageServiceTests {
 
 		doReturn(senderZoneId).when(dateTimeHelper).findUserZoneId(transporterUserAccount.getEmail());
 
-		doReturn(receiverZoneId).when(dateTimeHelper).findUserZoneId(loadDiscussionsOutput.getClient().getId());
+		doReturn(receiverZoneId).when(dateTimeHelper).findUserZoneId(loadDiscussionsOutput.getClient().getEmail());
 
 		// when
 		MessageDto messageDto = chatMessageService.sendMessage(command, loadDiscussionsOutput.getId(),
@@ -188,12 +206,12 @@ public class ChatMessageServiceTests {
 		// given
 		SendMessageCommandBuilder commandBuilder = defaultSendMessageCommandBuilder();
 		SendMessageCommand command = commandBuilder.build();
-		UserAccount clientUserAccount = defaultClientUserAccountBuilder().id(100L).build();
+		UserAccount clientUserAccount = defaultClientUserAccountBuilder().oauthId(400L).build();
 
 		given(loadUserAccountPort.loadUserAccountByUsername(any(String.class)))
 				.willReturn(Optional.of(clientUserAccount));
 
-		LoadDiscussionsOutput loadDiscussionsOutput = defaultLoadDiscussionsOutput();
+		LoadDiscussionsOutput loadDiscussionsOutput = defaultClientLoadDiscussionsOutput();
 		given(loadDiscussionsPort.loadDiscussionById(any(Long.class))).willReturn(Optional.of(loadDiscussionsOutput));
 		// when
 		// then
@@ -207,18 +225,166 @@ public class ChatMessageServiceTests {
 		// given
 		SendMessageCommandBuilder commandBuilder = defaultSendMessageCommandBuilder();
 		SendMessageCommand command = commandBuilder.build();
-		UserAccount transporterUserAccount = defaultTransporterUserAccountBuilder().id(200L).build();
+		UserAccount transporterUserAccount = defaultTransporterUserAccountBuilder().oauthId(600L).build();
 
 		given(loadUserAccountPort.loadUserAccountByUsername(any(String.class)))
 				.willReturn(Optional.of(transporterUserAccount));
 
-		LoadDiscussionsOutput loadDiscussionsOutput = defaultLoadDiscussionsOutput();
+		LoadDiscussionsOutput loadDiscussionsOutput = defaultClientLoadDiscussionsOutput();
 		given(loadDiscussionsPort.loadDiscussionById(any(Long.class))).willReturn(Optional.of(loadDiscussionsOutput));
 		// when
 		// then
 		assertThrows(OperationDeniedException.class,
 				() -> chatMessageService.sendMessage(command, 1L, transporterUserAccount.getEmail()));
 
+	}
+
+	@Test
+	void givenInexistentDiscussion_WhenLoadMessages_ThenThrowDiscussionNotFoundException() {
+		// given
+
+		LoadMessagesCommandBuilder commandBuilder = defaultLoadMessagesCommandBuilder();
+		LoadMessagesCommand command = commandBuilder.build();
+
+		UserAccount transporterUserAccount = defaultTransporterUserAccountBuilder().build();
+
+		given(loadUserAccountPort.loadUserAccountByUsername(any(String.class)))
+				.willReturn(Optional.of(transporterUserAccount));
+
+		given(loadDiscussionsPort.loadDiscussionById(any(Long.class))).willReturn(Optional.empty());
+		// when
+
+		// then
+		assertThrows(DiscussionNotFoundException.class, () -> chatMessageService.loadMessages(command));
+	}
+
+	@Test
+	void givenAuthenticatedClientIsDifferentThanDiscussionClient_WhenLoadMessages_ThenThrowOperationDeniedException() {
+		// given
+
+		LoadMessagesCommandBuilder commandBuilder = defaultLoadMessagesCommandBuilder();
+		LoadMessagesCommand command = commandBuilder.build();
+
+		UserAccount clientUserAccount = defaultClientUserAccountBuilder().oauthId(400L).build();
+
+		given(loadUserAccountPort.loadUserAccountByUsername(any(String.class)))
+				.willReturn(Optional.of(clientUserAccount));
+
+		LoadDiscussionsOutput loadDiscussionsOutput = defaultClientLoadDiscussionsOutput();
+		given(loadDiscussionsPort.loadDiscussionById(any(Long.class))).willReturn(Optional.of(loadDiscussionsOutput));
+		// when
+
+		// then
+		assertThrows(OperationDeniedException.class, () -> chatMessageService.loadMessages(command));
+	}
+
+	@Test
+	void givenAuthenticatedTransporterIsDifferentThanDiscussionTransporter_WhenLoadMessages_ThenThrowOperationDeniedException() {
+		// given
+
+		LoadMessagesCommandBuilder commandBuilder = defaultLoadMessagesCommandBuilder();
+		LoadMessagesCommand command = commandBuilder.build();
+
+		UserAccount transporterUserAccount = defaultTransporterUserAccountBuilder().oauthId(600L).build();
+
+		given(loadUserAccountPort.loadUserAccountByUsername(any(String.class)))
+				.willReturn(Optional.of(transporterUserAccount));
+
+		LoadDiscussionsOutput loadDiscussionsOutput = defaultClientLoadDiscussionsOutput();
+		given(loadDiscussionsPort.loadDiscussionById(any(Long.class))).willReturn(Optional.of(loadDiscussionsOutput));
+		// when
+
+		// then
+		assertThrows(OperationDeniedException.class, () -> chatMessageService.loadMessages(command));
+	}
+
+	@Test
+	void testLoadTransporterMessages() {
+		// given
+
+		LoadMessagesCommandBuilder commandBuilder = defaultLoadMessagesCommandBuilder();
+		LoadMessagesCommand command = commandBuilder.build();
+
+		UserAccount transporterUserAccount = defaultTransporterUserAccountBuilder().build();
+
+		given(loadUserAccountPort.loadUserAccountByUsername(any(String.class)))
+				.willReturn(Optional.of(transporterUserAccount));
+
+		LoadDiscussionsOutput loadDiscussionsOutput = defaultTransporterLoadDiscussionsOutput();
+		given(loadDiscussionsPort.loadDiscussionById(any(Long.class))).willReturn(Optional.of(loadDiscussionsOutput));
+
+		ZoneId userZoneId = ZoneId.of("Africa/Tunis");
+
+		doReturn(userZoneId).when(dateTimeHelper).findUserZoneId(any(String.class));
+
+		LoadMessagesOutputResult messagesOutputResult = defaultLoadMessagesOutputResult();
+		given(loadMessagesPort.loadMessages(command.getDiscussionId(), command.getPageNumber(), command.getPageSize(),
+				command.getSortingCriterion())).willReturn(messagesOutputResult);
+		// when
+		LoadMessagesResult result = chatMessageService.loadMessages(command);
+		// then
+		List<Long> messageIds = messagesOutputResult.getContent().stream()
+				.filter(m -> !m.getRead() && m.getAuthorId().equals(transporterUserAccount.getOauthId()))
+				.map(m -> m.getId()).collect(Collectors.toList());
+
+		then(updateMessagePort).should(times(1)).updateRead(messageIds, true);
+
+		then(sendMessageNotificationPort).should(times(1)).sendReadNotification(
+				loadDiscussionsOutput.getClient().getEmail(), loadDiscussionsOutput.getId(), messageIds);
+
+		assertEquals(command.getPageNumber(), result.getPageNumber());
+		assertEquals(command.getPageSize(), result.getPageSize());
+		assertEquals(messagesOutputResult.getTotalElements(), result.getTotalElements());
+		assertEquals(messagesOutputResult.getTotalPages(), result.getTotalPages());
+		assertEquals(messagesOutputResult.isHasNext(), result.isHasNext());
+		assertEquals(messagesOutputResult.getContent().stream()
+				.map(m -> DiscussionUtils.mapToMessageDto(dateTimeHelper, m, userZoneId)).collect(Collectors.toList()),
+				result.getContent());
+	}
+	
+	
+	@Test
+	void testLoadClientMessages() {
+		// given
+
+		LoadMessagesCommandBuilder commandBuilder = defaultLoadMessagesCommandBuilder();
+		LoadMessagesCommand command = commandBuilder.build();
+
+		UserAccount clientUserAccount = defaultClientUserAccountBuilder().build();
+
+		given(loadUserAccountPort.loadUserAccountByUsername(any(String.class)))
+				.willReturn(Optional.of(clientUserAccount));
+
+		LoadDiscussionsOutput loadDiscussionsOutput = defaultClientLoadDiscussionsOutput();
+		given(loadDiscussionsPort.loadDiscussionById(any(Long.class))).willReturn(Optional.of(loadDiscussionsOutput));
+
+		ZoneId userZoneId = ZoneId.of("Africa/Tunis");
+
+		doReturn(userZoneId).when(dateTimeHelper).findUserZoneId(any(String.class));
+
+		LoadMessagesOutputResult messagesOutputResult = defaultLoadMessagesOutputResult();
+		given(loadMessagesPort.loadMessages(command.getDiscussionId(), command.getPageNumber(), command.getPageSize(),
+				command.getSortingCriterion())).willReturn(messagesOutputResult);
+		// when
+		LoadMessagesResult result = chatMessageService.loadMessages(command);
+		// then
+		List<Long> messageIds = messagesOutputResult.getContent().stream()
+				.filter(m -> !m.getRead() && m.getAuthorId().equals(clientUserAccount.getOauthId()))
+				.map(m -> m.getId()).collect(Collectors.toList());
+
+		then(updateMessagePort).should(times(1)).updateRead(messageIds, true);
+
+		then(sendMessageNotificationPort).should(times(1)).sendReadNotification(
+				loadDiscussionsOutput.getTransporter().getEmail(), loadDiscussionsOutput.getId(), messageIds);
+
+		assertEquals(command.getPageNumber(), result.getPageNumber());
+		assertEquals(command.getPageSize(), result.getPageSize());
+		assertEquals(messagesOutputResult.getTotalElements(), result.getTotalElements());
+		assertEquals(messagesOutputResult.getTotalPages(), result.getTotalPages());
+		assertEquals(messagesOutputResult.isHasNext(), result.isHasNext());
+		assertEquals(messagesOutputResult.getContent().stream()
+				.map(m -> DiscussionUtils.mapToMessageDto(dateTimeHelper, m, userZoneId)).collect(Collectors.toList()),
+				result.getContent());
 	}
 
 }

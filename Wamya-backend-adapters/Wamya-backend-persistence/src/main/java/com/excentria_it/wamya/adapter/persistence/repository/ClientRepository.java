@@ -12,4 +12,6 @@ public interface ClientRepository extends JpaRepository<ClientJpaEntity, Long> {
 
 	Optional<ClientJpaEntity> findByEmail(String email);
 
+	Optional<ClientJpaEntity> findByOauthId(Long userOauthId);
+
 }

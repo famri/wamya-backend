@@ -62,6 +62,10 @@ public class UserPrincipal implements UserDetails {
 		return user.isEnabled();
 	}
 
+	public Long getOauthId() {
+		return user.getOauthId();
+	}
+	
 	private final Collection<? extends GrantedAuthority> getAuthorities(Collection<RoleEntity> roles) {
 		Set<GrantedAuthority> authorities = new HashSet<>();
 		roles.forEach(r -> {

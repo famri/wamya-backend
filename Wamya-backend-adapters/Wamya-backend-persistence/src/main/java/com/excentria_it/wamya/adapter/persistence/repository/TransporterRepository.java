@@ -21,4 +21,6 @@ public interface TransporterRepository extends JpaRepository<TransporterJpaEntit
 	Optional<TransporterJpaEntity> findTransporterWithVehiculesByMobilePhoneNumber(
 			@Param("internationalCallingCode") String internationalCallingCode,
 			@Param("mobileNumber") String mobileNumber);
+
+	Optional<TransporterJpaEntity> findByOauthId(Long userOauthId);
 }

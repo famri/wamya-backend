@@ -208,10 +208,10 @@ public class DiscussionsPersistenceAdapterTests {
 	void givenExistentDiscussion_WhenLoadDiscussion_ThenReturnLoadDiscussionsOutput() {
 		DiscussionJpaEntity discussionJpaEntity = defaultDiscussionJpaEntity();
 		// given
-		given(discussionsRepository.findByClient_IdAndTransporter_Id(any(Long.class), any(Long.class)))
+		given(discussionsRepository.findByClient_OauthIdAndTransporter_OauthId(any(Long.class), any(Long.class)))
 				.willReturn(Optional.of(discussionJpaEntity));
 
-		LoadDiscussionsOutput discussionOutput = defaultLoadDiscussionsOutput();
+		LoadDiscussionsOutput discussionOutput = defaultClientLoadDiscussionsOutput();
 		given(discussionMapper.mapToLoadDiscussionsOutput(discussionJpaEntity)).willReturn(discussionOutput);
 		// when
 		Optional<LoadDiscussionsOutput> discussionOptional = discussionsPersistenceAdapter.loadDiscusssion(1L, 2L,
@@ -226,7 +226,7 @@ public class DiscussionsPersistenceAdapterTests {
 	@Test
 	void givenInexistentDiscussion_WhenLoadDiscussion_ThenReturnEmptyOptional() {
 		// given
-		given(discussionsRepository.findByClient_IdAndTransporter_Id(any(Long.class), any(Long.class)))
+		given(discussionsRepository.findByClient_OauthIdAndTransporter_OauthId(any(Long.class), any(Long.class)))
 				.willReturn(Optional.empty());
 
 		// when
@@ -244,7 +244,7 @@ public class DiscussionsPersistenceAdapterTests {
 		// given
 		given(discussionsRepository.findById(any(Long.class))).willReturn(Optional.of(discussionJpaEntity));
 
-		LoadDiscussionsOutput discussionOutput = defaultLoadDiscussionsOutput();
+		LoadDiscussionsOutput discussionOutput = defaultClientLoadDiscussionsOutput();
 		given(discussionMapper.mapToLoadDiscussionsOutput(discussionJpaEntity)).willReturn(discussionOutput);
 		// when
 		Optional<LoadDiscussionsOutput> discussionOptional = discussionsPersistenceAdapter.loadDiscussionById(1L);
@@ -271,7 +271,7 @@ public class DiscussionsPersistenceAdapterTests {
 	@Test
 	void givenInexistentClient_WhenCreateDiscussion_ThenReturnFalse() {
 		// given
-		given(clientRepository.findById(any(Long.class))).willReturn(Optional.empty());
+		given(clientRepository.findByOauthId(any(Long.class))).willReturn(Optional.empty());
 
 		// when
 		LoadDiscussionsOutput result = discussionsPersistenceAdapter.createDiscussion(1L, 2L, false);
@@ -283,8 +283,8 @@ public class DiscussionsPersistenceAdapterTests {
 	void givenInexistentTransporter_WhenCreateDiscussion_ThenReturnFalse() {
 		// given
 		ClientJpaEntity clientJpaEntity = defaultExistentClientJpaEntity();
-		given(clientRepository.findById(any(Long.class))).willReturn(Optional.of(clientJpaEntity));
-		given(transporterRepository.findById(any(Long.class))).willReturn(Optional.empty());
+		given(clientRepository.findByOauthId(any(Long.class))).willReturn(Optional.of(clientJpaEntity));
+		given(transporterRepository.findByOauthId(any(Long.class))).willReturn(Optional.empty());
 
 		// when
 		LoadDiscussionsOutput result = discussionsPersistenceAdapter.createDiscussion(1L, 2L, false);
@@ -296,15 +296,15 @@ public class DiscussionsPersistenceAdapterTests {
 	void givenExistentClientAndTransporter_WhenCreateDiscussion_ThenReturnLoadDiscussionsOutput() {
 		// given
 		ClientJpaEntity clientJpaEntity = defaultExistentClientJpaEntity();
-		given(clientRepository.findById(any(Long.class))).willReturn(Optional.of(clientJpaEntity));
+		given(clientRepository.findByOauthId(any(Long.class))).willReturn(Optional.of(clientJpaEntity));
 
 		TransporterJpaEntity transporterJpaEntity = defaultExistentTransporterJpaEntity();
-		given(transporterRepository.findById(any(Long.class))).willReturn(Optional.of(transporterJpaEntity));
+		given(transporterRepository.findByOauthId(any(Long.class))).willReturn(Optional.of(transporterJpaEntity));
 
 		DiscussionJpaEntity discussionJpaEntity = defaultDiscussionJpaEntity();
 		given(discussionsRepository.save(any(DiscussionJpaEntity.class))).willReturn(discussionJpaEntity);
 
-		LoadDiscussionsOutput loadDiscussionsOutput = defaultLoadDiscussionsOutput();
+		LoadDiscussionsOutput loadDiscussionsOutput = defaultClientLoadDiscussionsOutput();
 		given(discussionMapper.mapToLoadDiscussionsOutput(discussionJpaEntity)).willReturn(loadDiscussionsOutput);
 
 		// when

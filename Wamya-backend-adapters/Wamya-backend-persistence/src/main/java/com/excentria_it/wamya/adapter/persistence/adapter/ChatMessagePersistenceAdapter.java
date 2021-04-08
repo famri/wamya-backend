@@ -1,9 +1,11 @@
 package com.excentria_it.wamya.adapter.persistence.adapter;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +21,7 @@ import com.excentria_it.wamya.adapter.persistence.repository.MessageRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.UserAccountRepository;
 import com.excentria_it.wamya.application.port.out.AddMessageToDiscussionPort;
 import com.excentria_it.wamya.application.port.out.LoadMessagesPort;
+import com.excentria_it.wamya.application.port.out.UpdateMessagePort;
 import com.excentria_it.wamya.common.SortCriterion;
 import com.excentria_it.wamya.common.annotation.PersistenceAdapter;
 import com.excentria_it.wamya.common.utils.ParameterUtils;
@@ -29,7 +32,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @PersistenceAdapter
-public class ChatMessagePersistenceAdapter implements AddMessageToDiscussionPort, LoadMessagesPort {
+public class ChatMessagePersistenceAdapter implements AddMessageToDiscussionPort, LoadMessagesPort, UpdateMessagePort {
 
 	private final MessageRepository messageRepository;
 	private final DiscussionRepository discussionRepository;
@@ -37,8 +40,8 @@ public class ChatMessagePersistenceAdapter implements AddMessageToDiscussionPort
 	private final DiscussionMapper discussionMapper;
 
 	@Override
-	public MessageOutput addMessage(Long discussionId, Long senderId, String messageContent) {
-		Optional<UserAccountJpaEntity> userAccountOptional = userAccountRepository.findById(senderId);
+	public MessageOutput addMessage(Long discussionId, Long senderOauthId, String messageContent) {
+		Optional<UserAccountJpaEntity> userAccountOptional = userAccountRepository.findByOauthId(senderOauthId);
 		if (userAccountOptional.isEmpty())
 			return null;
 
@@ -58,7 +61,7 @@ public class ChatMessagePersistenceAdapter implements AddMessageToDiscussionPort
 
 		discussionRepository.save(discussionJpaEntity);
 
-		return new MessageOutput(message.getId(), userAccountOptional.get().getId(), messageContent,
+		return new MessageOutput(message.getId(), userAccountOptional.get().getOauthId(), messageContent,
 				message.getDateTime(), message.getRead());
 	}
 
@@ -81,5 +84,12 @@ public class ChatMessagePersistenceAdapter implements AddMessageToDiscussionPort
 		return Sort.by(Direction.valueOf(sortingCriterion.getDirection().toUpperCase()),
 				ParameterUtils.kebabToCamelCase(sortingCriterion.getField()));
 
+	}
+
+	@Override
+	public void updateRead(List<Long> messagesIds, boolean isRead) {
+		if (CollectionUtils.isNotEmpty(messagesIds)) {
+			messageRepository.batchUpdateReadMessages(messagesIds, isRead);
+		}
 	}
 }

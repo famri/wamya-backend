@@ -119,9 +119,9 @@ public class UserAccountPersistenceAdapter
 	}
 
 	@Override
-	public Boolean existsById(Long userId) {
+	public Boolean existsByOauthId(Long userOauthId) {
 
-		return userAccountRepository.existsById(userId);
+		return userAccountRepository.existsByOauthId(userOauthId);
 	}
 
 }

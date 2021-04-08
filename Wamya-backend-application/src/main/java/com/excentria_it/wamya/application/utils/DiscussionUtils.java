@@ -10,6 +10,11 @@ import com.excentria_it.wamya.domain.LoadDiscussionsOutput.InterlocutorOutput;
 import com.excentria_it.wamya.domain.LoadDiscussionsOutput.MessageOutput;
 
 public class DiscussionUtils {
+
+	private DiscussionUtils() {
+
+	}
+
 	public static LoadDiscussionsDto mapToLoadDiscussionsDto(DateTimeHelper dateTimeHelper, LoadDiscussionsOutput ldo,
 			ZoneId userZoneId) {
 		return LoadDiscussionsDto.builder().id(ldo.getId()).active(ldo.getActive())

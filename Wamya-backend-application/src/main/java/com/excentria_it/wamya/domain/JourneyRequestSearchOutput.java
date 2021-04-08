@@ -33,7 +33,7 @@ public interface JourneyRequestSearchOutput {
 
 	String getDescription();
 
-	@Value("#{new com.excentria_it.wamya.domain.JourneyRequestSearchDto.ClientDto(target.clientId, target.clientFirstname, target.clientPhotoUrl)}")
+	@Value("#{new com.excentria_it.wamya.domain.JourneyRequestSearchDto.ClientDto(target.clientOauthId, target.clientFirstname, target.clientPhotoUrl)}")
 	ClientDto getClient();
 
 	Double getMinPrice();

@@ -22,6 +22,7 @@ import com.excentria_it.wamya.domain.LoadDiscussionsOutput.InterlocutorOutput;
 import com.excentria_it.wamya.domain.LoadDiscussionsOutput.MessageOutput;
 import com.excentria_it.wamya.domain.LoadDiscussionsOutputResult;
 import com.excentria_it.wamya.domain.LoadDiscussionsResult;
+import com.excentria_it.wamya.domain.LoadMessagesOutputResult;
 
 public class DiscussionTestData {
 
@@ -29,23 +30,23 @@ public class DiscussionTestData {
 	private static final Instant instant2 = ZonedDateTime.of(2021, 03, 14, 10, 30, 00, 0, ZoneId.of("UTC")).toInstant();
 
 	private static final List<MessageOutput> clientDiscussion1Messages = List.of(
-			new MessageOutput(1L, 1L, "Hello!", instant1.plusSeconds(10), false),
-			new MessageOutput(1L, 2L, "Hi! Can I help you?", instant1.plusSeconds(15), false));
+			new MessageOutput(1L, 100L, "Hello!", instant1.plusSeconds(10), false),
+			new MessageOutput(1L, 200L, "Hi! Can I help you?", instant1.plusSeconds(15), false));
 
 	private static final List<MessageOutput> clientDiscussion2Messages = List.of(
-			new MessageOutput(1L, 1L, "Hello!", instant1.plusSeconds(10), false),
-			new MessageOutput(1L, 3L, "Hello Sir! How can I help you?", instant2.plusSeconds(15), false));
+			new MessageOutput(1L, 100L, "Hello!", instant1.plusSeconds(10), false),
+			new MessageOutput(1L, 300L, "Hello Sir! How can I help you?", instant2.plusSeconds(15), false));
 
-	private static final InterlocutorOutput clientDiscussionClientInterlocutor = InterlocutorOutput.builder().id(1L)
+	private static final InterlocutorOutput clientDiscussionClientInterlocutor = InterlocutorOutput.builder().id(100L)
 			.email("client1@gmail.com").mobileNumber("+216_96111111").name("Client 1")
 			.photoUrl("https://path/to/client1/photo").build();
 
 	private static final InterlocutorOutput clientDiscussion1TransporterInterlocutor = InterlocutorOutput.builder()
-			.id(2L).email("transporter1@gmail.com").mobileNumber("+216_96222222").name("Transporter 1")
+			.id(200L).email("transporter1@gmail.com").mobileNumber("+216_96222222").name("Transporter 1")
 			.photoUrl("https://path/to/transporter1/photo").build();
 
 	private static final InterlocutorOutput clientDiscussion2TransporterInterlocutor = InterlocutorOutput.builder()
-			.id(3L).email("transporter2@gmail.com").mobileNumber("+216_96333333").name("Transporter 2")
+			.id(300L).email("transporter2@gmail.com").mobileNumber("+216_96333333").name("Transporter 2")
 			.photoUrl("https://path/to/transporter2/photo").build();
 
 	private static final List<LoadDiscussionsOutput> loadDiscussionsOutputList = List.of(
@@ -59,7 +60,12 @@ public class DiscussionTestData {
 		return new LoadDiscussionsOutputResult(1, 2, 0, 25, false, loadDiscussionsOutputList);
 	}
 
-	public static LoadDiscussionsOutput defaultLoadDiscussionsOutput() {
+	public static LoadDiscussionsOutput defaultClientLoadDiscussionsOutput() {
+
+		return loadDiscussionsOutputList.get(0);
+	}
+	
+	public static LoadDiscussionsOutput defaultTransporterLoadDiscussionsOutput() {
 
 		return loadDiscussionsOutputList.get(0);
 	}
@@ -104,12 +110,12 @@ public class DiscussionTestData {
 	}
 
 	public static FindDiscussionCommandBuilder defaultFindDiscussionCommandBuilder() {
-		return FindDiscussionCommand.builder().clientId(1L).transporterId(2L).username("client1@gmail.com");
+		return FindDiscussionCommand.builder().clientId(100L).transporterId(200L).username("client1@gmail.com");
 
 	}
 
 	public static CreateDiscussionCommandBuilder defaultCreateDiscussionCommandBuilder() {
-		return CreateDiscussionCommand.builder().clientId(1L).transporterId(2L);
+		return CreateDiscussionCommand.builder().clientId(100L).transporterId(200L);
 	}
 
 	public static LoadDiscussionsResult defaultLoadDiscussionsResult() {
@@ -128,6 +134,11 @@ public class DiscussionTestData {
 								new InterlocutorDto(ldo.getTransporter().getId(), ldo.getTransporter().getName(),
 										ldo.getTransporter().getMobileNumber(), ldo.getTransporter().getPhotoUrl())))
 						.collect(Collectors.toList()));
+	}
+
+	public static LoadMessagesOutputResult defaultLoadMessagesOutputResult() {
+		LoadMessagesOutputResult result = new LoadMessagesOutputResult(1,2,0,25,false, clientDiscussion1Messages);
+		return result;
 	}
 
 }

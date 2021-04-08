@@ -1,5 +1,6 @@
 package com.excentria_it.wamya.application.port.in;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
@@ -26,8 +27,10 @@ public interface LoadMessagesCommandUseCase {
 		@NotNull
 		private Long discussionId;
 		@NotNull
+		@Min(0)
 		private Integer pageNumber;
 		@NotNull
+		@Min(1)
 		private Integer pageSize;
 
 		@Sort(fields = { "date-time" })

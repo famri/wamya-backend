@@ -28,14 +28,15 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		//TODO for production enable csrf
 		// @formatter:off
-		http.csrf().and().cors().disable().httpBasic().disable().formLogin().disable().sessionManagement()
+		http.csrf().disable().cors()
+		.disable().httpBasic().disable().formLogin().disable().sessionManagement()
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 				.authorizeRequests(authz -> authz.antMatchers("/actuator/**", "/content/**").permitAll()
 						.antMatchers(HttpMethod.POST, "/login/**", "/accounts/**").permitAll()
 						.antMatchers(HttpMethod.GET, "/countries/**", "/locales/**").permitAll()
 						.antMatchers(HttpMethod.GET,"/wamya-ws/**").hasAnyAuthority("SCOPE_journey:write", "SCOPE_offer:write")
 						.antMatchers("/user-preferences").hasAnyAuthority("SCOPE_journey:write", "SCOPE_offer:write")
-						.antMatchers("/users/me/discussions")
+						.antMatchers("/users/me/discussions/**")
 						.hasAnyAuthority("SCOPE_journey:write", "SCOPE_offer:write")
 						.antMatchers(HttpMethod.GET, "/localities/**").hasAuthority("SCOPE_journey:write")
 						.antMatchers(HttpMethod.GET, "/departments/**").hasAuthority("SCOPE_offer:write")
@@ -64,7 +65,9 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 						.hasAuthority("SCOPE_profile:write")
 						.antMatchers(HttpMethod.POST, "/validation-codes/email/send/**")
 						.hasAuthority("SCOPE_profile:write").anyRequest().authenticated())
-				.oauth2ResourceServer().bearerTokenResolver(bearerTokenResolver()).jwt()
+				.oauth2ResourceServer()
+				.bearerTokenResolver(bearerTokenResolver())
+				.jwt()
 		// .jwtAuthenticationConverter(authenticationConverter)
 		;
 

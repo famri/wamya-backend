@@ -42,10 +42,9 @@ public class JourneyProposalMapperTests {
 				"en_US");
 
 		assertEquals(journeyProposalJpaEntity.getId(), journeyProposalDto.getId());
-		assertEquals(journeyProposalJpaEntity.getId(), journeyProposalDto.getId());
 		assertEquals(journeyProposalJpaEntity.getPrice(), journeyProposalDto.getPrice());
 
-		assertEquals(journeyProposalJpaEntity.getTransporter().getId(), journeyProposalDto.getTransporter().getId());
+		assertEquals(journeyProposalJpaEntity.getTransporter().getOauthId(), journeyProposalDto.getTransporter().getId());
 		assertEquals(journeyProposalJpaEntity.getTransporter().getFirstname(),
 				journeyProposalDto.getTransporter().getFirstname());
 		assertEquals(journeyProposalJpaEntity.getTransporter().getGlobalRating(),

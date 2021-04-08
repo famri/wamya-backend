@@ -140,7 +140,7 @@ public class UserAccountPersistenceAdapterTests {
 	}
 
 	@Test
-	void givenNonExistentUserAccountByIccAndMobileNumber_WhenLoadUserAccountByIccAndMobileNumber_ThenReturnOptionalOfNull() {
+	void givenInexistentUserAccountByIccAndMobileNumber_WhenLoadUserAccountByIccAndMobileNumber_ThenReturnOptionalOfNull() {
 
 		// given
 
@@ -164,7 +164,7 @@ public class UserAccountPersistenceAdapterTests {
 	}
 
 	@Test
-	void givenNonExistentUserAccountById_WhenUpdateUserAccount_ThenThrowUserAccountNotFoundException() {
+	void givenInexistentUserAccountById_WhenUpdateUserAccount_ThenThrowUserAccountNotFoundException() {
 		// given
 		UserAccount userAccount = UserAccountTestData.defaultUserAccountBuilder().build();
 		given(userAccountRepository.findById(userAccount.getId())).willReturn(Optional.ofNullable(null));
@@ -250,7 +250,7 @@ public class UserAccountPersistenceAdapterTests {
 	}
 
 	@Test
-	void givenNonExistentUserAccountByEmail_WhenLoadUserAccountByIccAndMobileNumber_ThenReturnOptionalOfNull() {
+	void givenInexistentUserAccountByEmail_WhenLoadUserAccountByIccAndMobileNumber_ThenReturnOptionalOfNull() {
 
 		// given
 
@@ -265,23 +265,23 @@ public class UserAccountPersistenceAdapterTests {
 	}
 
 	@Test
-	void givenUserExists_WehnExistsById_ThenReturnTrue() {
+	void givenUserExists_WehnExistsByOauthId_ThenReturnTrue() {
 
-		given(userAccountRepository.existsById(any(Long.class))).willReturn(true);
+		given(userAccountRepository.existsByOauthId(any(Long.class))).willReturn(true);
 
 		// when
-		Boolean result = userAccountPersistenceAdapter.existsById(1L);
+		Boolean result = userAccountPersistenceAdapter.existsByOauthId(1L);
 		// then
 		assertTrue(result);
 	}
 
 	@Test
-	void givenInexistentUser_WehnExistsById_ThenReturnFalse() {
+	void givenInexistentUser_WehnExistsByOauthId_ThenReturnFalse() {
 
-		given(userAccountRepository.existsById(any(Long.class))).willReturn(false);
+		given(userAccountRepository.existsByOauthId(any(Long.class))).willReturn(false);
 
 		// when
-		Boolean result = userAccountPersistenceAdapter.existsById(1L);
+		Boolean result = userAccountPersistenceAdapter.existsByOauthId(1L);
 		// then
 		assertFalse(result);
 	}

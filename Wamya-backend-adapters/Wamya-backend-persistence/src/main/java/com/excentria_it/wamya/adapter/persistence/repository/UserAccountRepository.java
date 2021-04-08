@@ -25,4 +25,8 @@ public interface UserAccountRepository extends JpaRepository<UserAccountJpaEntit
 			@Param("internationalCallingCode") String internationalCallingCode,
 			@Param("mobileNumber") String mobileNumber);
 
+	Boolean existsByOauthId(Long userOauthId);
+	
+	Optional<UserAccountJpaEntity> findByOauthId(Long userOauthId);
+
 }

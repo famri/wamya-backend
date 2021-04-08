@@ -138,10 +138,10 @@ public class DiscussionsPersistenceAdapter implements LoadDiscussionsPort, Creat
 	}
 
 	@Override
-	public Optional<LoadDiscussionsOutput> loadDiscusssion(Long clientId, Long transporterId, boolean isTransporter) {
+	public Optional<LoadDiscussionsOutput> loadDiscusssion(Long clientOauthId, Long transporterOauthId, boolean isTransporter) {
 
 		Optional<DiscussionJpaEntity> discussionOptional = discussionsRepository
-				.findByClient_IdAndTransporter_Id(clientId, transporterId);
+				.findByClient_OauthIdAndTransporter_OauthId(clientOauthId, transporterOauthId);
 
 		if (discussionOptional.isEmpty())
 			return Optional.empty();
@@ -151,13 +151,13 @@ public class DiscussionsPersistenceAdapter implements LoadDiscussionsPort, Creat
 	}
 
 	@Override
-	public LoadDiscussionsOutput createDiscussion(Long clientId, Long transporterId, boolean isTransporter) {
+	public LoadDiscussionsOutput createDiscussion(Long clientOauthId, Long transporterOauthId, boolean isTransporter) {
 
-		Optional<ClientJpaEntity> clientAccount = clientRepository.findById(clientId);
+		Optional<ClientJpaEntity> clientAccount = clientRepository.findByOauthId(clientOauthId);
 		if (clientAccount.isEmpty()) {
 			return null;
 		}
-		Optional<TransporterJpaEntity> transporterAccount = transporterRepository.findById(transporterId);
+		Optional<TransporterJpaEntity> transporterAccount = transporterRepository.findByOauthId(transporterOauthId);
 		if (transporterAccount.isEmpty()) {
 			return null;
 		}

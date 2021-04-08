@@ -30,7 +30,7 @@ public class JourneyProposalMapper {
 				vehicule.getModel().getConstructor().getName(), vehicule.getModel().getName(), vehicule.getPhotoUrl());
 
 		TransporterJpaEntity transporter = journeyProposalJpaEntity.getTransporter();
-		JourneyProposalDto.TransporterDto transporterDto = new JourneyProposalDto.TransporterDto(transporter.getId(),
+		JourneyProposalDto.TransporterDto transporterDto = new JourneyProposalDto.TransporterDto(transporter.getOauthId(),
 				transporter.getFirstname(), transporter.getPhotoUrl(), transporter.getGlobalRating());
 
 		return JourneyProposalDto.builder().id(journeyProposalJpaEntity.getId())

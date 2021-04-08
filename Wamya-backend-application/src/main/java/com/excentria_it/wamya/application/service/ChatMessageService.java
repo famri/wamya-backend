@@ -1,19 +1,21 @@
 package com.excentria_it.wamya.application.service;
 
 import java.time.ZoneId;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
 import com.excentria_it.wamya.application.port.in.LoadMessagesCommandUseCase;
-import com.excentria_it.wamya.application.port.in.LoadMessagesCommandUseCase.LoadMessagesCommand;
 import com.excentria_it.wamya.application.port.in.SendMessageUseCase;
 import com.excentria_it.wamya.application.port.out.AddMessageToDiscussionPort;
 import com.excentria_it.wamya.application.port.out.LoadDiscussionsPort;
 import com.excentria_it.wamya.application.port.out.LoadMessagesPort;
 import com.excentria_it.wamya.application.port.out.LoadUserAccountPort;
+import com.excentria_it.wamya.application.port.out.SendMessageNotificationPort;
 import com.excentria_it.wamya.application.port.out.SendMessagePort;
+import com.excentria_it.wamya.application.port.out.UpdateMessagePort;
 import com.excentria_it.wamya.application.utils.DateTimeHelper;
 import com.excentria_it.wamya.application.utils.DiscussionUtils;
 import com.excentria_it.wamya.common.annotation.UseCase;
@@ -39,7 +41,9 @@ public class ChatMessageService implements SendMessageUseCase, LoadMessagesComma
 	private final SendMessagePort sendMessagePort;
 
 	private final LoadMessagesPort loadMessagesPort;
+	private final UpdateMessagePort updateMessagePort;
 	private final DateTimeHelper dateTimeHelper;
+	private final SendMessageNotificationPort sendMessageNotificationPort;
 
 	@Override
 	public MessageDto sendMessage(SendMessageCommand command, Long discussionId, String username) {
@@ -68,9 +72,9 @@ public class ChatMessageService implements SendMessageUseCase, LoadMessagesComma
 
 		}
 
-		if ((isTransporter && (loadDiscussionsOutput.getTransporter().getId() != userAccountOptional.get().getId()))
+		if ((isTransporter && !loadDiscussionsOutput.getTransporter().getId().equals(userAccountOptional.get().getOauthId()))
 				|| (!isTransporter
-						&& (loadDiscussionsOutput.getClient().getId() != userAccountOptional.get().getId()))) {
+						&& !loadDiscussionsOutput.getClient().getId().equals(userAccountOptional.get().getOauthId()))) {
 			throw new OperationDeniedException("Discussion does not belong to user.");
 		}
 
@@ -115,9 +119,9 @@ public class ChatMessageService implements SendMessageUseCase, LoadMessagesComma
 		LoadDiscussionsOutput loadDiscussionsOutput = loadDiscussionsOutputOptional.get();
 
 		// check that authenticated user is loading his own discussion messages
-		if ((isTransporter && !userAccountOptional.get().getId().equals(loadDiscussionsOutput.getTransporter().getId()))
+		if ((isTransporter && !userAccountOptional.get().getOauthId().equals(loadDiscussionsOutput.getTransporter().getId()))
 				|| (!isTransporter
-						&& !userAccountOptional.get().getId().equals(loadDiscussionsOutput.getClient().getId()))) {
+						&& !userAccountOptional.get().getOauthId().equals(loadDiscussionsOutput.getClient().getId()))) {
 
 			throw new OperationDeniedException(String.format("Cannot load messages of another user discussion."));
 		}
@@ -126,6 +130,21 @@ public class ChatMessageService implements SendMessageUseCase, LoadMessagesComma
 
 		LoadMessagesOutputResult messagesOutputResult = loadMessagesPort.loadMessages(command.getDiscussionId(),
 				command.getPageNumber(), command.getPageSize(), command.getSortingCriterion());
+
+		List<Long> messagesIds = messagesOutputResult.getContent().stream()
+				.filter(m -> !m.getRead() && m.getAuthorId().equals(userAccountOptional.get().getOauthId()))
+				.map(m -> m.getId()).collect(Collectors.toList());
+		if (!messagesIds.isEmpty()) {
+
+			updateMessagePort.updateRead(messagesIds, true);
+			if (isTransporter) {
+				sendMessageNotificationPort.sendReadNotification(loadDiscussionsOutput.getClient().getEmail(),
+						command.getDiscussionId(), messagesIds);
+			} else {
+				sendMessageNotificationPort.sendReadNotification(loadDiscussionsOutput.getTransporter().getEmail(),
+						command.getDiscussionId(), messagesIds);
+			}
+		}
 
 		return new LoadMessagesResult(messagesOutputResult.getTotalPages(), messagesOutputResult.getTotalElements(),
 				messagesOutputResult.getPageNumber(), messagesOutputResult.getPageSize(),

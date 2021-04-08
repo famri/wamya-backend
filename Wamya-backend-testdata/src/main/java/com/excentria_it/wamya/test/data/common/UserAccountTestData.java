@@ -19,7 +19,7 @@ public class UserAccountTestData {
 	public static UserAccountBuilder defaultUserAccountBuilder() {
 		Map<String, String> preferences = new HashMap<>();
 		preferences.put("timezone", "Africa/Tunis");
-		return UserAccount.builder().id(1L).isTransporter(false).gender(Gender.MAN).firstname(DEFAULT_FIRSTNAME)
+		return UserAccount.builder().id(1L).isTransporter(false).gender(Gender.MAN).firstname(DEFAULT_FIRSTNAME).oauthId(100L)
 				.lastname(DEFAULT_LASTNAME).dateOfBirth(DEFAULT_DATE_OF_BIRTH).email(DEFAULT_EMAIL)
 				.emailValidationCode(DEFAULT_VALIDATION_CODE).isValidatedEmail(true)
 				.mobilePhoneNumber(defaultMobilePhoneNumber()).mobileNumberValidationCode(DEFAULT_VALIDATION_CODE)
@@ -31,7 +31,7 @@ public class UserAccountTestData {
 	public static UserAccountBuilder defaultClientUserAccountBuilder() {
 		Map<String, String> preferences = new HashMap<>();
 		preferences.put("timezone", "Africa/Tunis");
-		return UserAccount.builder().id(1L).isTransporter(false).gender(Gender.MAN).firstname("client1")
+		return UserAccount.builder().id(1L).isTransporter(false).gender(Gender.MAN).firstname("client1").oauthId(100L)
 				.lastname("client1").dateOfBirth(DEFAULT_DATE_OF_BIRTH).email("client1@gmail.com")
 				.emailValidationCode(DEFAULT_VALIDATION_CODE).isValidatedEmail(true)
 				.mobilePhoneNumber(new MobilePhoneNumber(DEFAULT_INTERNATIONAL_CALLING_CODE, "96111111"))
@@ -44,7 +44,7 @@ public class UserAccountTestData {
 	public static UserAccountBuilder defaultTransporterUserAccountBuilder() {
 		Map<String, String> preferences = new HashMap<>();
 		preferences.put("timezone", "Africa/Tunis");
-		return UserAccount.builder().id(2L).isTransporter(true).gender(Gender.MAN).firstname("transporter1")
+		return UserAccount.builder().id(2L).isTransporter(true).gender(Gender.MAN).firstname("transporter1").oauthId(200L)
 				.lastname("transporter1").dateOfBirth(DEFAULT_DATE_OF_BIRTH).email("transporter1@gmail.com")
 				.emailValidationCode(DEFAULT_VALIDATION_CODE).isValidatedEmail(true)
 				.mobilePhoneNumber(new MobilePhoneNumber(DEFAULT_INTERNATIONAL_CALLING_CODE, "96222222"))

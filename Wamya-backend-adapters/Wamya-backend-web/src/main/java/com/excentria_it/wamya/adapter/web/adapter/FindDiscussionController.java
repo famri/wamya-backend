@@ -31,12 +31,12 @@ public class FindDiscussionController {
 
 	@GetMapping(path = "/me/discussions", params = { "clientId", "transporterId" })
 	@ResponseStatus(HttpStatus.OK)
-	public LoadDiscussionsDto loadDiscussion(@RequestParam(name = "clientId") Long clientId,
-			@RequestParam(name = "transporterId") Long transporterId,
+	public LoadDiscussionsDto loadDiscussion(@RequestParam(name = "clientId") Long clientOauthId,
+			@RequestParam(name = "transporterId") Long transporterOauthId,
 			final @AuthenticationPrincipal JwtAuthenticationToken principal) {
 
-		FindDiscussionCommand command = FindDiscussionCommand.builder().username(principal.getName()).clientId(clientId)
-				.transporterId(transporterId).build();
+		FindDiscussionCommand command = FindDiscussionCommand.builder().username(principal.getName()).clientId(clientOauthId)
+				.transporterId(transporterOauthId).build();
 
 		validationHelper.validateInput(command);
 

@@ -33,7 +33,7 @@ public class LoadDiscussionMessagesController {
 
 	@GetMapping(path = "/discussions/{discussionId}/messages")
 	@ResponseStatus(HttpStatus.OK)
-	public LoadMessagesResult loadDiscussions(@PathVariable(name = "discussionId") Long discussionId,
+	public LoadMessagesResult loadDiscussionMessages(@PathVariable(name = "discussionId") Long discussionId,
 			@RequestParam(name = "page", defaultValue = "0") Integer pageNumber,
 			@RequestParam(name = "size", defaultValue = "25") Integer pageSize,
 			final @AuthenticationPrincipal JwtAuthenticationToken principal) {

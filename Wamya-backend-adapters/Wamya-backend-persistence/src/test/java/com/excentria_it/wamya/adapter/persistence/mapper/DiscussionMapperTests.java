@@ -23,7 +23,7 @@ public class DiscussionMapperTests {
 
 		assertEquals(discussionJpaEntity.getTransporter().getFirstname(),
 				loadDiscussionsOutput.getTransporter().getName());
-		assertEquals(discussionJpaEntity.getTransporter().getId(), loadDiscussionsOutput.getTransporter().getId());
+		assertEquals(discussionJpaEntity.getTransporter().getOauthId(), loadDiscussionsOutput.getTransporter().getId());
 		assertEquals(
 				discussionJpaEntity.getTransporter().getIcc().getValue() + "_"
 						+ discussionJpaEntity.getTransporter().getMobileNumber(),
@@ -33,7 +33,7 @@ public class DiscussionMapperTests {
 				loadDiscussionsOutput.getTransporter().getPhotoUrl());
 
 		assertEquals(discussionJpaEntity.getClient().getFirstname(), loadDiscussionsOutput.getClient().getName());
-		assertEquals(discussionJpaEntity.getClient().getId(), loadDiscussionsOutput.getClient().getId());
+		assertEquals(discussionJpaEntity.getClient().getOauthId(), loadDiscussionsOutput.getClient().getId());
 		assertEquals(
 				discussionJpaEntity.getClient().getIcc().getValue() + "_"
 						+ discussionJpaEntity.getClient().getMobileNumber(),
@@ -52,7 +52,7 @@ public class DiscussionMapperTests {
 		assertEquals(discussionJpaEntity.getLatestMessage().getDateTime(),
 				loadDiscussionsOutput.getLatestMessage().getDateTime());
 
-		assertEquals(discussionJpaEntity.getLatestMessage().getAuthor().getId(),
+		assertEquals(discussionJpaEntity.getLatestMessage().getAuthor().getOauthId(),
 				loadDiscussionsOutput.getLatestMessage().getAuthorId());
 
 	}
