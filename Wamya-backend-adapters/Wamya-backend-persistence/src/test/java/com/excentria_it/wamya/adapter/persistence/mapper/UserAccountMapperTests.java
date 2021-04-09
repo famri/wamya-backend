@@ -74,6 +74,8 @@ public class UserAccountMapperTests {
 
 		assertEquals(userAccount.getId(), userAccountJpaEntity.getId());
 
+		assertEquals(userAccount.getOauthId(), userAccountJpaEntity.getOauthId());
+
 		assertTrue(userAccountJpaEntity instanceof TransporterJpaEntity);
 
 		assertEquals(userAccount.getGender(), userAccountJpaEntity.getGender());

@@ -82,7 +82,7 @@ public class ChatMessageService implements SendMessageUseCase, LoadMessagesComma
 		ZoneId receiverZoneId = dateTimeHelper.findUserZoneId(receiverUsername);
 
 		MessageOutput messageOutput = addMessageToDiscussionPort.addMessage(discussionId,
-				userAccountOptional.get().getId(), command.getContent());
+				userAccountOptional.get().getOauthId(), command.getContent());
 
 		MessageDto toReceiverMessageDto = new MessageDto(messageOutput.getId(), messageOutput.getAuthorId(),
 				messageOutput.getContent(),

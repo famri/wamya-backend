@@ -24,10 +24,10 @@ public class UserAccountMapper {
 			return null;
 
 		Map<String, UserPreferenceJpaEntity> preferences = new HashMap<>();
-		
+
 		userAccount.getPreferences().forEach((k, v) -> preferences.put(k,
 				new UserPreferenceJpaEntity(new UserPreferenceId(userAccount.getId(), k), v, null)));
-		
+
 		if (userAccount.getIsTransporter()) {
 
 			return new TransporterJpaEntity(userAccount.getId(), userAccount.getOauthId(), userAccount.getGender(),
@@ -38,7 +38,7 @@ public class UserAccountMapper {
 					userAccount.getReceiveNewsletter(),
 					userAccount.getCreationDateTime() != null ? userAccount.getCreationDateTime().toInstant()
 							: Instant.now(),
-					userAccount.getPhotoUrl(),preferences);
+					userAccount.getPhotoUrl(), preferences);
 
 		} else {
 			return new ClientJpaEntity(userAccount.getId(), userAccount.getOauthId(), userAccount.getGender(),
@@ -49,7 +49,7 @@ public class UserAccountMapper {
 					userAccount.getReceiveNewsletter(),
 					userAccount.getCreationDateTime() != null ? userAccount.getCreationDateTime().toInstant()
 							: Instant.now(),
-					userAccount.getPhotoUrl(),preferences);
+					userAccount.getPhotoUrl(), preferences);
 		}
 
 	}
@@ -62,7 +62,8 @@ public class UserAccountMapper {
 
 		userAccountJpaEntity.getPreferences().forEach((k, v) -> preferences.put(k, v.getValue()));
 
-		return UserAccount.builder().id(userAccountJpaEntity.getId()).gender(userAccountJpaEntity.getGender())
+		return UserAccount.builder().id(userAccountJpaEntity.getId()).oauthId(userAccountJpaEntity.getOauthId())
+				.gender(userAccountJpaEntity.getGender())
 				.isTransporter(userAccountJpaEntity instanceof TransporterJpaEntity)
 				.firstname(userAccountJpaEntity.getFirstname()).lastname(userAccountJpaEntity.getLastname())
 				.dateOfBirth(userAccountJpaEntity.getDateOfBirth()).email(userAccountJpaEntity.getEmail())

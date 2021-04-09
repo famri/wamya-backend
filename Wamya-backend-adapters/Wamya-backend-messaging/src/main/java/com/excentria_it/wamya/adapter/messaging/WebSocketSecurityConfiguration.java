@@ -12,7 +12,7 @@ public class WebSocketSecurityConfiguration extends AbstractSecurityWebSocketMes
 	protected void configureInbound(MessageSecurityMetadataSourceRegistry messages) {
 		messages.nullDestMatcher().authenticated().simpDestMatchers("/app/**")
 				.hasAnyAuthority("SCOPE_journey:write", "SCOPE_offer:write")
-				.simpSubscribeDestMatchers("/user/queue/messages")
+				.simpSubscribeDestMatchers("/user/queue/messages","/user/queue/read-messages")
 				.hasAnyAuthority("SCOPE_journey:write", "SCOPE_offer:write").simpTypeMatchers(MESSAGE, SUBSCRIBE)
 				.denyAll().anyMessage().denyAll();
 
