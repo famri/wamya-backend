@@ -106,7 +106,7 @@ services:
   wamya:
     container_name: wamya
     build: Wamya-backend-configuration
-    mem_limit: 512m
+    mem_limit: 1024m
 #    deploy:
 #      resources:
 #        limits:
@@ -123,7 +123,7 @@ services:
       - POSTGRES_PASSWORD=wamya
       - RABBITMQ_USER=dev
       - RABBITMQ_PASS=dev      
-    entrypoint: ["java", "-Djava.security.egd=file:/dev/./urandom", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:9090", "-Xms256m","-Xmx350m", "-jar", "/wamya-backend.jar"]
+    entrypoint: ["java", "-Djava.security.egd=file:/dev/./urandom", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:9090", "-Xms256m","-Xmx768m", "-jar", "/wamya-backend.jar"]
     depends_on:
       - "database"
 
