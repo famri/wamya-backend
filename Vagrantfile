@@ -52,7 +52,7 @@ $docker_compose = <<-'RUN_DOCKER_COMPOSE'
 RUN_DOCKER_COMPOSE
 
 #Create the host VM volume to backup database
-$create_database_volume = <<-'DATABASE_VOLUME'
+$create_database_volumes = <<-'DATABASE_VOLUME'
 
 mkdir -m 700 -p /postgres/database-data
 
@@ -72,7 +72,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 	  	end
 	  	
 	  	dev.vm.provision "shell", inline: $bootstrap, args: VAGRANT_USER
-		dev.vm.provision "shell", inline: $create_database_volume
+		dev.vm.provision "shell", inline: $create_database_volumes
 #		dev.vm.provision "shell", inline: $docker_compose, run: 'always'
   
 #		dev.vm.synced_folder ".", "/vagrant", disabled:true
@@ -83,16 +83,37 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
 		dev.vm.network "private_network", ip: "192.168.50.4"
 		dev.vm.network "forwarded_port", guest: 22, host: 2222
+		
+# POSTGRES WAMYA DB	PORT	
 		dev.vm.network "forwarded_port", guest: 5432, host: 5432
+		
+# POSTGRES AUTH DB PORT	
 		dev.vm.network "forwarded_port", guest: 5433, host: 5433
+		
+# GATEWAY PORT
 		dev.vm.network "forwarded_port", guest: 8443, host: 8443
+# WAMYA WEB PORT
 		dev.vm.network "forwarded_port", guest: 8080, host: 8080
+		
+# WAMYA WEB DEBUG PORT		
 		dev.vm.network "forwarded_port", guest: 9090, host: 9090
+
+# MESSAGING-GATEWAY WEB PORT
 		dev.vm.network "forwarded_port", guest: 8585, host: 8585
+
+# MESSAGING-GATEWAY WEB DEBUG PORT
 		dev.vm.network "forwarded_port", guest: 9595, host: 9595
+		
+# RABBIT MQ MANAGER PORT		
 		dev.vm.network "forwarded_port", guest: 15672, host: 15672
+		
+# KANNEL ADMIN PORT
 		dev.vm.network "forwarded_port", guest: 13000, host: 13000
+		
+# KANNEL SMS BOX PORT
 		dev.vm.network "forwarded_port", guest: 13013, host: 13013
+		
+# MAILHOG WEB PORT
 		dev.vm.network "forwarded_port", guest: 8025, host: 8025
 		
 

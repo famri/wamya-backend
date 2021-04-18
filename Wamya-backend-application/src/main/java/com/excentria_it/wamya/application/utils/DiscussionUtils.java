@@ -25,12 +25,16 @@ public class DiscussionUtils {
 	}
 
 	public static MessageDto mapToMessageDto(DateTimeHelper dateTimeHelper, MessageOutput mo, ZoneId userZoneId) {
+		if (mo == null)
+			return null;
 		return MessageDto.builder().id(mo.getId()).authorId(mo.getAuthorId()).content(mo.getContent())
 				.dateTime(dateTimeHelper.systemToUserLocalDateTime(mo.getDateTime(), userZoneId)).read(mo.getRead())
 				.build();
 	}
 
 	public static InterlocutorDto mapToInterlocutorDto(InterlocutorOutput io) {
+		if (io == null)
+			return null;
 		return InterlocutorDto.builder().id(io.getId()).name(io.getName()).mobileNumber(io.getMobileNumber())
 				.photoUrl(io.getPhotoUrl()).build();
 	}

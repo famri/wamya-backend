@@ -1,16 +1,46 @@
 package com.excentria_it.wamya.adapter.persistence.mapper;
 
 import static com.excentria_it.wamya.test.data.common.DiscussionJpaTestData.*;
+import static com.excentria_it.wamya.test.data.common.UserAccountJpaEntityTestData.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
 import com.excentria_it.wamya.adapter.persistence.entity.DiscussionJpaEntity;
+import com.excentria_it.wamya.adapter.persistence.entity.TransporterJpaEntity;
 import com.excentria_it.wamya.domain.LoadDiscussionsOutput;
+import com.excentria_it.wamya.domain.LoadDiscussionsOutput.InterlocutorOutput;
+import com.excentria_it.wamya.domain.LoadDiscussionsOutput.MessageOutput;
 
 public class DiscussionMapperTests {
 
 	private DiscussionMapper discussionMapper = new DiscussionMapper();
+
+	@Test
+	void testMapToLoadDiscussionsOutputFromNullDiscussionJpaEntity() {
+		LoadDiscussionsOutput loadDiscussionsOutput = discussionMapper.mapToLoadDiscussionsOutput(null);
+		assertEquals(null, loadDiscussionsOutput);
+	}
+
+	@Test
+	void testGetInterlocutorOutputFromNullUserAccountJpaEntity() {
+		InterlocutorOutput interlocutorOutput = discussionMapper.getInterlocutorOutput(null);
+		assertEquals(null, interlocutorOutput);
+	}
+
+	@Test
+	void testGetInterlocutorOutputFromNullUserAccountIccJpaEntity() {
+		TransporterJpaEntity transporterJpaEntity = defaultExistentTransporterJpaEntity();
+		transporterJpaEntity.setIcc(null);
+		InterlocutorOutput interlocutorOutput = discussionMapper.getInterlocutorOutput(transporterJpaEntity);
+		assertEquals(transporterJpaEntity.getMobileNumber(), interlocutorOutput.getMobileNumber());
+	}
+
+	@Test
+	void testGetMessageOutputFromNullMessageJpaEntity() {
+		MessageOutput messageOutput = discussionMapper.getMessageOutput(null);
+		assertEquals(null, messageOutput);
+	}
 
 	@Test
 	void testMapToClientLoadDiscussionsOutput() {

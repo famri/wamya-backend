@@ -173,7 +173,7 @@ public class DiscussionsServiceTests {
 					loadDiscussionsResult.getContent().get(i).getTransporter().getMobileNumber());
 			assertEquals(expectedResult.getContent().get(i).getTransporter().getPhotoUrl(),
 					loadDiscussionsResult.getContent().get(i).getTransporter().getPhotoUrl());
-			
+
 			assertEquals(expectedResult.getContent().get(i).getDateTime(),
 					loadDiscussionsResult.getContent().get(i).getDateTime().atZone(userZoneId).toInstant());
 

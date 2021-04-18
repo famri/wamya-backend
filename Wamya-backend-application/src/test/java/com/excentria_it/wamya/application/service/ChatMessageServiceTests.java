@@ -98,7 +98,7 @@ public class ChatMessageServiceTests {
 		then(loadUserAccountPort).should(times(1)).loadUserAccountByUsername(clientUserAccount.getEmail());
 		then(loadDiscussionsPort).should(times(1)).loadDiscussionById(loadDiscussionsOutput.getId());
 		then(addMessageToDiscussionPort).should(times(1)).addMessage(loadDiscussionsOutput.getId(),
-				clientUserAccount.getId(), command.getContent());
+				clientUserAccount.getOauthId(), command.getContent());
 
 		MessageDto toReceiverMessageDto = new MessageDto(messageOutput.getId(), messageOutput.getAuthorId(),
 				messageOutput.getContent(),
@@ -156,7 +156,7 @@ public class ChatMessageServiceTests {
 		then(loadUserAccountPort).should(times(1)).loadUserAccountByUsername(transporterUserAccount.getEmail());
 		then(loadDiscussionsPort).should(times(1)).loadDiscussionById(loadDiscussionsOutput.getId());
 		then(addMessageToDiscussionPort).should(times(1)).addMessage(loadDiscussionsOutput.getId(),
-				transporterUserAccount.getId(), command.getContent());
+				transporterUserAccount.getOauthId(), command.getContent());
 
 		MessageDto toReceiverMessageDto = new MessageDto(messageOutput.getId(), messageOutput.getAuthorId(),
 				messageOutput.getContent(),
@@ -341,8 +341,7 @@ public class ChatMessageServiceTests {
 				.map(m -> DiscussionUtils.mapToMessageDto(dateTimeHelper, m, userZoneId)).collect(Collectors.toList()),
 				result.getContent());
 	}
-	
-	
+
 	@Test
 	void testLoadClientMessages() {
 		// given
@@ -369,8 +368,8 @@ public class ChatMessageServiceTests {
 		LoadMessagesResult result = chatMessageService.loadMessages(command);
 		// then
 		List<Long> messageIds = messagesOutputResult.getContent().stream()
-				.filter(m -> !m.getRead() && m.getAuthorId().equals(clientUserAccount.getOauthId()))
-				.map(m -> m.getId()).collect(Collectors.toList());
+				.filter(m -> !m.getRead() && m.getAuthorId().equals(clientUserAccount.getOauthId())).map(m -> m.getId())
+				.collect(Collectors.toList());
 
 		then(updateMessagePort).should(times(1)).updateRead(messageIds, true);
 

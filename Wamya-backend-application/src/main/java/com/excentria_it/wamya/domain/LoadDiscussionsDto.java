@@ -29,6 +29,7 @@ public class LoadDiscussionsDto {
 	@Data
 	@Builder
 	public static class MessageDto {
+
 		private Long id;
 		private Long authorId;
 		private String content;

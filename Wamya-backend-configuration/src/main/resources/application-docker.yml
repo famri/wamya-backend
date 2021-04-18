@@ -21,11 +21,13 @@ ribbon.NFLoadBalancerPingInterval: 5
 
 management.endpoint.health.show-details: "ALWAYS"
 management.endpoints.web.exposure.include: "*"
-
-logging.level:
-  org.springframework.security: DEBUG
-  org.springframework.messaging: DEBUG
-  org.springframework.web.socket: DEBUG
+logging:
+  file:  
+    name: /var/log/wamya.log
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.messaging: DEBUG
+    org.springframework.web.socket: DEBUG
 
      
 

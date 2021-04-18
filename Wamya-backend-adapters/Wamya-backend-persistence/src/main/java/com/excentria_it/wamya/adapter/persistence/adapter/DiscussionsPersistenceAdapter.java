@@ -138,7 +138,8 @@ public class DiscussionsPersistenceAdapter implements LoadDiscussionsPort, Creat
 	}
 
 	@Override
-	public Optional<LoadDiscussionsOutput> loadDiscusssion(Long clientOauthId, Long transporterOauthId, boolean isTransporter) {
+	public Optional<LoadDiscussionsOutput> loadDiscusssion(Long clientOauthId, Long transporterOauthId,
+			boolean isTransporter) {
 
 		Optional<DiscussionJpaEntity> discussionOptional = discussionsRepository
 				.findByClient_OauthIdAndTransporter_OauthId(clientOauthId, transporterOauthId);

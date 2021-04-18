@@ -101,7 +101,41 @@ services:
       timeout: 5s
       retries: 3
       start_period: 15s
-             
+
+### THE REDIS DATABASE
+ 
+#  redis:
+#    container_name: redis
+#    image: redis:alpine3.13
+#    command: redis-server --requirepass changeme
+#    ports:
+#      - "6379:6379"    
+#    mem_limit: 350m
+#    deploy:
+#      resources:
+#        limits:
+#          memory: 350M
+#        reservations:
+#          memory: 50M
+      
+#    volumes:
+#      - redis-data:/data
+#    healthcheck:
+#      test:  ["CMD", "redis-cli", "ping"]
+#      interval: 15s
+#      timeout: 5s
+#      retries: 3
+#      start_period: 15s
+        
+### THE REDIS COMMANDER        
+#  redis-commander:
+#    container_name: redis-commander
+#    image: rediscommander/redis-commander:snyk-fix-08c85f17c94a7f00df6fb21e8ea1d10d   
+#    environment:
+#      - REDIS_HOSTS=local:redis:6379
+#    ports:
+#      - "8081:8081"   
+    
 # THE SPRING BOOT WAMYA APP
   wamya:
     container_name: wamya
@@ -122,10 +156,12 @@ services:
       - POSTGRES_USER=wamya
       - POSTGRES_PASSWORD=wamya
       - RABBITMQ_USER=dev
-      - RABBITMQ_PASS=dev      
+      - RABBITMQ_PASS=dev
+      - REDIS_PASSWORD=changeme      
     entrypoint: ["java", "-Djava.security.egd=file:/dev/./urandom", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:9090", "-Xms256m","-Xmx768m", "-jar", "/wamya-backend.jar"]
     depends_on:
       - "database"
+#      - "redis"
 
 #### THE RABBITMQ
   rabbitmq:
@@ -246,4 +282,5 @@ volumes:
       type: 'none'
       o: 'bind'
       device: '/postgres/auth-database-data'
-
+  
+#  redis-data: {}

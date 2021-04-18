@@ -13,6 +13,8 @@ import com.excentria_it.wamya.domain.LoadDiscussionsOutput.MessageOutput;
 public class DiscussionMapper {
 
 	public LoadDiscussionsOutput mapToLoadDiscussionsOutput(DiscussionJpaEntity discussionJpaEntity) {
+		if (discussionJpaEntity == null)
+			return null;
 		return LoadDiscussionsOutput.builder().id(discussionJpaEntity.getId()).active(discussionJpaEntity.getActive())
 				.dateTime(discussionJpaEntity.getDateTime())
 				.client(this.getInterlocutorOutput(discussionJpaEntity.getClient()))
@@ -21,13 +23,18 @@ public class DiscussionMapper {
 	}
 
 	public InterlocutorOutput getInterlocutorOutput(UserAccountJpaEntity userAccount) {
+		if (userAccount == null)
+			return null;
 		return InterlocutorOutput.builder().id(userAccount.getOauthId()).name(userAccount.getFirstname())
 				.email(userAccount.getEmail())
-				.mobileNumber(userAccount.getIcc().getValue() + "_" + userAccount.getMobileNumber())
+				.mobileNumber((userAccount.getIcc() != null ? userAccount.getIcc().getValue() + "_" : "")
+						+ userAccount.getMobileNumber())
 				.photoUrl(userAccount.getPhotoUrl()).build();
 	}
 
 	public MessageOutput getMessageOutput(MessageJpaEntity m) {
+		if (m == null)
+			return null;
 		return MessageOutput.builder().id(m.getId()).authorId(m.getAuthor().getOauthId()).content(m.getContent())
 				.dateTime(m.getDateTime()).read(m.getRead()).build();
 	}

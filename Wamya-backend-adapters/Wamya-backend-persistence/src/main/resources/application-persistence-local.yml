@@ -25,6 +25,7 @@ spring:
     password: password
 
 
+
 log4jdbc:
   trim:
     sql:

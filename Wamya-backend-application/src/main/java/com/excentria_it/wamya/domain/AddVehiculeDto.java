@@ -19,6 +19,9 @@ import lombok.NoArgsConstructor;
 @Builder
 public class AddVehiculeDto {
 
+	
+	private Long id;
+	
 	private String constructorName;
 
 	private String modelName;
