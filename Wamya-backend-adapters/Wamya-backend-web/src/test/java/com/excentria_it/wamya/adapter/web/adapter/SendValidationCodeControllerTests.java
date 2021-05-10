@@ -31,7 +31,7 @@ import com.excentria_it.wamya.application.port.in.SendValidationCodeUseCase.Send
 import com.excentria_it.wamya.common.annotation.ValidationMessageSource;
 import com.excentria_it.wamya.common.exception.ApiError;
 import com.excentria_it.wamya.common.exception.ApiError.ErrorCode;
-import com.excentria_it.wamya.common.exception.RestApiExceptionHandler;
+import com.excentria_it.wamya.common.exception.handlers.RestApiExceptionHandler;
 import com.excentria_it.wamya.common.exception.UserAccountNotFoundException;
 import com.excentria_it.wamya.common.exception.UserEmailValidationException;
 import com.excentria_it.wamya.common.exception.UserMobileNumberValidationException;

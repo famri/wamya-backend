@@ -19,9 +19,10 @@ public class UserAccountJpaEntityTestData {
 		userAccount.getPreferences().forEach((k, v) -> {
 			preferences.put(k, new UserPreferenceJpaEntity(new UserPreferenceId(1L, k), v, null));
 		});
-		TransporterJpaEntity t = new TransporterJpaEntity(1L, userAccount.getOauthId(), userAccount.getGender(),
-				userAccount.getFirstname(), userAccount.getLastname(), userAccount.getDateOfBirth(),
-				userAccount.getEmail(), userAccount.getEmailValidationCode(), userAccount.getIsValidatedEmail(),
+		TransporterJpaEntity t = new TransporterJpaEntity(1L, userAccount.getOauthId(),
+				GenderJpaTestData.defaultGenderJpaEntity(), userAccount.getFirstname(), userAccount.getLastname(),
+				userAccount.getDateOfBirth(), userAccount.getEmail(), userAccount.getEmailValidationCode(),
+				userAccount.getIsValidatedEmail(),
 				InternationalCallingCodeJpaEntityTestData.defaultExistentInternationalCallingCodeJpaEntity(),
 				userAccount.getMobilePhoneNumber().getMobileNumber(), userAccount.getMobileNumberValidationCode(),
 				userAccount.getIsValidatedMobileNumber(), userAccount.getReceiveNewsletter(),
@@ -32,9 +33,10 @@ public class UserAccountJpaEntityTestData {
 
 	public static final TransporterJpaEntity defaultNewTransporterJpaEntity() {
 
-		TransporterJpaEntity t = new TransporterJpaEntity(null, userAccount.getOauthId(), userAccount.getGender(),
-				userAccount.getFirstname(), userAccount.getLastname(), userAccount.getDateOfBirth(),
-				userAccount.getEmail(), userAccount.getEmailValidationCode(), userAccount.getIsValidatedEmail(),
+		TransporterJpaEntity t = new TransporterJpaEntity(null, userAccount.getOauthId(),
+				GenderJpaTestData.defaultGenderJpaEntity(), userAccount.getFirstname(), userAccount.getLastname(),
+				userAccount.getDateOfBirth(), userAccount.getEmail(), userAccount.getEmailValidationCode(),
+				userAccount.getIsValidatedEmail(),
 				InternationalCallingCodeJpaEntityTestData.defaultExistentInternationalCallingCodeJpaEntity(),
 				userAccount.getMobilePhoneNumber().getMobileNumber(), userAccount.getMobileNumberValidationCode(),
 				userAccount.getIsValidatedMobileNumber(), userAccount.getReceiveNewsletter(),
@@ -48,9 +50,9 @@ public class UserAccountJpaEntityTestData {
 		userAccount.getPreferences().forEach((k, v) -> {
 			preferences.put(k, new UserPreferenceJpaEntity(new UserPreferenceId(1L, k), v, null));
 		});
-		return new ClientJpaEntity(1L, userAccount.getOauthId(), userAccount.getGender(), userAccount.getFirstname(),
-				userAccount.getLastname(), userAccount.getDateOfBirth(), userAccount.getEmail(),
-				userAccount.getEmailValidationCode(), userAccount.getIsValidatedEmail(),
+		return new ClientJpaEntity(1L, userAccount.getOauthId(), GenderJpaTestData.defaultGenderJpaEntity(),
+				userAccount.getFirstname(), userAccount.getLastname(), userAccount.getDateOfBirth(),
+				userAccount.getEmail(), userAccount.getEmailValidationCode(), userAccount.getIsValidatedEmail(),
 				InternationalCallingCodeJpaEntityTestData.defaultExistentInternationalCallingCodeJpaEntity(),
 				userAccount.getMobilePhoneNumber().getMobileNumber(), userAccount.getMobileNumberValidationCode(),
 				userAccount.getIsValidatedMobileNumber(), userAccount.getReceiveNewsletter(),
@@ -59,9 +61,9 @@ public class UserAccountJpaEntityTestData {
 	}
 
 	public static final ClientJpaEntity defaultNewClientJpaEntity() {
-		return new ClientJpaEntity(null, userAccount.getOauthId(), userAccount.getGender(), userAccount.getFirstname(),
-				userAccount.getLastname(), userAccount.getDateOfBirth(), userAccount.getEmail(),
-				userAccount.getEmailValidationCode(), userAccount.getIsValidatedEmail(),
+		return new ClientJpaEntity(null, userAccount.getOauthId(), GenderJpaTestData.defaultGenderJpaEntity(),
+				userAccount.getFirstname(), userAccount.getLastname(), userAccount.getDateOfBirth(),
+				userAccount.getEmail(), userAccount.getEmailValidationCode(), userAccount.getIsValidatedEmail(),
 				InternationalCallingCodeJpaEntityTestData.defaultExistentInternationalCallingCodeJpaEntity(),
 				userAccount.getMobilePhoneNumber().getMobileNumber(), userAccount.getMobileNumberValidationCode(),
 				userAccount.getIsValidatedMobileNumber(), userAccount.getReceiveNewsletter(),

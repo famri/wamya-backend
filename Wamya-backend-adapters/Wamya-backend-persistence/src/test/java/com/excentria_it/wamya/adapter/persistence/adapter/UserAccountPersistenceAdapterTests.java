@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.excentria_it.wamya.adapter.persistence.entity.ClientJpaEntity;
+import com.excentria_it.wamya.adapter.persistence.entity.GenderJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.InternationalCallingCodeJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.TransporterJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.UserAccountJpaEntity;
@@ -22,13 +23,16 @@ import com.excentria_it.wamya.adapter.persistence.mapper.ClientMapper;
 import com.excentria_it.wamya.adapter.persistence.mapper.TransporterMapper;
 import com.excentria_it.wamya.adapter.persistence.mapper.UserAccountMapper;
 import com.excentria_it.wamya.adapter.persistence.repository.ClientRepository;
+import com.excentria_it.wamya.adapter.persistence.repository.GenderRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.InternationalCallingCodeRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.TransporterRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.UserAccountRepository;
-import com.excentria_it.wamya.common.exception.UnsupportedInternationalCallingCode;
+import com.excentria_it.wamya.common.exception.GenderNotFoundException;
+import com.excentria_it.wamya.common.exception.UnsupportedInternationalCallingCodeException;
 import com.excentria_it.wamya.common.exception.UserAccountNotFoundException;
 import com.excentria_it.wamya.domain.UserAccount;
 import com.excentria_it.wamya.domain.UserAccount.UserAccountBuilder;
+import com.excentria_it.wamya.test.data.common.GenderJpaTestData;
 import com.excentria_it.wamya.test.data.common.InternationalCallingCodeJpaEntityTestData;
 import com.excentria_it.wamya.test.data.common.TestConstants;
 import com.excentria_it.wamya.test.data.common.UserAccountJpaEntityTestData;
@@ -46,6 +50,8 @@ public class UserAccountPersistenceAdapterTests {
 	@Mock
 	private InternationalCallingCodeRepository iccRepository;
 	@Mock
+	private GenderRepository genderRepository;
+	@Mock
 	private UserAccountMapper userAccountMapper;
 	@Mock
 	private TransporterMapper transporterMapper;
@@ -58,16 +64,31 @@ public class UserAccountPersistenceAdapterTests {
 	// Test createUserAccount
 
 	@Test
-	void givenNotFoundIcc_WhenCreateUserAccount_ThenThrowUnsupportedInternationalCallingCode() {
+	void givenNotFoundIcc_WhenCreateUserAccount_ThenThrowUnsupportedInternationalCallingCodeException() {
 
 		UserAccountBuilder userAccountBuilder = UserAccountTestData.defaultUserAccountBuilder();
 		UserAccount userAccount = userAccountBuilder.build();
 
 		given(iccRepository.findByValue(userAccount.getMobilePhoneNumber().getInternationalCallingCode()))
-				.willReturn(Optional.ofNullable(null));
+				.willReturn(Optional.empty());
 
-		assertThrows(UnsupportedInternationalCallingCode.class,
+		assertThrows(UnsupportedInternationalCallingCodeException.class,
 				() -> userAccountPersistenceAdapter.createUserAccount(userAccount));
+	}
+
+	@Test
+	void givenNotFoundGender_WhenCreateUserAccount_ThenThrowGenderNotFoundException() {
+
+		UserAccountBuilder userAccountBuilder = UserAccountTestData.defaultUserAccountBuilder();
+		UserAccount userAccount = userAccountBuilder.build();
+
+		Optional<InternationalCallingCodeJpaEntity> iccEntity = Optional
+				.of(InternationalCallingCodeJpaEntityTestData.defaultExistentInternationalCallingCodeJpaEntity());
+		given(iccRepository.findByValue(userAccount.getMobilePhoneNumber().getInternationalCallingCode()))
+				.willReturn(iccEntity);
+		given(genderRepository.findById(userAccount.getGenderId())).willReturn(Optional.empty());
+
+		assertThrows(GenderNotFoundException.class, () -> userAccountPersistenceAdapter.createUserAccount(userAccount));
 	}
 
 	@Test
@@ -83,8 +104,14 @@ public class UserAccountPersistenceAdapterTests {
 
 		TransporterJpaEntity transporterJpaEntity = UserAccountJpaEntityTestData.defaultNewTransporterJpaEntity();
 
-		given(transporterMapper.mapToJpaEntity(any(UserAccount.class), any(InternationalCallingCodeJpaEntity.class)))
-				.willReturn(transporterJpaEntity);
+		GenderJpaEntity genderEntity = GenderJpaTestData.defaultGenderJpaEntity();
+		Optional<GenderJpaEntity> genderEntityOptional = Optional.of(genderEntity);
+
+		given(genderRepository.findById(any(Long.class))).willReturn(genderEntityOptional);
+
+		given(transporterMapper.mapToJpaEntity(any(UserAccount.class), any(InternationalCallingCodeJpaEntity.class),
+				any(GenderJpaEntity.class))).willReturn(transporterJpaEntity);
+
 		given(transporterRepository.save(transporterJpaEntity)).willReturn(transporterJpaEntity);
 
 		userAccountPersistenceAdapter.createUserAccount(userAccount);
@@ -103,10 +130,15 @@ public class UserAccountPersistenceAdapterTests {
 		given(iccRepository.findByValue(userAccount.getMobilePhoneNumber().getInternationalCallingCode()))
 				.willReturn(iccEntity);
 
+		GenderJpaEntity genderEntity = GenderJpaTestData.defaultGenderJpaEntity();
+		Optional<GenderJpaEntity> genderEntityOptional = Optional.of(genderEntity);
+
+		given(genderRepository.findById(any(Long.class))).willReturn(genderEntityOptional);
+
 		ClientJpaEntity clientJpaEntity = UserAccountJpaEntityTestData.defaultNewClientJpaEntity();
 
-		given(clientMapper.mapToJpaEntity(any(UserAccount.class), any(InternationalCallingCodeJpaEntity.class)))
-				.willReturn(clientJpaEntity);
+		given(clientMapper.mapToJpaEntity(any(UserAccount.class), any(InternationalCallingCodeJpaEntity.class),
+				any(GenderJpaEntity.class))).willReturn(clientJpaEntity);
 		given(clientRepository.save(clientJpaEntity)).willReturn(clientJpaEntity);
 
 		userAccountPersistenceAdapter.createUserAccount(userAccount);
@@ -186,10 +218,34 @@ public class UserAccountPersistenceAdapterTests {
 		given(userAccountRepository.findById(userAccount.getId())).willReturn(userAccountJpaEntity);
 
 		given(iccRepository.findByValue(userAccount.getMobilePhoneNumber().getInternationalCallingCode()))
-				.willReturn(Optional.ofNullable(null));
+				.willReturn(Optional.empty());
 
 		// when, then
-		assertThrows(UnsupportedInternationalCallingCode.class,
+		assertThrows(UnsupportedInternationalCallingCodeException.class,
+				() -> userAccountPersistenceAdapter.updateUserAccount(userAccount));
+
+	}
+
+	@Test
+	void givenExistentUserAccountByIdWithNonExistentGender_WhenUpdateUserAccount_ThenThrowGenderNotFoundException() {
+		// given
+		UserAccount userAccount = UserAccountTestData.defaultUserAccountBuilder().build();
+
+		Optional<UserAccountJpaEntity> userAccountJpaEntity = Optional
+				.ofNullable(UserAccountJpaEntityTestData.defaultExistentClientJpaEntity());
+
+		given(userAccountRepository.findById(userAccount.getId())).willReturn(userAccountJpaEntity);
+
+		InternationalCallingCodeJpaEntity iccEntity = InternationalCallingCodeJpaEntityTestData
+				.defaultExistentInternationalCallingCodeJpaEntity();
+		Optional<InternationalCallingCodeJpaEntity> iccEntityOptional = Optional.of(iccEntity);
+
+		given(iccRepository.findByValue(userAccount.getMobilePhoneNumber().getInternationalCallingCode()))
+				.willReturn(iccEntityOptional);
+		given(genderRepository.findById(any(Long.class))).willReturn(Optional.empty());
+
+		// when, then
+		assertThrows(GenderNotFoundException.class,
 				() -> userAccountPersistenceAdapter.updateUserAccount(userAccount));
 
 	}
@@ -211,8 +267,13 @@ public class UserAccountPersistenceAdapterTests {
 		given(iccRepository.findByValue(userAccount.getMobilePhoneNumber().getInternationalCallingCode()))
 				.willReturn(iccEntityOptional);
 
-		given(userAccountMapper.mapToJpaEntity(any(UserAccount.class), any(InternationalCallingCodeJpaEntity.class)))
-				.willReturn(userAccountJpaEntityOptional.get());
+		GenderJpaEntity genderEntity = GenderJpaTestData.defaultGenderJpaEntity();
+		Optional<GenderJpaEntity> genderEntityOptional = Optional.of(genderEntity);
+
+		given(genderRepository.findById(any(Long.class))).willReturn(genderEntityOptional);
+
+		given(userAccountMapper.mapToJpaEntity(any(UserAccount.class), any(InternationalCallingCodeJpaEntity.class),
+				any(GenderJpaEntity.class))).willReturn(userAccountJpaEntityOptional.get());
 
 		// when
 		userAccountPersistenceAdapter.updateUserAccount(userAccount);

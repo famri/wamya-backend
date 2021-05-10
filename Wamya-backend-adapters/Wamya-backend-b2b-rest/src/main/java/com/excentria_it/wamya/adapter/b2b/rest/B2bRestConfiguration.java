@@ -12,7 +12,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.excentria_it.wamya.adapter.b2b.rest.props.AuthServerProperties;
 import com.excentria_it.wamya.adapter.b2b.rest.props.GoogleApiProperties;
-import com.excentria_it.wamya.common.exception.RestTemplateResponseErrorHandler;
+import com.excentria_it.wamya.common.exception.handlers.RestTemplateResponseErrorHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Configuration

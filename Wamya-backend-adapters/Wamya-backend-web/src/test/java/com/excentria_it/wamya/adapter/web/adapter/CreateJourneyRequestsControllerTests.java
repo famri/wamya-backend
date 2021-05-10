@@ -22,7 +22,7 @@ import org.springframework.test.context.ActiveProfiles;
 import com.c4_soft.springaddons.security.oauth2.test.mockmvc.MockMvcSupport;
 import com.excentria_it.wamya.application.port.in.CreateJourneyRequestUseCase;
 import com.excentria_it.wamya.application.port.in.CreateJourneyRequestUseCase.CreateJourneyRequestCommand;
-import com.excentria_it.wamya.common.exception.RestApiExceptionHandler;
+import com.excentria_it.wamya.common.exception.handlers.RestApiExceptionHandler;
 import com.excentria_it.wamya.domain.CreateJourneyRequestDto;
 import com.excentria_it.wamya.test.data.common.JourneyRequestTestData;
 import com.excentria_it.wamya.test.data.common.TestConstants;

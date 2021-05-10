@@ -13,8 +13,10 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import com.excentria_it.wamya.adapter.persistence.entity.GenderJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.InternationalCallingCodeJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.UserAccountJpaEntity;
+import com.excentria_it.wamya.test.data.common.GenderJpaTestData;
 import com.excentria_it.wamya.test.data.common.InternationalCallingCodeJpaEntityTestData;
 import com.excentria_it.wamya.test.data.common.TestConstants;
 
@@ -28,10 +30,14 @@ public class UserAccountRepositoryTests {
 	@Autowired
 	private InternationalCallingCodeRepository iccRepository;
 
+	@Autowired
+	private GenderRepository genderRepository;
+
 	@BeforeEach
 	public void cleanDatabase() {
 		userAccountRepository.deleteAll();
 		iccRepository.deleteAll();
+		genderRepository.deleteAll();
 	}
 
 	@Test
@@ -63,7 +69,7 @@ public class UserAccountRepositoryTests {
 		assertEquals(TestConstants.DEFAULT_EMAIL, entityOptional.get().getEmail());
 
 	}
-	
+
 	@Test
 	public void givenAUserAccountWithEmailAndEmptyPreferences_WhenFindByEmailWithUserPreferences_ThenReturnUserAccount() {
 
@@ -71,7 +77,8 @@ public class UserAccountRepositoryTests {
 		givenAUserAccountWithEmailAndMobilePhoneAndPassword();
 
 		// When
-		Optional<UserAccountJpaEntity> entityOptional = userAccountRepository.findByEmailWithUserPreferences(TestConstants.DEFAULT_EMAIL);
+		Optional<UserAccountJpaEntity> entityOptional = userAccountRepository
+				.findByEmailWithUserPreferences(TestConstants.DEFAULT_EMAIL);
 		// Then
 		assertTrue(entityOptional.isPresent());
 		assertEquals(TestConstants.DEFAULT_EMAIL, entityOptional.get().getEmail());
@@ -85,27 +92,31 @@ public class UserAccountRepositoryTests {
 		givenAUserAccountWithEmailAndMobilePhoneAndPassword();
 
 		// When
-		Optional<UserAccountJpaEntity> entityOptional = userAccountRepository.findByMobilePhoneNumberWithUserPreferences(
-				InternationalCallingCodeJpaEntityTestData.defaultExistentInternationalCallingCodeJpaEntity().getValue(),
-				TestConstants.DEFAULT_MOBILE_NUMBER);
+		Optional<UserAccountJpaEntity> entityOptional = userAccountRepository
+				.findByMobilePhoneNumberWithUserPreferences(InternationalCallingCodeJpaEntityTestData
+						.defaultExistentInternationalCallingCodeJpaEntity().getValue(),
+						TestConstants.DEFAULT_MOBILE_NUMBER);
 		// Then
 		assertTrue(entityOptional.isPresent());
 		assertEquals(TestConstants.DEFAULT_INTERNATIONAL_CALLING_CODE, entityOptional.get().getIcc().getValue());
 
 	}
+
 	private void givenAUserAccountWithEmailAndMobilePhoneAndPassword() {
 		InternationalCallingCodeJpaEntity iccEntity = InternationalCallingCodeJpaEntityTestData
 				.defaultNewInternationalCallingCodeJpaEntity();
 
 		iccEntity = iccRepository.save(iccEntity);
 
+		GenderJpaEntity genderEntity = GenderJpaTestData.defaultGenderJpaEntity();
+		genderEntity = genderRepository.save(genderEntity);
+		
 		UserAccountJpaEntity userAccountEntity = defaultNewTransporterJpaEntity();
 		userAccountEntity.setIcc(iccEntity);
-
+		userAccountEntity.setGender(genderEntity);
+		
 		userAccountRepository.save(userAccountEntity);
 
 	}
-	
-
 
 }

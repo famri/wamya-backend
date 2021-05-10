@@ -8,6 +8,7 @@ import java.util.Map;
 import org.springframework.stereotype.Component;
 
 import com.excentria_it.wamya.adapter.persistence.entity.ClientJpaEntity;
+import com.excentria_it.wamya.adapter.persistence.entity.GenderJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.InternationalCallingCodeJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.TransporterJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.UserAccountJpaEntity;
@@ -19,7 +20,8 @@ import com.excentria_it.wamya.domain.UserAccount.MobilePhoneNumber;
 @Component
 public class UserAccountMapper {
 
-	public UserAccountJpaEntity mapToJpaEntity(UserAccount userAccount, InternationalCallingCodeJpaEntity icc) {
+	public UserAccountJpaEntity mapToJpaEntity(UserAccount userAccount, InternationalCallingCodeJpaEntity icc,
+			GenderJpaEntity gender) {
 		if (userAccount == null)
 			return null;
 
@@ -30,7 +32,7 @@ public class UserAccountMapper {
 
 		if (userAccount.getIsTransporter()) {
 
-			return new TransporterJpaEntity(userAccount.getId(), userAccount.getOauthId(), userAccount.getGender(),
+			return new TransporterJpaEntity(userAccount.getId(), userAccount.getOauthId(), gender,
 					userAccount.getFirstname(), userAccount.getLastname(), userAccount.getDateOfBirth(),
 					userAccount.getEmail(), userAccount.getEmailValidationCode(), userAccount.getIsValidatedEmail(),
 					icc, userAccount.getMobilePhoneNumber().getMobileNumber(),
@@ -41,7 +43,7 @@ public class UserAccountMapper {
 					userAccount.getPhotoUrl(), preferences);
 
 		} else {
-			return new ClientJpaEntity(userAccount.getId(), userAccount.getOauthId(), userAccount.getGender(),
+			return new ClientJpaEntity(userAccount.getId(), userAccount.getOauthId(), gender,
 					userAccount.getFirstname(), userAccount.getLastname(), userAccount.getDateOfBirth(),
 					userAccount.getEmail(), userAccount.getEmailValidationCode(), userAccount.getIsValidatedEmail(),
 					icc, userAccount.getMobilePhoneNumber().getMobileNumber(),
@@ -63,7 +65,7 @@ public class UserAccountMapper {
 		userAccountJpaEntity.getPreferences().forEach((k, v) -> preferences.put(k, v.getValue()));
 
 		return UserAccount.builder().id(userAccountJpaEntity.getId()).oauthId(userAccountJpaEntity.getOauthId())
-				.gender(userAccountJpaEntity.getGender())
+				.genderId(userAccountJpaEntity.getGender().getId())
 				.isTransporter(userAccountJpaEntity instanceof TransporterJpaEntity)
 				.firstname(userAccountJpaEntity.getFirstname()).lastname(userAccountJpaEntity.getLastname())
 				.dateOfBirth(userAccountJpaEntity.getDateOfBirth()).email(userAccountJpaEntity.getEmail())

@@ -25,7 +25,7 @@ import com.excentria_it.wamya.application.port.in.LoadDiscussionsUseCase;
 import com.excentria_it.wamya.application.port.in.LoadDiscussionsUseCase.LoadDiscussionsCommand;
 import com.excentria_it.wamya.common.FilterCriterion;
 import com.excentria_it.wamya.common.SortCriterion;
-import com.excentria_it.wamya.common.exception.RestApiExceptionHandler;
+import com.excentria_it.wamya.common.exception.handlers.RestApiExceptionHandler;
 import com.excentria_it.wamya.domain.LoadDiscussionsResult;
 import com.excentria_it.wamya.test.data.common.TestConstants;
 

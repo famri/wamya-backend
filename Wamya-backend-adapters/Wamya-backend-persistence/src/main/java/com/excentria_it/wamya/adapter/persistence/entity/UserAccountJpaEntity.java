@@ -7,8 +7,6 @@ import java.util.Map;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -18,11 +16,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapKey;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import com.excentria_it.wamya.common.annotation.Generated;
-import com.excentria_it.wamya.domain.Gender;
 
 import lombok.NoArgsConstructor;
 
@@ -43,8 +41,8 @@ public abstract class UserAccountJpaEntity {
 
 	protected Long oauthId;
 
-	@Enumerated(EnumType.STRING)
-	protected Gender gender;
+	@OneToOne
+	protected GenderJpaEntity gender;
 
 	protected String firstname;
 
@@ -79,7 +77,7 @@ public abstract class UserAccountJpaEntity {
 	@MapKey(name = "userPreferenceId.key")
 	protected Map<String, UserPreferenceJpaEntity> preferences = new HashMap<>();
 
-	public UserAccountJpaEntity(Long id, Long oauthId, Gender gender, String firstname, String lastname,
+	public UserAccountJpaEntity(Long id, Long oauthId, GenderJpaEntity gender, String firstname, String lastname,
 			LocalDate dateOfBirth, String email, String emailValidationCode, Boolean isValidatedEmail,
 			InternationalCallingCodeJpaEntity icc, String mobileNumber, String mobileNumberValidationCode,
 			Boolean isValidatedMobileNumber, Boolean receiveNewsletter, Instant creationDateTime, String photoUrl,
@@ -128,11 +126,11 @@ public abstract class UserAccountJpaEntity {
 		this.oauthId = oauthId;
 	}
 
-	public Gender getGender() {
+	public GenderJpaEntity getGender() {
 		return gender;
 	}
 
-	public void setGender(Gender gender) {
+	public void setGender(GenderJpaEntity gender) {
 		this.gender = gender;
 	}
 

@@ -23,7 +23,7 @@ import com.excentria_it.wamya.adapter.web.utils.ValidationHelper;
 import com.excentria_it.wamya.application.port.in.LoadMessagesCommandUseCase;
 import com.excentria_it.wamya.application.port.in.LoadMessagesCommandUseCase.LoadMessagesCommand;
 import com.excentria_it.wamya.common.SortCriterion;
-import com.excentria_it.wamya.common.exception.RestApiExceptionHandler;
+import com.excentria_it.wamya.common.exception.handlers.RestApiExceptionHandler;
 import com.excentria_it.wamya.domain.LoadMessagesResult;
 import com.excentria_it.wamya.test.data.common.TestConstants;
 import static com.excentria_it.wamya.test.data.common.MessageTestData.*;

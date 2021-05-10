@@ -1,4 +1,4 @@
-package com.excentria_it.wamya.common.exception;
+package com.excentria_it.wamya.common.exception.handlers;
 
 import java.io.IOException;
 
@@ -7,6 +7,9 @@ import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.ResponseErrorHandler;
 
+import com.excentria_it.wamya.common.exception.ApiError;
+import com.excentria_it.wamya.common.exception.AuthServerError;
+import com.excentria_it.wamya.common.exception.AuthorizationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

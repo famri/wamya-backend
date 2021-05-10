@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.stereotype.Component;
 
 import com.excentria_it.wamya.adapter.persistence.entity.ClientJpaEntity;
+import com.excentria_it.wamya.adapter.persistence.entity.GenderJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.InternationalCallingCodeJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.UserPreferenceId;
 import com.excentria_it.wamya.adapter.persistence.entity.UserPreferenceJpaEntity;
@@ -14,7 +15,8 @@ import com.excentria_it.wamya.domain.UserAccount;
 @Component
 public class ClientMapper {
 
-	public ClientJpaEntity mapToJpaEntity(UserAccount userAccount, InternationalCallingCodeJpaEntity icc) {
+	public ClientJpaEntity mapToJpaEntity(UserAccount userAccount, InternationalCallingCodeJpaEntity icc,
+			GenderJpaEntity gender) {
 		if (userAccount == null || userAccount.getIsTransporter())
 			return null;
 
@@ -25,7 +27,7 @@ public class ClientMapper {
 					new UserPreferenceJpaEntity(new UserPreferenceId(userAccount.getId(), k), v, null)));
 		}
 
-		return new ClientJpaEntity(userAccount.getId(), userAccount.getOauthId(), userAccount.getGender(),
+		return new ClientJpaEntity(userAccount.getId(), userAccount.getOauthId(), gender,
 				userAccount.getFirstname(), userAccount.getLastname(), userAccount.getDateOfBirth(),
 				userAccount.getEmail(), userAccount.getEmailValidationCode(), userAccount.getIsValidatedEmail(), icc,
 				userAccount.getMobilePhoneNumber().getMobileNumber(), userAccount.getMobileNumberValidationCode(),

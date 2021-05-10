@@ -6,9 +6,8 @@ import java.util.Locale;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
-import com.excentria_it.wamya.common.exception.UnsupportedInternationalCallingCode;
+import com.excentria_it.wamya.common.exception.UnsupportedInternationalCallingCodeException;
 import com.excentria_it.wamya.common.exception.UserAccountAlreadyExistsException;
-import com.excentria_it.wamya.domain.Gender;
 import com.excentria_it.wamya.domain.JwtOAuth2AccessToken;
 import com.excentria_it.wamya.domain.RegexPattern;
 
@@ -20,7 +19,7 @@ import lombok.NoArgsConstructor;
 public interface CreateUserAccountUseCase {
 
 	JwtOAuth2AccessToken registerUserAccountCreationDemand(CreateUserAccountCommand command, Locale locale)
-			throws UserAccountAlreadyExistsException, UnsupportedInternationalCallingCode;
+			throws UserAccountAlreadyExistsException, UnsupportedInternationalCallingCodeException;
 
 	void checkExistingAccount(CreateUserAccountCommand command);
 
@@ -36,7 +35,7 @@ public interface CreateUserAccountUseCase {
 		Boolean isTransporter;
 
 		@NotNull
-		Gender gender;
+		Long genderId;
 
 		@NotNull
 		String firstname;

@@ -23,9 +23,9 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import com.excentria_it.wamya.application.port.in.CreateUserAccountUseCase;
 import com.excentria_it.wamya.application.port.in.CreateUserAccountUseCase.CreateUserAccountCommand;
-import com.excentria_it.wamya.common.exception.RestApiExceptionHandler;
-import com.excentria_it.wamya.common.exception.UnsupportedInternationalCallingCode;
+import com.excentria_it.wamya.common.exception.UnsupportedInternationalCallingCodeException;
 import com.excentria_it.wamya.common.exception.UserAccountAlreadyExistsException;
+import com.excentria_it.wamya.common.exception.handlers.RestApiExceptionHandler;
 import com.excentria_it.wamya.domain.JwtOAuth2AccessToken;
 import com.excentria_it.wamya.test.data.common.UserAccountTestData;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -109,7 +109,7 @@ public class CreateUserAccountControllerTests {
 
 		CreateUserAccountCommand command = UserAccountTestData.defaultClientUserAccountCommandBuilder().build();
 
-		doThrow(UnsupportedInternationalCallingCode.class).when(createUserAccountUseCase)
+		doThrow(UnsupportedInternationalCallingCodeException.class).when(createUserAccountUseCase)
 				.registerUserAccountCreationDemand(eq(command), any(Locale.class));
 
 		String createUserAccountJson = objectMapper.writeValueAsString(command);

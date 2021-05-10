@@ -20,7 +20,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.excentria_it.wamya.application.port.in.LoadCountriesUseCase;
-import com.excentria_it.wamya.common.exception.RestApiExceptionHandler;
+import com.excentria_it.wamya.common.exception.handlers.RestApiExceptionHandler;
 import com.excentria_it.wamya.domain.LoadCountriesDto;
 import com.excentria_it.wamya.domain.LoadCountriesResult;
 

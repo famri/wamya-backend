@@ -24,7 +24,7 @@ import org.springframework.test.context.ActiveProfiles;
 import com.c4_soft.springaddons.security.oauth2.test.mockmvc.MockMvcSupport;
 import com.excentria_it.wamya.application.port.in.AutoCompletePlaceForClientUseCase;
 import com.excentria_it.wamya.application.utils.AutoCompletePlaceMapper;
-import com.excentria_it.wamya.common.exception.RestApiExceptionHandler;
+import com.excentria_it.wamya.common.exception.handlers.RestApiExceptionHandler;
 import com.excentria_it.wamya.domain.AutoCompleteLocalityDto;
 import com.excentria_it.wamya.domain.AutoCompletePlaceDto;
 import com.excentria_it.wamya.domain.AutoCompletePlaceResult;

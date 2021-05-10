@@ -28,7 +28,7 @@ import com.excentria_it.wamya.adapter.web.utils.ValidationHelper;
 import com.excentria_it.wamya.application.port.in.SearchJourneyRequestsUseCase;
 import com.excentria_it.wamya.application.port.in.SearchJourneyRequestsUseCase.SearchJourneyRequestsCommand;
 import com.excentria_it.wamya.common.SortCriterion;
-import com.excentria_it.wamya.common.exception.RestApiExceptionHandler;
+import com.excentria_it.wamya.common.exception.handlers.RestApiExceptionHandler;
 import com.excentria_it.wamya.domain.JourneyRequestsSearchResult;
 import com.excentria_it.wamya.test.data.common.JourneyRequestTestData;
 import com.excentria_it.wamya.test.data.common.TestConstants;

@@ -14,7 +14,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.excentria_it.wamya.common.annotation.Generated;
-import com.excentria_it.wamya.domain.Gender;
 
 import lombok.NoArgsConstructor;
 
@@ -38,7 +37,7 @@ public class ClientJpaEntity extends UserAccountJpaEntity {
 		journeyRequest.setClient(null);
 	}
 
-	public ClientJpaEntity(Long id, Long oauthId, Gender gender, String firstname, String lastname,
+	public ClientJpaEntity(Long id, Long oauthId, GenderJpaEntity gender, String firstname, String lastname,
 			LocalDate dateOfBirth, String email, String emailValidationCode, Boolean isValidatedEmail,
 			InternationalCallingCodeJpaEntity icc, String mobileNumber, String mobileNumberValidationCode,
 			Boolean isValidatedMobileNumber, Boolean receiveNewsletter, Instant creationDateTime, String photoUrl,

@@ -9,7 +9,8 @@ public class ExceptionsTests {
 	@Test
 	void testUnsupportedInternationalCallingCode() {
 		String message = "SOME MESSAGE";
-		UnsupportedInternationalCallingCode exception = new UnsupportedInternationalCallingCode(message);
+		UnsupportedInternationalCallingCodeException exception = new UnsupportedInternationalCallingCodeException(
+				message);
 		assertEquals(exception.getMessage(), message);
 
 	}
@@ -139,6 +140,13 @@ public class ExceptionsTests {
 	void testDiscussionNotFoundException() {
 		String message = "SOME MESSAGE";
 		DiscussionNotFoundException exception = new DiscussionNotFoundException(message);
+		assertEquals(exception.getMessage(), message);
+	}
+
+	@Test
+	void testGenderNotFoundException() {
+		String message = "SOME MESSAGE";
+		GenderNotFoundException exception = new GenderNotFoundException(message);
 		assertEquals(exception.getMessage(), message);
 	}
 }

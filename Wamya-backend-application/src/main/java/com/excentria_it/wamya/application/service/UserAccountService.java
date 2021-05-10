@@ -90,7 +90,7 @@ public class UserAccountService implements CreateUserAccountUseCase {
 		Long oauthId = oAuthUserAccountPort.createOAuthUserAccount(oauthUserAccount);
 
 		UserAccount userAccount = UserAccount.builder().oauthId(oauthId).isTransporter(command.getIsTransporter())
-				.gender(command.getGender()).firstname(command.getFirstname()).lastname(command.getLastname())
+				.genderId(command.getGenderId()).firstname(command.getFirstname()).lastname(command.getLastname())
 				.dateOfBirth(command.getDateOfBirth()).email(command.getEmail())
 				.emailValidationCode(emailValidationCode).isValidatedEmail(false)
 				.mobilePhoneNumber(new MobilePhoneNumber(command.getIcc(), command.getMobileNumber()))

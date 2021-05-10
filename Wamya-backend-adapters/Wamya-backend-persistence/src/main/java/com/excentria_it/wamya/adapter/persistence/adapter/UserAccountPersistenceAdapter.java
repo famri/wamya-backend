@@ -2,12 +2,14 @@ package com.excentria_it.wamya.adapter.persistence.adapter;
 
 import java.util.Optional;
 
+import com.excentria_it.wamya.adapter.persistence.entity.GenderJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.InternationalCallingCodeJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.UserAccountJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.mapper.ClientMapper;
 import com.excentria_it.wamya.adapter.persistence.mapper.TransporterMapper;
 import com.excentria_it.wamya.adapter.persistence.mapper.UserAccountMapper;
 import com.excentria_it.wamya.adapter.persistence.repository.ClientRepository;
+import com.excentria_it.wamya.adapter.persistence.repository.GenderRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.InternationalCallingCodeRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.TransporterRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.UserAccountRepository;
@@ -15,7 +17,8 @@ import com.excentria_it.wamya.application.port.out.CreateUserAccountPort;
 import com.excentria_it.wamya.application.port.out.LoadUserAccountPort;
 import com.excentria_it.wamya.application.port.out.UpdateUserAccountPort;
 import com.excentria_it.wamya.common.annotation.PersistenceAdapter;
-import com.excentria_it.wamya.common.exception.UnsupportedInternationalCallingCode;
+import com.excentria_it.wamya.common.exception.GenderNotFoundException;
+import com.excentria_it.wamya.common.exception.UnsupportedInternationalCallingCodeException;
 import com.excentria_it.wamya.common.exception.UserAccountNotFoundException;
 import com.excentria_it.wamya.domain.UserAccount;
 
@@ -34,6 +37,8 @@ public class UserAccountPersistenceAdapter
 
 	private final InternationalCallingCodeRepository iccRepository;
 
+	private final GenderRepository genderRepository;
+
 	private final UserAccountMapper userAccountMapper;
 
 	private final TransporterMapper transporterMapper;
@@ -41,21 +46,29 @@ public class UserAccountPersistenceAdapter
 	private final ClientMapper clientMapper;
 
 	@Override
-	public Long createUserAccount(UserAccount userAccount) throws UnsupportedInternationalCallingCode {
+	public Long createUserAccount(UserAccount userAccount) throws UnsupportedInternationalCallingCodeException {
 
 		Optional<InternationalCallingCodeJpaEntity> iccEntity = iccRepository
 				.findByValue(userAccount.getMobilePhoneNumber().getInternationalCallingCode());
 
 		if (iccEntity.isEmpty())
-			throw new UnsupportedInternationalCallingCode(String.format("Unsupported international calling code %s",
-					userAccount.getMobilePhoneNumber().getInternationalCallingCode()));
+			throw new UnsupportedInternationalCallingCodeException(
+					String.format("Unsupported international calling code %s",
+							userAccount.getMobilePhoneNumber().getInternationalCallingCode()));
+
+		Optional<GenderJpaEntity> genderEntity = genderRepository.findById(userAccount.getGenderId());
+
+		if (genderEntity.isEmpty())
+			throw new GenderNotFoundException(String.format("Gender ID not found: %s", userAccount.getGenderId()));
 
 		UserAccountJpaEntity result;
 		if (userAccount.getIsTransporter()) {
 
-			result = transporterRepository.save(transporterMapper.mapToJpaEntity(userAccount, iccEntity.get()));
+			result = transporterRepository
+					.save(transporterMapper.mapToJpaEntity(userAccount, iccEntity.get(), genderEntity.get()));
 		} else {
-			result = clientRepository.save(clientMapper.mapToJpaEntity(userAccount, iccEntity.get()));
+			result = clientRepository
+					.save(clientMapper.mapToJpaEntity(userAccount, iccEntity.get(), genderEntity.get()));
 		}
 
 		return result.getId();
@@ -72,11 +85,19 @@ public class UserAccountPersistenceAdapter
 				Optional<InternationalCallingCodeJpaEntity> iccEntity = iccRepository
 						.findByValue(userAccount.getMobilePhoneNumber().getInternationalCallingCode());
 				if (iccEntity.isEmpty()) {
-					throw new UnsupportedInternationalCallingCode(
+					throw new UnsupportedInternationalCallingCodeException(
 							String.format("Unsupported international calling code %s",
 									userAccount.getMobilePhoneNumber().getInternationalCallingCode()));
 				}
-				UserAccountJpaEntity entity = userAccountMapper.mapToJpaEntity(userAccount, iccEntity.get());
+
+				Optional<GenderJpaEntity> genderEntity = genderRepository.findById(userAccount.getGenderId());
+
+				if (genderEntity.isEmpty())
+					throw new GenderNotFoundException(
+							String.format("Gender ID not found: %s", userAccount.getGenderId()));
+
+				UserAccountJpaEntity entity = userAccountMapper.mapToJpaEntity(userAccount, iccEntity.get(),
+						genderEntity.get());
 				userAccountRepository.save(entity);
 			} else
 				throw new UserAccountNotFoundException(

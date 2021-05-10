@@ -21,7 +21,7 @@ public class UserAccount {
 
 	private Boolean isTransporter;
 
-	private Gender gender;
+	private Long genderId;
 
 	private String firstname;
 
@@ -79,6 +79,16 @@ public class UserAccount {
 			return this.internationalCallingCode + this.mobileNumber;
 		}
 
+	}
+
+	@NoArgsConstructor
+	@AllArgsConstructor
+	@Data
+	public static class UserGender {
+
+		Long id;
+
+		String name;
 	}
 
 }

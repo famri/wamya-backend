@@ -26,7 +26,7 @@ import com.c4_soft.springaddons.security.oauth2.test.mockmvc.MockMvcSupport;
 import com.excentria_it.wamya.adapter.web.utils.ValidationHelper;
 import com.excentria_it.wamya.application.port.in.LoadProposalsUseCase;
 import com.excentria_it.wamya.application.port.in.LoadProposalsUseCase.LoadProposalsCommand;
-import com.excentria_it.wamya.common.exception.RestApiExceptionHandler;
+import com.excentria_it.wamya.common.exception.handlers.RestApiExceptionHandler;
 import com.excentria_it.wamya.domain.JourneyRequestProposals;
 import com.excentria_it.wamya.test.data.common.JourneyProposalTestData;
 import com.excentria_it.wamya.test.data.common.TestConstants;

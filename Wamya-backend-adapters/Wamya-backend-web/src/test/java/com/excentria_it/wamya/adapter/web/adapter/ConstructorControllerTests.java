@@ -23,7 +23,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import com.c4_soft.springaddons.security.oauth2.test.mockmvc.MockMvcSupport;
 import com.excentria_it.wamya.application.port.in.LoadConstructorsUseCase;
-import com.excentria_it.wamya.common.exception.RestApiExceptionHandler;
+import com.excentria_it.wamya.common.exception.handlers.RestApiExceptionHandler;
 import com.excentria_it.wamya.domain.LoadConstructorModelsResult;
 import com.excentria_it.wamya.domain.LoadConstructorsDto;
 import com.excentria_it.wamya.domain.LoadConstructorsResult;

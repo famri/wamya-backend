@@ -1,4 +1,4 @@
-package com.excentria_it.wamya.common.exception;
+package com.excentria_it.wamya.common.exception.handlers;
 
 import static org.assertj.core.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.*;
@@ -17,7 +17,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
 
+import com.excentria_it.wamya.common.exception.ApiError;
+import com.excentria_it.wamya.common.exception.AuthServerError;
+import com.excentria_it.wamya.common.exception.AuthorizationException;
 import com.excentria_it.wamya.common.exception.ApiError.ErrorCode;
+import com.excentria_it.wamya.common.exception.handlers.RestTemplateResponseErrorHandler;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

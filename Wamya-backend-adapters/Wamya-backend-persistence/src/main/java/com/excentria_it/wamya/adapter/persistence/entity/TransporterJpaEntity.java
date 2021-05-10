@@ -65,7 +65,7 @@ public class TransporterJpaEntity extends UserAccountJpaEntity {
 		proposal.setTransporter(null);
 	}
 
-	public TransporterJpaEntity(Long id, Long oauthId, Gender gender, String firstname, String lastname,
+	public TransporterJpaEntity(Long id, Long oauthId, GenderJpaEntity gender, String firstname, String lastname,
 			LocalDate dateOfBirth, String email, String emailValidationCode, Boolean isValidatedEmail,
 			InternationalCallingCodeJpaEntity icc, String mobileNumber, String mobileNumberValidationCode,
 			Boolean isValidatedMobileNumber, Boolean receiveNewsletter, Instant creationDateTime, String photoUrl,

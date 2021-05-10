@@ -1,4 +1,4 @@
-package com.excentria_it.wamya.common.exception;
+package com.excentria_it.wamya.common.exception.handlers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +26,24 @@ import org.springframework.web.multipart.support.MissingServletRequestPartExcept
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import com.excentria_it.wamya.common.exception.ApiError;
 import com.excentria_it.wamya.common.exception.ApiError.ErrorCode;
+import com.excentria_it.wamya.common.exception.AuthorizationException;
+import com.excentria_it.wamya.common.exception.CountryNotFoundException;
+import com.excentria_it.wamya.common.exception.DepartmentNotFoundException;
+import com.excentria_it.wamya.common.exception.DiscussionNotFoundException;
+import com.excentria_it.wamya.common.exception.GenderNotFoundException;
+import com.excentria_it.wamya.common.exception.InvalidPlaceTypeException;
+import com.excentria_it.wamya.common.exception.InvalidTransporterVehiculeException;
+import com.excentria_it.wamya.common.exception.JourneyProposalNotFoundException;
+import com.excentria_it.wamya.common.exception.JourneyRequestExpiredException;
+import com.excentria_it.wamya.common.exception.JourneyRequestNotFoundException;
+import com.excentria_it.wamya.common.exception.OperationDeniedException;
+import com.excentria_it.wamya.common.exception.UnsupportedInternationalCallingCodeException;
+import com.excentria_it.wamya.common.exception.UserAccountAlreadyExistsException;
+import com.excentria_it.wamya.common.exception.UserAccountNotFoundException;
+import com.excentria_it.wamya.common.exception.UserEmailValidationException;
+import com.excentria_it.wamya.common.exception.UserMobileNumberValidationException;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -233,10 +250,10 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 
 	}
 
-	@ExceptionHandler({ UnsupportedInternationalCallingCode.class })
+	@ExceptionHandler({ UnsupportedInternationalCallingCodeException.class })
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	public ResponseEntity<ApiError> handleUnsupportedInternationalCallingCode(
-			UnsupportedInternationalCallingCode exception) {
+			UnsupportedInternationalCallingCodeException exception) {
 
 		log.warn("Exception at " + exception.getClass() + ": ", exception);
 		final String error = "International calling code is not supported.";
@@ -344,6 +361,16 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 	@ExceptionHandler({ DiscussionNotFoundException.class })
 	@ResponseStatus(HttpStatus.NOT_FOUND)
 	public ResponseEntity<ApiError> handleDiscussionNotFoundException(DiscussionNotFoundException exception) {
+
+		log.error("Exception at " + exception.getClass() + ": ", exception);
+		final String error = exception.getMessage();
+		final ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, ErrorCode.OBJECT_NOT_FOUND, error);
+		return new ResponseEntity<ApiError>(apiError, new HttpHeaders(), apiError.getStatus());
+	}
+
+	@ExceptionHandler({ GenderNotFoundException.class })
+	@ResponseStatus(HttpStatus.NOT_FOUND)
+	public ResponseEntity<ApiError> handleGenderNotFoundException(GenderNotFoundException exception) {
 
 		log.error("Exception at " + exception.getClass() + ": ", exception);
 		final String error = exception.getMessage();

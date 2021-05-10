@@ -1,4 +1,4 @@
-package com.excentria_it.wamya.common.exception;
+package com.excentria_it.wamya.common.exception.handlers;
 
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.mockito.BDDMockito.*;
@@ -37,7 +37,26 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
+import com.excentria_it.wamya.common.exception.ApiError;
 import com.excentria_it.wamya.common.exception.ApiError.ErrorCode;
+import com.excentria_it.wamya.common.exception.AuthorizationException;
+import com.excentria_it.wamya.common.exception.CountryNotFoundException;
+import com.excentria_it.wamya.common.exception.DepartmentNotFoundException;
+import com.excentria_it.wamya.common.exception.DiscussionNotFoundException;
+import com.excentria_it.wamya.common.exception.GenderNotFoundException;
+import com.excentria_it.wamya.common.exception.InvalidPlaceTypeException;
+import com.excentria_it.wamya.common.exception.InvalidTransporterVehiculeException;
+import com.excentria_it.wamya.common.exception.JourneyProposalNotFoundException;
+import com.excentria_it.wamya.common.exception.JourneyRequestExpiredException;
+import com.excentria_it.wamya.common.exception.JourneyRequestNotFoundException;
+import com.excentria_it.wamya.common.exception.MyBindException;
+import com.excentria_it.wamya.common.exception.OperationDeniedException;
+import com.excentria_it.wamya.common.exception.SomeObject;
+import com.excentria_it.wamya.common.exception.UnsupportedInternationalCallingCodeException;
+import com.excentria_it.wamya.common.exception.UserAccountAlreadyExistsException;
+import com.excentria_it.wamya.common.exception.UserAccountNotFoundException;
+import com.excentria_it.wamya.common.exception.UserEmailValidationException;
+import com.excentria_it.wamya.common.exception.UserMobileNumberValidationException;
 
 @ExtendWith(MockitoExtension.class)
 public class RestApiExceptionHandlerTest {
@@ -374,7 +393,7 @@ public class RestApiExceptionHandlerTest {
 	@Test
 	void whenHandleUnsupportedInternationalCallingCode_ThenStatusIsBadRequest() {
 		// given
-		UnsupportedInternationalCallingCode exception = givenUnsupportedInternationalCallingCode();
+		UnsupportedInternationalCallingCodeException exception = givenUnsupportedInternationalCallingCode();
 
 		// When
 		ResponseEntity<ApiError> responseEntity = restApiExceptionHandler
@@ -556,6 +575,22 @@ public class RestApiExceptionHandlerTest {
 	}
 
 	@Test
+	void whenHandleGenderNotFoundException_thenStatusIsNotFound() {
+		// given
+		GenderNotFoundException exception = givenGenderNotFoundException();
+
+		// When
+		ResponseEntity<ApiError> responseEntity = restApiExceptionHandler.handleGenderNotFoundException(exception);
+
+		// Then
+		then(responseEntity.getBody() instanceof ApiError);
+		then(((ApiError) responseEntity.getBody()).getStatus()).isEqualTo(HttpStatus.NOT_FOUND);
+		then(((ApiError) responseEntity.getBody()).getErrorCode()).isEqualTo(ErrorCode.OBJECT_NOT_FOUND);
+		then(((ApiError) responseEntity.getBody()).getErrors()).containsExactly(SOME_MESSAGE);
+		then(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+	}
+
+	@Test
 	void whenHandleJourneyProposalNotFoundException_thenStatusIsBadREquest() {
 		// given
 		JourneyProposalNotFoundException exception = givenJourneyProposalNotFoundException();
@@ -653,8 +688,17 @@ public class RestApiExceptionHandlerTest {
 		return exception;
 	}
 
-	private UnsupportedInternationalCallingCode givenUnsupportedInternationalCallingCode() {
-		UnsupportedInternationalCallingCode exception = Mockito.mock(UnsupportedInternationalCallingCode.class);
+	private GenderNotFoundException givenGenderNotFoundException() {
+
+		GenderNotFoundException exception = Mockito.mock(GenderNotFoundException.class);
+		given(exception.getMessage()).willReturn(SOME_MESSAGE);
+
+		return exception;
+	}
+
+	private UnsupportedInternationalCallingCodeException givenUnsupportedInternationalCallingCode() {
+		UnsupportedInternationalCallingCodeException exception = Mockito
+				.mock(UnsupportedInternationalCallingCodeException.class);
 		given(exception.getMessage()).willReturn(SOME_MESSAGE);
 
 		return exception;

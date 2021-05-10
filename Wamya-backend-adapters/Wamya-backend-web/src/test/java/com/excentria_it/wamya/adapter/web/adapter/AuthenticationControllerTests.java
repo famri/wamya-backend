@@ -23,7 +23,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import com.excentria_it.wamya.application.port.in.AuthenticateUserUseCase;
 import com.excentria_it.wamya.application.port.in.AuthenticateUserUseCase.LoginUserCommand;
 import com.excentria_it.wamya.common.exception.AuthorizationException;
-import com.excentria_it.wamya.common.exception.RestApiExceptionHandler;
+import com.excentria_it.wamya.common.exception.handlers.RestApiExceptionHandler;
 import com.excentria_it.wamya.domain.JwtOAuth2AccessToken;
 import com.excentria_it.wamya.test.data.common.UserLoginTestData;
 import com.fasterxml.jackson.databind.ObjectMapper;
