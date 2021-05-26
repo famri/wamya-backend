@@ -70,7 +70,8 @@ public abstract class UserAccountJpaEntity {
 
 	protected Instant creationDateTime;
 
-	protected String photoUrl;
+	@ManyToOne
+	protected DocumentJpaEntity profileImage;
 
 	@OneToMany(mappedBy = "userAccount", cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST,
 			CascadeType.REFRESH }, orphanRemoval = true)
@@ -80,8 +81,8 @@ public abstract class UserAccountJpaEntity {
 	public UserAccountJpaEntity(Long id, Long oauthId, GenderJpaEntity gender, String firstname, String lastname,
 			LocalDate dateOfBirth, String email, String emailValidationCode, Boolean isValidatedEmail,
 			InternationalCallingCodeJpaEntity icc, String mobileNumber, String mobileNumberValidationCode,
-			Boolean isValidatedMobileNumber, Boolean receiveNewsletter, Instant creationDateTime, String photoUrl,
-			Map<String, UserPreferenceJpaEntity> preferences) {
+			Boolean isValidatedMobileNumber, Boolean receiveNewsletter, Instant creationDateTime,
+			DocumentJpaEntity profileImage, Map<String, UserPreferenceJpaEntity> preferences) {
 		super();
 		this.id = id;
 		this.oauthId = oauthId;
@@ -98,7 +99,7 @@ public abstract class UserAccountJpaEntity {
 		this.isValidatedMobileNumber = isValidatedMobileNumber;
 		this.receiveNewsletter = receiveNewsletter;
 		this.creationDateTime = creationDateTime;
-		this.photoUrl = photoUrl;
+		this.profileImage = profileImage;
 		if (preferences != null) {
 			preferences.forEach((k, v) -> v.setUserAccount(this));
 		}
@@ -230,12 +231,12 @@ public abstract class UserAccountJpaEntity {
 		this.creationDateTime = creationDateTime;
 	}
 
-	public String getPhotoUrl() {
-		return photoUrl;
+	public DocumentJpaEntity getProfileImage() {
+		return profileImage;
 	}
 
-	public void setPhotoUrl(String photoUrl) {
-		this.photoUrl = photoUrl;
+	public void setProfileImage(DocumentJpaEntity profileImage) {
+		this.profileImage = profileImage;
 	}
 
 	public Map<String, UserPreferenceJpaEntity> getPreferences() {
@@ -273,7 +274,7 @@ public abstract class UserAccountJpaEntity {
 				+ ", emailValidationCode=" + emailValidationCode + ", isValidatedEmail=" + isValidatedEmail + ", icc="
 				+ icc + ", mobileNumber=" + mobileNumber + ", mobileNumberValidationCode=" + mobileNumberValidationCode
 				+ ", isValidatedMobileNumber=" + isValidatedMobileNumber + ", receiveNewsletter=" + receiveNewsletter
-				+ ", creationDateTime=" + creationDateTime + ", photoUrl=" + photoUrl + "]";
+				+ ", creationDateTime=" + creationDateTime + ", profileImage=" + profileImage + "]";
 	}
 
 }

@@ -68,7 +68,7 @@ dependencies {
     }
     
     testImplementation 'com.integralblue:log4jdbc-spring-boot-starter:2.0.0'
-   
+    testImplementation 'commons-codec:commons-codec:1.15'
     
 }
 

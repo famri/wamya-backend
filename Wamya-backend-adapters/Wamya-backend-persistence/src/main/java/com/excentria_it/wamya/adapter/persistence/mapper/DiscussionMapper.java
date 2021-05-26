@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import com.excentria_it.wamya.adapter.persistence.entity.DiscussionJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.MessageJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.UserAccountJpaEntity;
+import com.excentria_it.wamya.application.utils.DocumentUrlResolver;
 import com.excentria_it.wamya.domain.LoadDiscussionsOutput;
 import com.excentria_it.wamya.domain.LoadDiscussionsOutput.InterlocutorOutput;
 import com.excentria_it.wamya.domain.LoadDiscussionsOutput.MessageOutput;
@@ -29,7 +30,9 @@ public class DiscussionMapper {
 				.email(userAccount.getEmail())
 				.mobileNumber((userAccount.getIcc() != null ? userAccount.getIcc().getValue() + "_" : "")
 						+ userAccount.getMobileNumber())
-				.photoUrl(userAccount.getPhotoUrl()).build();
+				.photoUrl(DocumentUrlResolver.resolveUrl(userAccount.getProfileImage().getId(),
+						userAccount.getProfileImage().getHash()))
+				.build();
 	}
 
 	public MessageOutput getMessageOutput(MessageJpaEntity m) {

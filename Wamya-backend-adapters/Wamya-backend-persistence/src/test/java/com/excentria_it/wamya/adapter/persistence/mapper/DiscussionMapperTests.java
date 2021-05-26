@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import com.excentria_it.wamya.adapter.persistence.entity.DiscussionJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.TransporterJpaEntity;
+import com.excentria_it.wamya.application.utils.DocumentUrlResolver;
 import com.excentria_it.wamya.domain.LoadDiscussionsOutput;
 import com.excentria_it.wamya.domain.LoadDiscussionsOutput.InterlocutorOutput;
 import com.excentria_it.wamya.domain.LoadDiscussionsOutput.MessageOutput;
@@ -59,7 +60,9 @@ public class DiscussionMapperTests {
 						+ discussionJpaEntity.getTransporter().getMobileNumber(),
 				loadDiscussionsOutput.getTransporter().getMobileNumber());
 
-		assertEquals(discussionJpaEntity.getTransporter().getPhotoUrl(),
+		assertEquals(
+				DocumentUrlResolver.resolveUrl(discussionJpaEntity.getTransporter().getProfileImage().getId(),
+						discussionJpaEntity.getTransporter().getProfileImage().getHash()),
 				loadDiscussionsOutput.getTransporter().getPhotoUrl());
 
 		assertEquals(discussionJpaEntity.getClient().getFirstname(), loadDiscussionsOutput.getClient().getName());
@@ -69,7 +72,10 @@ public class DiscussionMapperTests {
 						+ discussionJpaEntity.getClient().getMobileNumber(),
 				loadDiscussionsOutput.getClient().getMobileNumber());
 
-		assertEquals(discussionJpaEntity.getClient().getPhotoUrl(), loadDiscussionsOutput.getClient().getPhotoUrl());
+		assertEquals(
+				DocumentUrlResolver.resolveUrl(discussionJpaEntity.getClient().getProfileImage().getId(),
+						discussionJpaEntity.getTransporter().getProfileImage().getHash()),
+				loadDiscussionsOutput.getClient().getPhotoUrl());
 
 		assertEquals(discussionJpaEntity.getLatestMessage().getId(), loadDiscussionsOutput.getLatestMessage().getId());
 

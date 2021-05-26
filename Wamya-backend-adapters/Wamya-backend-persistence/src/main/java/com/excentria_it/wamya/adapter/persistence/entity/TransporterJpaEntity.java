@@ -3,7 +3,6 @@ package com.excentria_it.wamya.adapter.persistence.entity;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -16,7 +15,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.excentria_it.wamya.common.annotation.Generated;
-import com.excentria_it.wamya.domain.Gender;
 
 import lombok.NoArgsConstructor;
 
@@ -68,12 +66,12 @@ public class TransporterJpaEntity extends UserAccountJpaEntity {
 	public TransporterJpaEntity(Long id, Long oauthId, GenderJpaEntity gender, String firstname, String lastname,
 			LocalDate dateOfBirth, String email, String emailValidationCode, Boolean isValidatedEmail,
 			InternationalCallingCodeJpaEntity icc, String mobileNumber, String mobileNumberValidationCode,
-			Boolean isValidatedMobileNumber, Boolean receiveNewsletter, Instant creationDateTime, String photoUrl,
-			Map<String, UserPreferenceJpaEntity> preferences) {
+			Boolean isValidatedMobileNumber, Boolean receiveNewsletter, Instant creationDateTime,
+			DocumentJpaEntity profileImage, Map<String, UserPreferenceJpaEntity> preferences) {
 
 		super(id, oauthId, gender, firstname, lastname, dateOfBirth, email, emailValidationCode, isValidatedEmail, icc,
 				mobileNumber, mobileNumberValidationCode, isValidatedMobileNumber, receiveNewsletter, creationDateTime,
-				photoUrl, preferences);
+				profileImage, preferences);
 
 	}
 

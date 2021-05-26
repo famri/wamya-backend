@@ -1,5 +1,6 @@
 package com.excentria_it.wamya.adapter.persistence.mapper;
 
+import static com.excentria_it.wamya.test.data.common.DocumentJpaTestData.*;
 import static com.excentria_it.wamya.test.data.common.GenderJpaTestData.*;
 import static com.excentria_it.wamya.test.data.common.InternationalCallingCodeJpaEntityTestData.*;
 import static com.excentria_it.wamya.test.data.common.UserAccountTestData.*;
@@ -9,6 +10,7 @@ import java.time.ZoneOffset;
 
 import org.junit.jupiter.api.Test;
 
+import com.excentria_it.wamya.adapter.persistence.entity.DocumentJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.GenderJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.InternationalCallingCodeJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.TransporterJpaEntity;
@@ -22,8 +24,10 @@ public class TransporterMapperTests {
 	void testMapToJpaEntity() {
 		UserAccount userAccount = defaultUserAccountBuilder().isTransporter(true).build();
 		InternationalCallingCodeJpaEntity icc = defaultExistentInternationalCallingCodeJpaEntity();
-		GenderJpaEntity gender = defaultGenderJpaEntity();
-		TransporterJpaEntity transporterJpaEntity = transporterMapper.mapToJpaEntity(userAccount, icc, gender);
+		GenderJpaEntity gender = manGenderJpaEntity();
+		DocumentJpaEntity profileImage = defaultManProfileImageDocumentJpaEntity();
+		TransporterJpaEntity transporterJpaEntity = transporterMapper.mapToJpaEntity(userAccount, icc, gender,
+				profileImage);
 
 		assertEquals(userAccount.getId(), transporterJpaEntity.getId());
 		assertEquals(userAccount.getOauthId(), transporterJpaEntity.getOauthId());
@@ -46,14 +50,15 @@ public class TransporterMapperTests {
 		assertEquals(userAccount.getReceiveNewsletter(), transporterJpaEntity.getReceiveNewsletter());
 		assertTrue(userAccount.getCreationDateTime()
 				.isEqual(transporterJpaEntity.getCreationDateTime().atZone(ZoneOffset.UTC)));
-		assertEquals(userAccount.getPhotoUrl(), transporterJpaEntity.getPhotoUrl());
+		assertEquals(profileImage, transporterJpaEntity.getProfileImage());
 	}
 
 	@Test
 	void testMapNullToJpaEntity() {
 		InternationalCallingCodeJpaEntity icc = defaultExistentInternationalCallingCodeJpaEntity();
-		GenderJpaEntity gender = defaultGenderJpaEntity();
-		TransporterJpaEntity transporterJpaEntity = transporterMapper.mapToJpaEntity(null, icc, gender);
+		GenderJpaEntity gender = manGenderJpaEntity();
+		DocumentJpaEntity profileImage = defaultManProfileImageDocumentJpaEntity();
+		TransporterJpaEntity transporterJpaEntity = transporterMapper.mapToJpaEntity(null, icc, gender, profileImage);
 		assertNull(transporterJpaEntity);
 	}
 
@@ -61,8 +66,10 @@ public class TransporterMapperTests {
 	void testMapNotTransporterToJpaEntity() {
 		UserAccount userAccount = defaultUserAccountBuilder().isTransporter(false).build();
 		InternationalCallingCodeJpaEntity icc = defaultExistentInternationalCallingCodeJpaEntity();
-		GenderJpaEntity gender = defaultGenderJpaEntity();
-		TransporterJpaEntity transporterJpaEntity = transporterMapper.mapToJpaEntity(userAccount, icc, gender);
+		GenderJpaEntity gender = manGenderJpaEntity();
+		DocumentJpaEntity profileImage = defaultManProfileImageDocumentJpaEntity();
+		TransporterJpaEntity transporterJpaEntity = transporterMapper.mapToJpaEntity(userAccount, icc, gender,
+				profileImage);
 		assertNull(transporterJpaEntity);
 	}
 }

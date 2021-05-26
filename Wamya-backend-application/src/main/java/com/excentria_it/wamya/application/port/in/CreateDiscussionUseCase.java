@@ -1,6 +1,5 @@
 package com.excentria_it.wamya.application.port.in;
 
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import com.excentria_it.wamya.domain.LoadDiscussionsDto;
@@ -24,7 +23,7 @@ public interface CreateDiscussionUseCase {
 		private Long clientId;
 		@NotNull
 		private Long transporterId;
-	
+
 	}
 
 }

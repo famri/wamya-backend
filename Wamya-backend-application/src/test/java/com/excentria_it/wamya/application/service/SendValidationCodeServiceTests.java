@@ -52,40 +52,6 @@ public class SendValidationCodeServiceTests {
 	private SendValidationCodeService sendValidationCodeService;
 
 	@Test
-	void testUpdateSMSValidationCode() {
-
-		String validationCode = TestConstants.DEFAULT_VALIDATION_CODE;
-		UserAccount userAccount = Mockito.mock(UserAccount.class);
-
-		sendValidationCodeService.updateSMSValidationCode(userAccount, validationCode);
-
-		InOrder inOrder = Mockito.inOrder(userAccount, updateUserAccountPort);
-
-		then(userAccount).should(inOrder).setMobileNumberValidationCode(validationCode);
-
-		then(userAccount).should(inOrder).setIsValidatedMobileNumber(false);
-
-		then(updateUserAccountPort).should(inOrder).updateUserAccount(userAccount);
-	}
-
-	@Test
-	void testUpdateEmailValidationCode() {
-
-		String validationCode = TestConstants.DEFAULT_VALIDATION_CODE;
-		UserAccount userAccount = Mockito.mock(UserAccount.class);
-
-		sendValidationCodeService.updateEmailValidationCode(userAccount, validationCode);
-
-		InOrder inOrder = Mockito.inOrder(userAccount, updateUserAccountPort);
-
-		then(userAccount).should(inOrder).setEmailValidationCode(validationCode);
-
-		then(userAccount).should(inOrder).setIsValidatedEmail(false);
-
-		then(updateUserAccountPort).should(inOrder).updateUserAccount(userAccount);
-	}
-
-	@Test
 	void givenNonExistentEmail_whenCheckExistingAccount_ThenThrowUserAccountNotFoundException() {
 		givenNonExistentEmail();
 
@@ -197,10 +163,10 @@ public class SendValidationCodeServiceTests {
 
 		sendValidationCodeService.sendSMSValidationCode(sendSMSValidationCodeCommand, new Locale("fr"));
 
-		InOrder inOrder = Mockito.inOrder(codeGenerator, sendValidationCodeService, messagingPort);
+		InOrder inOrder = Mockito.inOrder(codeGenerator, updateUserAccountPort, messagingPort);
 
 		inOrder.verify(codeGenerator).generateNumericCode();
-		inOrder.verify(sendValidationCodeService).updateSMSValidationCode(userAccount,
+		inOrder.verify(updateUserAccountPort).updateSMSValidationCode(userAccount.getId(),
 				TestConstants.DEFAULT_VALIDATION_CODE);
 		inOrder.verify(messagingPort).sendSMSMessage(any(SMSMessage.class));
 	}
@@ -219,10 +185,10 @@ public class SendValidationCodeServiceTests {
 
 		sendValidationCodeService.sendEmailValidationLink(command, new Locale("fr"));
 
-		InOrder inOrder = Mockito.inOrder(codeGenerator, sendValidationCodeService, messagingPort);
+		InOrder inOrder = Mockito.inOrder(codeGenerator,  messagingPort, updateUserAccountPort);
 
 		inOrder.verify(codeGenerator).generateNumericCode();
-		inOrder.verify(sendValidationCodeService).updateEmailValidationCode(userAccount,
+		inOrder.verify(updateUserAccountPort).updateEmailValidationCode(userAccount.getId(),
 				TestConstants.DEFAULT_VALIDATION_CODE);
 		inOrder.verify(messagingPort).sendEmailMessage(any(EmailMessage.class));
 	}

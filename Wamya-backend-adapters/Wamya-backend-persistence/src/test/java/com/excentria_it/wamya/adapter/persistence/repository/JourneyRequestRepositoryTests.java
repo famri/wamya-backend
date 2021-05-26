@@ -33,6 +33,7 @@ import com.excentria_it.wamya.adapter.persistence.entity.ConstructorJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.CountryJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.DelegationJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.DepartmentJpaEntity;
+import com.excentria_it.wamya.adapter.persistence.entity.DocumentJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.EngineTypeJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.EngineTypeJpaEntity.EngineTypeCode;
 import com.excentria_it.wamya.adapter.persistence.entity.InternationalCallingCodeJpaEntity;
@@ -53,6 +54,7 @@ import com.excentria_it.wamya.adapter.persistence.entity.VehiculeJpaEntity;
 import com.excentria_it.wamya.domain.ClientJourneyRequestDto;
 import com.excentria_it.wamya.domain.JourneyRequestSearchOutput;
 import com.excentria_it.wamya.domain.PlaceType;
+import com.excentria_it.wamya.test.data.common.DocumentJpaTestData;
 
 @DataJpaTest
 @ActiveProfiles(profiles = { "persistence-local" })
@@ -95,9 +97,14 @@ public class JourneyRequestRepositoryTests {
 	@Autowired
 	private CountryRepository countryRepository;
 
+	@Autowired
+	private DocumentRepository documentRepository;
+
 	@BeforeEach
 	public void cleanDatabase() {
+		
 		transporterRepository.deleteAll();
+
 		clientRepository.deleteAll();
 		journeyRequestRepository.deleteAll();
 		engineTypeRepository.deleteAll();
@@ -108,6 +115,7 @@ public class JourneyRequestRepositoryTests {
 		internationalCallingCodeRepository.deleteAll();
 		departmentRepository.deleteAll();
 		countryRepository.deleteAll();
+		documentRepository.deleteAll();
 	}
 
 	@Test
@@ -123,7 +131,10 @@ public class JourneyRequestRepositoryTests {
 		List<EngineTypeJpaEntity> engineTypes = List.of(engineTypesListList.get(0).get(0),
 				engineTypesListList.get(1).get(0), engineTypesListList.get(2).get(0));
 		InternationalCallingCodeJpaEntity icc = givenIcc("+216");
-		List<ClientJpaEntity> clients = givenClients(icc);
+
+		DocumentJpaEntity defaultManProfileImage = givenDefaultManProfileImage();
+		List<ClientJpaEntity> clients = givenClients(icc,
+				List.of(defaultManProfileImage, defaultManProfileImage, defaultManProfileImage));
 		List<ZonedDateTime> dates = givenLocalDateTimes();
 		List<ZonedDateTime> endDates = givenEndDates();
 		List<Integer> distances = givenDistances();
@@ -131,7 +142,8 @@ public class JourneyRequestRepositoryTests {
 		List<List<ModelJpaEntity>> models = givenModels(constructors);
 
 		List<List<VehiculeJpaEntity>> vehicules = givenVehicules(engineTypesListList, models);
-		List<TransporterJpaEntity> transporters = givenTransporters(vehicules);
+		List<TransporterJpaEntity> transporters = givenTransporters(vehicules,
+				List.of(defaultManProfileImage, defaultManProfileImage, defaultManProfileImage));
 		List<String> descriptions = givenDescriptions();
 
 		Map<Integer, Set<JourneyProposalJpaEntity>> proposalsMap = givenProposals(transporters, vehicules);
@@ -201,7 +213,10 @@ public class JourneyRequestRepositoryTests {
 				engineTypesListList.get(1).get(0), engineTypesListList.get(2).get(0));
 
 		InternationalCallingCodeJpaEntity icc = givenIcc("+216");
-		List<ClientJpaEntity> clients = givenClients(icc);
+		DocumentJpaEntity defaultManProfileImage = givenDefaultManProfileImage();
+
+		List<ClientJpaEntity> clients = givenClients(icc,
+				List.of(defaultManProfileImage, defaultManProfileImage, defaultManProfileImage));
 		List<ZonedDateTime> dates = givenLocalDateTimes();
 		List<ZonedDateTime> endDates = givenEndDates();
 		List<Integer> distances = givenDistances();
@@ -209,7 +224,8 @@ public class JourneyRequestRepositoryTests {
 		List<List<ModelJpaEntity>> models = givenModels(constructors);
 
 		List<List<VehiculeJpaEntity>> vehicules = givenVehicules(engineTypesListList, models);
-		List<TransporterJpaEntity> transporters = givenTransporters(vehicules);
+		List<TransporterJpaEntity> transporters = givenTransporters(vehicules,
+				List.of(defaultManProfileImage, defaultManProfileImage, defaultManProfileImage));
 		List<String> descriptions = givenDescriptions();
 
 		Map<Integer, Set<JourneyProposalJpaEntity>> proposalsMap = givenProposals(transporters, vehicules);
@@ -277,7 +293,10 @@ public class JourneyRequestRepositoryTests {
 				engineTypesListList.get(1).get(0), engineTypesListList.get(2).get(0));
 
 		InternationalCallingCodeJpaEntity icc = givenIcc("+216");
-		List<ClientJpaEntity> clients = givenClients(icc);
+
+		DocumentJpaEntity defaultManProfileImage = givenDefaultManProfileImage();
+		List<ClientJpaEntity> clients = givenClients(icc,
+				List.of(defaultManProfileImage, defaultManProfileImage, defaultManProfileImage));
 		List<ZonedDateTime> dates = givenLocalDateTimes();
 		List<ZonedDateTime> endDates = givenEndDates();
 		List<Integer> distances = givenDistances();
@@ -285,7 +304,8 @@ public class JourneyRequestRepositoryTests {
 		List<List<ModelJpaEntity>> models = givenModels(constructors);
 
 		List<List<VehiculeJpaEntity>> vehicules = givenVehicules(engineTypesListList, models);
-		List<TransporterJpaEntity> transporters = givenTransporters(vehicules);
+		List<TransporterJpaEntity> transporters = givenTransporters(vehicules,
+				List.of(defaultManProfileImage, defaultManProfileImage, defaultManProfileImage));
 		List<String> descriptions = givenDescriptions();
 
 		Map<Integer, Set<JourneyProposalJpaEntity>> proposalsMap = givenProposals(transporters, vehicules);
@@ -348,7 +368,9 @@ public class JourneyRequestRepositoryTests {
 				engineTypesListList.get(1).get(0), engineTypesListList.get(2).get(0));
 
 		InternationalCallingCodeJpaEntity icc = givenIcc("+216");
-		List<ClientJpaEntity> clients = givenClients(icc);
+		DocumentJpaEntity defaultManProfileImage = givenDefaultManProfileImage();
+		List<ClientJpaEntity> clients = givenClients(icc,
+				List.of(defaultManProfileImage, defaultManProfileImage, defaultManProfileImage));
 		List<ZonedDateTime> dates = givenLocalDateTimes();
 		List<ZonedDateTime> endDates = givenEndDates();
 		List<Integer> distances = givenDistances();
@@ -356,7 +378,8 @@ public class JourneyRequestRepositoryTests {
 		List<List<ModelJpaEntity>> models = givenModels(constructors);
 
 		List<List<VehiculeJpaEntity>> vehicules = givenVehicules(engineTypesListList, models);
-		List<TransporterJpaEntity> transporters = givenTransporters(vehicules);
+		List<TransporterJpaEntity> transporters = givenTransporters(vehicules,
+				List.of(defaultManProfileImage, defaultManProfileImage, defaultManProfileImage));
 		List<String> descriptions = givenDescriptions();
 
 		Map<Integer, Set<JourneyProposalJpaEntity>> proposalsMap = givenProposals(transporters, vehicules);
@@ -415,7 +438,12 @@ public class JourneyRequestRepositoryTests {
 				engineTypesListList.get(1).get(0), engineTypesListList.get(2).get(0));
 
 		InternationalCallingCodeJpaEntity icc = givenIcc("+216");
-		List<ClientJpaEntity> clients = givenClients(icc);
+
+		DocumentJpaEntity defaultManProfileImage = givenDefaultManProfileImage();
+
+		List<ClientJpaEntity> clients = givenClients(icc,
+				List.of(defaultManProfileImage, defaultManProfileImage, defaultManProfileImage));
+
 		List<ZonedDateTime> dates = givenLocalDateTimes();
 		List<ZonedDateTime> endDates = givenEndDates();
 		List<Integer> distances = givenDistances();
@@ -423,7 +451,8 @@ public class JourneyRequestRepositoryTests {
 		List<List<ModelJpaEntity>> models = givenModels(constructors);
 
 		List<List<VehiculeJpaEntity>> vehicules = givenVehicules(engineTypesListList, models);
-		List<TransporterJpaEntity> transporters = givenTransporters(vehicules);
+		List<TransporterJpaEntity> transporters = givenTransporters(vehicules,
+				List.of(defaultManProfileImage, defaultManProfileImage, defaultManProfileImage));
 		List<String> descriptions = givenDescriptions();
 
 		Map<Integer, Set<JourneyProposalJpaEntity>> proposalsMap = givenProposals(transporters, vehicules);
@@ -493,7 +522,9 @@ public class JourneyRequestRepositoryTests {
 				engineTypesListList.get(1).get(0), engineTypesListList.get(2).get(0));
 
 		InternationalCallingCodeJpaEntity icc = givenIcc("+216");
-		List<ClientJpaEntity> clients = givenClients(icc);
+		DocumentJpaEntity defaultManProfileImage = givenDefaultManProfileImage();
+		List<ClientJpaEntity> clients = givenClients(icc,
+				List.of(defaultManProfileImage, defaultManProfileImage, defaultManProfileImage));
 		List<ZonedDateTime> dates = givenLocalDateTimes();
 		List<ZonedDateTime> endDates = givenEndDates();
 
@@ -503,7 +534,8 @@ public class JourneyRequestRepositoryTests {
 		List<List<ModelJpaEntity>> models = givenModels(constructors);
 
 		List<List<VehiculeJpaEntity>> vehicules = givenVehicules(engineTypesListList, models);
-		List<TransporterJpaEntity> transporters = givenTransporters(vehicules);
+		List<TransporterJpaEntity> transporters = givenTransporters(vehicules,
+				List.of(defaultManProfileImage, defaultManProfileImage, defaultManProfileImage));
 		List<String> descriptions = givenDescriptions();
 
 		Map<Integer, Set<JourneyProposalJpaEntity>> proposalsMap = givenProposals(transporters, vehicules);
@@ -571,7 +603,10 @@ public class JourneyRequestRepositoryTests {
 				engineTypesListList.get(1).get(0), engineTypesListList.get(2).get(0));
 
 		InternationalCallingCodeJpaEntity icc = givenIcc("+216");
-		List<ClientJpaEntity> clients = givenClients(icc);
+		DocumentJpaEntity defaultManProfileImage = givenDefaultManProfileImage();
+
+		List<ClientJpaEntity> clients = givenClients(icc,
+				List.of(defaultManProfileImage, defaultManProfileImage, defaultManProfileImage));
 		List<ZonedDateTime> dates = givenLocalDateTimes();
 		List<ZonedDateTime> endDates = givenEndDates();
 
@@ -579,7 +614,8 @@ public class JourneyRequestRepositoryTests {
 		List<List<ModelJpaEntity>> models = givenModels(constructors);
 
 		List<List<VehiculeJpaEntity>> vehicules = givenVehicules(engineTypesListList, models);
-		List<TransporterJpaEntity> transporters = givenTransporters(vehicules);
+		List<TransporterJpaEntity> transporters = givenTransporters(vehicules,
+				List.of(defaultManProfileImage, defaultManProfileImage, defaultManProfileImage));
 		List<String> descriptions = givenDescriptions();
 
 		Map<Integer, Set<JourneyProposalJpaEntity>> proposalsMap = givenProposals(transporters, vehicules);
@@ -635,6 +671,11 @@ public class JourneyRequestRepositoryTests {
 
 	}
 
+	private DocumentJpaEntity givenDefaultManProfileImage() {
+		return documentRepository.save(DocumentJpaTestData.defaultManProfileImageDocumentJpaEntity());
+
+	}
+
 	@Test
 	public void testFindByDeparturePlace_DepartmentIdAndEngineType_IdInAndDateBetween_OrderByDistanceDesc() {
 
@@ -649,7 +690,11 @@ public class JourneyRequestRepositoryTests {
 				engineTypesListList.get(1).get(0), engineTypesListList.get(2).get(0));
 
 		InternationalCallingCodeJpaEntity icc = givenIcc("+216");
-		List<ClientJpaEntity> clients = givenClients(icc);
+
+		DocumentJpaEntity defaultManProfileImage = givenDefaultManProfileImage();
+
+		List<ClientJpaEntity> clients = givenClients(icc,
+				List.of(defaultManProfileImage, defaultManProfileImage, defaultManProfileImage));
 		List<ZonedDateTime> dates = givenLocalDateTimes();
 		List<ZonedDateTime> endDates = givenEndDates();
 
@@ -657,7 +702,8 @@ public class JourneyRequestRepositoryTests {
 		List<List<ModelJpaEntity>> models = givenModels(constructors);
 
 		List<List<VehiculeJpaEntity>> vehicules = givenVehicules(engineTypesListList, models);
-		List<TransporterJpaEntity> transporters = givenTransporters(vehicules);
+		List<TransporterJpaEntity> transporters = givenTransporters(vehicules,
+				List.of(defaultManProfileImage, defaultManProfileImage, defaultManProfileImage));
 		List<String> descriptions = givenDescriptions();
 
 		Map<Integer, Set<JourneyProposalJpaEntity>> proposalsMap = givenProposals(transporters, vehicules);
@@ -724,7 +770,10 @@ public class JourneyRequestRepositoryTests {
 				engineTypesListList.get(1).get(0), engineTypesListList.get(2).get(0));
 
 		InternationalCallingCodeJpaEntity icc = givenIcc("+216");
-		List<ClientJpaEntity> clients = givenClients(icc);
+		DocumentJpaEntity defaultManProfileImage = givenDefaultManProfileImage();
+
+		List<ClientJpaEntity> clients = givenClients(icc,
+				List.of(defaultManProfileImage, defaultManProfileImage, defaultManProfileImage));
 		List<ZonedDateTime> dates = givenLocalDateTimes();
 		List<ZonedDateTime> endDates = givenEndDates();
 
@@ -732,7 +781,8 @@ public class JourneyRequestRepositoryTests {
 		List<List<ModelJpaEntity>> models = givenModels(constructors);
 
 		List<List<VehiculeJpaEntity>> vehicules = givenVehicules(engineTypesListList, models);
-		List<TransporterJpaEntity> transporters = givenTransporters(vehicules);
+		List<TransporterJpaEntity> transporters = givenTransporters(vehicules,
+				List.of(defaultManProfileImage, defaultManProfileImage, defaultManProfileImage));
 		List<String> descriptions = givenDescriptions();
 
 		Map<Integer, Set<JourneyProposalJpaEntity>> proposalsMap = givenProposals(transporters, vehicules);
@@ -779,7 +829,11 @@ public class JourneyRequestRepositoryTests {
 				engineTypesListList.get(1).get(0), engineTypesListList.get(2).get(0));
 
 		InternationalCallingCodeJpaEntity icc = givenIcc("+216");
-		List<ClientJpaEntity> clients = givenClients(icc);
+
+		DocumentJpaEntity defaultManProfileImage = givenDefaultManProfileImage();
+
+		List<ClientJpaEntity> clients = givenClients(icc,
+				List.of(defaultManProfileImage, defaultManProfileImage, defaultManProfileImage));
 		List<ZonedDateTime> dates = givenLocalDateTimes();
 		List<ZonedDateTime> endDates = givenEndDates();
 		List<Integer> distances = givenDistances();
@@ -788,7 +842,8 @@ public class JourneyRequestRepositoryTests {
 		List<List<ModelJpaEntity>> models = givenModels(constructors);
 
 		List<List<VehiculeJpaEntity>> vehicules = givenVehicules(engineTypesListList, models);
-		List<TransporterJpaEntity> transporters = givenTransporters(vehicules);
+		List<TransporterJpaEntity> transporters = givenTransporters(vehicules,
+				List.of(defaultManProfileImage, defaultManProfileImage, defaultManProfileImage));
 		List<String> descriptions = givenDescriptions();
 
 		Map<Integer, Set<JourneyProposalJpaEntity>> proposalsMap = givenProposals(transporters, vehicules);
@@ -1246,30 +1301,32 @@ public class JourneyRequestRepositoryTests {
 		return List.of(vehicules1, vehicules2, vehicules3);
 	}
 
-	private List<ClientJpaEntity> givenClients(InternationalCallingCodeJpaEntity icc) {
+	private List<ClientJpaEntity> givenClients(InternationalCallingCodeJpaEntity icc,
+			List<DocumentJpaEntity> profileImages) {
 		List<ClientJpaEntity> clients = List.of(
 				new ClientJpaEntity(null, null, null, "Client1", null, null, "client1@gmail.com", null, null, icc,
-						"22111111", null, null, null, null, "https://path/to/client1/photo",null),
+						"22111111", null, null, null, null, profileImages.get(0), null),
 				new ClientJpaEntity(null, null, null, "Client2", null, null, "client2@gmail.com", null, null, icc,
-						"22222222", null, null, null, null, "https://path/to/client2/photo",null),
+						"22222222", null, null, null, null, profileImages.get(1), null),
 				new ClientJpaEntity(null, null, null, "Client3", null, null, "client3@gmail.com", null, null, icc,
-						"22333333", null, null, null, null, "https://path/to/client3/photo",null));
+						"22333333", null, null, null, null, profileImages.get(2), null));
 
 		return clientRepository.saveAll(clients);
 	}
 
-	private List<TransporterJpaEntity> givenTransporters(List<List<VehiculeJpaEntity>> vehicules) {
+	private List<TransporterJpaEntity> givenTransporters(List<List<VehiculeJpaEntity>> vehicules,
+			List<DocumentJpaEntity> profileImages) {
 
 		TransporterJpaEntity t1 = new TransporterJpaEntity(null, null, null, "Transporter1", null, null, null, null,
-				null, null, null, null, null, null, null, "https://path/to/transporter1/photo",null);
+				null, null, null, null, null, null, null, profileImages.get(0), null);
 		vehicules.get(0).forEach(v -> t1.addVehicule(v));
 
 		TransporterJpaEntity t2 = new TransporterJpaEntity(null, null, null, "Transporter2", null, null, null, null,
-				null, null, null, null, null, null, null, "https://path/to/transporter2/photo",null);
+				null, null, null, null, null, null, null, profileImages.get(1), null);
 		vehicules.get(1).forEach(v -> t2.addVehicule(v));
 
 		TransporterJpaEntity t3 = new TransporterJpaEntity(null, null, null, "Transporter3", null, null, null, null,
-				null, null, null, null, null, null, null, "https://path/to/transporter3/photo",null);
+				null, null, null, null, null, null, null, profileImages.get(2), null);
 		vehicules.get(2).forEach(v -> t1.addVehicule(v));
 
 		List<TransporterJpaEntity> transporters = List.of(t1, t2, t3);

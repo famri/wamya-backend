@@ -56,7 +56,7 @@ public class SendValidationCodeService implements SendValidationCodeUseCase {
 
 			String validationCode = codeGenerator.generateNumericCode();
 
-			updateSMSValidationCode(userAccount, validationCode);
+			updateUserAccountPort.updateSMSValidationCode(userAccount.getId(), validationCode);
 
 			messagingPort.sendSMSMessage(SMSMessage.builder().template(SMSTemplate.PHONE_VALIDATION)
 					.to(mobilePhoneNumber.toCallable()).language(locale.getLanguage())
@@ -77,7 +77,7 @@ public class SendValidationCodeService implements SendValidationCodeUseCase {
 
 			String validationCode = codeGenerator.generateNumericCode();
 
-			updateEmailValidationCode(userAccount, validationCode);
+			updateUserAccountPort.updateEmailValidationCode(userAccount.getId(), validationCode);
 
 			messagingPort.sendEmailMessage(EmailMessage.builder().from(EmailSender.WAMYA_TEAM).to(command.getEmail())
 					.subject(messageSource.getMessage(EmailSubject.EMAIL_VALIDATION, null, locale))
@@ -113,18 +113,6 @@ public class SendValidationCodeService implements SendValidationCodeUseCase {
 		return userAccountOptional.get();
 	}
 
-	protected void updateSMSValidationCode(UserAccount userAccount, String validationCode) {
 
-		userAccount.setMobileNumberValidationCode(validationCode);
-		userAccount.setIsValidatedMobileNumber(false);
-		updateUserAccountPort.updateUserAccount(userAccount);
-	}
-
-	protected void updateEmailValidationCode(UserAccount userAccount, String validationCode) {
-
-		userAccount.setEmailValidationCode(validationCode);
-		userAccount.setIsValidatedEmail(false);
-		updateUserAccountPort.updateUserAccount(userAccount);
-	}
 
 }

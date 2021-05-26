@@ -157,7 +157,9 @@ services:
       - POSTGRES_PASSWORD=wamya
       - RABBITMQ_USER=dev
       - RABBITMQ_PASS=dev
-      - REDIS_PASSWORD=changeme      
+      - REDIS_PASSWORD=changeme
+    volumes:
+      - file-storage:/file-storage       
     entrypoint: ["java", "-Djava.security.egd=file:/dev/./urandom", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:9090", "-Xms256m","-Xmx768m", "-jar", "/wamya-backend.jar"]
     depends_on:
       - "database"
@@ -283,4 +285,10 @@ volumes:
       o: 'bind'
       device: '/postgres/auth-database-data'
   
+  file-storage:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: '/file-storage'
 #  redis-data: {}

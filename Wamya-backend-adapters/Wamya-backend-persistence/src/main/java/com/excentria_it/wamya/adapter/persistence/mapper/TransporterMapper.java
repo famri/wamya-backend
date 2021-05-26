@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
+import com.excentria_it.wamya.adapter.persistence.entity.DocumentJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.GenderJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.InternationalCallingCodeJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.TransporterJpaEntity;
@@ -16,7 +17,7 @@ import com.excentria_it.wamya.domain.UserAccount;
 public class TransporterMapper {
 
 	public TransporterJpaEntity mapToJpaEntity(UserAccount userAccount, InternationalCallingCodeJpaEntity icc,
-			GenderJpaEntity gender) {
+			GenderJpaEntity gender, DocumentJpaEntity profileImage) {
 		if (userAccount == null || !userAccount.getIsTransporter())
 			return null;
 
@@ -32,7 +33,7 @@ public class TransporterMapper {
 				userAccount.getEmail(), userAccount.getEmailValidationCode(), userAccount.getIsValidatedEmail(), icc,
 				userAccount.getMobilePhoneNumber().getMobileNumber(), userAccount.getMobileNumberValidationCode(),
 				userAccount.getIsValidatedMobileNumber(), userAccount.getReceiveNewsletter(),
-				userAccount.getCreationDateTime().toInstant(), userAccount.getPhotoUrl(), preferences);
+				userAccount.getCreationDateTime().toInstant(), profileImage, preferences);
 
 	}
 }

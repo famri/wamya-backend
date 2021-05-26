@@ -8,12 +8,14 @@ import java.util.Map;
 import org.springframework.stereotype.Component;
 
 import com.excentria_it.wamya.adapter.persistence.entity.ClientJpaEntity;
+import com.excentria_it.wamya.adapter.persistence.entity.DocumentJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.GenderJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.InternationalCallingCodeJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.TransporterJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.UserAccountJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.UserPreferenceId;
 import com.excentria_it.wamya.adapter.persistence.entity.UserPreferenceJpaEntity;
+import com.excentria_it.wamya.application.utils.DocumentUrlResolver;
 import com.excentria_it.wamya.domain.UserAccount;
 import com.excentria_it.wamya.domain.UserAccount.MobilePhoneNumber;
 
@@ -21,7 +23,7 @@ import com.excentria_it.wamya.domain.UserAccount.MobilePhoneNumber;
 public class UserAccountMapper {
 
 	public UserAccountJpaEntity mapToJpaEntity(UserAccount userAccount, InternationalCallingCodeJpaEntity icc,
-			GenderJpaEntity gender) {
+			GenderJpaEntity gender, DocumentJpaEntity profileImage) {
 		if (userAccount == null)
 			return null;
 
@@ -40,7 +42,7 @@ public class UserAccountMapper {
 					userAccount.getReceiveNewsletter(),
 					userAccount.getCreationDateTime() != null ? userAccount.getCreationDateTime().toInstant()
 							: Instant.now(),
-					userAccount.getPhotoUrl(), preferences);
+					profileImage, preferences);
 
 		} else {
 			return new ClientJpaEntity(userAccount.getId(), userAccount.getOauthId(), gender,
@@ -51,7 +53,7 @@ public class UserAccountMapper {
 					userAccount.getReceiveNewsletter(),
 					userAccount.getCreationDateTime() != null ? userAccount.getCreationDateTime().toInstant()
 							: Instant.now(),
-					userAccount.getPhotoUrl(), preferences);
+					profileImage, preferences);
 		}
 
 	}
@@ -77,6 +79,8 @@ public class UserAccountMapper {
 				.isValidatedMobileNumber(userAccountJpaEntity.getIsValidatedMobileNumber())
 				.receiveNewsletter(userAccountJpaEntity.getReceiveNewsletter())
 				.creationDateTime(userAccountJpaEntity.getCreationDateTime().atZone(ZoneOffset.UTC))
-				.photoUrl(userAccountJpaEntity.getPhotoUrl()).preferences(preferences).build();
+				.photoUrl(DocumentUrlResolver.resolveUrl(userAccountJpaEntity.getProfileImage().getId(),
+						userAccountJpaEntity.getProfileImage().getHash()))
+				.preferences(preferences).build();
 	}
 }

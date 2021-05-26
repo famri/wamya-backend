@@ -1,0 +1,4 @@
+app:
+  file-strorage:
+    local:
+      root-folder: /

@@ -43,6 +43,7 @@ import com.excentria_it.wamya.common.exception.AuthorizationException;
 import com.excentria_it.wamya.common.exception.CountryNotFoundException;
 import com.excentria_it.wamya.common.exception.DepartmentNotFoundException;
 import com.excentria_it.wamya.common.exception.DiscussionNotFoundException;
+import com.excentria_it.wamya.common.exception.DocumentAccessException;
 import com.excentria_it.wamya.common.exception.GenderNotFoundException;
 import com.excentria_it.wamya.common.exception.InvalidPlaceTypeException;
 import com.excentria_it.wamya.common.exception.InvalidTransporterVehiculeException;
@@ -53,6 +54,7 @@ import com.excentria_it.wamya.common.exception.MyBindException;
 import com.excentria_it.wamya.common.exception.OperationDeniedException;
 import com.excentria_it.wamya.common.exception.SomeObject;
 import com.excentria_it.wamya.common.exception.UnsupportedInternationalCallingCodeException;
+import com.excentria_it.wamya.common.exception.UnsupportedMimeTypeException;
 import com.excentria_it.wamya.common.exception.UserAccountAlreadyExistsException;
 import com.excentria_it.wamya.common.exception.UserAccountNotFoundException;
 import com.excentria_it.wamya.common.exception.UserEmailValidationException;
@@ -607,8 +609,54 @@ public class RestApiExceptionHandlerTest {
 		then(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
 	}
 
+	@Test
+	void whenHandleDocumentAccessException_thenStatusIsInternalServerError() {
+		// given
+		DocumentAccessException exception = givenDocumentAccessException();
+
+		// When
+		ResponseEntity<ApiError> responseEntity = restApiExceptionHandler.handleDocumentAccessException(exception);
+
+		// Then
+		then(responseEntity.getBody() instanceof ApiError);
+		then(((ApiError) responseEntity.getBody()).getStatus()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+		then(((ApiError) responseEntity.getBody()).getErrorCode()).isEqualTo(ErrorCode.INTERNAL_SERVER_ERROR);
+		then(((ApiError) responseEntity.getBody()).getErrors()).containsExactly(SOME_MESSAGE);
+		then(responseEntity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+
+	@Test
+	void whenHandleUnsupportedMimeTypeException_thenStatusIsUnsupportedMediaType() {
+		// given
+		UnsupportedMimeTypeException exception = givenUnsupportedMimeTypeException();
+
+		// When
+		ResponseEntity<ApiError> responseEntity = restApiExceptionHandler.handleUnsupportedMimeTypeException(exception);
+
+		// Then
+		then(responseEntity.getBody() instanceof ApiError);
+		then(((ApiError) responseEntity.getBody()).getStatus()).isEqualTo(HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+		then(((ApiError) responseEntity.getBody()).getErrorCode()).isEqualTo(ErrorCode.UNSUPPORTED_MEDIA_TYPE);
+		then(((ApiError) responseEntity.getBody()).getErrors()).containsExactly(SOME_MESSAGE);
+		then(responseEntity.getStatusCode()).isEqualTo(HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+	}
+
 	private JourneyProposalNotFoundException givenJourneyProposalNotFoundException() {
 		JourneyProposalNotFoundException exception = Mockito.mock(JourneyProposalNotFoundException.class);
+		given(exception.getMessage()).willReturn(SOME_MESSAGE);
+
+		return exception;
+	}
+
+	private UnsupportedMimeTypeException givenUnsupportedMimeTypeException() {
+		UnsupportedMimeTypeException exception = Mockito.mock(UnsupportedMimeTypeException.class);
+		given(exception.getMessage()).willReturn(SOME_MESSAGE);
+
+		return exception;
+	}
+
+	private DocumentAccessException givenDocumentAccessException() {
+		DocumentAccessException exception = Mockito.mock(DocumentAccessException.class);
 		given(exception.getMessage()).willReturn(SOME_MESSAGE);
 
 		return exception;

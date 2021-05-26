@@ -16,6 +16,7 @@ import org.springframework.security.crypto.password.StandardPasswordEncoder;
 import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
 
 import com.excentria_it.wamya.adapter.b2b.rest.B2bRestConfiguration;
+import com.excentria_it.wamya.adapter.file.storage.FileStorageConfiguration;
 import com.excentria_it.wamya.adapter.messaging.MessagingConfiguration;
 import com.excentria_it.wamya.adapter.messaging.WebSocketConfiguration;
 import com.excentria_it.wamya.adapter.messaging.WebSocketSecurityConfiguration;
@@ -27,8 +28,8 @@ import com.excentria_it.wamya.application.props.ServerUrlProperties;
 
 @Configuration
 @Import(value = { B2bRestConfiguration.class, MessagingConfiguration.class, WebSocketConfiguration.class,
-		WebSocketSecurityConfiguration.class, PersistenceConfiguration.class, WebConfiguration.class,
-		WebSecurityConfiguration.class })
+		FileStorageConfiguration.class, PersistenceConfiguration.class, WebConfiguration.class,
+		WebSecurityConfiguration.class, WebSocketSecurityConfiguration.class })
 @EnableConfigurationProperties(value = { CodeGeneratorProperties.class, ServerUrlProperties.class })
 public class WamyaConfiguration {
 

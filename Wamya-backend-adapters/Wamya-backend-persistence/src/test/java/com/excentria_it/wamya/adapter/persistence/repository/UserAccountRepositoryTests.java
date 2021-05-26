@@ -13,9 +13,11 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import com.excentria_it.wamya.adapter.persistence.entity.DocumentJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.GenderJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.InternationalCallingCodeJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.UserAccountJpaEntity;
+import com.excentria_it.wamya.test.data.common.DocumentJpaTestData;
 import com.excentria_it.wamya.test.data.common.GenderJpaTestData;
 import com.excentria_it.wamya.test.data.common.InternationalCallingCodeJpaEntityTestData;
 import com.excentria_it.wamya.test.data.common.TestConstants;
@@ -33,11 +35,16 @@ public class UserAccountRepositoryTests {
 	@Autowired
 	private GenderRepository genderRepository;
 
+	@Autowired
+	private DocumentRepository documentRepository;
+
 	@BeforeEach
 	public void cleanDatabase() {
+		
 		userAccountRepository.deleteAll();
 		iccRepository.deleteAll();
 		genderRepository.deleteAll();
+		documentRepository.deleteAll();
 	}
 
 	@Test
@@ -108,13 +115,17 @@ public class UserAccountRepositoryTests {
 
 		iccEntity = iccRepository.save(iccEntity);
 
-		GenderJpaEntity genderEntity = GenderJpaTestData.defaultGenderJpaEntity();
+		GenderJpaEntity genderEntity = GenderJpaTestData.manGenderJpaEntity();
 		genderEntity = genderRepository.save(genderEntity);
-		
+
+		DocumentJpaEntity defaultManProfileImage = DocumentJpaTestData.defaultManProfileImageDocumentJpaEntity();
+		defaultManProfileImage = documentRepository.save(defaultManProfileImage);
+
 		UserAccountJpaEntity userAccountEntity = defaultNewTransporterJpaEntity();
 		userAccountEntity.setIcc(iccEntity);
 		userAccountEntity.setGender(genderEntity);
-		
+		userAccountEntity.setProfileImage(defaultManProfileImage);
+
 		userAccountRepository.save(userAccountEntity);
 
 	}

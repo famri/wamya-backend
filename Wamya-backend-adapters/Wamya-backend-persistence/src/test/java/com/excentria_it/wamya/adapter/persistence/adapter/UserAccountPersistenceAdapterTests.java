@@ -8,13 +8,16 @@ import static org.mockito.Mockito.*;
 
 import java.util.Optional;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.excentria_it.wamya.adapter.persistence.entity.ClientJpaEntity;
+import com.excentria_it.wamya.adapter.persistence.entity.DocumentJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.GenderJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.InternationalCallingCodeJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.TransporterJpaEntity;
@@ -23,15 +26,19 @@ import com.excentria_it.wamya.adapter.persistence.mapper.ClientMapper;
 import com.excentria_it.wamya.adapter.persistence.mapper.TransporterMapper;
 import com.excentria_it.wamya.adapter.persistence.mapper.UserAccountMapper;
 import com.excentria_it.wamya.adapter.persistence.repository.ClientRepository;
+import com.excentria_it.wamya.adapter.persistence.repository.DocumentRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.GenderRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.InternationalCallingCodeRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.TransporterRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.UserAccountRepository;
+import com.excentria_it.wamya.adapter.persistence.utils.DefaultIds;
 import com.excentria_it.wamya.common.exception.GenderNotFoundException;
 import com.excentria_it.wamya.common.exception.UnsupportedInternationalCallingCodeException;
 import com.excentria_it.wamya.common.exception.UserAccountNotFoundException;
+import com.excentria_it.wamya.domain.DocumentType;
 import com.excentria_it.wamya.domain.UserAccount;
 import com.excentria_it.wamya.domain.UserAccount.UserAccountBuilder;
+import com.excentria_it.wamya.test.data.common.DocumentJpaTestData;
 import com.excentria_it.wamya.test.data.common.GenderJpaTestData;
 import com.excentria_it.wamya.test.data.common.InternationalCallingCodeJpaEntityTestData;
 import com.excentria_it.wamya.test.data.common.TestConstants;
@@ -57,6 +64,8 @@ public class UserAccountPersistenceAdapterTests {
 	private TransporterMapper transporterMapper;
 	@Mock
 	private ClientMapper clientMapper;
+	@Mock
+	private DocumentRepository documentRepository;
 
 	@InjectMocks
 	private UserAccountPersistenceAdapter userAccountPersistenceAdapter;
@@ -92,7 +101,7 @@ public class UserAccountPersistenceAdapterTests {
 	}
 
 	@Test
-	void givenFoundIcc_WhenCreateTransporterUserAccount_ThenSaveTransporterJpaEntity() {
+	void givenFoundIccAndManGender_WhenCreateTransporterUserAccount_ThenSaveTransporterJpaEntity() {
 
 		UserAccountBuilder userAccountBuilder = UserAccountTestData.defaultUserAccountBuilder();
 		UserAccount userAccount = userAccountBuilder.isTransporter(true).build();
@@ -104,15 +113,51 @@ public class UserAccountPersistenceAdapterTests {
 
 		TransporterJpaEntity transporterJpaEntity = UserAccountJpaEntityTestData.defaultNewTransporterJpaEntity();
 
-		GenderJpaEntity genderEntity = GenderJpaTestData.defaultGenderJpaEntity();
+		GenderJpaEntity genderEntity = GenderJpaTestData.manGenderJpaEntity();
 		Optional<GenderJpaEntity> genderEntityOptional = Optional.of(genderEntity);
 
 		given(genderRepository.findById(any(Long.class))).willReturn(genderEntityOptional);
 
 		given(transporterMapper.mapToJpaEntity(any(UserAccount.class), any(InternationalCallingCodeJpaEntity.class),
-				any(GenderJpaEntity.class))).willReturn(transporterJpaEntity);
+				any(GenderJpaEntity.class), any(DocumentJpaEntity.class))).willReturn(transporterJpaEntity);
 
 		given(transporterRepository.save(transporterJpaEntity)).willReturn(transporterJpaEntity);
+
+		DocumentJpaEntity defaultManAvatarDocument = DocumentJpaTestData.defaultManProfileImageDocumentJpaEntity();
+		given(documentRepository.findById(DefaultIds.DEFAULT_MAN_AVATAR_DOCUMENT_ID))
+				.willReturn(Optional.of(defaultManAvatarDocument));
+
+		userAccountPersistenceAdapter.createUserAccount(userAccount);
+
+		then(transporterRepository).should(times(1)).save(transporterJpaEntity);
+	}
+
+	@Test
+	void givenFoundIccAndWomanGender_WhenCreateTransporterUserAccount_ThenSaveTransporterJpaEntity() {
+
+		UserAccountBuilder userAccountBuilder = UserAccountTestData.defaultUserAccountBuilder();
+		UserAccount userAccount = userAccountBuilder.isTransporter(true).build();
+
+		Optional<InternationalCallingCodeJpaEntity> iccEntity = Optional
+				.of(InternationalCallingCodeJpaEntityTestData.defaultExistentInternationalCallingCodeJpaEntity());
+		given(iccRepository.findByValue(userAccount.getMobilePhoneNumber().getInternationalCallingCode()))
+				.willReturn(iccEntity);
+
+		TransporterJpaEntity transporterJpaEntity = UserAccountJpaEntityTestData.defaultNewTransporterJpaEntity();
+
+		GenderJpaEntity genderEntity = GenderJpaTestData.womanGenderJpaEntity();
+		Optional<GenderJpaEntity> genderEntityOptional = Optional.of(genderEntity);
+
+		given(genderRepository.findById(any(Long.class))).willReturn(genderEntityOptional);
+
+		given(transporterMapper.mapToJpaEntity(any(UserAccount.class), any(InternationalCallingCodeJpaEntity.class),
+				any(GenderJpaEntity.class), any(DocumentJpaEntity.class))).willReturn(transporterJpaEntity);
+
+		given(transporterRepository.save(transporterJpaEntity)).willReturn(transporterJpaEntity);
+
+		DocumentJpaEntity defaultWomanAvatarDocument = DocumentJpaTestData.defaultWomanProfileImageDocumentJpaEntity();
+		given(documentRepository.findById(DefaultIds.DEFAULT_WOMAN_AVATAR_DOCUMENT_ID))
+				.willReturn(Optional.of(defaultWomanAvatarDocument));
 
 		userAccountPersistenceAdapter.createUserAccount(userAccount);
 
@@ -130,7 +175,7 @@ public class UserAccountPersistenceAdapterTests {
 		given(iccRepository.findByValue(userAccount.getMobilePhoneNumber().getInternationalCallingCode()))
 				.willReturn(iccEntity);
 
-		GenderJpaEntity genderEntity = GenderJpaTestData.defaultGenderJpaEntity();
+		GenderJpaEntity genderEntity = GenderJpaTestData.manGenderJpaEntity();
 		Optional<GenderJpaEntity> genderEntityOptional = Optional.of(genderEntity);
 
 		given(genderRepository.findById(any(Long.class))).willReturn(genderEntityOptional);
@@ -138,8 +183,12 @@ public class UserAccountPersistenceAdapterTests {
 		ClientJpaEntity clientJpaEntity = UserAccountJpaEntityTestData.defaultNewClientJpaEntity();
 
 		given(clientMapper.mapToJpaEntity(any(UserAccount.class), any(InternationalCallingCodeJpaEntity.class),
-				any(GenderJpaEntity.class))).willReturn(clientJpaEntity);
+				any(GenderJpaEntity.class), any(DocumentJpaEntity.class))).willReturn(clientJpaEntity);
 		given(clientRepository.save(clientJpaEntity)).willReturn(clientJpaEntity);
+
+		DocumentJpaEntity defaultManAvatarDocument = DocumentJpaTestData.defaultManProfileImageDocumentJpaEntity();
+		given(documentRepository.findById(DefaultIds.DEFAULT_MAN_AVATAR_DOCUMENT_ID))
+				.willReturn(Optional.of(defaultManAvatarDocument));
 
 		userAccountPersistenceAdapter.createUserAccount(userAccount);
 
@@ -172,12 +221,12 @@ public class UserAccountPersistenceAdapterTests {
 	}
 
 	@Test
-	void givenInexistentUserAccountByIccAndMobileNumber_WhenLoadUserAccountByIccAndMobileNumber_ThenReturnOptionalOfNull() {
+	void givenInexistentUserAccountByIccAndMobileNumber_WhenLoadUserAccountByIccAndMobileNumber_ThenReturnOptionalEmpty() {
 
 		// given
 
 		given(userAccountRepository.findByMobilePhoneNumber(TestConstants.DEFAULT_INTERNATIONAL_CALLING_CODE,
-				TestConstants.DEFAULT_MOBILE_NUMBER)).willReturn(Optional.ofNullable(null));
+				TestConstants.DEFAULT_MOBILE_NUMBER)).willReturn(Optional.empty());
 
 		// when
 		Optional<UserAccount> result = userAccountPersistenceAdapter
@@ -185,101 +234,6 @@ public class UserAccountPersistenceAdapterTests {
 		// then
 		assertThat(result.isEmpty()).isTrue();
 
-	}
-
-	// Test updateUserAccount
-	@Test
-	void givenNullUserAccountId_WhenUpdateUserAccount_ThenThrowUnsupportedOperationException() {
-		assertThrows(UnsupportedOperationException.class, () -> userAccountPersistenceAdapter
-				.updateUserAccount(UserAccountTestData.defaultUserAccountBuilder().id(null).build()));
-
-	}
-
-	@Test
-	void givenInexistentUserAccountById_WhenUpdateUserAccount_ThenThrowUserAccountNotFoundException() {
-		// given
-		UserAccount userAccount = UserAccountTestData.defaultUserAccountBuilder().build();
-		given(userAccountRepository.findById(userAccount.getId())).willReturn(Optional.ofNullable(null));
-
-		// when, then
-		assertThrows(UserAccountNotFoundException.class,
-				() -> userAccountPersistenceAdapter.updateUserAccount(userAccount));
-
-	}
-
-	@Test
-	void givenExistentUserAccountByIdWithNonExistentIcc_WhenUpdateUserAccount_ThenThrowUnsupportedInternationalCallingCode() {
-		// given
-		UserAccount userAccount = UserAccountTestData.defaultUserAccountBuilder().build();
-
-		Optional<UserAccountJpaEntity> userAccountJpaEntity = Optional
-				.ofNullable(UserAccountJpaEntityTestData.defaultExistentClientJpaEntity());
-
-		given(userAccountRepository.findById(userAccount.getId())).willReturn(userAccountJpaEntity);
-
-		given(iccRepository.findByValue(userAccount.getMobilePhoneNumber().getInternationalCallingCode()))
-				.willReturn(Optional.empty());
-
-		// when, then
-		assertThrows(UnsupportedInternationalCallingCodeException.class,
-				() -> userAccountPersistenceAdapter.updateUserAccount(userAccount));
-
-	}
-
-	@Test
-	void givenExistentUserAccountByIdWithNonExistentGender_WhenUpdateUserAccount_ThenThrowGenderNotFoundException() {
-		// given
-		UserAccount userAccount = UserAccountTestData.defaultUserAccountBuilder().build();
-
-		Optional<UserAccountJpaEntity> userAccountJpaEntity = Optional
-				.ofNullable(UserAccountJpaEntityTestData.defaultExistentClientJpaEntity());
-
-		given(userAccountRepository.findById(userAccount.getId())).willReturn(userAccountJpaEntity);
-
-		InternationalCallingCodeJpaEntity iccEntity = InternationalCallingCodeJpaEntityTestData
-				.defaultExistentInternationalCallingCodeJpaEntity();
-		Optional<InternationalCallingCodeJpaEntity> iccEntityOptional = Optional.of(iccEntity);
-
-		given(iccRepository.findByValue(userAccount.getMobilePhoneNumber().getInternationalCallingCode()))
-				.willReturn(iccEntityOptional);
-		given(genderRepository.findById(any(Long.class))).willReturn(Optional.empty());
-
-		// when, then
-		assertThrows(GenderNotFoundException.class,
-				() -> userAccountPersistenceAdapter.updateUserAccount(userAccount));
-
-	}
-
-	@Test
-	void givenExistentUserAccountByIdWithExistentIcc_WhenUpdateUserAccount_ThenShouldSaveUserAccountJpaEntity() {
-		// given
-		UserAccount userAccount = UserAccountTestData.defaultUserAccountBuilder().build();
-
-		Optional<UserAccountJpaEntity> userAccountJpaEntityOptional = Optional
-				.ofNullable(UserAccountJpaEntityTestData.defaultExistentClientJpaEntity());
-
-		given(userAccountRepository.findById(userAccount.getId())).willReturn(userAccountJpaEntityOptional);
-
-		InternationalCallingCodeJpaEntity iccEntity = InternationalCallingCodeJpaEntityTestData
-				.defaultExistentInternationalCallingCodeJpaEntity();
-		Optional<InternationalCallingCodeJpaEntity> iccEntityOptional = Optional.ofNullable(iccEntity);
-
-		given(iccRepository.findByValue(userAccount.getMobilePhoneNumber().getInternationalCallingCode()))
-				.willReturn(iccEntityOptional);
-
-		GenderJpaEntity genderEntity = GenderJpaTestData.defaultGenderJpaEntity();
-		Optional<GenderJpaEntity> genderEntityOptional = Optional.of(genderEntity);
-
-		given(genderRepository.findById(any(Long.class))).willReturn(genderEntityOptional);
-
-		given(userAccountMapper.mapToJpaEntity(any(UserAccount.class), any(InternationalCallingCodeJpaEntity.class),
-				any(GenderJpaEntity.class))).willReturn(userAccountJpaEntityOptional.get());
-
-		// when
-		userAccountPersistenceAdapter.updateUserAccount(userAccount);
-
-		// then
-		then(userAccountRepository).should(times(1)).save(userAccountJpaEntityOptional.get());
 	}
 
 	// Test loadUserAccountByEmail
@@ -305,28 +259,35 @@ public class UserAccountPersistenceAdapterTests {
 	}
 
 	@Test
-	void givenNullEmail_WhenLoadUserAccountByIccAndMobileNumber_ThenReturnOptionalOfNull() {
+	void givenNullUsername_WhenLoadUserAccountByIccAndMobileNumber_ThenReturnOptionalEmpty() {
 		Optional<UserAccount> result = userAccountPersistenceAdapter.loadUserAccountByUsername(null);
 		assertThat(result.isEmpty()).isTrue();
 	}
 
 	@Test
-	void givenInexistentUserAccountByEmail_WhenLoadUserAccountByIccAndMobileNumber_ThenReturnOptionalOfNull() {
+	void givenBadUsername_WhenLoadUserAccountByIccAndMobileNumber_ThenReturnOptionalEmpty() {
+		Optional<UserAccount> result = userAccountPersistenceAdapter.loadUserAccountByUsername("ThisIsABadUserName");
+		assertThat(result.isEmpty()).isTrue();
+	}
+
+	@Test
+	void givenInexistentUserAccountByEmail_WhenLoadUserAccountByIccAndMobileNumber_ThenReturnOptionalEmpty() {
 
 		// given
 
-		given(userAccountRepository.findByEmail(TestConstants.DEFAULT_EMAIL)).willReturn(Optional.ofNullable(null));
+		given(userAccountRepository.findByEmail(TestConstants.DEFAULT_EMAIL)).willReturn(Optional.empty());
 
 		// when
 		Optional<UserAccount> result = userAccountPersistenceAdapter
 				.loadUserAccountByUsername(TestConstants.DEFAULT_EMAIL);
 		// then
-		assertThat(result.isEmpty()).isTrue();
+		assertTrue(result.isEmpty());
 
 	}
 
+	// Test existsByOauthId
 	@Test
-	void givenUserExists_WehnExistsByOauthId_ThenReturnTrue() {
+	void givenUserExists_WhenExistsByOauthId_ThenReturnTrue() {
 
 		given(userAccountRepository.existsByOauthId(any(Long.class))).willReturn(true);
 
@@ -337,7 +298,7 @@ public class UserAccountPersistenceAdapterTests {
 	}
 
 	@Test
-	void givenInexistentUser_WehnExistsByOauthId_ThenReturnFalse() {
+	void givenInexistentUser_WhenExistsByOauthId_ThenReturnFalse() {
 
 		given(userAccountRepository.existsByOauthId(any(Long.class))).willReturn(false);
 
@@ -345,6 +306,243 @@ public class UserAccountPersistenceAdapterTests {
 		Boolean result = userAccountPersistenceAdapter.existsByOauthId(1L);
 		// then
 		assertFalse(result);
+	}
+
+	// TestupdateSMSValidationCode
+
+	@Test
+	void givenExistentUserAccountById_WhenUpdateSMSValidationCode_ThenChangeSMSValidationCodeAndValidatedSMSCodeFalse() {
+		// given
+		UserAccountJpaEntity clientEntity = UserAccountJpaEntityTestData.defaultExistentClientJpaEntity();
+
+		Optional<UserAccountJpaEntity> clientEntityOptional = Optional.of(clientEntity);
+
+		given(userAccountRepository.findById(any(Long.class))).willReturn(clientEntityOptional);
+
+		// when
+		userAccountPersistenceAdapter.updateSMSValidationCode(clientEntity.getId(), "1234");
+		// then
+		ArgumentCaptor<UserAccountJpaEntity> captor = ArgumentCaptor.forClass(UserAccountJpaEntity.class);
+		then(userAccountRepository).should(times(1)).save(captor.capture());
+		assertEquals("1234", captor.getValue().getMobileNumberValidationCode());
+		assertEquals(false, captor.getValue().getIsValidatedMobileNumber());
+	}
+
+	@Test
+	void givenInexistentUserAccountById_WhenUpdateSMSValidationCode_ThenThrowUserAccountNotFoundException() {
+		// given
+
+		given(userAccountRepository.findById(any(Long.class))).willReturn(Optional.empty());
+
+		// when // then
+		assertThrows(UserAccountNotFoundException.class,
+				() -> userAccountPersistenceAdapter.updateSMSValidationCode(1L, "1234"));
+
+	}
+
+	@Test
+	void givenExistentUserAccountById_WhenUpdateEmailValidationCode_ThenChangeEmailValidationCodeAndValidatedEmailCodeFalse() {
+		// given
+		UserAccountJpaEntity clientEntity = UserAccountJpaEntityTestData.defaultExistentClientJpaEntity();
+
+		Optional<UserAccountJpaEntity> clientEntityOptional = Optional.of(clientEntity);
+
+		given(userAccountRepository.findById(any(Long.class))).willReturn(clientEntityOptional);
+
+		// when
+		userAccountPersistenceAdapter.updateEmailValidationCode(clientEntity.getId(), "1234");
+		// then
+		ArgumentCaptor<UserAccountJpaEntity> captor = ArgumentCaptor.forClass(UserAccountJpaEntity.class);
+		then(userAccountRepository).should(times(1)).save(captor.capture());
+		assertEquals("1234", captor.getValue().getEmailValidationCode());
+		assertEquals(false, captor.getValue().getIsValidatedEmail());
+	}
+
+	@Test
+	void givenInexistentUserAccountById_WhenUpdateEmailValidationCode_ThenThrowUserAccountNotFoundException() {
+		// given
+
+		given(userAccountRepository.findById(any(Long.class))).willReturn(Optional.empty());
+
+		// when // then
+		assertThrows(UserAccountNotFoundException.class,
+				() -> userAccountPersistenceAdapter.updateEmailValidationCode(1L, "1234"));
+
+	}
+
+	// Test loadProfileImageLocation
+
+	@Test
+	void givenExistentUserAccount_WhenLoadProfileImageLocationThenReturnProfileImageLocation() {
+		// given
+		UserAccountJpaEntity clientEntity = UserAccountJpaEntityTestData.defaultExistentClientJpaEntity();
+
+		Optional<UserAccountJpaEntity> clientEntityOptional = Optional.of(clientEntity);
+
+		given(userAccountRepository.findById(any(Long.class))).willReturn(clientEntityOptional);
+
+		// when
+		String location = userAccountPersistenceAdapter.loadProfileImageLocation(clientEntity.getId());
+		// then
+
+		assertEquals(clientEntity.getProfileImage().getLocation(), location);
+
+	}
+
+	@Test
+	void givenInexistentUserAccount_WhenLoadProfileImageLocationThenThrowUserAccountNotFoundException() {
+		// given
+
+		given(userAccountRepository.findById(any(Long.class))).willReturn(Optional.empty());
+
+		// when // then
+		assertThrows(UserAccountNotFoundException.class,
+				() -> userAccountPersistenceAdapter.loadProfileImageLocation(1L));
+
+	}
+
+	@Test
+	void givenExistentUserAccountWithNullProfileImage_WhenLoadProfileImageLocationThenReturnNull() {
+		// given
+		UserAccountJpaEntity clientEntity = UserAccountJpaEntityTestData
+				.defaultExistentClientJpaEntityWithNoProfileImage();
+
+		Optional<UserAccountJpaEntity> clientEntityOptional = Optional.of(clientEntity);
+
+		given(userAccountRepository.findById(any(Long.class))).willReturn(clientEntityOptional);
+
+		// when
+		String location = userAccountPersistenceAdapter.loadProfileImageLocation(clientEntity.getId());
+		// then
+
+		assertNull(location);
+
+	}
+	// Test hasDefaultProfileImage
+
+	@Test
+	void givenExistentUserAccount_WhenHasDefaultProfileImageThenReturnTrue() {
+		// given
+		UserAccountJpaEntity clientEntity = UserAccountJpaEntityTestData.defaultExistentClientJpaEntity();
+
+		Optional<UserAccountJpaEntity> clientEntityOptional = Optional.of(clientEntity);
+
+		given(userAccountRepository.findById(any(Long.class))).willReturn(clientEntityOptional);
+
+		// when
+		boolean hasDefaultProfileImage = userAccountPersistenceAdapter.hasDefaultProfileImage(clientEntity.getId());
+		// then
+
+		assertTrue(hasDefaultProfileImage);
+
+	}
+
+	@Test
+	void givenInexistentUserAccount_WhenHasDefaultProfileImageThenThrowUserAccountNotFoundException() {
+		// given
+
+		given(userAccountRepository.findById(any(Long.class))).willReturn(Optional.empty());
+
+		// when // then
+		assertThrows(UserAccountNotFoundException.class,
+				() -> userAccountPersistenceAdapter.hasDefaultProfileImage(1L));
+
+	}
+
+	@Test
+	void givenExistentUserAccountWithNullProfileImage_WhenHasDefaultProfileImageThenReturnFalse() {
+		// given
+		UserAccountJpaEntity clientEntity = UserAccountJpaEntityTestData
+				.defaultExistentClientJpaEntityWithNoProfileImage();
+
+		Optional<UserAccountJpaEntity> clientEntityOptional = Optional.of(clientEntity);
+
+		given(userAccountRepository.findById(any(Long.class))).willReturn(clientEntityOptional);
+
+		// when
+		boolean hasDefaultProfileImage = userAccountPersistenceAdapter.hasDefaultProfileImage(clientEntity.getId());
+		// then
+
+		assertFalse(hasDefaultProfileImage);
+
+	}
+
+	// Test updateUserProfileImage
+
+	@Test
+	void givenExistentUserAccountWithDefaultProfileImage_WhenUpdateUserProfileImageThenSaveProfileImageAndUpdateUserProfileImage() {
+		// given
+		UserAccountJpaEntity clientEntity = UserAccountJpaEntityTestData.defaultExistentClientJpaEntity();
+
+		Optional<UserAccountJpaEntity> clientEntityOptional = Optional.of(clientEntity);
+
+		given(userAccountRepository.findById(any(Long.class))).willReturn(clientEntityOptional);
+
+		// when
+
+		String location = "/Images/1621329097610-some_man_avatar.jpg";
+		String hash = DigestUtils.sha256Hex(location.getBytes());
+		userAccountPersistenceAdapter.updateUserProfileImage(clientEntity.getId(), location, hash);
+		// then
+
+		then(documentRepository).should(never()).delete(any(DocumentJpaEntity.class));
+
+		ArgumentCaptor<DocumentJpaEntity> captor = ArgumentCaptor.forClass(DocumentJpaEntity.class);
+		then(documentRepository).should(times(1)).save(captor.capture());
+
+		assertEquals(location, captor.getValue().getLocation());
+		assertEquals(hash, captor.getValue().getHash());
+		assertEquals(clientEntity, captor.getValue().getOwner());
+		assertEquals(DocumentType.IMAGE_JPEG, captor.getValue().getType());
+		assertEquals(false, captor.getValue().getIsDefault());
+
+	}
+
+	@Test
+	void givenExistentUserAccountWithNonDefaultProfileImage_WhenUpdateUserProfileImageThenDeleteOldProfileImageAndSaveNewOneAndUpdateUserProfileImage() {
+		// given
+		UserAccountJpaEntity clientEntity = UserAccountJpaEntityTestData
+				.defaultExistentClientJpaEntityWithNonDefaultProfileImage();
+
+		Optional<UserAccountJpaEntity> clientEntityOptional = Optional.of(clientEntity);
+
+		given(userAccountRepository.findById(any(Long.class))).willReturn(clientEntityOptional);
+
+		// when
+
+		String location = "/Images/1621329097610-some_other_man_avatar.jpg";
+		String hash = DigestUtils.sha256Hex(location.getBytes());
+
+		DocumentJpaEntity oldProfileImage = clientEntity.getProfileImage();
+
+		userAccountPersistenceAdapter.updateUserProfileImage(clientEntity.getId(), location, hash);
+		// then
+
+		then(documentRepository).should(times(1)).delete(oldProfileImage);
+
+		ArgumentCaptor<DocumentJpaEntity> captor = ArgumentCaptor.forClass(DocumentJpaEntity.class);
+		then(documentRepository).should(times(1)).save(captor.capture());
+
+		assertEquals(location, captor.getValue().getLocation());
+		assertEquals(hash, captor.getValue().getHash());
+		assertEquals(clientEntity, captor.getValue().getOwner());
+		assertEquals(DocumentType.IMAGE_JPEG, captor.getValue().getType());
+		assertEquals(false, captor.getValue().getIsDefault());
+
+	}
+
+	@Test
+	void givenInexistentUserAccount_WhenUpdateUserProfileImageThenThrowUserAccountNotFoundException() {
+		// given
+
+		given(userAccountRepository.findById(any(Long.class))).willReturn(Optional.empty());
+
+		// when // then
+		String location = "/Images/1621329097610-some_other_man_avatar.jpg";
+		String hash = DigestUtils.sha256Hex(location.getBytes());
+		assertThrows(UserAccountNotFoundException.class,
+				() -> userAccountPersistenceAdapter.updateUserProfileImage(1L, location, hash));
+
 	}
 
 }

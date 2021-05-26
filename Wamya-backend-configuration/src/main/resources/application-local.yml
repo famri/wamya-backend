@@ -1,5 +1,5 @@
 spring.profiles: local
-spring.profiles.include: default, b2b-rest-local, messaging-local, persistence-local, web-local, app-local
+spring.profiles.include: default, b2b-rest-local, messaging-local, persistence-local, file-storage-local, web-local, app-local
 
 app:
   eureka-server: localhost

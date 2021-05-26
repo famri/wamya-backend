@@ -43,7 +43,8 @@ dependencies {
 	implementation 'com.fasterxml.jackson.core:jackson-annotations'
 	implementation 'com.fasterxml.jackson.core:jackson-databind'
 	implementation 'org.apache.commons:commons-collections4:4.4' 
-	
+	implementation 'org.apache.tika:tika-core:1.26'
+	implementation 'commons-codec:commons-codec:1.15'
 	
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'junit' // excluding junit 4   
@@ -56,6 +57,8 @@ dependencies {
     testImplementation 'org.mockito:mockito-junit-jupiter'
     testImplementation 'com.tngtech.archunit:archunit:0.9.3'
     testImplementation 'de.adesso:junit-insights:1.1.0'
+    testImplementation 'org.powermock:powermock-module-junit4:2.0.9'
+	testImplementation 'org.powermock:powermock-api-mockito2:2.0.9'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
       
     testImplementation (project(':Wamya-backend-testdata')){

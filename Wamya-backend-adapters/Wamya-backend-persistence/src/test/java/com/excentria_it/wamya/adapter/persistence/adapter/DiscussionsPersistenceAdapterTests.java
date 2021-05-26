@@ -31,6 +31,7 @@ import com.excentria_it.wamya.adapter.persistence.mapper.DiscussionMapper;
 import com.excentria_it.wamya.adapter.persistence.repository.ClientRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.DiscussionRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.TransporterRepository;
+import com.excentria_it.wamya.application.utils.DocumentUrlResolver;
 import com.excentria_it.wamya.common.FilterCriterion;
 import com.excentria_it.wamya.common.SortCriterion;
 import com.excentria_it.wamya.domain.LoadDiscussionsOutput;
@@ -325,7 +326,9 @@ public class DiscussionsPersistenceAdapterTests {
 	private InterlocutorOutput getInterlocutorOutput(UserAccountJpaEntity userAccount) {
 		return InterlocutorOutput.builder().id(userAccount.getId()).email(userAccount.getEmail())
 				.mobileNumber(userAccount.getIcc().getValue() + "_" + userAccount.getMobileNumber())
-				.name(userAccount.getFirstname()).photoUrl(userAccount.getPhotoUrl()).build();
+				.name(userAccount.getFirstname()).photoUrl(DocumentUrlResolver
+						.resolveUrl(userAccount.getProfileImage().getId(), userAccount.getProfileImage().getHash()))
+				.build();
 	}
 
 	private Page<DiscussionJpaEntity> givenDiscussionsPage() {

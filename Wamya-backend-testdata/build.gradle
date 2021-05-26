@@ -10,5 +10,7 @@ dependencies {
     implementation "org.springframework.data:spring-data-jpa:${springBootVersion}"
    
     implementation 'com.fasterxml.jackson.core:jackson-databind'
+    
+    implementation 'commons-codec:commons-codec:1.15'
   
 }

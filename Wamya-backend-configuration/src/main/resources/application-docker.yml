@@ -1,5 +1,5 @@
 spring.profiles: docker
-spring.profiles.include: default, b2b-rest-docker, messaging-docker, persistence-docker, web-docker, app-docker
+spring.profiles.include: default, b2b-rest-docker, messaging-docker, persistence-docker, file-storage-docker, web-docker, app-docker
 
 app:
   eureka-server: eureka

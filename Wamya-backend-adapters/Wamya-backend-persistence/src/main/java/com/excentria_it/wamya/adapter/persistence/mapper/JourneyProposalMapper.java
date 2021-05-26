@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import com.excentria_it.wamya.adapter.persistence.entity.JourneyProposalJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.TransporterJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.VehiculeJpaEntity;
+import com.excentria_it.wamya.application.utils.DocumentUrlResolver;
 import com.excentria_it.wamya.common.domain.StatusCode;
 import com.excentria_it.wamya.domain.JourneyProposalDto;
 import com.excentria_it.wamya.domain.JourneyProposalDto.VehiculeDto;
@@ -30,8 +31,10 @@ public class JourneyProposalMapper {
 				vehicule.getModel().getConstructor().getName(), vehicule.getModel().getName(), vehicule.getPhotoUrl());
 
 		TransporterJpaEntity transporter = journeyProposalJpaEntity.getTransporter();
-		JourneyProposalDto.TransporterDto transporterDto = new JourneyProposalDto.TransporterDto(transporter.getOauthId(),
-				transporter.getFirstname(), transporter.getPhotoUrl(), transporter.getGlobalRating());
+		JourneyProposalDto.TransporterDto transporterDto = new JourneyProposalDto.TransporterDto(
+				transporter.getOauthId(), transporter.getFirstname(), DocumentUrlResolver
+						.resolveUrl(transporter.getProfileImage().getId(), transporter.getProfileImage().getHash()),
+				transporter.getGlobalRating());
 
 		return JourneyProposalDto.builder().id(journeyProposalJpaEntity.getId())
 				.price(journeyProposalJpaEntity.getPrice()).transporter(transporterDto).vehicule(vehiculeDto)

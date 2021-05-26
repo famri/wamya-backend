@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import com.excentria_it.wamya.adapter.persistence.entity.JourneyProposalJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.TransporterJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.VehiculeJpaEntity;
+import com.excentria_it.wamya.application.utils.DocumentUrlResolver;
 import com.excentria_it.wamya.domain.JourneyProposalDto;
 
 public class JourneyProposalMapperTests {
@@ -44,12 +45,15 @@ public class JourneyProposalMapperTests {
 		assertEquals(journeyProposalJpaEntity.getId(), journeyProposalDto.getId());
 		assertEquals(journeyProposalJpaEntity.getPrice(), journeyProposalDto.getPrice());
 
-		assertEquals(journeyProposalJpaEntity.getTransporter().getOauthId(), journeyProposalDto.getTransporter().getId());
+		assertEquals(journeyProposalJpaEntity.getTransporter().getOauthId(),
+				journeyProposalDto.getTransporter().getId());
 		assertEquals(journeyProposalJpaEntity.getTransporter().getFirstname(),
 				journeyProposalDto.getTransporter().getFirstname());
 		assertEquals(journeyProposalJpaEntity.getTransporter().getGlobalRating(),
 				journeyProposalDto.getTransporter().getGlobalRating());
-		assertEquals(journeyProposalJpaEntity.getTransporter().getPhotoUrl(),
+		assertEquals(
+				DocumentUrlResolver.resolveUrl(journeyProposalJpaEntity.getTransporter().getProfileImage().getId(),
+						journeyProposalJpaEntity.getTransporter().getProfileImage().getHash()),
 				journeyProposalDto.getTransporter().getPhotoUrl());
 
 		assertEquals(journeyProposalJpaEntity.getVehicule().getId(), journeyProposalDto.getVehicule().getId());

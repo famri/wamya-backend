@@ -8,6 +8,7 @@ import java.time.ZoneOffset;
 import org.junit.jupiter.api.Test;
 
 import com.excentria_it.wamya.adapter.persistence.entity.ClientJpaEntity;
+import com.excentria_it.wamya.adapter.persistence.entity.DocumentJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.GenderJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.InternationalCallingCodeJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.TransporterJpaEntity;
@@ -16,7 +17,7 @@ import com.excentria_it.wamya.domain.UserAccount;
 import com.excentria_it.wamya.test.data.common.InternationalCallingCodeJpaEntityTestData;
 import com.excentria_it.wamya.test.data.common.UserAccountJpaEntityTestData;
 import com.excentria_it.wamya.test.data.common.UserAccountTestData;
-
+import static com.excentria_it.wamya.test.data.common.DocumentJpaTestData.*;
 public class UserAccountMapperTests {
 
 	private UserAccountMapper userAccountMapper = new UserAccountMapper();
@@ -27,8 +28,10 @@ public class UserAccountMapperTests {
 		UserAccount userAccount = UserAccountTestData.defaultUserAccountBuilder().isTransporter(false).build();
 		InternationalCallingCodeJpaEntity iccEntity = InternationalCallingCodeJpaEntityTestData
 				.defaultExistentInternationalCallingCodeJpaEntity();
-		GenderJpaEntity gender = defaultGenderJpaEntity();
-		UserAccountJpaEntity userAccountJpaEntity = userAccountMapper.mapToJpaEntity(userAccount, iccEntity,gender);
+		GenderJpaEntity gender = manGenderJpaEntity();
+		DocumentJpaEntity profileImage = defaultManProfileImageDocumentJpaEntity();
+		
+		UserAccountJpaEntity userAccountJpaEntity = userAccountMapper.mapToJpaEntity(userAccount, iccEntity,gender,profileImage);
 
 		assertEquals(userAccount.getId(), userAccountJpaEntity.getId());
 
@@ -71,8 +74,9 @@ public class UserAccountMapperTests {
 		UserAccount userAccount = UserAccountTestData.defaultUserAccountBuilder().isTransporter(true).build();
 		InternationalCallingCodeJpaEntity iccEntity = InternationalCallingCodeJpaEntityTestData
 				.defaultExistentInternationalCallingCodeJpaEntity();
-		GenderJpaEntity gender = defaultGenderJpaEntity();
-		UserAccountJpaEntity userAccountJpaEntity = userAccountMapper.mapToJpaEntity(userAccount, iccEntity,gender);
+		GenderJpaEntity gender = manGenderJpaEntity();
+		DocumentJpaEntity profileImage = defaultManProfileImageDocumentJpaEntity();
+		UserAccountJpaEntity userAccountJpaEntity = userAccountMapper.mapToJpaEntity(userAccount, iccEntity,gender,profileImage);
 
 		assertEquals(userAccount.getId(), userAccountJpaEntity.getId());
 
@@ -117,8 +121,9 @@ public class UserAccountMapperTests {
 		UserAccount userAccount = UserAccountTestData.defaultUserAccountBuilder().creationDateTime(null).build();
 		InternationalCallingCodeJpaEntity iccEntity = InternationalCallingCodeJpaEntityTestData
 				.defaultExistentInternationalCallingCodeJpaEntity();
-		GenderJpaEntity gender = defaultGenderJpaEntity();
-		UserAccountJpaEntity userAccountJpaEntity = userAccountMapper.mapToJpaEntity(userAccount, iccEntity, gender);
+		GenderJpaEntity gender = manGenderJpaEntity();
+		DocumentJpaEntity profileImage = defaultManProfileImageDocumentJpaEntity();
+		UserAccountJpaEntity userAccountJpaEntity = userAccountMapper.mapToJpaEntity(userAccount, iccEntity, gender, profileImage);
 
 		assertNotNull(userAccountJpaEntity.getCreationDateTime());
 
@@ -131,8 +136,9 @@ public class UserAccountMapperTests {
 				.creationDateTime(null).build();
 		InternationalCallingCodeJpaEntity iccEntity = InternationalCallingCodeJpaEntityTestData
 				.defaultExistentInternationalCallingCodeJpaEntity();
-		GenderJpaEntity gender = defaultGenderJpaEntity();
-		UserAccountJpaEntity userAccountJpaEntity = userAccountMapper.mapToJpaEntity(userAccount, iccEntity, gender);
+		GenderJpaEntity gender = manGenderJpaEntity();
+		DocumentJpaEntity profileImage = defaultManProfileImageDocumentJpaEntity();
+		UserAccountJpaEntity userAccountJpaEntity = userAccountMapper.mapToJpaEntity(userAccount, iccEntity, gender, profileImage);
 
 		assertNotNull(userAccountJpaEntity.getCreationDateTime());
 
@@ -144,8 +150,9 @@ public class UserAccountMapperTests {
 		UserAccount userAccount = null;
 		InternationalCallingCodeJpaEntity iccEntity = InternationalCallingCodeJpaEntityTestData
 				.defaultExistentInternationalCallingCodeJpaEntity();
-		GenderJpaEntity gender = defaultGenderJpaEntity();
-		UserAccountJpaEntity userAccountJpaEntity = userAccountMapper.mapToJpaEntity(userAccount, iccEntity, gender);
+		GenderJpaEntity gender = manGenderJpaEntity();
+		DocumentJpaEntity profileImage = defaultManProfileImageDocumentJpaEntity();
+		UserAccountJpaEntity userAccountJpaEntity = userAccountMapper.mapToJpaEntity(userAccount, iccEntity, gender, profileImage);
 
 		assertNull(userAccountJpaEntity);
 

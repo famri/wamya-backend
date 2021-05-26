@@ -149,4 +149,26 @@ public class ExceptionsTests {
 		GenderNotFoundException exception = new GenderNotFoundException(message);
 		assertEquals(exception.getMessage(), message);
 	}
+
+	@Test
+	void testDocumentAccessException() {
+		String message = "SOME MESSAGE";
+		DocumentAccessException exception = new DocumentAccessException(message);
+		assertEquals(exception.getMessage(), message);
+	}
+
+	@Test
+	void testUnsupportedMimeTypeException() {
+		String message = "SOME MESSAGE";
+		UnsupportedMimeTypeException exception = new UnsupportedMimeTypeException(message);
+		assertEquals(exception.getMessage(), message);
+	}
+
+	@Test
+	void testDocumentNotFoundException() {
+		String message = "SOME MESSAGE";
+		DocumentNotFoundException exception = new DocumentNotFoundException(message);
+		assertEquals(exception.getMessage(), message);
+	}
+
 }

@@ -60,6 +60,11 @@ mkdir -m 700 -p /postgres/auth-database-data
 
 DATABASE_VOLUME
 
+$create_file_storage_volumes = <<-'FILE_STORAGE_VOLUME'
+
+mkdir -m 700 -p /file-storage
+
+FILE_STORAGE_VOLUME
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.disksize.size = '50GB'
@@ -73,6 +78,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 	  	
 	  	dev.vm.provision "shell", inline: $bootstrap, args: VAGRANT_USER
 		dev.vm.provision "shell", inline: $create_database_volumes
+		dev.vm.provision "shell", inline: $create_file_storage_volumes
 #		dev.vm.provision "shell", inline: $docker_compose, run: 'always'
   
 #		dev.vm.synced_folder ".", "/vagrant", disabled:true

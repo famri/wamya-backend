@@ -20,27 +20,27 @@ public class UserAccountJpaEntityTestData {
 			preferences.put(k, new UserPreferenceJpaEntity(new UserPreferenceId(1L, k), v, null));
 		});
 		TransporterJpaEntity t = new TransporterJpaEntity(1L, userAccount.getOauthId(),
-				GenderJpaTestData.defaultGenderJpaEntity(), userAccount.getFirstname(), userAccount.getLastname(),
+				GenderJpaTestData.manGenderJpaEntity(), userAccount.getFirstname(), userAccount.getLastname(),
 				userAccount.getDateOfBirth(), userAccount.getEmail(), userAccount.getEmailValidationCode(),
 				userAccount.getIsValidatedEmail(),
 				InternationalCallingCodeJpaEntityTestData.defaultExistentInternationalCallingCodeJpaEntity(),
 				userAccount.getMobilePhoneNumber().getMobileNumber(), userAccount.getMobileNumberValidationCode(),
 				userAccount.getIsValidatedMobileNumber(), userAccount.getReceiveNewsletter(),
-				userAccount.getCreationDateTime().toInstant(), userAccount.getPhotoUrl(), preferences);
+				userAccount.getCreationDateTime().toInstant(), DocumentJpaTestData.defaultManProfileImageDocumentJpaEntity(), preferences);
 		t.setGlobalRating(4.3);
 		return t;
 	}
 
 	public static final TransporterJpaEntity defaultNewTransporterJpaEntity() {
-
+		
 		TransporterJpaEntity t = new TransporterJpaEntity(null, userAccount.getOauthId(),
-				GenderJpaTestData.defaultGenderJpaEntity(), userAccount.getFirstname(), userAccount.getLastname(),
+				GenderJpaTestData.manGenderJpaEntity(), userAccount.getFirstname(), userAccount.getLastname(),
 				userAccount.getDateOfBirth(), userAccount.getEmail(), userAccount.getEmailValidationCode(),
 				userAccount.getIsValidatedEmail(),
 				InternationalCallingCodeJpaEntityTestData.defaultExistentInternationalCallingCodeJpaEntity(),
 				userAccount.getMobilePhoneNumber().getMobileNumber(), userAccount.getMobileNumberValidationCode(),
 				userAccount.getIsValidatedMobileNumber(), userAccount.getReceiveNewsletter(),
-				userAccount.getCreationDateTime().toInstant(), userAccount.getPhotoUrl(), Collections.emptyMap());
+				userAccount.getCreationDateTime().toInstant(), DocumentJpaTestData.defaultManProfileImageDocumentJpaEntity(), Collections.emptyMap());
 		t.setGlobalRating(5.0);
 		return t;
 	}
@@ -50,23 +50,54 @@ public class UserAccountJpaEntityTestData {
 		userAccount.getPreferences().forEach((k, v) -> {
 			preferences.put(k, new UserPreferenceJpaEntity(new UserPreferenceId(1L, k), v, null));
 		});
-		return new ClientJpaEntity(1L, userAccount.getOauthId(), GenderJpaTestData.defaultGenderJpaEntity(),
+		return new ClientJpaEntity(1L, userAccount.getOauthId(), GenderJpaTestData.manGenderJpaEntity(),
 				userAccount.getFirstname(), userAccount.getLastname(), userAccount.getDateOfBirth(),
 				userAccount.getEmail(), userAccount.getEmailValidationCode(), userAccount.getIsValidatedEmail(),
 				InternationalCallingCodeJpaEntityTestData.defaultExistentInternationalCallingCodeJpaEntity(),
 				userAccount.getMobilePhoneNumber().getMobileNumber(), userAccount.getMobileNumberValidationCode(),
 				userAccount.getIsValidatedMobileNumber(), userAccount.getReceiveNewsletter(),
-				userAccount.getCreationDateTime().toInstant(), userAccount.getPhotoUrl(), preferences);
+				userAccount.getCreationDateTime().toInstant(), DocumentJpaTestData.defaultManProfileImageDocumentJpaEntity(), preferences);
 
 	}
 
 	public static final ClientJpaEntity defaultNewClientJpaEntity() {
-		return new ClientJpaEntity(null, userAccount.getOauthId(), GenderJpaTestData.defaultGenderJpaEntity(),
+		return new ClientJpaEntity(null, userAccount.getOauthId(), GenderJpaTestData.manGenderJpaEntity(),
 				userAccount.getFirstname(), userAccount.getLastname(), userAccount.getDateOfBirth(),
 				userAccount.getEmail(), userAccount.getEmailValidationCode(), userAccount.getIsValidatedEmail(),
 				InternationalCallingCodeJpaEntityTestData.defaultExistentInternationalCallingCodeJpaEntity(),
 				userAccount.getMobilePhoneNumber().getMobileNumber(), userAccount.getMobileNumberValidationCode(),
 				userAccount.getIsValidatedMobileNumber(), userAccount.getReceiveNewsletter(),
-				userAccount.getCreationDateTime().toInstant(), userAccount.getPhotoUrl(), Collections.emptyMap());
+				userAccount.getCreationDateTime().toInstant(), DocumentJpaTestData.defaultManProfileImageDocumentJpaEntity(), Collections.emptyMap());
+	}
+	
+
+	public static final ClientJpaEntity defaultExistentClientJpaEntityWithNoProfileImage() {
+		Map<String, UserPreferenceJpaEntity> preferences = new HashMap<>();
+		userAccount.getPreferences().forEach((k, v) -> {
+			preferences.put(k, new UserPreferenceJpaEntity(new UserPreferenceId(1L, k), v, null));
+		});
+		return new ClientJpaEntity(1L, userAccount.getOauthId(), GenderJpaTestData.manGenderJpaEntity(),
+				userAccount.getFirstname(), userAccount.getLastname(), userAccount.getDateOfBirth(),
+				userAccount.getEmail(), userAccount.getEmailValidationCode(), userAccount.getIsValidatedEmail(),
+				InternationalCallingCodeJpaEntityTestData.defaultExistentInternationalCallingCodeJpaEntity(),
+				userAccount.getMobilePhoneNumber().getMobileNumber(), userAccount.getMobileNumberValidationCode(),
+				userAccount.getIsValidatedMobileNumber(), userAccount.getReceiveNewsletter(),
+				userAccount.getCreationDateTime().toInstant(), null, preferences);
+
+	}
+	
+	public static final ClientJpaEntity defaultExistentClientJpaEntityWithNonDefaultProfileImage() {
+		Map<String, UserPreferenceJpaEntity> preferences = new HashMap<>();
+		userAccount.getPreferences().forEach((k, v) -> {
+			preferences.put(k, new UserPreferenceJpaEntity(new UserPreferenceId(1L, k), v, null));
+		});
+		return new ClientJpaEntity(1L, userAccount.getOauthId(), GenderJpaTestData.manGenderJpaEntity(),
+				userAccount.getFirstname(), userAccount.getLastname(), userAccount.getDateOfBirth(),
+				userAccount.getEmail(), userAccount.getEmailValidationCode(), userAccount.getIsValidatedEmail(),
+				InternationalCallingCodeJpaEntityTestData.defaultExistentInternationalCallingCodeJpaEntity(),
+				userAccount.getMobilePhoneNumber().getMobileNumber(), userAccount.getMobileNumberValidationCode(),
+				userAccount.getIsValidatedMobileNumber(), userAccount.getReceiveNewsletter(),
+				userAccount.getCreationDateTime().toInstant(), DocumentJpaTestData.nonDefaultManProfileImageDocumentJpaEntity(), preferences);
+
 	}
 }

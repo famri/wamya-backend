@@ -58,11 +58,12 @@ dependencies {
     testImplementation (project (':Wamya-backend-testdata')){
     	 transitive = false
     }
-
+	
 	//testImplementation "com.c4-soft.springaddons:spring-security-oauth2-addons:${springaddonsVersion}"
 	//testImplementation "com.c4-soft.springaddons:spring-security-oauth2-test-addons:${springaddonsVersion}"
 	testImplementation "com.c4-soft.springaddons:spring-security-oauth2-test-webmvc-addons:${springaddonsVersion}"
 	testImplementation 'com.fasterxml.jackson.module:jackson-module-mrbean:2.12.1'	
+	testImplementation 'commons-io:commons-io:2.8.0'
     
     
 }

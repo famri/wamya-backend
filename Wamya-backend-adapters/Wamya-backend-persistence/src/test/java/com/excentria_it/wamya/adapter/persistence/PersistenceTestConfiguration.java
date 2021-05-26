@@ -12,7 +12,6 @@ import com.integralblue.log4jdbc.spring.Log4jdbcAutoConfiguration;
 @EnableAutoConfiguration
 @Import(PersistenceConfiguration.class)
 @ImportAutoConfiguration(Log4jdbcAutoConfiguration.class)
-
 public class PersistenceTestConfiguration {
 
 	@Test

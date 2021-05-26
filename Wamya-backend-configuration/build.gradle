@@ -42,7 +42,8 @@ dependencies {
     implementation (project(':Wamya-backend-adapters:Wamya-backend-web'))
     implementation (project(':Wamya-backend-adapters:Wamya-backend-messaging'))
     implementation (project(':Wamya-backend-adapters:Wamya-backend-b2b-rest'))
-    
+    implementation (project(':Wamya-backend-adapters:Wamya-backend-file-storage'))
+        
     implementation('org.springframework.cloud:spring-cloud-starter-netflix-eureka-client')
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
          

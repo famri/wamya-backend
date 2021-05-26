@@ -32,6 +32,7 @@ import com.excentria_it.wamya.common.exception.AuthorizationException;
 import com.excentria_it.wamya.common.exception.CountryNotFoundException;
 import com.excentria_it.wamya.common.exception.DepartmentNotFoundException;
 import com.excentria_it.wamya.common.exception.DiscussionNotFoundException;
+import com.excentria_it.wamya.common.exception.DocumentAccessException;
 import com.excentria_it.wamya.common.exception.GenderNotFoundException;
 import com.excentria_it.wamya.common.exception.InvalidPlaceTypeException;
 import com.excentria_it.wamya.common.exception.InvalidTransporterVehiculeException;
@@ -40,6 +41,7 @@ import com.excentria_it.wamya.common.exception.JourneyRequestExpiredException;
 import com.excentria_it.wamya.common.exception.JourneyRequestNotFoundException;
 import com.excentria_it.wamya.common.exception.OperationDeniedException;
 import com.excentria_it.wamya.common.exception.UnsupportedInternationalCallingCodeException;
+import com.excentria_it.wamya.common.exception.UnsupportedMimeTypeException;
 import com.excentria_it.wamya.common.exception.UserAccountAlreadyExistsException;
 import com.excentria_it.wamya.common.exception.UserAccountNotFoundException;
 import com.excentria_it.wamya.common.exception.UserEmailValidationException;
@@ -377,5 +379,28 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 		final ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, ErrorCode.OBJECT_NOT_FOUND, error);
 		return new ResponseEntity<ApiError>(apiError, new HttpHeaders(), apiError.getStatus());
 	}
+
+	@ExceptionHandler({ DocumentAccessException.class })
+	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+	public ResponseEntity<ApiError> handleDocumentAccessException(DocumentAccessException exception) {
+
+		log.error("Exception at " + exception.getClass() + ": ", exception);
+		final String error = exception.getMessage();
+		final ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.INTERNAL_SERVER_ERROR,
+				error);
+		return new ResponseEntity<ApiError>(apiError, new HttpHeaders(), apiError.getStatus());
+	}
+	
+	@ExceptionHandler({ UnsupportedMimeTypeException.class })
+	@ResponseStatus(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+	public ResponseEntity<ApiError> handleUnsupportedMimeTypeException(UnsupportedMimeTypeException exception) {
+
+		log.error("Exception at " + exception.getClass() + ": ", exception);
+		final String error = exception.getMessage();
+		final ApiError apiError = new ApiError(HttpStatus.UNSUPPORTED_MEDIA_TYPE, ErrorCode.UNSUPPORTED_MEDIA_TYPE,
+				error);
+		return new ResponseEntity<ApiError>(apiError, new HttpHeaders(), apiError.getStatus());
+	}
+	
 
 }

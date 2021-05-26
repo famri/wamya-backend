@@ -11,6 +11,7 @@ include 'Wamya-backend-adapters:Wamya-backend-web'
 include 'Wamya-backend-adapters:Wamya-backend-persistence'
 include 'Wamya-backend-adapters:Wamya-backend-messaging'
 include 'Wamya-backend-adapters:Wamya-backend-b2b-rest'
+include 'Wamya-backend-adapters:Wamya-backend-file-storage'
 
 include 'Wamya-backend-application'
 include 'Wamya-backend-testdata'

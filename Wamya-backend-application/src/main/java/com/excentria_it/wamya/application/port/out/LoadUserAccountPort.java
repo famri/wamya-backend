@@ -10,4 +10,8 @@ public interface LoadUserAccountPort {
 
 	Boolean existsByOauthId(Long userOauthId);
 
+	String loadProfileImageLocation(Long userId);
+	
+	Boolean hasDefaultProfileImage(Long userId);
+
 }

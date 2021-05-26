@@ -1,8 +1,11 @@
 package com.excentria_it.wamya.application.port.out;
 
-import com.excentria_it.wamya.domain.UserAccount;
-
 public interface UpdateUserAccountPort {
-	
-	void updateUserAccount(UserAccount userAccount);
+
+	void updateSMSValidationCode(Long userId, String validationCode);
+
+	void updateEmailValidationCode(Long userId, String validationCode);
+
+	void updateUserProfileImage(Long userId, String location, String hash);
+
 }
