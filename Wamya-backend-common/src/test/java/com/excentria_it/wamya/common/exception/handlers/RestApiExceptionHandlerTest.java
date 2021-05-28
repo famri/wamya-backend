@@ -44,6 +44,7 @@ import com.excentria_it.wamya.common.exception.CountryNotFoundException;
 import com.excentria_it.wamya.common.exception.DepartmentNotFoundException;
 import com.excentria_it.wamya.common.exception.DiscussionNotFoundException;
 import com.excentria_it.wamya.common.exception.DocumentAccessException;
+import com.excentria_it.wamya.common.exception.ForbiddenAccessException;
 import com.excentria_it.wamya.common.exception.GenderNotFoundException;
 import com.excentria_it.wamya.common.exception.InvalidPlaceTypeException;
 import com.excentria_it.wamya.common.exception.InvalidTransporterVehiculeException;
@@ -626,6 +627,22 @@ public class RestApiExceptionHandlerTest {
 	}
 
 	@Test
+	void whenHandleForbiddenAccessException_thenStatusIsForbidden() {
+		// given
+		ForbiddenAccessException exception = givenForbiddenAccessException();
+
+		// When
+		ResponseEntity<ApiError> responseEntity = restApiExceptionHandler.handleForbiddenAccessException(exception);
+
+		// Then
+		then(responseEntity.getBody() instanceof ApiError);
+		then(((ApiError) responseEntity.getBody()).getStatus()).isEqualTo(HttpStatus.FORBIDDEN);
+		then(((ApiError) responseEntity.getBody()).getErrorCode()).isEqualTo(ErrorCode.AUTHORIZATION);
+		then(((ApiError) responseEntity.getBody()).getErrors()).containsExactly(SOME_MESSAGE);
+		then(responseEntity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+	}
+
+	@Test
 	void whenHandleUnsupportedMimeTypeException_thenStatusIsUnsupportedMediaType() {
 		// given
 		UnsupportedMimeTypeException exception = givenUnsupportedMimeTypeException();
@@ -657,6 +674,13 @@ public class RestApiExceptionHandlerTest {
 
 	private DocumentAccessException givenDocumentAccessException() {
 		DocumentAccessException exception = Mockito.mock(DocumentAccessException.class);
+		given(exception.getMessage()).willReturn(SOME_MESSAGE);
+
+		return exception;
+	}
+
+	private ForbiddenAccessException givenForbiddenAccessException() {
+		ForbiddenAccessException exception = Mockito.mock(ForbiddenAccessException.class);
 		given(exception.getMessage()).willReturn(SOME_MESSAGE);
 
 		return exception;

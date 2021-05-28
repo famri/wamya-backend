@@ -2,8 +2,10 @@ package com.excentria_it.wamya.adapter.persistence.adapter;
 
 import java.time.Instant;
 import java.util.Optional;
+import java.util.Set;
 
 import com.excentria_it.wamya.adapter.persistence.entity.DocumentJpaEntity;
+import com.excentria_it.wamya.adapter.persistence.entity.EntitlementJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.GenderJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.InternationalCallingCodeJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.UserAccountJpaEntity;
@@ -25,6 +27,7 @@ import com.excentria_it.wamya.common.exception.GenderNotFoundException;
 import com.excentria_it.wamya.common.exception.UnsupportedInternationalCallingCodeException;
 import com.excentria_it.wamya.common.exception.UserAccountNotFoundException;
 import com.excentria_it.wamya.domain.DocumentType;
+import com.excentria_it.wamya.domain.EntitlementType;
 import com.excentria_it.wamya.domain.Gender;
 import com.excentria_it.wamya.domain.UserAccount;
 
@@ -238,18 +241,14 @@ public class UserAccountPersistenceAdapter
 			if (currentProfileAvatar != null && !currentProfileAvatar.getIsDefault()) {
 				documentRepository.delete(currentProfileAvatar);
 			}
-//			EntitlementJpaEntity ownerEntitlement = new EntitlementJpaEntity(UserType.OWNER, true, true);
-//			EntitlementJpaEntity othersEntitlement = new EntitlementJpaEntity(UserType.OTHERS, true, false);
-//			EntitlementJpaEntity supportEntitlement = new EntitlementJpaEntity(UserType.SUPPORT, true, true);
-//			EntitlementJpaEntity adminEntitlement= new EntitlementJpaEntity(UserType.ADMIN, true, true);
-//
-//			Set<EntitlementJpaEntity> entitlements = Set.of(ownerEntitlement, othersEntitlement, supportEntitlement,
-//					adminEntitlement);
+			EntitlementJpaEntity ownerEntitlement = new EntitlementJpaEntity(EntitlementType.OWNER, true, true);
+			EntitlementJpaEntity othersEntitlement = new EntitlementJpaEntity(EntitlementType.OTHERS, true, false);
+			EntitlementJpaEntity supportEntitlement = new EntitlementJpaEntity(EntitlementType.SUPPORT, true, true);
+
+			Set<EntitlementJpaEntity> entitlements = Set.of(ownerEntitlement, othersEntitlement, supportEntitlement);
 
 			DocumentJpaEntity newProfileAvatar = new DocumentJpaEntity(userAccountEntity, location,
-					DocumentType.IMAGE_JPEG, Instant.now(),
-					// entitlements,
-					hash, false);
+					DocumentType.IMAGE_JPEG, Instant.now(), entitlements, hash, false);
 			newProfileAvatar = documentRepository.save(newProfileAvatar);
 			userAccountEntity.setProfileImage(newProfileAvatar);
 			userAccountRepository.save(userAccountEntity);

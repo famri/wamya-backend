@@ -33,7 +33,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 				.authorizeRequests(authz -> authz.antMatchers("/actuator/**", "/content/**").permitAll()
 						.antMatchers(HttpMethod.POST, "/login/**", "/accounts/**").permitAll()
-						.antMatchers(HttpMethod.GET, "/countries/**", "/locales/**", "/genders/**").permitAll()
+						.antMatchers(HttpMethod.GET, "/countries/**", "/locales/**", "/genders/**", "/documents/**").permitAll()
 						.antMatchers(HttpMethod.GET,"/wamya-ws/**").hasAnyAuthority("SCOPE_journey:write", "SCOPE_offer:write")
 						.antMatchers("/user-preferences").hasAnyAuthority("SCOPE_journey:write", "SCOPE_offer:write")
 						.antMatchers("/users/me/discussions/**")

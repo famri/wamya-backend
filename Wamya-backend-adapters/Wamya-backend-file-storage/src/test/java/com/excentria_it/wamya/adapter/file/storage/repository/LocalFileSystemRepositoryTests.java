@@ -10,12 +10,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Date;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.core.io.FileSystemResource;
 
 import com.excentria_it.wamya.adapter.file.storage.props.LocalFileStorageProperties;
 
@@ -63,6 +65,20 @@ public class LocalFileSystemRepositoryTests {
 		// then
 
 		assertFalse(Files.exists(createdFilePath));
+
+	}
+
+	@Test
+	void testLoad() throws IOException {
+		Path filePath = Paths.get(testDir.toAbsolutePath().toString() + "/test_delete.txt");
+		Path createdFilePath = Files.createFile(filePath);
+		assertTrue(Files.exists(createdFilePath));
+
+		// When
+		FileSystemResource res = localFileSystemRepository.load(createdFilePath.toAbsolutePath().toString());
+		// then
+
+		assertTrue(IOUtils.contentEquals(Files.newInputStream(filePath), res.getInputStream()));
 
 	}
 }

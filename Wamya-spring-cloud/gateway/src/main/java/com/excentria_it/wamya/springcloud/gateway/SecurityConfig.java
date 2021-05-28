@@ -15,7 +15,7 @@ public class SecurityConfig {
 		http.csrf().disable().authorizeExchange()
 				.pathMatchers("/actuator/**", "/eureka/**", "/wamya-backend/login/**", "/wamya-backend/accounts/**",
 						"/oauth/**", "/wamya-backend/countries/**", "/wamya-backend/locales/**", "/wamya-backend/genders/**",
-						"/wamya-backend/content/**")
+						"/wamya-backend/content/**","/wamya-backend/documents/**")
 				.permitAll().anyExchange().authenticated().and().oauth2ResourceServer().bearerTokenConverter(authenticationConverter()).jwt();
 		
 		return http.build();

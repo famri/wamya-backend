@@ -1,7 +1,10 @@
 package com.excentria_it.wamya.adapter.persistence.entity;
 
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -9,6 +12,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -39,22 +43,21 @@ public class DocumentJpaEntity {
 
 	private Instant creationDateTime;
 
-//	@OneToMany(cascade = CascadeType.ALL)
-//	private Set<EntitlementJpaEntity> entitlements;
+	@OneToMany(cascade = CascadeType.ALL)
+	private Set<EntitlementJpaEntity> entitlements = new HashSet<>();
 
 	private String hash;
 
 	private Boolean isDefault;
 
 	public DocumentJpaEntity(UserAccountJpaEntity owner, String location, DocumentType type, Instant creationDateTime,
-			// Set<EntitlementJpaEntity> entitlements,
-			String hash, Boolean isDefault) {
+			Set<EntitlementJpaEntity> entitlements, String hash, Boolean isDefault) {
 		super();
 		this.owner = owner;
 		this.location = location;
 		this.type = type;
 		this.creationDateTime = creationDateTime;
-		// this.entitlements = entitlements;
+		this.entitlements = entitlements;
 		this.hash = hash;
 		this.isDefault = isDefault;
 	}
@@ -99,14 +102,6 @@ public class DocumentJpaEntity {
 		this.creationDateTime = creationDateTime;
 	}
 
-//	public Set<EntitlementJpaEntity> getEntitlements() {
-//		return entitlements;
-//	}
-//
-//	public void setEntitlements(Set<EntitlementJpaEntity> entitlements) {
-//		this.entitlements = entitlements;
-//	}
-
 	public String getHash() {
 		return hash;
 	}
@@ -121,6 +116,14 @@ public class DocumentJpaEntity {
 
 	public void setIsDefault(Boolean isDefault) {
 		this.isDefault = isDefault;
+	}
+
+	public Set<EntitlementJpaEntity> getEntitlements() {
+		return entitlements;
+	}
+
+	public void setEntitlements(Set<EntitlementJpaEntity> entitlements) {
+		this.entitlements = entitlements;
 	}
 
 	@Override

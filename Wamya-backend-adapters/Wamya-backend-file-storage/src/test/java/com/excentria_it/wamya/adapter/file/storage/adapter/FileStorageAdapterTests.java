@@ -54,5 +54,18 @@ public class FileStorageAdapterTests {
 		then(fileRepository).should(times(1)).delete(fileLocation);
 
 	}
+	
+	@Test
+	void givenNoException_whenLoadFile_thenReturnCallRepositoryLoad () throws IOException {
+		// given
+
+		String fileLocation = "/some/location/image.jpg";
+
+		// when
+		fileStorageAdapter.loadFile(fileLocation);
+		// then
+		then(fileRepository).should(times(1)).load(fileLocation);
+
+	}
 
 }

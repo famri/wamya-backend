@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.util.Date;
 
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Repository;
 
 import com.excentria_it.wamya.adapter.file.storage.props.DockerFileStorageProperties;
@@ -35,6 +36,11 @@ public class DockerFileSystemRepository implements FileRepository {
 	public void delete(String fileLocation) throws IOException {
 		Path filePath = Paths.get(fileLocation);
 		Files.deleteIfExists(filePath);
+	}
+
+	@Override
+	public FileSystemResource load(String fileLocation) throws IOException {
+		return new FileSystemResource(Paths.get(fileLocation));
 	}
 
 }

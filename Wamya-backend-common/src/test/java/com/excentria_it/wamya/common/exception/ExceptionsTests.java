@@ -171,4 +171,10 @@ public class ExceptionsTests {
 		assertEquals(exception.getMessage(), message);
 	}
 
+	@Test
+	void testForbiddenAccessException() {
+		String message = "SOME MESSAGE";
+		ForbiddenAccessException exception = new ForbiddenAccessException(message);
+		assertEquals(exception.getMessage(), message);
+	}
 }

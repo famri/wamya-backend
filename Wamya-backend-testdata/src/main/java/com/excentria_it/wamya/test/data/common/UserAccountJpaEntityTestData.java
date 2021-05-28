@@ -60,6 +60,21 @@ public class UserAccountJpaEntityTestData {
 
 	}
 
+	public static final ClientJpaEntity defaultExistentWomanClientJpaEntity() {
+		Map<String, UserPreferenceJpaEntity> preferences = new HashMap<>();
+		userAccount.getPreferences().forEach((k, v) -> {
+			preferences.put(k, new UserPreferenceJpaEntity(new UserPreferenceId(1L, k), v, null));
+		});
+		return new ClientJpaEntity(3L, userAccount.getOauthId(), GenderJpaTestData.womanGenderJpaEntity(),
+				userAccount.getFirstname(), userAccount.getLastname(), userAccount.getDateOfBirth(),
+				userAccount.getEmail(), userAccount.getEmailValidationCode(), userAccount.getIsValidatedEmail(),
+				InternationalCallingCodeJpaEntityTestData.defaultExistentInternationalCallingCodeJpaEntity(),
+				userAccount.getMobilePhoneNumber().getMobileNumber(), userAccount.getMobileNumberValidationCode(),
+				userAccount.getIsValidatedMobileNumber(), userAccount.getReceiveNewsletter(),
+				userAccount.getCreationDateTime().toInstant(), DocumentJpaTestData.defaultManProfileImageDocumentJpaEntity(), preferences);
+
+	}
+	
 	public static final ClientJpaEntity defaultNewClientJpaEntity() {
 		return new ClientJpaEntity(null, userAccount.getOauthId(), GenderJpaTestData.manGenderJpaEntity(),
 				userAccount.getFirstname(), userAccount.getLastname(), userAccount.getDateOfBirth(),

@@ -40,6 +40,7 @@ import com.excentria_it.wamya.common.exception.JourneyProposalNotFoundException;
 import com.excentria_it.wamya.common.exception.JourneyRequestExpiredException;
 import com.excentria_it.wamya.common.exception.JourneyRequestNotFoundException;
 import com.excentria_it.wamya.common.exception.OperationDeniedException;
+import com.excentria_it.wamya.common.exception.ForbiddenAccessException;
 import com.excentria_it.wamya.common.exception.UnsupportedInternationalCallingCodeException;
 import com.excentria_it.wamya.common.exception.UnsupportedMimeTypeException;
 import com.excentria_it.wamya.common.exception.UserAccountAlreadyExistsException;
@@ -387,6 +388,16 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 		log.error("Exception at " + exception.getClass() + ": ", exception);
 		final String error = exception.getMessage();
 		final ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.INTERNAL_SERVER_ERROR,
+				error);
+		return new ResponseEntity<ApiError>(apiError, new HttpHeaders(), apiError.getStatus());
+	}
+	@ExceptionHandler({ ForbiddenAccessException.class })
+	@ResponseStatus(HttpStatus.FORBIDDEN)
+	public ResponseEntity<ApiError> handleForbiddenAccessException(ForbiddenAccessException exception) {
+
+		log.error("Exception at " + exception.getClass() + ": ", exception);
+		final String error = exception.getMessage();
+		final ApiError apiError = new ApiError(HttpStatus.FORBIDDEN, ErrorCode.AUTHORIZATION,
 				error);
 		return new ResponseEntity<ApiError>(apiError, new HttpHeaders(), apiError.getStatus());
 	}
