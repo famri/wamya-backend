@@ -13,19 +13,22 @@ import com.excentria_it.wamya.adapter.persistence.entity.VehiculeJpaEntity.Vehic
 public class VehiculeJpaEntityTestData {
 
 	public static final VehiculeJpaEntity vehiculeJpaEntity1 = VehiculeJpaEntity.builder().id(1L)
-			.type(EngineTypeJpaEntity.builder().id(1L).code(EngineTypeCode.VAN_L1H1).build())
+			.type(EngineTypeJpaEntity.builder().id(1L).code(EngineTypeCode.VAN_L1H1)
+					.image(DocumentJpaTestData.defaultVanL1H1VehiculeImageDocumentJpaEntity()).build())
 			.model(ModelJpaEntity.builder().id(1L).name("PARTNER")
 					.constructor(ConstructorJpaEntity.builder().id(1L).name("PEUGEOT").build()).build())
 			.circulationDate(LocalDate.of(2020, 01, 01)).registration("1 TUN 220").build();
 
 	public static final VehiculeJpaEntity vehiculeJpaEntity2 = VehiculeJpaEntity.builder().id(2L)
-			.type(EngineTypeJpaEntity.builder().id(1L).code(EngineTypeCode.VAN_L2H2).build())
+			.type(EngineTypeJpaEntity.builder().id(1L).code(EngineTypeCode.VAN_L2H2)
+					.image(DocumentJpaTestData.defaultVanL2H2VehiculeImageDocumentJpaEntity()).build())
 			.model(ModelJpaEntity.builder().id(2L).name("KANGOO")
 					.constructor(ConstructorJpaEntity.builder().id(2L).name("RENAULT").build()).build())
 			.circulationDate(LocalDate.of(2020, 01, 01)).registration("2 TUN 220").build();
 
 	public static final VehiculeJpaEntity vehiculeJpaEntity3 = VehiculeJpaEntity.builder().id(3L)
-			.type(EngineTypeJpaEntity.builder().id(1L).code(EngineTypeCode.VAN_L3H3).build())
+			.type(EngineTypeJpaEntity.builder().id(1L).code(EngineTypeCode.VAN_L3H3)
+					.image(DocumentJpaTestData.defaultVanL3H3VehiculeImageDocumentJpaEntity()).build())
 			.model(ModelJpaEntity.builder().id(3L).name("JUMPER")
 					.constructor(ConstructorJpaEntity.builder().id(3L).name("CITROEN").build()).build())
 			.circulationDate(LocalDate.of(2020, 01, 01)).registration("3 TUN 220").build();

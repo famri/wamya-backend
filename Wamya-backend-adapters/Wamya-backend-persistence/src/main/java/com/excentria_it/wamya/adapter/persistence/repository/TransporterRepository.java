@@ -23,4 +23,11 @@ public interface TransporterRepository extends JpaRepository<TransporterJpaEntit
 			@Param("mobileNumber") String mobileNumber);
 
 	Optional<TransporterJpaEntity> findByOauthId(Long userOauthId);
+
+	@Query("SELECT CASE WHEN (COUNT(*) > 0) THEN TRUE ELSE FALSE END FROM TransporterJpaEntity t INNER JOIN t.vehicules v  WHERE t.icc.value = :internationalCallingCode AND t.mobileNumber = :mobileNumber AND v.id = :vehiculeId")
+	boolean existsByIccAndMobileNumberAndVehiculeId(String internationalCallingCode, String mobileNumber,
+			Long vehiculeId);
+
+	@Query("SELECT CASE WHEN (COUNT(*) > 0) THEN TRUE ELSE FALSE END FROM TransporterJpaEntity t INNER JOIN t.vehicules v  WHERE t.email = :email AND v.id = :vehiculeId")
+	boolean existsByEmailAndVehiculeId(String email, Long vehiculeId);
 }

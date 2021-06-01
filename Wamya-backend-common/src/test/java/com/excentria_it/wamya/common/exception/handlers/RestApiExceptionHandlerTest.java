@@ -60,6 +60,7 @@ import com.excentria_it.wamya.common.exception.UserAccountAlreadyExistsException
 import com.excentria_it.wamya.common.exception.UserAccountNotFoundException;
 import com.excentria_it.wamya.common.exception.UserEmailValidationException;
 import com.excentria_it.wamya.common.exception.UserMobileNumberValidationException;
+import com.excentria_it.wamya.common.exception.VehiculeNotFoundException;
 
 @ExtendWith(MockitoExtension.class)
 public class RestApiExceptionHandlerTest {
@@ -643,6 +644,22 @@ public class RestApiExceptionHandlerTest {
 	}
 
 	@Test
+	void whenVehiculeNotFoundException_thenStatusIsNotFound() {
+		// given
+		VehiculeNotFoundException exception = givenVehiculeNotFoundException();
+
+		// When
+		ResponseEntity<ApiError> responseEntity = restApiExceptionHandler.handleVehiculeNotFoundException(exception);
+
+		// Then
+		then(responseEntity.getBody() instanceof ApiError);
+		then(((ApiError) responseEntity.getBody()).getStatus()).isEqualTo(HttpStatus.NOT_FOUND);
+		then(((ApiError) responseEntity.getBody()).getErrorCode()).isEqualTo(ErrorCode.OBJECT_NOT_FOUND);
+		then(((ApiError) responseEntity.getBody()).getErrors()).containsExactly(SOME_MESSAGE);
+		then(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+	}
+
+	@Test
 	void whenHandleUnsupportedMimeTypeException_thenStatusIsUnsupportedMediaType() {
 		// given
 		UnsupportedMimeTypeException exception = givenUnsupportedMimeTypeException();
@@ -660,6 +677,13 @@ public class RestApiExceptionHandlerTest {
 
 	private JourneyProposalNotFoundException givenJourneyProposalNotFoundException() {
 		JourneyProposalNotFoundException exception = Mockito.mock(JourneyProposalNotFoundException.class);
+		given(exception.getMessage()).willReturn(SOME_MESSAGE);
+
+		return exception;
+	}
+
+	private VehiculeNotFoundException givenVehiculeNotFoundException() {
+		VehiculeNotFoundException exception = Mockito.mock(VehiculeNotFoundException.class);
 		given(exception.getMessage()).willReturn(SOME_MESSAGE);
 
 		return exception;

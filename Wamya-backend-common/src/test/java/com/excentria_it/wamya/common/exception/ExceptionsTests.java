@@ -177,4 +177,12 @@ public class ExceptionsTests {
 		ForbiddenAccessException exception = new ForbiddenAccessException(message);
 		assertEquals(exception.getMessage(), message);
 	}
+
+	@Test
+	void testVehiculeNotFoundException() {
+		String message = "SOME MESSAGE";
+		VehiculeNotFoundException exception = new VehiculeNotFoundException(message);
+		assertEquals(exception.getMessage(), message);
+	}
+
 }

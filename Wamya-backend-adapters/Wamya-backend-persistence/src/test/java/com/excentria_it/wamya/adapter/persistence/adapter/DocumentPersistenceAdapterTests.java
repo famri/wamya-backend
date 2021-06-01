@@ -74,7 +74,7 @@ public class DocumentPersistenceAdapterTests {
 		given(documentRepository.findById(any(Long.class))).willReturn(Optional.of(document));
 		// when
 		Boolean canReadDocument = documentPersistenceAdapter.checkReadEntitlements(1L, document.getHash(),
-				TestConstants.DEFAULT_EMAIL, Set.of("ADMIN"));
+				TestConstants.DEFAULT_EMAIL, Set.of("ROLE_ADMIN"));
 		// then
 		assertTrue(canReadDocument);
 	}
@@ -88,7 +88,7 @@ public class DocumentPersistenceAdapterTests {
 		given(documentRepository.findById(any(Long.class))).willReturn(Optional.of(document));
 		// when
 		Boolean canReadDocument = documentPersistenceAdapter.checkReadEntitlements(1L, document.getHash(),
-				TestConstants.DEFAULT_EMAIL, Set.of("SUPPORT"));
+				TestConstants.DEFAULT_EMAIL, Set.of("ROLE_SUPPORT"));
 		// then
 		assertTrue(canReadDocument);
 	}
@@ -103,7 +103,7 @@ public class DocumentPersistenceAdapterTests {
 		given(documentRepository.findById(any(Long.class))).willReturn(Optional.of(document));
 		// when
 		Boolean canReadDocument = documentPersistenceAdapter.checkReadEntitlements(1L, document.getHash(),
-				TestConstants.DEFAULT_EMAIL, Set.of("SUPPORT"));
+				TestConstants.DEFAULT_EMAIL, Set.of("ROLE_SUPPORT"));
 		// then
 		assertTrue(canReadDocument);
 	}
@@ -117,7 +117,7 @@ public class DocumentPersistenceAdapterTests {
 		given(documentRepository.findById(any(Long.class))).willReturn(Optional.of(document));
 		// when
 		Boolean canReadDocument = documentPersistenceAdapter.checkReadEntitlements(1L, document.getHash(),
-				TestConstants.DEFAULT_EMAIL, Set.of("SUPPORT"));
+				TestConstants.DEFAULT_EMAIL, Set.of("ROLE_SUPPORT"));
 		// then
 		assertFalse(canReadDocument);
 	}
@@ -131,7 +131,7 @@ public class DocumentPersistenceAdapterTests {
 		given(documentRepository.findById(any(Long.class))).willReturn(Optional.of(document));
 		// when
 		Boolean canReadDocument = documentPersistenceAdapter.checkReadEntitlements(1L, document.getHash(),
-				TestConstants.DEFAULT_EMAIL, Set.of("SUPPORT"));
+				TestConstants.DEFAULT_EMAIL, Set.of("ROLE_SUPPORT"));
 		// then
 		assertFalse(canReadDocument);
 	}
@@ -159,7 +159,7 @@ public class DocumentPersistenceAdapterTests {
 		given(documentRepository.findById(any(Long.class))).willReturn(Optional.of(document));
 		// when
 		Boolean canReadDocument = documentPersistenceAdapter.checkReadEntitlements(1L, document.getHash(),
-				document.getOwner().getEmail(), Set.of("CLIENT"));
+				document.getOwner().getEmail(), Set.of("ROLE_CLIENT"));
 		// then
 		assertTrue(canReadDocument);
 	}
@@ -189,7 +189,7 @@ public class DocumentPersistenceAdapterTests {
 		given(documentRepository.findById(any(Long.class))).willReturn(Optional.of(document));
 		// when
 		Boolean canReadDocument = documentPersistenceAdapter.checkReadEntitlements(1L, document.getHash(),
-				document.getOwner().getEmail(), Set.of("CLIENT"));
+				document.getOwner().getEmail(), Set.of("ROLE_CLIENT"));
 		// then
 		assertFalse(canReadDocument);
 	}
@@ -204,7 +204,7 @@ public class DocumentPersistenceAdapterTests {
 		given(documentRepository.findById(any(Long.class))).willReturn(Optional.of(document));
 		// when
 		Boolean canReadDocument = documentPersistenceAdapter.checkReadEntitlements(1L, document.getHash(),
-				document.getOwner().getEmail(), Set.of("CLIENT"));
+				document.getOwner().getEmail(), Set.of("ROLE_CLIENT"));
 		// then
 		assertFalse(canReadDocument);
 	}
@@ -219,7 +219,7 @@ public class DocumentPersistenceAdapterTests {
 		given(documentRepository.findById(any(Long.class))).willReturn(Optional.of(document));
 		// when
 		Boolean canReadDocument = documentPersistenceAdapter.checkReadEntitlements(1L, document.getHash(),
-				document.getOwner().getEmail(), Set.of("CLIENT"));
+				document.getOwner().getEmail(), Set.of("ROLE_CLIENT"));
 		// then
 		assertFalse(canReadDocument);
 	}
@@ -234,7 +234,7 @@ public class DocumentPersistenceAdapterTests {
 		given(documentRepository.findById(any(Long.class))).willReturn(Optional.of(document));
 		// when
 		Boolean canReadDocument = documentPersistenceAdapter.checkReadEntitlements(1L, document.getHash(),
-				"others@gmail.com", Set.of("CLIENT"));
+				"others@gmail.com", Set.of("ROLE_CLIENT"));
 		// then
 		assertFalse(canReadDocument);
 	}
@@ -249,7 +249,7 @@ public class DocumentPersistenceAdapterTests {
 		given(documentRepository.findById(any(Long.class))).willReturn(Optional.of(document));
 		// when
 		Boolean canReadDocument = documentPersistenceAdapter.checkReadEntitlements(1L, document.getHash(),
-				"others@gmail.com", Set.of("CLIENT"));
+				"others@gmail.com", Set.of("ROLE_CLIENT"));
 		// then
 		assertTrue(canReadDocument);
 	}
@@ -264,7 +264,7 @@ public class DocumentPersistenceAdapterTests {
 		given(documentRepository.findById(any(Long.class))).willReturn(Optional.of(document));
 		// when
 		Boolean canReadDocument = documentPersistenceAdapter.checkReadEntitlements(1L, document.getHash(),
-				"others@gmail.com", Set.of("CLIENT"));
+				"others@gmail.com", Set.of("ROLE_CLIENT"));
 		// then
 		assertFalse(canReadDocument);
 	}
@@ -279,7 +279,7 @@ public class DocumentPersistenceAdapterTests {
 		given(documentRepository.findById(any(Long.class))).willReturn(Optional.of(document));
 		// when
 		Boolean canReadDocument = documentPersistenceAdapter.checkReadEntitlements(1L, document.getHash(),
-				"others@gmail.com", Set.of("CLIENT"));
+				"others@gmail.com", Set.of("ROLE_CLIENT"));
 		// then
 		assertFalse(canReadDocument);
 	}

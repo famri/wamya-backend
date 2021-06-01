@@ -44,11 +44,16 @@ public class VehiculeJpaEntity {
 
 	private String registration;
 
-	private String photoUrl;
-
 	@OneToOne(cascade = { CascadeType.ALL })
 	@JoinColumn(name = "temporary_model_id", unique = true, nullable = true, updatable = true)
 	private TemporaryModelJpaEntity temporaryModel;
+
+	@ManyToOne
+	protected DocumentJpaEntity image;
+
+	public Long getId() {
+		return id;
+	}
 
 	public EngineTypeJpaEntity getType() {
 		return type;
@@ -82,24 +87,20 @@ public class VehiculeJpaEntity {
 		this.registration = registration;
 	}
 
-	public Long getId() {
-		return id;
-	}
-
-	public String getPhotoUrl() {
-		return photoUrl;
-	}
-
-	public void setPhotoUrl(String photoUrl) {
-		this.photoUrl = photoUrl;
-	}
-
 	public TemporaryModelJpaEntity getTemporaryModel() {
 		return temporaryModel;
 	}
 
 	public void setTemporaryModel(TemporaryModelJpaEntity temporaryModel) {
 		this.temporaryModel = temporaryModel;
+	}
+
+	public DocumentJpaEntity getImage() {
+		return image;
+	}
+
+	public void setImage(DocumentJpaEntity image) {
+		this.image = image;
 	}
 
 	@Override

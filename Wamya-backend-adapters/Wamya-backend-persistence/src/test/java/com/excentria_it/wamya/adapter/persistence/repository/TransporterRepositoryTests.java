@@ -15,6 +15,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.excentria_it.wamya.adapter.persistence.entity.ConstructorJpaEntity;
+import com.excentria_it.wamya.adapter.persistence.entity.DocumentJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.EngineTypeJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.EngineTypeJpaEntity.EngineTypeCode;
 import com.excentria_it.wamya.adapter.persistence.entity.InternationalCallingCodeJpaEntity;
@@ -23,6 +24,7 @@ import com.excentria_it.wamya.adapter.persistence.entity.LocalizedId;
 import com.excentria_it.wamya.adapter.persistence.entity.ModelJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.TransporterJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.VehiculeJpaEntity;
+import com.excentria_it.wamya.test.data.common.DocumentJpaTestData;
 
 @DataJpaTest
 @ActiveProfiles(profiles = { "persistence-local" })
@@ -47,6 +49,9 @@ public class TransporterRepositoryTests {
 	@Autowired
 	private InternationalCallingCodeRepository internationalCallingCodeRepository;
 
+	@Autowired
+	private DocumentRepository documentRepository;
+
 	@BeforeEach
 	public void cleanDatabase() {
 		transporterRepository.deleteAll();
@@ -57,14 +62,15 @@ public class TransporterRepositoryTests {
 		modelRepository.deleteAll();
 		constructorRepository.deleteAll();
 		internationalCallingCodeRepository.deleteAll();
-
+		documentRepository.deleteAll();
 	}
 
 	@Test
 	void testFindByIcc_ValueAndMobileNumber() {
 		List<List<ConstructorJpaEntity>> constructors = givenConstructors();
 		List<List<ModelJpaEntity>> models = givenModels(constructors);
-		List<List<EngineTypeJpaEntity>> engineTypes = givenEngineTypes();
+		List<List<DocumentJpaEntity>> images = givenImages();
+		List<List<EngineTypeJpaEntity>> engineTypes = givenEngineTypes(images);
 		List<List<VehiculeJpaEntity>> vehicules = givenVehicules(engineTypes, models);
 		InternationalCallingCodeJpaEntity icc = givenIcc("+216");
 		// given
@@ -86,7 +92,8 @@ public class TransporterRepositoryTests {
 
 		List<List<ConstructorJpaEntity>> constructors = givenConstructors();
 		List<List<ModelJpaEntity>> models = givenModels(constructors);
-		List<List<EngineTypeJpaEntity>> engineTypes = givenEngineTypes();
+		List<List<DocumentJpaEntity>> images = givenImages();
+		List<List<EngineTypeJpaEntity>> engineTypes = givenEngineTypes(images);
 		List<List<VehiculeJpaEntity>> vehicules = givenVehicules(engineTypes, models);
 		InternationalCallingCodeJpaEntity icc = givenIcc("+216");
 		// given
@@ -108,7 +115,8 @@ public class TransporterRepositoryTests {
 
 		List<List<ConstructorJpaEntity>> constructors = givenConstructors();
 		List<List<ModelJpaEntity>> models = givenModels(constructors);
-		List<List<EngineTypeJpaEntity>> engineTypes = givenEngineTypes();
+		List<List<DocumentJpaEntity>> images = givenImages();
+		List<List<EngineTypeJpaEntity>> engineTypes = givenEngineTypes(images);
 		List<List<VehiculeJpaEntity>> vehicules = givenVehicules(engineTypes, models);
 		InternationalCallingCodeJpaEntity icc = givenIcc("+216");
 		// given
@@ -131,7 +139,8 @@ public class TransporterRepositoryTests {
 
 		List<List<ConstructorJpaEntity>> constructors = givenConstructors();
 		List<List<ModelJpaEntity>> models = givenModels(constructors);
-		List<List<EngineTypeJpaEntity>> engineTypes = givenEngineTypes();
+		List<List<DocumentJpaEntity>> images = givenImages();
+		List<List<EngineTypeJpaEntity>> engineTypes = givenEngineTypes(images);
 		List<List<VehiculeJpaEntity>> vehicules = givenVehicules(engineTypes, models);
 		InternationalCallingCodeJpaEntity icc = givenIcc("+216");
 		// given
@@ -151,7 +160,8 @@ public class TransporterRepositoryTests {
 
 		List<List<ConstructorJpaEntity>> constructors = givenConstructors();
 		List<List<ModelJpaEntity>> models = givenModels(constructors);
-		List<List<EngineTypeJpaEntity>> engineTypes = givenEngineTypes();
+		List<List<DocumentJpaEntity>> images = givenImages();
+		List<List<EngineTypeJpaEntity>> engineTypes = givenEngineTypes(images);
 		List<List<VehiculeJpaEntity>> vehicules = givenVehicules(engineTypes, models);
 		InternationalCallingCodeJpaEntity icc = givenIcc("+216");
 		// given
@@ -175,7 +185,8 @@ public class TransporterRepositoryTests {
 
 		List<List<ConstructorJpaEntity>> constructors = givenConstructors();
 		List<List<ModelJpaEntity>> models = givenModels(constructors);
-		List<List<EngineTypeJpaEntity>> engineTypes = givenEngineTypes();
+		List<List<DocumentJpaEntity>> images = givenImages();
+		List<List<EngineTypeJpaEntity>> engineTypes = givenEngineTypes(images);
 		List<List<VehiculeJpaEntity>> vehicules = givenVehicules(engineTypes, models);
 		InternationalCallingCodeJpaEntity icc = givenIcc("+216");
 		// given
@@ -193,18 +204,15 @@ public class TransporterRepositoryTests {
 			InternationalCallingCodeJpaEntity icc) {
 
 		TransporterJpaEntity t1 = new TransporterJpaEntity(null, null, null, "Transporter1", null, null,
-				"transport1@gmail.com", null, null, icc, "22000001", null, null, null, null,
-				null,null);
+				"transport1@gmail.com", null, null, icc, "22000001", null, null, null, null, null, null);
 		vehicules.get(0).forEach(v -> t1.addVehicule(v));
 
 		TransporterJpaEntity t2 = new TransporterJpaEntity(null, null, null, "Transporter2", null, null,
-				"transport2@gmail.com", null, null, icc, "22000002", null, null, null, null,
-				null,null);
+				"transport2@gmail.com", null, null, icc, "22000002", null, null, null, null, null, null);
 		vehicules.get(1).forEach(v -> t2.addVehicule(v));
 
 		TransporterJpaEntity t3 = new TransporterJpaEntity(null, null, null, "Transporter3", null, null,
-				"transport3@gmail.com", null, null, icc, "22000003", null, null, null, null,
-				null,null);
+				"transport3@gmail.com", null, null, icc, "22000003", null, null, null, null, null, null);
 		vehicules.get(2).forEach(v -> t3.addVehicule(v));
 
 		List<TransporterJpaEntity> transporters = List.of(t1, t2, t3);
@@ -217,36 +225,27 @@ public class TransporterRepositoryTests {
 			List<List<ModelJpaEntity>> models) {
 		List<VehiculeJpaEntity> vehicules1 = List.of(
 				VehiculeJpaEntity.builder().type(engineTypes.get(0).get(0)).model(models.get(0).get(0))
-						.circulationDate(LocalDate.of(2020, 01, 01)).registration("1 TUN 220")
-						.photoUrl("https://path/to/vehicule11/photo").build(),
+						.circulationDate(LocalDate.of(2020, 01, 01)).registration("1 TUN 220").build(),
 				VehiculeJpaEntity.builder().type(engineTypes.get(0).get(1)).model(models.get(0).get(1))
-						.circulationDate(LocalDate.of(2020, 01, 02)).registration("2 TUN 220")
-						.photoUrl("https://path/to/vehicule12/photo").build(),
+						.circulationDate(LocalDate.of(2020, 01, 02)).registration("2 TUN 220").build(),
 				VehiculeJpaEntity.builder().type(engineTypes.get(0).get(2)).model(models.get(0).get(2))
-						.circulationDate(LocalDate.of(2020, 01, 03)).registration("3 TUN 220")
-						.photoUrl("https://path/to/vehicule13/photo").build());
+						.circulationDate(LocalDate.of(2020, 01, 03)).registration("3 TUN 220").build());
 
 		List<VehiculeJpaEntity> vehicules2 = List.of(
 				VehiculeJpaEntity.builder().type(engineTypes.get(1).get(0)).model(models.get(1).get(0))
-						.circulationDate(LocalDate.of(2020, 01, 11)).registration("11 TUN 220")
-						.photoUrl("https://path/to/vehicule21/photo").build(),
+						.circulationDate(LocalDate.of(2020, 01, 11)).registration("11 TUN 220").build(),
 				VehiculeJpaEntity.builder().type(engineTypes.get(1).get(1)).model(models.get(1).get(1))
-						.circulationDate(LocalDate.of(2020, 01, 12)).registration("12 TUN 220")
-						.photoUrl("https://path/to/vehicule22/photo").build(),
+						.circulationDate(LocalDate.of(2020, 01, 12)).registration("12 TUN 220").build(),
 				VehiculeJpaEntity.builder().type(engineTypes.get(1).get(2)).model(models.get(1).get(2))
-						.circulationDate(LocalDate.of(2020, 01, 13)).registration("13 TUN 220")
-						.photoUrl("https://path/to/vehicule23/photo").build());
+						.circulationDate(LocalDate.of(2020, 01, 13)).registration("13 TUN 220").build());
 
 		List<VehiculeJpaEntity> vehicules3 = List.of(
 				VehiculeJpaEntity.builder().type(engineTypes.get(2).get(0)).model(models.get(2).get(0))
-						.circulationDate(LocalDate.of(2020, 01, 21)).registration("21 TUN 220")
-						.photoUrl("https://path/to/vehicule31/photo").build(),
+						.circulationDate(LocalDate.of(2020, 01, 21)).registration("21 TUN 220").build(),
 				VehiculeJpaEntity.builder().type(engineTypes.get(2).get(1)).model(models.get(2).get(1))
-						.circulationDate(LocalDate.of(2020, 01, 22)).registration("22 TUN 220")
-						.photoUrl("https://path/to/vehicule32/photo").build(),
+						.circulationDate(LocalDate.of(2020, 01, 22)).registration("22 TUN 220").build(),
 				VehiculeJpaEntity.builder().type(engineTypes.get(2).get(2)).model(models.get(2).get(2))
-						.circulationDate(LocalDate.of(2020, 01, 23)).registration("23 TUN 220")
-						.photoUrl("https://path/to/vehicule33/photo").build());
+						.circulationDate(LocalDate.of(2020, 01, 23)).registration("23 TUN 220").build());
 
 		vehicules1 = vehiculeRepository.saveAll(vehicules1);
 		vehicules2 = vehiculeRepository.saveAll(vehicules2);
@@ -255,7 +254,7 @@ public class TransporterRepositoryTests {
 		return List.of(vehicules1, vehicules2, vehicules3);
 	}
 
-	private List<List<EngineTypeJpaEntity>> givenEngineTypes() {
+	private List<List<EngineTypeJpaEntity>> givenEngineTypes(List<List<DocumentJpaEntity>> images) {
 		// Engine type 11
 		EngineTypeJpaEntity et11 = new EngineTypeJpaEntity();
 		et11.setCode(EngineTypeCode.VAN_L1H1);
@@ -273,6 +272,8 @@ public class TransporterRepositoryTests {
 		let11fr.setName("TypeVehicule11");
 		let11fr.setDescription("DescriptionTypeVehicule11");
 		et11.getLocalizations().put("fr_FR", let11fr);
+
+		et11.setImage(images.get(0).get(0));
 
 		// Engine type 12
 		EngineTypeJpaEntity et12 = new EngineTypeJpaEntity();
@@ -292,6 +293,8 @@ public class TransporterRepositoryTests {
 		let12fr.setDescription("DescriptionTypeVehicule12");
 		et12.getLocalizations().put("fr_FR", let12fr);
 
+		et12.setImage(images.get(0).get(1));
+
 		// Engine type 13
 		EngineTypeJpaEntity et13 = new EngineTypeJpaEntity();
 		et13.setCode(EngineTypeCode.VAN_L3H3);
@@ -309,6 +312,8 @@ public class TransporterRepositoryTests {
 		let13fr.setName("TypeVehicule13");
 		let13fr.setDescription("DescriptionTypeVehicule3");
 		et13.getLocalizations().put("fr_FR", let13fr);
+
+		et13.setImage(images.get(0).get(2));
 
 		// Engine type 21
 		EngineTypeJpaEntity et21 = new EngineTypeJpaEntity();
@@ -328,6 +333,8 @@ public class TransporterRepositoryTests {
 		let21fr.setDescription("DescriptionTypeVehicule21");
 		et21.getLocalizations().put("fr_FR", let21fr);
 
+		et21.setImage(images.get(1).get(0));
+
 		// Engine type 22
 		EngineTypeJpaEntity et22 = new EngineTypeJpaEntity();
 		et22.setCode(EngineTypeCode.UTILITY);
@@ -346,10 +353,11 @@ public class TransporterRepositoryTests {
 		let22fr.setDescription("DescriptionTypeVehicule22");
 		et22.getLocalizations().put("fr_FR", let22fr);
 
+		et22.setImage(images.get(1).get(1));
+
 		// Engine type 23
 		EngineTypeJpaEntity et23 = new EngineTypeJpaEntity();
 		et23.setCode(EngineTypeCode.DUMP_TRUCK);
-		;
 
 		LocalizedEngineTypeJpaEntity let23en = new LocalizedEngineTypeJpaEntity();
 		let23en.setLocalizedId(new LocalizedId("en_US"));
@@ -364,6 +372,8 @@ public class TransporterRepositoryTests {
 		let23fr.setName("TypeVehicule23");
 		let23fr.setDescription("DescriptionTypeVehicule23");
 		et23.getLocalizations().put("fr_FR", let23fr);
+
+		et23.setImage(images.get(1).get(2));
 
 		// Engine type 31
 		EngineTypeJpaEntity et31 = new EngineTypeJpaEntity();
@@ -383,6 +393,8 @@ public class TransporterRepositoryTests {
 		let31fr.setDescription("DescriptionTypeVehicule31");
 		et31.getLocalizations().put("fr_FR", let31fr);
 
+		et31.setImage(images.get(2).get(0));
+
 		// Engine type 32
 		EngineTypeJpaEntity et32 = new EngineTypeJpaEntity();
 		et32.setCode(EngineTypeCode.TANKER);
@@ -401,6 +413,8 @@ public class TransporterRepositoryTests {
 		let32fr.setDescription("DescriptionTypeVehicule32");
 		et32.getLocalizations().put("fr_FR", let32fr);
 
+		et32.setImage(images.get(2).get(1));
+
 		// Engine type 33
 		EngineTypeJpaEntity et33 = new EngineTypeJpaEntity();
 		et33.setCode(EngineTypeCode.BUS);
@@ -418,6 +432,8 @@ public class TransporterRepositoryTests {
 		let33fr.setName("TypeVehicule33");
 		let33fr.setDescription("DescriptionTypeVehicule3");
 		et33.getLocalizations().put("fr_FR", let33fr);
+
+		et33.setImage(images.get(2).get(2));
 
 		List<EngineTypeJpaEntity> engineTypes1 = List.of(et11, et12, et13);
 		List<EngineTypeJpaEntity> engineTypes2 = List.of(et21, et22, et23);
@@ -446,6 +462,37 @@ public class TransporterRepositoryTests {
 		constructors3 = constructorRepository.saveAll(constructors3);
 
 		return List.of(constructors1, constructors2, constructors3);
+	}
+
+	private List<List<DocumentJpaEntity>> givenImages() {
+
+		DocumentJpaEntity i11 = DocumentJpaTestData.defaultVanL1H1VehiculeImageDocumentJpaEntity();
+		i11.setId(null);
+		DocumentJpaEntity i12 = DocumentJpaTestData.defaultVanL2H2VehiculeImageDocumentJpaEntity();
+		i12.setId(null);
+		DocumentJpaEntity i13 = DocumentJpaTestData.defaultVanL3H3VehiculeImageDocumentJpaEntity();
+		i13.setId(null);
+
+		DocumentJpaEntity i21 = DocumentJpaTestData.defaultFlatbedTruckVehiculeImageDocumentJpaEntity();
+		i21.setId(null);
+		DocumentJpaEntity i22 = DocumentJpaTestData.defaultUtilityVehiculeImageDocumentJpaEntity();
+		i22.setId(null);
+		DocumentJpaEntity i23 = DocumentJpaTestData.defaultDumpTruckVehiculeImageDocumentJpaEntity();
+		i23.setId(null);
+
+		DocumentJpaEntity i31 = DocumentJpaTestData.defaultBoxTruckVehiculeImageDocumentJpaEntity();
+		i31.setId(null);
+		DocumentJpaEntity i32 = DocumentJpaTestData.defaultTankerVehiculeImageDocumentJpaEntity();
+		i32.setId(null);
+		DocumentJpaEntity i33 = DocumentJpaTestData.defaultBusVehiculeImageDocumentJpaEntity();
+		i33.setId(null);
+
+		List<DocumentJpaEntity> images1 = documentRepository.saveAll(List.of(i11, i12, i13));
+		List<DocumentJpaEntity> images2 = documentRepository.saveAll(List.of(i21, i22, i23));
+		List<DocumentJpaEntity> images3 = documentRepository.saveAll(List.of(i31, i32, i33));
+
+		return List.of(images1, images2, images3);
+
 	}
 
 	private List<List<ModelJpaEntity>> givenModels(List<List<ConstructorJpaEntity>> constructors) {

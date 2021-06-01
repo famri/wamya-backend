@@ -18,8 +18,8 @@ import lombok.RequiredArgsConstructor;
 @PersistenceAdapter
 public class DocumentPersistenceAdapter implements CheckDocumentEntitlementsPort, LoadDocumentInfoPort {
 
-	private static final String ADMIN_ROLE = "ADMIN";
-	private static final String SUPPORT_ROLE = "SUPPORT";
+	private static final String ADMIN_ROLE = "ROLE_ADMIN";
+	private static final String SUPPORT_ROLE = "ROLE_SUPPORT";
 
 	private final DocumentRepository documentRepository;
 

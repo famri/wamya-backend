@@ -12,6 +12,8 @@ import com.excentria_it.wamya.adapter.persistence.entity.TransporterJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.VehiculeJpaEntity;
 import com.excentria_it.wamya.application.utils.DocumentUrlResolver;
 import com.excentria_it.wamya.domain.JourneyProposalDto;
+import com.excentria_it.wamya.test.data.common.DocumentJpaTestData;
+import com.excentria_it.wamya.test.data.common.VehiculeJpaEntityTestData;
 
 public class JourneyProposalMapperTests {
 
@@ -61,7 +63,41 @@ public class JourneyProposalMapperTests {
 				journeyProposalDto.getVehicule().getConstructor());
 		assertEquals(journeyProposalJpaEntity.getVehicule().getModel().getName(),
 				journeyProposalDto.getVehicule().getModel());
-		assertEquals(journeyProposalJpaEntity.getVehicule().getPhotoUrl(),
+		assertEquals(getVehiculeImageUrl(journeyProposalJpaEntity.getVehicule()),
+				journeyProposalDto.getVehicule().getPhotoUrl());
+	}
+
+	@Test
+	void testMapToDomainEntityWithNonDefaultVehiculeImage() {
+
+		JourneyProposalJpaEntity journeyProposalJpaEntity = defaultJourneyProposalJpaEntityBuilder()
+				.vehicule(VehiculeJpaEntityTestData.defaultVehiculeJpaEntityBuilder()
+						.image(DocumentJpaTestData.nonDefaultVehiculeImageDocumentJpaEntity()).build())
+				.build();
+
+		JourneyProposalDto journeyProposalDto = journeyProposalMapper.mapToDomainEntity(journeyProposalJpaEntity,
+				"en_US");
+
+		assertEquals(journeyProposalJpaEntity.getId(), journeyProposalDto.getId());
+		assertEquals(journeyProposalJpaEntity.getPrice(), journeyProposalDto.getPrice());
+
+		assertEquals(journeyProposalJpaEntity.getTransporter().getOauthId(),
+				journeyProposalDto.getTransporter().getId());
+		assertEquals(journeyProposalJpaEntity.getTransporter().getFirstname(),
+				journeyProposalDto.getTransporter().getFirstname());
+		assertEquals(journeyProposalJpaEntity.getTransporter().getGlobalRating(),
+				journeyProposalDto.getTransporter().getGlobalRating());
+		assertEquals(
+				DocumentUrlResolver.resolveUrl(journeyProposalJpaEntity.getTransporter().getProfileImage().getId(),
+						journeyProposalJpaEntity.getTransporter().getProfileImage().getHash()),
+				journeyProposalDto.getTransporter().getPhotoUrl());
+
+		assertEquals(journeyProposalJpaEntity.getVehicule().getId(), journeyProposalDto.getVehicule().getId());
+		assertEquals(journeyProposalJpaEntity.getVehicule().getModel().getConstructor().getName(),
+				journeyProposalDto.getVehicule().getConstructor());
+		assertEquals(journeyProposalJpaEntity.getVehicule().getModel().getName(),
+				journeyProposalDto.getVehicule().getModel());
+		assertEquals(getVehiculeImageUrl(journeyProposalJpaEntity.getVehicule()),
 				journeyProposalDto.getVehicule().getPhotoUrl());
 	}
 
@@ -71,5 +107,12 @@ public class JourneyProposalMapperTests {
 		JourneyProposalDto journeyProposalDto = journeyProposalMapper.mapToDomainEntity(null, "en_US");
 
 		assertNull(journeyProposalDto);
+	}
+
+	private String getVehiculeImageUrl(VehiculeJpaEntity vehicule) {
+		return (vehicule.getImage() != null)
+				? DocumentUrlResolver.resolveUrl(vehicule.getImage().getId(), vehicule.getImage().getHash())
+				: DocumentUrlResolver.resolveUrl(vehicule.getType().getImage().getId(),
+						vehicule.getType().getImage().getHash());
 	}
 }

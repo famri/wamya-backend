@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import com.excentria_it.wamya.adapter.persistence.entity.TransporterJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.mapper.VehiculeMapper;
 import com.excentria_it.wamya.adapter.persistence.repository.TransporterRepository;
+import com.excentria_it.wamya.application.port.out.CheckUserVehiculePort;
 import com.excentria_it.wamya.application.port.out.LoadTransporterVehiculesPort;
 import com.excentria_it.wamya.common.annotation.PersistenceAdapter;
 import com.excentria_it.wamya.domain.JourneyProposalDto.VehiculeDto;
@@ -16,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @PersistenceAdapter
-public class TransporterPersistenceAdapter implements LoadTransporterVehiculesPort {
+public class TransporterPersistenceAdapter implements LoadTransporterVehiculesPort, CheckUserVehiculePort {
 
 	private final TransporterRepository transporterRepository;
 
@@ -46,6 +47,24 @@ public class TransporterPersistenceAdapter implements LoadTransporterVehiculesPo
 
 		return transporter.get().getVehicules().stream().map(v -> vehiculeMapper.mapToDomainEntity(v))
 				.collect(Collectors.toSet());
+	}
+
+	@Override
+	public Boolean isUserVehicule(String username, Long vehiculeId) {
+
+		if (username == null || vehiculeId == null) {
+			return false;
+		}
+
+		if (username.contains("@")) {
+			return transporterRepository.existsByEmailAndVehiculeId(username, vehiculeId);
+		} else if (username.split("_").length == 2) {
+			String[] mobile = username.split("_");
+			return transporterRepository.existsByIccAndMobileNumberAndVehiculeId(mobile[0], mobile[1], vehiculeId);
+		} else {
+			return false;
+		}
+
 	}
 
 }

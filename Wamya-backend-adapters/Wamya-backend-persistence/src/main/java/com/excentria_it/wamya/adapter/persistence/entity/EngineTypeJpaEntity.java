@@ -12,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MapKey;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -39,7 +40,8 @@ public class EngineTypeJpaEntity {
 	@Enumerated(EnumType.STRING)
 	private EngineTypeCode code;
 
-	private String defaultPhotoUri;
+	@OneToOne
+	protected DocumentJpaEntity image;
 
 	private Integer rank;
 
@@ -76,20 +78,20 @@ public class EngineTypeJpaEntity {
 		return localizations.get(locale).getDescription();
 	}
 
-	public String getDefaultPhotoUri() {
-		return defaultPhotoUri;
-	}
-
-	public void setDefaultPhotoUri(String defaultPhotoUri) {
-		this.defaultPhotoUri = defaultPhotoUri;
-	}
-
 	public Integer getRank() {
 		return rank;
 	}
 
 	public void setRank(Integer rank) {
 		this.rank = rank;
+	}
+
+	public DocumentJpaEntity getImage() {
+		return image;
+	}
+
+	public void setImage(DocumentJpaEntity image) {
+		this.image = image;
 	}
 
 	@Override
@@ -116,11 +118,6 @@ public class EngineTypeJpaEntity {
 		} else if (!id.equals(other.id))
 			return false;
 		return true;
-	}
-
-	@Override
-	public String toString() {
-		return "EngineTypeJpaEntity [id=" + id + ", code=" + code + "]";
 	}
 
 	public enum EngineTypeCode {

@@ -7,7 +7,9 @@ import org.junit.jupiter.api.Test;
 
 import com.excentria_it.wamya.adapter.persistence.entity.TemporaryModelJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.VehiculeJpaEntity;
+import com.excentria_it.wamya.application.utils.DocumentUrlResolver;
 import com.excentria_it.wamya.domain.JourneyProposalDto.VehiculeDto;
+import com.excentria_it.wamya.test.data.common.DocumentJpaTestData;
 
 public class VehiculeMapperTests {
 
@@ -21,7 +23,20 @@ public class VehiculeMapperTests {
 		assertEquals(vehiculeJpaEntity.getId(), vehiculeDto.getId());
 		assertEquals(vehiculeJpaEntity.getModel().getName(), vehiculeDto.getModel());
 		assertEquals(vehiculeJpaEntity.getModel().getConstructor().getName(), vehiculeDto.getConstructor());
-		assertEquals(vehiculeJpaEntity.getPhotoUrl(), vehiculeDto.getPhotoUrl());
+		assertEquals(getVehiculeImageUrl(vehiculeJpaEntity), vehiculeDto.getPhotoUrl());
+
+	}
+
+	@Test
+	void testMapVehiculeJpaEntityWithNonDefaultVehiculeImage() {
+		VehiculeJpaEntity vehiculeJpaEntity = defaultVehiculeJpaEntityBuilder()
+				.image(DocumentJpaTestData.nonDefaultVehiculeImageDocumentJpaEntity()).build();
+		VehiculeDto vehiculeDto = vehiculeMapper.mapToDomainEntity(vehiculeJpaEntity);
+
+		assertEquals(vehiculeJpaEntity.getId(), vehiculeDto.getId());
+		assertEquals(vehiculeJpaEntity.getModel().getName(), vehiculeDto.getModel());
+		assertEquals(vehiculeJpaEntity.getModel().getConstructor().getName(), vehiculeDto.getConstructor());
+		assertEquals(getVehiculeImageUrl(vehiculeJpaEntity), vehiculeDto.getPhotoUrl());
 
 	}
 
@@ -36,7 +51,14 @@ public class VehiculeMapperTests {
 		assertEquals(vehiculeJpaEntity.getId(), vehiculeDto.getId());
 		assertEquals(vehiculeJpaEntity.getTemporaryModel().getModelName(), vehiculeDto.getModel());
 		assertEquals(vehiculeJpaEntity.getTemporaryModel().getConstructorName(), vehiculeDto.getConstructor());
-		assertEquals(vehiculeJpaEntity.getPhotoUrl(), vehiculeDto.getPhotoUrl());
+		assertEquals(getVehiculeImageUrl(vehiculeJpaEntity), vehiculeDto.getPhotoUrl());
 
+	}
+
+	private String getVehiculeImageUrl(VehiculeJpaEntity vehicule) {
+		return (vehicule.getImage() != null)
+				? DocumentUrlResolver.resolveUrl(vehicule.getImage().getId(), vehicule.getImage().getHash())
+				: DocumentUrlResolver.resolveUrl(vehicule.getType().getImage().getId(),
+						vehicule.getType().getImage().getHash());
 	}
 }

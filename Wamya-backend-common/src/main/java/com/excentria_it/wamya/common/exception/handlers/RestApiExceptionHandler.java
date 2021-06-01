@@ -47,6 +47,7 @@ import com.excentria_it.wamya.common.exception.UserAccountAlreadyExistsException
 import com.excentria_it.wamya.common.exception.UserAccountNotFoundException;
 import com.excentria_it.wamya.common.exception.UserEmailValidationException;
 import com.excentria_it.wamya.common.exception.UserMobileNumberValidationException;
+import com.excentria_it.wamya.common.exception.VehiculeNotFoundException;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -412,6 +413,16 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 				error);
 		return new ResponseEntity<ApiError>(apiError, new HttpHeaders(), apiError.getStatus());
 	}
-	
+
+
+	@ExceptionHandler({ VehiculeNotFoundException.class })
+	@ResponseStatus(HttpStatus.NOT_FOUND)
+	public ResponseEntity<ApiError> handleVehiculeNotFoundException(VehiculeNotFoundException exception) {
+
+		log.error("Exception at " + exception.getClass() + ": ", exception);
+		final String error = exception.getMessage();
+		final ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, ErrorCode.OBJECT_NOT_FOUND, error);
+		return new ResponseEntity<ApiError>(apiError, new HttpHeaders(), apiError.getStatus());
+	}
 
 }

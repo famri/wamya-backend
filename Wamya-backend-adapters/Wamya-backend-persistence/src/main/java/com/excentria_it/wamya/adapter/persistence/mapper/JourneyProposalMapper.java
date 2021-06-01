@@ -27,8 +27,15 @@ public class JourneyProposalMapper {
 			return null;
 
 		VehiculeJpaEntity vehicule = journeyProposalJpaEntity.getVehicule();
+		
+		String vehiculeImageUrl = (vehicule.getImage() != null)
+				? DocumentUrlResolver.resolveUrl(vehicule.getImage().getId(),
+						vehicule.getImage().getHash())
+				: DocumentUrlResolver.resolveUrl(vehicule.getType().getImage().getId(),
+						vehicule.getType().getImage().getHash());
+		
 		JourneyProposalDto.VehiculeDto vehiculeDto = new VehiculeDto(vehicule.getId(),
-				vehicule.getModel().getConstructor().getName(), vehicule.getModel().getName(), vehicule.getPhotoUrl());
+				vehicule.getModel().getConstructor().getName(), vehicule.getModel().getName(), vehiculeImageUrl);
 
 		TransporterJpaEntity transporter = journeyProposalJpaEntity.getTransporter();
 		JourneyProposalDto.TransporterDto transporterDto = new JourneyProposalDto.TransporterDto(

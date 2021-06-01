@@ -23,6 +23,7 @@ import com.excentria_it.wamya.adapter.persistence.entity.TransporterJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.VehiculeJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.mapper.VehiculeMapper;
 import com.excentria_it.wamya.adapter.persistence.repository.TransporterRepository;
+import com.excentria_it.wamya.application.utils.DocumentUrlResolver;
 import com.excentria_it.wamya.domain.JourneyProposalDto.VehiculeDto;
 import com.excentria_it.wamya.test.data.common.TestConstants;
 
@@ -78,7 +79,7 @@ public class TransporterPersistenceAdapterTests {
 			VehiculeJpaEntity v = it.next();
 			vehiculeJpaEntities.add(v);
 			VehiculeDto vehiculeDto = new VehiculeDto(v.getId(), v.getModel().getConstructor().getName(),
-					v.getModel().getName(), v.getPhotoUrl());
+					v.getModel().getName(), getVehiculeImageUrl(v));
 			vehiculeDtos.add(vehiculeDto);
 			given(vehiculeMapper.mapToDomainEntity(v)).willReturn(vehiculeDto);
 		}
@@ -124,13 +125,13 @@ public class TransporterPersistenceAdapterTests {
 		List<VehiculeDto> vehiculeDtos = new ArrayList<>(3);
 		Iterator<VehiculeJpaEntity> it = vehiculeEntities.iterator();
 		while (it.hasNext()) {
-			
+
 			VehiculeJpaEntity v = it.next();
 			transporterJpaEntity.addVehicule(v);
-			
+
 			vehiculeJpaEntities.add(v);
 			VehiculeDto vehiculeDto = new VehiculeDto(v.getId(), v.getModel().getConstructor().getName(),
-					v.getModel().getName(), v.getPhotoUrl());
+					v.getModel().getName(), getVehiculeImageUrl(v));
 			vehiculeDtos.add(vehiculeDto);
 			given(vehiculeMapper.mapToDomainEntity(v)).willReturn(vehiculeDto);
 		}
@@ -162,5 +163,70 @@ public class TransporterPersistenceAdapterTests {
 
 		assertTrue(vehicules.isEmpty());
 
+	}
+
+	@Test
+	void givenNullUsername_whenIsUserVehicule_thenReturnFalse() {
+		// given
+
+		// When
+
+		// then
+		assertFalse(transporterPersistenceAdapter.isUserVehicule(null, 1L));
+
+	}
+
+	@Test
+	void givenNullVehiculeId_whenIsUserVehicule_thenReturnFalse() {
+		// given
+
+		// When
+
+		// then
+		assertFalse(transporterPersistenceAdapter.isUserVehicule(TestConstants.DEFAULT_EMAIL, null));
+
+	}
+
+	@Test
+	void givenEmailUsername_whenIsUserVehicule_thenReturnTrue() {
+		// given
+		given(transporterRepository.existsByEmailAndVehiculeId(any(String.class), any(Long.class))).willReturn(true);
+		// When
+
+		// then
+		assertTrue(transporterPersistenceAdapter.isUserVehicule(TestConstants.DEFAULT_EMAIL, 1L));
+
+	}
+
+	@Test
+	void givenMobileNumberUsername_whenIsUserVehicule_thenReturnTrue() {
+		// given
+		given(transporterRepository.existsByIccAndMobileNumberAndVehiculeId(any(String.class), any(String.class),
+				any(Long.class))).willReturn(true);
+		// When
+
+		// then
+		assertTrue(transporterPersistenceAdapter.isUserVehicule(TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME, 1L));
+
+	}
+
+	@Test
+	void givenBadUsername_whenIsUserVehicule_thenReturnFalse() {
+		// given
+	
+		// When
+
+		// then
+		assertFalse(transporterPersistenceAdapter.isUserVehicule("BadUserName", 1L));
+
+	}
+	
+	
+	private String getVehiculeImageUrl(VehiculeJpaEntity vehiculeJpaEntity) {
+		return vehiculeJpaEntity.getImage() != null
+				? DocumentUrlResolver.resolveUrl(vehiculeJpaEntity.getImage().getId(),
+						vehiculeJpaEntity.getImage().getHash())
+				: DocumentUrlResolver.resolveUrl(vehiculeJpaEntity.getType().getImage().getId(),
+						vehiculeJpaEntity.getType().getImage().getHash());
 	}
 }
