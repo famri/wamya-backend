@@ -83,48 +83,14 @@ public class UserAccountPersistenceAdapter
 		if (userAccount.getIsTransporter()) {
 
 			result = transporterRepository.save(transporterMapper.mapToJpaEntity(userAccount, iccEntity.get(),
-					genderEntity.get(), defaultAvatarDocumentOptional.get()));
+					genderEntity.get(), defaultAvatarDocumentOptional.get(), null));
 		} else {
 			result = clientRepository.save(clientMapper.mapToJpaEntity(userAccount, iccEntity.get(), genderEntity.get(),
-					defaultAvatarDocumentOptional.get()));
+					defaultAvatarDocumentOptional.get(), null));
 		}
 
 		return result.getId();
 	}
-
-//	@Override
-//	public void updateUserAccount(UserAccount userAccount) {
-//
-//		if (userAccount.getId() != null) {
-//
-//			Optional<UserAccountJpaEntity> optionalEntity = userAccountRepository.findById(userAccount.getId());
-//
-//			if (optionalEntity.isPresent()) {
-//				Optional<InternationalCallingCodeJpaEntity> iccEntity = iccRepository
-//						.findByValue(userAccount.getMobilePhoneNumber().getInternationalCallingCode());
-//				if (iccEntity.isEmpty()) {
-//					throw new UnsupportedInternationalCallingCodeException(
-//							String.format("Unsupported international calling code %s",
-//									userAccount.getMobilePhoneNumber().getInternationalCallingCode()));
-//				}
-//
-//				Optional<GenderJpaEntity> genderEntity = genderRepository.findById(userAccount.getGenderId());
-//
-//				if (genderEntity.isEmpty())
-//					throw new GenderNotFoundException(
-//							String.format("Gender ID not found: %s", userAccount.getGenderId()));
-//
-//				UserAccountJpaEntity entity = userAccountMapper.mapToJpaEntity(userAccount, iccEntity.get(),
-//						genderEntity.get());
-//				userAccountRepository.save(entity);
-//			} else
-//				throw new UserAccountNotFoundException(
-//						String.format("No account was found by ID %d.", userAccount.getId()));
-//		} else {
-//			throw new UnsupportedOperationException("Should not update an Entity that does not already exist");
-//		}
-//
-//	}
 
 	@Override
 	public Optional<UserAccount> loadUserAccountByUsername(String username) {
@@ -256,6 +222,65 @@ public class UserAccountPersistenceAdapter
 		} else {
 			throw new UserAccountNotFoundException(String.format("No account was found by ID %d.", userId));
 		}
+	}
+
+	@Override
+	public void updateIdentityDocument(Long userId, String location, String hash, DocumentType documentType) {
+
+		Optional<UserAccountJpaEntity> userAccountEntityOptional = userAccountRepository.findById(userId);
+		if (userAccountEntityOptional.isPresent()) {
+			UserAccountJpaEntity userAccountEntity = userAccountEntityOptional.get();
+			DocumentJpaEntity currentIdentityDocument = userAccountEntity.getIdentityDocument();
+			if (currentIdentityDocument != null) {
+				documentRepository.delete(currentIdentityDocument);
+			}
+			EntitlementJpaEntity ownerEntitlement = new EntitlementJpaEntity(EntitlementType.OWNER, true, true);
+			EntitlementJpaEntity othersEntitlement = new EntitlementJpaEntity(EntitlementType.OTHERS, false, false);
+			EntitlementJpaEntity supportEntitlement = new EntitlementJpaEntity(EntitlementType.SUPPORT, true, true);
+
+			Set<EntitlementJpaEntity> entitlements = Set.of(ownerEntitlement, othersEntitlement, supportEntitlement);
+
+			DocumentJpaEntity newIdentityDocument = new DocumentJpaEntity(userAccountEntity, location, documentType,
+					Instant.now(), entitlements, hash, false);
+			newIdentityDocument = documentRepository.save(newIdentityDocument);
+			userAccountEntity.setIdentityDocument(newIdentityDocument);
+			userAccountRepository.save(userAccountEntity);
+
+		} else {
+			throw new UserAccountNotFoundException(String.format("No account was found by ID %d.", userId));
+		}
+
+	}
+
+	@Override
+	public boolean hasNoIdentityImage(Long userId) {
+		Optional<UserAccountJpaEntity> optionalEntity = userAccountRepository.findById(userId);
+
+		if (optionalEntity.isPresent()) {
+
+			UserAccountJpaEntity userAccountJpaEntity = optionalEntity.get();
+
+			return userAccountJpaEntity.getIdentityDocument() == null;
+
+		} else
+			throw new UserAccountNotFoundException(String.format("No account was found by ID %d.", userId));
+	}
+
+	@Override
+	public String loadIdentityDocumentLocation(Long userId) {
+		Optional<UserAccountJpaEntity> optionalEntity = userAccountRepository.findById(userId);
+
+		if (optionalEntity.isPresent()) {
+
+			UserAccountJpaEntity userAccountJpaEntity = optionalEntity.get();
+			DocumentJpaEntity identityDocument = userAccountJpaEntity.getIdentityDocument();
+			if (identityDocument != null) {
+				return identityDocument.getLocation();
+			}
+			return null;
+
+		} else
+			throw new UserAccountNotFoundException(String.format("No account was found by ID %d.", userId));
 	}
 
 }

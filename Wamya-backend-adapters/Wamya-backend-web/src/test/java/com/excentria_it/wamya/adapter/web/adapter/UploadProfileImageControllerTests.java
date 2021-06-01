@@ -39,7 +39,7 @@ public class UploadProfileImageControllerTests {
 
 	@Test
 	void givenMultipartFile_WhenUploadProfileImage_ThenSucceed() throws Exception {
-		InputStream imageIs = UploadProfileImageController.class.getResourceAsStream("/Image.jpg");
+		InputStream imageIs = UploadProfileImageControllerTests.class.getClassLoader().getResourceAsStream("Image.jpg");
 
 		MockMultipartFile image = new MockMultipartFile("image", "image.jpg", "image/jpeg", imageIs);
 

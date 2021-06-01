@@ -23,7 +23,7 @@ import com.excentria_it.wamya.domain.UserAccount.MobilePhoneNumber;
 public class UserAccountMapper {
 
 	public UserAccountJpaEntity mapToJpaEntity(UserAccount userAccount, InternationalCallingCodeJpaEntity icc,
-			GenderJpaEntity gender, DocumentJpaEntity profileImage) {
+			GenderJpaEntity gender, DocumentJpaEntity profileImage, DocumentJpaEntity identityDocument) {
 		if (userAccount == null)
 			return null;
 
@@ -42,7 +42,7 @@ public class UserAccountMapper {
 					userAccount.getReceiveNewsletter(),
 					userAccount.getCreationDateTime() != null ? userAccount.getCreationDateTime().toInstant()
 							: Instant.now(),
-					profileImage, preferences);
+					profileImage, preferences, identityDocument);
 
 		} else {
 			return new ClientJpaEntity(userAccount.getId(), userAccount.getOauthId(), gender,
@@ -53,7 +53,7 @@ public class UserAccountMapper {
 					userAccount.getReceiveNewsletter(),
 					userAccount.getCreationDateTime() != null ? userAccount.getCreationDateTime().toInstant()
 							: Instant.now(),
-					profileImage, preferences);
+					profileImage, preferences, identityDocument);
 		}
 
 	}

@@ -26,8 +26,9 @@ public class TransporterMapperTests {
 		InternationalCallingCodeJpaEntity icc = defaultExistentInternationalCallingCodeJpaEntity();
 		GenderJpaEntity gender = manGenderJpaEntity();
 		DocumentJpaEntity profileImage = defaultManProfileImageDocumentJpaEntity();
+		DocumentJpaEntity identityDocument = pdfIdentityDocumentJpaEntity();
 		TransporterJpaEntity transporterJpaEntity = transporterMapper.mapToJpaEntity(userAccount, icc, gender,
-				profileImage);
+				profileImage, identityDocument);
 
 		assertEquals(userAccount.getId(), transporterJpaEntity.getId());
 		assertEquals(userAccount.getOauthId(), transporterJpaEntity.getOauthId());
@@ -58,7 +59,9 @@ public class TransporterMapperTests {
 		InternationalCallingCodeJpaEntity icc = defaultExistentInternationalCallingCodeJpaEntity();
 		GenderJpaEntity gender = manGenderJpaEntity();
 		DocumentJpaEntity profileImage = defaultManProfileImageDocumentJpaEntity();
-		TransporterJpaEntity transporterJpaEntity = transporterMapper.mapToJpaEntity(null, icc, gender, profileImage);
+		DocumentJpaEntity identityDocument = pdfIdentityDocumentJpaEntity();
+		TransporterJpaEntity transporterJpaEntity = transporterMapper.mapToJpaEntity(null, icc, gender, profileImage,
+				identityDocument);
 		assertNull(transporterJpaEntity);
 	}
 
@@ -68,8 +71,9 @@ public class TransporterMapperTests {
 		InternationalCallingCodeJpaEntity icc = defaultExistentInternationalCallingCodeJpaEntity();
 		GenderJpaEntity gender = manGenderJpaEntity();
 		DocumentJpaEntity profileImage = defaultManProfileImageDocumentJpaEntity();
+		DocumentJpaEntity identityDocument = pdfIdentityDocumentJpaEntity();
 		TransporterJpaEntity transporterJpaEntity = transporterMapper.mapToJpaEntity(userAccount, icc, gender,
-				profileImage);
+				profileImage, identityDocument);
 		assertNull(transporterJpaEntity);
 	}
 }

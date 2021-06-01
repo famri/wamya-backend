@@ -40,12 +40,13 @@ public class ClientJpaEntity extends UserAccountJpaEntity {
 	public ClientJpaEntity(Long id, Long oauthId, GenderJpaEntity gender, String firstname, String lastname,
 			LocalDate dateOfBirth, String email, String emailValidationCode, Boolean isValidatedEmail,
 			InternationalCallingCodeJpaEntity icc, String mobileNumber, String mobileNumberValidationCode,
-			Boolean isValidatedMobileNumber, Boolean receiveNewsletter, Instant creationDateTime, DocumentJpaEntity profileImage,
-			Map<String, UserPreferenceJpaEntity> preferences) {
+			Boolean isValidatedMobileNumber, Boolean receiveNewsletter, Instant creationDateTime,
+			DocumentJpaEntity profileImage, Map<String, UserPreferenceJpaEntity> preferences,
+			DocumentJpaEntity identityDocument) {
 
 		super(id, oauthId, gender, firstname, lastname, dateOfBirth, email, emailValidationCode, isValidatedEmail, icc,
 				mobileNumber, mobileNumberValidationCode, isValidatedMobileNumber, receiveNewsletter, creationDateTime,
-				profileImage, preferences);
+				profileImage, preferences, identityDocument);
 
 	}
 

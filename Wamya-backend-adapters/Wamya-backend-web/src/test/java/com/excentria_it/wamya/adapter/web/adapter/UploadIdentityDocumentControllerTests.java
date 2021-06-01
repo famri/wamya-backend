@@ -23,37 +23,38 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.c4_soft.springaddons.security.oauth2.test.mockmvc.MockMvcSupport;
-import com.excentria_it.wamya.application.port.in.UploadVehiculeImageUseCase;
+import com.excentria_it.wamya.application.port.in.UploadIdentityDocumentUseCase;
 import com.excentria_it.wamya.common.exception.handlers.RestApiExceptionHandler;
 import com.excentria_it.wamya.test.data.common.TestConstants;
 
 @ActiveProfiles(profiles = { "web-local" })
-@Import(value = { UploadVehiculeImageController.class, RestApiExceptionHandler.class, MockMvcSupport.class })
-@WebMvcTest(controllers = UploadVehiculeImageController.class)
-public class UploadVehiculeImageControllerTests {
+@Import(value = { UploadIdentityDocumentController.class, RestApiExceptionHandler.class, MockMvcSupport.class })
+@WebMvcTest(controllers = UploadIdentityDocumentController.class)
+public class UploadIdentityDocumentControllerTests {
 	@Autowired
 	private MockMvcSupport api;
 
 	@MockBean
-	private UploadVehiculeImageUseCase uploadVehiculeImageUseCase;
+	private UploadIdentityDocumentUseCase uploadIdentityDocumentUseCase;
 
 	@Test
 	void givenMultipartFile_WhenUploadProfileImage_ThenSucceed() throws Exception {
-		InputStream imageIs = UploadVehiculeImageController.class.getResourceAsStream("/Image.jpg");
+		InputStream imageIs = UploadIdentityDocumentControllerTests.class.getClassLoader()
+				.getResourceAsStream("Image.jpg");
 
-		MockMultipartFile image = new MockMultipartFile("image", "image.jpg", "image/jpeg", imageIs);
+		MockMultipartFile identityDocument = new MockMultipartFile("document", "image.jpg", "image/jpeg", imageIs);
 
 		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
-				.authorities("SCOPE_vehicule:write"))
-				.perform(MockMvcRequestBuilders.multipart("/vehicules/1/images").file(image))
+				.authorities("SCOPE_profile:write"))
+				.perform(MockMvcRequestBuilders.multipart("/users/me/identities").file(identityDocument))
 				.andExpect(status().isCreated()).andReturn();
 
 		ArgumentCaptor<BufferedInputStream> isArgumentCaptor = ArgumentCaptor.forClass(BufferedInputStream.class);
 
-		then(uploadVehiculeImageUseCase).should(times(1)).uploadVehiculeImage(isArgumentCaptor.capture(),
-				eq(image.getOriginalFilename()), eq(1L), eq(TestConstants.DEFAULT_EMAIL));
+		then(uploadIdentityDocumentUseCase).should(times(1)).uploadIdentityDocument(isArgumentCaptor.capture(),
+				eq(identityDocument.getOriginalFilename()), eq(TestConstants.DEFAULT_EMAIL));
 
-		assertTrue(IOUtils.contentEquals(image.getInputStream(), isArgumentCaptor.getValue()));
+		assertTrue(IOUtils.contentEquals(identityDocument.getInputStream(), isArgumentCaptor.getValue()));
 
 	}
 

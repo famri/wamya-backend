@@ -13,6 +13,26 @@ import com.excentria_it.wamya.domain.DocumentType;
 import com.excentria_it.wamya.domain.EntitlementType;
 
 public class DocumentJpaTestData {
+	public static DocumentJpaEntity jpegIdentityDocumentJpaEntity() {
+		DocumentJpaEntity document = new DocumentJpaEntity(null, "/Images/1621329097610-default_identity.jpg",
+				DocumentType.IMAGE_JPEG, Instant.ofEpochMilli(1621329097610L), null,
+				DigestUtils.sha256Hex("/Images/1621329097610-default_identity.jpg".getBytes()), true);
+		document.setId(-5L);
+
+		return document;
+
+	}
+
+	public static DocumentJpaEntity pdfIdentityDocumentJpaEntity() {
+		DocumentJpaEntity document = new DocumentJpaEntity(null, "/Images/1621329097610-default_identity.pdf",
+				DocumentType.APPLICATION_PDF, Instant.ofEpochMilli(1621329097610L), null,
+				DigestUtils.sha256Hex("/Images/1621329097610-default_identity.pdf".getBytes()), true);
+		document.setId(-6L);
+
+		return document;
+
+	}
+
 	public static DocumentJpaEntity defaultManProfileImageDocumentJpaEntity() {
 		DocumentJpaEntity document = new DocumentJpaEntity(null, "/Images/1621329097610-default_man_avatar.jpg",
 				DocumentType.IMAGE_JPEG, Instant.ofEpochMilli(1621329097610L), null,
@@ -154,17 +174,19 @@ public class DocumentJpaTestData {
 		document.setId(-3L);
 		return document;
 	}
+
 	public static DocumentJpaEntity nonDefaultVehiculeImageDocumentJpaEntity() {
 		EntitlementJpaEntity ownerEntitlement = new EntitlementJpaEntity(EntitlementType.OWNER, true, true);
 		EntitlementJpaEntity othersEntitlement = new EntitlementJpaEntity(EntitlementType.OTHERS, true, false);
 		EntitlementJpaEntity supportEntitlement = new EntitlementJpaEntity(EntitlementType.SUPPORT, true, true);
-		DocumentJpaEntity document = new DocumentJpaEntity(null, "/Images/1621329097610-non_default_vehicule_avatar.jpg",
-				DocumentType.IMAGE_JPEG, Instant.ofEpochMilli(1621329097610L),
-				Set.of(ownerEntitlement, othersEntitlement, supportEntitlement),
+		DocumentJpaEntity document = new DocumentJpaEntity(null,
+				"/Images/1621329097610-non_default_vehicule_avatar.jpg", DocumentType.IMAGE_JPEG,
+				Instant.ofEpochMilli(1621329097610L), Set.of(ownerEntitlement, othersEntitlement, supportEntitlement),
 				DigestUtils.sha256Hex("/Images/1621329097610-non_default_vehicule_avatar.jpg".getBytes()), false);
 		document.setId(-4L);
 		return document;
 	}
+
 	public static DocumentJpaEntity nonDefaultManProfileImageWithOthersReadEntitlementTrueDocumentJpaEntity() {
 		EntitlementJpaEntity ownerEntitlement = new EntitlementJpaEntity(EntitlementType.OWNER, true, true);
 		EntitlementJpaEntity othersEntitlement = new EntitlementJpaEntity(EntitlementType.OTHERS, true, false);

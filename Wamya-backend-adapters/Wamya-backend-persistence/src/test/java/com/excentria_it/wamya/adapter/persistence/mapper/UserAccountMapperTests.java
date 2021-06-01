@@ -1,5 +1,6 @@
 package com.excentria_it.wamya.adapter.persistence.mapper;
 
+import static com.excentria_it.wamya.test.data.common.DocumentJpaTestData.*;
 import static com.excentria_it.wamya.test.data.common.GenderJpaTestData.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -17,7 +18,7 @@ import com.excentria_it.wamya.domain.UserAccount;
 import com.excentria_it.wamya.test.data.common.InternationalCallingCodeJpaEntityTestData;
 import com.excentria_it.wamya.test.data.common.UserAccountJpaEntityTestData;
 import com.excentria_it.wamya.test.data.common.UserAccountTestData;
-import static com.excentria_it.wamya.test.data.common.DocumentJpaTestData.*;
+
 public class UserAccountMapperTests {
 
 	private UserAccountMapper userAccountMapper = new UserAccountMapper();
@@ -30,8 +31,9 @@ public class UserAccountMapperTests {
 				.defaultExistentInternationalCallingCodeJpaEntity();
 		GenderJpaEntity gender = manGenderJpaEntity();
 		DocumentJpaEntity profileImage = defaultManProfileImageDocumentJpaEntity();
-		
-		UserAccountJpaEntity userAccountJpaEntity = userAccountMapper.mapToJpaEntity(userAccount, iccEntity,gender,profileImage);
+		DocumentJpaEntity identityDocument = jpegIdentityDocumentJpaEntity();
+		UserAccountJpaEntity userAccountJpaEntity = userAccountMapper.mapToJpaEntity(userAccount, iccEntity, gender,
+				profileImage, identityDocument);
 
 		assertEquals(userAccount.getId(), userAccountJpaEntity.getId());
 
@@ -76,7 +78,9 @@ public class UserAccountMapperTests {
 				.defaultExistentInternationalCallingCodeJpaEntity();
 		GenderJpaEntity gender = manGenderJpaEntity();
 		DocumentJpaEntity profileImage = defaultManProfileImageDocumentJpaEntity();
-		UserAccountJpaEntity userAccountJpaEntity = userAccountMapper.mapToJpaEntity(userAccount, iccEntity,gender,profileImage);
+		DocumentJpaEntity identityDocument = jpegIdentityDocumentJpaEntity();
+		UserAccountJpaEntity userAccountJpaEntity = userAccountMapper.mapToJpaEntity(userAccount, iccEntity, gender,
+				profileImage, identityDocument);
 
 		assertEquals(userAccount.getId(), userAccountJpaEntity.getId());
 
@@ -123,7 +127,9 @@ public class UserAccountMapperTests {
 				.defaultExistentInternationalCallingCodeJpaEntity();
 		GenderJpaEntity gender = manGenderJpaEntity();
 		DocumentJpaEntity profileImage = defaultManProfileImageDocumentJpaEntity();
-		UserAccountJpaEntity userAccountJpaEntity = userAccountMapper.mapToJpaEntity(userAccount, iccEntity, gender, profileImage);
+		DocumentJpaEntity identityDocument = jpegIdentityDocumentJpaEntity();
+		UserAccountJpaEntity userAccountJpaEntity = userAccountMapper.mapToJpaEntity(userAccount, iccEntity, gender,
+				profileImage, identityDocument);
 
 		assertNotNull(userAccountJpaEntity.getCreationDateTime());
 
@@ -138,7 +144,9 @@ public class UserAccountMapperTests {
 				.defaultExistentInternationalCallingCodeJpaEntity();
 		GenderJpaEntity gender = manGenderJpaEntity();
 		DocumentJpaEntity profileImage = defaultManProfileImageDocumentJpaEntity();
-		UserAccountJpaEntity userAccountJpaEntity = userAccountMapper.mapToJpaEntity(userAccount, iccEntity, gender, profileImage);
+		DocumentJpaEntity identityDocument = jpegIdentityDocumentJpaEntity();
+		UserAccountJpaEntity userAccountJpaEntity = userAccountMapper.mapToJpaEntity(userAccount, iccEntity, gender,
+				profileImage, identityDocument);
 
 		assertNotNull(userAccountJpaEntity.getCreationDateTime());
 
@@ -152,7 +160,9 @@ public class UserAccountMapperTests {
 				.defaultExistentInternationalCallingCodeJpaEntity();
 		GenderJpaEntity gender = manGenderJpaEntity();
 		DocumentJpaEntity profileImage = defaultManProfileImageDocumentJpaEntity();
-		UserAccountJpaEntity userAccountJpaEntity = userAccountMapper.mapToJpaEntity(userAccount, iccEntity, gender, profileImage);
+		DocumentJpaEntity identityDocument = jpegIdentityDocumentJpaEntity();
+		UserAccountJpaEntity userAccountJpaEntity = userAccountMapper.mapToJpaEntity(userAccount, iccEntity, gender,
+				profileImage, identityDocument);
 
 		assertNull(userAccountJpaEntity);
 

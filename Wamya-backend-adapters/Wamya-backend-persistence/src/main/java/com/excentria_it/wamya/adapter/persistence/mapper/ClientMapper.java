@@ -17,7 +17,7 @@ import com.excentria_it.wamya.domain.UserAccount;
 public class ClientMapper {
 
 	public ClientJpaEntity mapToJpaEntity(UserAccount userAccount, InternationalCallingCodeJpaEntity icc,
-			GenderJpaEntity gender, DocumentJpaEntity profileImage) {
+			GenderJpaEntity gender, DocumentJpaEntity profileImage, DocumentJpaEntity identityDocument) {
 		if (userAccount == null || userAccount.getIsTransporter())
 			return null;
 
@@ -33,7 +33,7 @@ public class ClientMapper {
 				userAccount.getEmailValidationCode(), userAccount.getIsValidatedEmail(), icc,
 				userAccount.getMobilePhoneNumber().getMobileNumber(), userAccount.getMobileNumberValidationCode(),
 				userAccount.getIsValidatedMobileNumber(), userAccount.getReceiveNewsletter(),
-				userAccount.getCreationDateTime().toInstant(), profileImage, preferences);
+				userAccount.getCreationDateTime().toInstant(), profileImage, preferences, identityDocument);
 
 	}
 }

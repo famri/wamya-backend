@@ -25,8 +25,9 @@ public class ClientMapperTests {
 		InternationalCallingCodeJpaEntity icc = defaultExistentInternationalCallingCodeJpaEntity();
 		GenderJpaEntity gender = manGenderJpaEntity();
 		DocumentJpaEntity profileImage = defaultManProfileImageDocumentJpaEntity();
-
-		ClientJpaEntity clientJpaEntity = clientMapper.mapToJpaEntity(userAccount, icc, gender, profileImage);
+		DocumentJpaEntity identityDocument = jpegIdentityDocumentJpaEntity();
+		ClientJpaEntity clientJpaEntity = clientMapper.mapToJpaEntity(userAccount, icc, gender, profileImage,
+				identityDocument);
 
 		assertEquals(userAccount.getId(), clientJpaEntity.getId());
 		assertEquals(userAccount.getOauthId(), clientJpaEntity.getOauthId());
@@ -55,7 +56,8 @@ public class ClientMapperTests {
 		InternationalCallingCodeJpaEntity icc = defaultExistentInternationalCallingCodeJpaEntity();
 		GenderJpaEntity gender = manGenderJpaEntity();
 		DocumentJpaEntity profileImage = defaultManProfileImageDocumentJpaEntity();
-		ClientJpaEntity clientJpaEntity = clientMapper.mapToJpaEntity(null, icc, gender, profileImage);
+		DocumentJpaEntity identityDocument = jpegIdentityDocumentJpaEntity();
+		ClientJpaEntity clientJpaEntity = clientMapper.mapToJpaEntity(null, icc, gender, profileImage,identityDocument);
 		assertNull(clientJpaEntity);
 
 	}
@@ -66,7 +68,8 @@ public class ClientMapperTests {
 		InternationalCallingCodeJpaEntity icc = defaultExistentInternationalCallingCodeJpaEntity();
 		GenderJpaEntity gender = manGenderJpaEntity();
 		DocumentJpaEntity profileImage = defaultManProfileImageDocumentJpaEntity();
-		ClientJpaEntity clientJpaEntity = clientMapper.mapToJpaEntity(userAccount, icc, gender, profileImage);
+		DocumentJpaEntity identityDocument = jpegIdentityDocumentJpaEntity();
+		ClientJpaEntity clientJpaEntity = clientMapper.mapToJpaEntity(userAccount, icc, gender, profileImage,identityDocument);
 		assertNull(clientJpaEntity);
 
 	}

@@ -73,6 +73,9 @@ public abstract class UserAccountJpaEntity {
 	@ManyToOne
 	protected DocumentJpaEntity profileImage;
 
+	@OneToOne
+	protected DocumentJpaEntity identityDocument;
+
 	@OneToMany(mappedBy = "userAccount", cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST,
 			CascadeType.REFRESH }, orphanRemoval = true)
 	@MapKey(name = "userPreferenceId.key")
@@ -82,7 +85,8 @@ public abstract class UserAccountJpaEntity {
 			LocalDate dateOfBirth, String email, String emailValidationCode, Boolean isValidatedEmail,
 			InternationalCallingCodeJpaEntity icc, String mobileNumber, String mobileNumberValidationCode,
 			Boolean isValidatedMobileNumber, Boolean receiveNewsletter, Instant creationDateTime,
-			DocumentJpaEntity profileImage, Map<String, UserPreferenceJpaEntity> preferences) {
+			DocumentJpaEntity profileImage, Map<String, UserPreferenceJpaEntity> preferences,
+			DocumentJpaEntity identityDocument) {
 		super();
 		this.id = id;
 		this.oauthId = oauthId;
@@ -100,6 +104,8 @@ public abstract class UserAccountJpaEntity {
 		this.receiveNewsletter = receiveNewsletter;
 		this.creationDateTime = creationDateTime;
 		this.profileImage = profileImage;
+		this.identityDocument = identityDocument;
+
 		if (preferences != null) {
 			preferences.forEach((k, v) -> v.setUserAccount(this));
 		}
@@ -243,6 +249,14 @@ public abstract class UserAccountJpaEntity {
 		return preferences;
 	}
 
+	public DocumentJpaEntity getIdentityDocument() {
+		return identityDocument;
+	}
+
+	public void setIdentityDocument(DocumentJpaEntity identityDocument) {
+		this.identityDocument = identityDocument;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -274,7 +288,8 @@ public abstract class UserAccountJpaEntity {
 				+ ", emailValidationCode=" + emailValidationCode + ", isValidatedEmail=" + isValidatedEmail + ", icc="
 				+ icc + ", mobileNumber=" + mobileNumber + ", mobileNumberValidationCode=" + mobileNumberValidationCode
 				+ ", isValidatedMobileNumber=" + isValidatedMobileNumber + ", receiveNewsletter=" + receiveNewsletter
-				+ ", creationDateTime=" + creationDateTime + ", profileImage=" + profileImage + "]";
+				+ ", creationDateTime=" + creationDateTime + ", profileImage=" + profileImage + ", identityDocument="
+				+ identityDocument + "]";
 	}
 
 }
