@@ -8,4 +8,6 @@ public interface OAuthUserAccountPort {
 
 	JwtOAuth2AccessToken fetchJwtTokenForUser(String username, String password);
 
+	void resetPassword(Long userOauthId, String password);
+
 }

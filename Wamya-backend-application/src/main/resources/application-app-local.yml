@@ -8,3 +8,8 @@ front:
     protocol: https
     host: localhost
     port: 8443
+
+app:
+  password-reset:
+    request-validity: H3
+    purge-cron-expression: '* */5 * * * *'
