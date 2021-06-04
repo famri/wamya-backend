@@ -6,6 +6,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.validation.constraints.NotEmpty;
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -17,6 +19,7 @@ import com.excentria_it.wamya.springcloud.authorisationserver.dto.OAuthRole;
 import com.excentria_it.wamya.springcloud.authorisationserver.dto.OAuthUserAccount;
 import com.excentria_it.wamya.springcloud.authorisationserver.dto.UserPrincipal;
 import com.excentria_it.wamya.springcloud.authorisationserver.exception.UserAccountAlreadyExistsException;
+import com.excentria_it.wamya.springcloud.authorisationserver.exception.UserAccountNotFoundException;
 import com.excentria_it.wamya.springcloud.authorisationserver.model.RoleEntity;
 import com.excentria_it.wamya.springcloud.authorisationserver.model.UserEntity;
 import com.excentria_it.wamya.springcloud.authorisationserver.repository.RoleRepository;
@@ -118,5 +121,19 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
 		}
 		return mapper.entityToApi(userEntityOptional.get());
+	}
+
+	@Override
+	public void resetPassword(Long oauthId, @NotEmpty String newPassword) {
+		Optional<UserEntity> userEntityOptional = userRepository.findById(oauthId);
+		if (userEntityOptional.isEmpty()) {
+			throw new UserAccountNotFoundException(String.format("Account not found by ID: %d", oauthId));
+		}
+
+		UserEntity entity = userEntityOptional.get();
+		entity.setPassword(passwordEncoder.encode(newPassword));
+
+		userRepository.save(entity);
+
 	}
 }

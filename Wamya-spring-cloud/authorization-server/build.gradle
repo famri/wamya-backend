@@ -29,7 +29,6 @@ dependencies {
 	
 	implementation "org.springframework.security.oauth.boot:spring-security-oauth2-autoconfigure"
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
-	//implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
 	implementation 'com.nimbusds:nimbus-jose-jwt:6.7'
 	
 	runtimeOnly  'org.postgresql:postgresql:42.2.14'

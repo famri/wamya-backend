@@ -11,6 +11,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 
 import com.excentria_it.wamya.adapter.b2b.rest.props.AuthServerProperties;
 import com.excentria_it.wamya.application.port.out.OAuthUserAccountPort;
+import com.excentria_it.wamya.common.annotation.ClientCredentialsWebClient;
 import com.excentria_it.wamya.common.annotation.WebAdapter;
 import com.excentria_it.wamya.common.exception.ApiError;
 import com.excentria_it.wamya.common.exception.AuthServerError;
@@ -38,6 +39,9 @@ public class OAuthUserAccountIntegrationAdapter implements OAuthUserAccountPort 
 
 	private WebClient webClient;
 
+	@ClientCredentialsWebClient
+	private WebClient authenticatedWebClient;
+
 	private ObjectMapper mapper;
 
 	public OAuthUserAccountIntegrationAdapter(AuthServerProperties authServerProperties,
@@ -51,7 +55,7 @@ public class OAuthUserAccountIntegrationAdapter implements OAuthUserAccountPort 
 	@Override
 	public Long createOAuthUserAccount(OAuthUserAccount userAccount) {
 
-		OAuthUserAccount user = getWebClient().post().uri(authServerProperties.getCreateUserUri())
+		OAuthUserAccount user = getUnauthenticatedWebClient().post().uri(authServerProperties.getCreateUserUri())
 				.bodyValue(userAccount).retrieve().bodyToMono(OAuthUserAccount.class)
 				.onErrorMap(WebClientResponseException.class, ex -> handleCreateOAuthUserAccountExceptions(ex)).block();
 
@@ -67,7 +71,7 @@ public class OAuthUserAccountIntegrationAdapter implements OAuthUserAccountPort 
 		formParams.add(PASSWORD_FORM_KEY, password);
 		formParams.add(GRANT_TYPE_FORM_KEY, GRANT_TYPE_FORM_VALUE);
 
-		JwtOAuth2AccessToken jwtToken = getWebClient().post().uri(authServerProperties.getTokenUri())
+		JwtOAuth2AccessToken jwtToken = getUnauthenticatedWebClient().post().uri(authServerProperties.getTokenUri())
 				.headers(headers -> {
 					headers.setBasicAuth(authServerProperties.getClientId(), authServerProperties.getClientSecret());
 					headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -78,7 +82,7 @@ public class OAuthUserAccountIntegrationAdapter implements OAuthUserAccountPort 
 
 	}
 
-	private WebClient getWebClient() {
+	private WebClient getUnauthenticatedWebClient() {
 		if (webClient == null) {
 			webClient = webClientBuilder.build();
 		}
@@ -132,5 +136,14 @@ public class OAuthUserAccountIntegrationAdapter implements OAuthUserAccountPort 
 		} catch (IOException ioex) {
 			return ex.getMessage();
 		}
+	}
+
+	@Override
+	public void resetPassword(Long userOauthId, String password) {
+
+		authenticatedWebClient.post()
+				.uri(authServerProperties.getResetPasswordUri().replace("{oAuthId}", userOauthId.toString()))
+				.bodyValue(password).retrieve();
+
 	}
 }

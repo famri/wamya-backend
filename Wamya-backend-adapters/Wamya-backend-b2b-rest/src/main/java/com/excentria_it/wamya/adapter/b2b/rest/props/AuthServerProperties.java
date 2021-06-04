@@ -35,4 +35,9 @@ public class AuthServerProperties {
 	@NotEmpty
 	@NotNull
 	private String clientSecret;
+	
+	@NotEmpty
+	@NotNull
+	private String resetPasswordUri;
+
 }
