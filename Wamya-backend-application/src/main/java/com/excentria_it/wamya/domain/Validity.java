@@ -11,9 +11,15 @@ public enum Validity {
 		this.milliseconds = milliseconds;
 	}
 
-	public Instant calculateExpiry() {
-
-		return Instant.now().plusMillis(this.milliseconds);
+	public Instant calculateExpiry(Instant startInstant) {
+		if (startInstant == null)
+			return null;
+		return startInstant.plusMillis(this.milliseconds);
 
 	}
+
+	public Long getValidityDelay() {
+		return this.milliseconds;
+	}
+
 }

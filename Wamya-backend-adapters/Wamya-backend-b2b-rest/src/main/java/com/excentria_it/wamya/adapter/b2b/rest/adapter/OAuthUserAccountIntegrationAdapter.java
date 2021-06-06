@@ -1,8 +1,13 @@
 package com.excentria_it.wamya.adapter.b2b.rest.adapter;
 
 import java.io.IOException;
+import java.util.Objects;
 
 import org.springframework.http.MediaType;
+import org.springframework.security.oauth2.client.AuthorizedClientServiceOAuth2AuthorizedClientManager;
+import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -11,7 +16,6 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 
 import com.excentria_it.wamya.adapter.b2b.rest.props.AuthServerProperties;
 import com.excentria_it.wamya.application.port.out.OAuthUserAccountPort;
-import com.excentria_it.wamya.common.annotation.ClientCredentialsWebClient;
 import com.excentria_it.wamya.common.annotation.WebAdapter;
 import com.excentria_it.wamya.common.exception.ApiError;
 import com.excentria_it.wamya.common.exception.AuthServerError;
@@ -22,6 +26,9 @@ import com.excentria_it.wamya.domain.JwtOAuth2AccessToken;
 import com.excentria_it.wamya.domain.OAuthUserAccount;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @WebAdapter
@@ -37,25 +44,26 @@ public class OAuthUserAccountIntegrationAdapter implements OAuthUserAccountPort 
 
 	private WebClient.Builder webClientBuilder;
 
-	private WebClient webClient;
+	private AuthorizedClientServiceOAuth2AuthorizedClientManager authorizedClientServiceAndManager;
 
-	@ClientCredentialsWebClient
-	private WebClient authenticatedWebClient;
+	private WebClient webClient;
 
 	private ObjectMapper mapper;
 
 	public OAuthUserAccountIntegrationAdapter(AuthServerProperties authServerProperties,
-			WebClient.Builder webClientBuilder, ObjectMapper mapper) {
+			WebClient.Builder webClientBuilder, ObjectMapper mapper,
+			AuthorizedClientServiceOAuth2AuthorizedClientManager authorizedClientServiceAndManager) {
 		this.authServerProperties = authServerProperties;
 		this.webClientBuilder = webClientBuilder;
 		this.mapper = mapper;
+		this.authorizedClientServiceAndManager = authorizedClientServiceAndManager;
 
 	}
 
 	@Override
 	public Long createOAuthUserAccount(OAuthUserAccount userAccount) {
 
-		OAuthUserAccount user = getUnauthenticatedWebClient().post().uri(authServerProperties.getCreateUserUri())
+		OAuthUserAccount user = getWebClient().post().uri(authServerProperties.getCreateUserUri())
 				.bodyValue(userAccount).retrieve().bodyToMono(OAuthUserAccount.class)
 				.onErrorMap(WebClientResponseException.class, ex -> handleCreateOAuthUserAccountExceptions(ex)).block();
 
@@ -71,7 +79,7 @@ public class OAuthUserAccountIntegrationAdapter implements OAuthUserAccountPort 
 		formParams.add(PASSWORD_FORM_KEY, password);
 		formParams.add(GRANT_TYPE_FORM_KEY, GRANT_TYPE_FORM_VALUE);
 
-		JwtOAuth2AccessToken jwtToken = getUnauthenticatedWebClient().post().uri(authServerProperties.getTokenUri())
+		JwtOAuth2AccessToken jwtToken = getWebClient().post().uri(authServerProperties.getTokenUri())
 				.headers(headers -> {
 					headers.setBasicAuth(authServerProperties.getClientId(), authServerProperties.getClientSecret());
 					headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -82,7 +90,23 @@ public class OAuthUserAccountIntegrationAdapter implements OAuthUserAccountPort 
 
 	}
 
-	private WebClient getUnauthenticatedWebClient() {
+	@Override
+	public void resetPassword(Long userOauthId, String password) {
+		OAuth2AuthorizeRequest authorizeRequest = OAuth2AuthorizeRequest
+				.withClientRegistrationId("on-prem-auth-server-cc").principal("wamya-mobile-app").build();
+		OAuth2AuthorizedClient authorizedClient = this.authorizedClientServiceAndManager.authorize(authorizeRequest);
+		OAuth2AccessToken accessToken = Objects.requireNonNull(authorizedClient).getAccessToken();
+
+		getWebClient().post()
+				.uri(authServerProperties.getResetPasswordUri().replace("{oAuthId}", userOauthId.toString()))
+				.headers(headers -> {
+					headers.setBearerAuth(accessToken.getTokenValue());
+
+				}).bodyValue(new PasswordBody(password)).retrieve().bodyToMono(String.class).block();
+
+	}
+
+	private WebClient getWebClient() {
 		if (webClient == null) {
 			webClient = webClientBuilder.build();
 		}
@@ -138,12 +162,10 @@ public class OAuthUserAccountIntegrationAdapter implements OAuthUserAccountPort 
 		}
 	}
 
-	@Override
-	public void resetPassword(Long userOauthId, String password) {
-
-		authenticatedWebClient.post()
-				.uri(authServerProperties.getResetPasswordUri().replace("{oAuthId}", userOauthId.toString()))
-				.bodyValue(password).retrieve();
-
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	static class PasswordBody {
+		private String password;
 	}
 }

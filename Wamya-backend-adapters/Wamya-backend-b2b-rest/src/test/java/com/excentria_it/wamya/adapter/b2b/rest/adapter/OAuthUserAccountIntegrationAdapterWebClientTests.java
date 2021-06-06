@@ -1,6 +1,8 @@
 package com.excentria_it.wamya.adapter.b2b.rest.adapter;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.BDDMockito.*;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -11,16 +13,23 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.oauth2.client.AuthorizedClientServiceOAuth2AuthorizedClientManager;
+import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
+import com.excentria_it.wamya.adapter.b2b.rest.adapter.OAuthUserAccountIntegrationAdapter.PasswordBody;
 import com.excentria_it.wamya.adapter.b2b.rest.props.AuthServerProperties;
 import com.excentria_it.wamya.common.exception.ApiError;
 import com.excentria_it.wamya.common.exception.AuthServerError;
@@ -31,6 +40,7 @@ import com.excentria_it.wamya.domain.JwtOAuth2AccessToken;
 import com.excentria_it.wamya.domain.OAuthRole;
 import com.excentria_it.wamya.domain.OAuthUserAccount;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import okhttp3.mockwebserver.MockResponse;
@@ -63,6 +73,9 @@ public class OAuthUserAccountIntegrationAdapterWebClientTests {
 	@Autowired
 	private ObjectMapper objectMapper;
 
+	@Mock
+	private AuthorizedClientServiceOAuth2AuthorizedClientManager authorizedClientServiceAndManager;
+
 	private static final String ACCESS_TOKEN_STRING = "SOME_TOKEN_STRING";
 
 	private OAuthUserAccountIntegrationAdapter oAuthUserAccountIntegrationAdapter;
@@ -74,9 +87,10 @@ public class OAuthUserAccountIntegrationAdapterWebClientTests {
 		authServerProperties.setClientSecret("clientSecret");
 		authServerProperties.setCreateUserUri(baseUrl + "/oauth/users");
 		authServerProperties.setTokenUri(baseUrl + "/oauth/token");
+		authServerProperties.setResetPasswordUri(baseUrl + "/oauth/users/{oAuthId}/do-reset-password");
 
 		oAuthUserAccountIntegrationAdapter = new OAuthUserAccountIntegrationAdapter(authServerProperties,
-				webClientBuilder, objectMapper);
+				webClientBuilder, objectMapper, authorizedClientServiceAndManager);
 	}
 
 	@Test
@@ -327,5 +341,32 @@ public class OAuthUserAccountIntegrationAdapterWebClientTests {
 
 		assertEquals("/oauth/token", recordedRequest.getPath());
 
+	}
+
+	@Test
+	void testResetPassword() throws JsonMappingException, JsonProcessingException, InterruptedException {
+		OAuth2AuthorizedClient oAuth2AuthorizedClient = Mockito.mock(OAuth2AuthorizedClient.class);
+		OAuth2AccessToken oAuth2AccessToken = Mockito.mock(OAuth2AccessToken.class);
+		given(oAuth2AccessToken.getTokenValue()).willReturn("SOME_OAUTH2_BEARER_TOKEN");
+		given(oAuth2AuthorizedClient.getAccessToken()).willReturn(oAuth2AccessToken);
+
+		given(authorizedClientServiceAndManager.authorize(any(OAuth2AuthorizeRequest.class)))
+				.willReturn(oAuth2AuthorizedClient);
+
+		mockBackEnd.enqueue(new MockResponse().setBody("OK").setResponseCode(HttpStatus.OK.value())
+				.addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON));
+
+		oAuthUserAccountIntegrationAdapter.resetPassword(1L, "myNewPassword");
+
+		RecordedRequest recordedRequest = mockBackEnd.takeRequest();
+
+		assertEquals(HttpMethod.POST.name(), recordedRequest.getMethod());
+
+		assertEquals("/oauth/users/1/do-reset-password", recordedRequest.getPath());
+
+		assertEquals("myNewPassword",
+				objectMapper.readValue(recordedRequest.getBody().readUtf8(), PasswordBody.class).getPassword());
+
+		assertEquals("Bearer " + "SOME_OAUTH2_BEARER_TOKEN", recordedRequest.getHeader(HttpHeaders.AUTHORIZATION));
 	}
 }

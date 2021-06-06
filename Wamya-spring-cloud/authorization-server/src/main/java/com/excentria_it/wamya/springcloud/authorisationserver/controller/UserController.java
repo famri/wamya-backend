@@ -33,7 +33,7 @@ public class UserController {
 
 		return newUser;
 	}
-
+	
 	@PostMapping(path = "/users/{id}/do-reset-password", consumes = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.OK)
 	public void createUser(@NotEmpty @RequestParam(name = "password") String newPassword,

@@ -76,7 +76,7 @@ public class PasswordResetController {
 
 		Locale supportedLocale = LocaleUtils.getSupporedLocale(locale);
 
-		if (resetPaswordUseCase.resetPassword(uuid, expiry, password)) {
+		if (resetPaswordUseCase.resetPassword(uuid, password)) {
 			return "password-reset-ok";
 		} else {
 			String errorMessage = messageSource.getMessage(ErrorMessagesPropertiesNames.PASSWORED_RESET_LINK_EXPIRED,

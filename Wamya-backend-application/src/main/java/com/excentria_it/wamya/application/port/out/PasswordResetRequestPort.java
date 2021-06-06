@@ -9,10 +9,10 @@ public interface PasswordResetRequestPort {
 
 	boolean requestExists(String uuid, Long expiry);
 
-	Long getUserAccountOauthId(String uuid, Long expiry);
+	Long getUserAccountOauthId(String uuid);
 
 	void purgeExpired();
 
-	void deleteRequest(String uuid, Long expiry);
+	void deleteRequest(String uuid);
 
 }

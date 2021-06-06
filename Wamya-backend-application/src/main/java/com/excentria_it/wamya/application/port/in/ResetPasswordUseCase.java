@@ -4,7 +4,6 @@ public interface ResetPasswordUseCase {
 
 	boolean checkRequest(String uuid, Long expiry);
 
-
-	boolean resetPassword(String uuid, Long expiry, String password);
+	boolean resetPassword(String uuid, String password);
 
 }

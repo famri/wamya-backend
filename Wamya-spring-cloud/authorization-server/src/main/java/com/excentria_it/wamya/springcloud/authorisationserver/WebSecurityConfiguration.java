@@ -39,12 +39,15 @@ class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 		// @formatter:off
 		http.authorizeRequests(authz -> authz
 
-				.antMatchers("/actuator/**").permitAll().antMatchers("/h2-console/**").permitAll()
-				.antMatchers(HttpMethod.POST, "/oauth/users").permitAll().mvcMatchers("/.well-known/jwks.json")
-				.permitAll().mvcMatchers("/favicon.ico").permitAll())
-
-				.authorizeRequests().anyRequest().authenticated().and().headers().frameOptions().disable().and().csrf()
-				.disable().cors().disable();
+				.antMatchers("/actuator/**").permitAll()
+				.antMatchers("/h2-console/**").permitAll()
+				.antMatchers(HttpMethod.POST, "/oauth/users/**").permitAll()
+				.antMatchers(HttpMethod.POST,"/oauth/users/{\\d+}/do-reset-password").hasAuthority("SCOPE_password:write")
+				.mvcMatchers("/.well-known/jwks.json").permitAll()
+				.mvcMatchers("/favicon.ico").permitAll())
+				.authorizeRequests().anyRequest().authenticated()
+				.and().headers().frameOptions().disable()
+				.and().csrf().disable().cors().disable().oauth2ResourceServer().jwt();
 		/*
 		 * .csrf(csrf -> csrf.ignoringRequestMatchers(
 		 * 

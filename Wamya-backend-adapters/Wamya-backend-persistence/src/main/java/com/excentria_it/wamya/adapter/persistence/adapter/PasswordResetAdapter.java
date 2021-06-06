@@ -42,21 +42,45 @@ public class PasswordResetAdapter implements PasswordResetRequestPort {
 
 	@Override
 	public boolean requestExists(String uuid, Long expiry) {
+		if (expiry == null || uuid == null) {
+			return false;
+		}
+		UUID uuidObj;
+		try {
+			uuidObj = UUID.fromString(uuid);
+		} catch (IllegalArgumentException e) {
+			return false;
+		}
 
-		return passwordResetRequestRepository.existsByUuidAndExpiryTimestamp(UUID.fromString(uuid),
-				Instant.ofEpochMilli(expiry));
-	}
-
-	@Override
-	public void deleteRequest(String uuid, Long expiry) {
-		passwordResetRequestRepository.deleteByUuidAndExpiryTimestamp(uuid, expiry);
-
-	}
-
-	@Override
-	public Long getUserAccountOauthId(String uuid, Long expiry) {
 		Optional<PasswordResetRequestJpaEntity> passwordResetRequestOptional = passwordResetRequestRepository
-				.findByUuidAndExpiryTimestamp(UUID.fromString(uuid), Instant.ofEpochMilli(expiry));
+				.findById(uuidObj);
+
+		if (passwordResetRequestOptional.isEmpty()) {
+			return false;
+		} else {
+			return expiry.equals(passwordResetRequestOptional.get().getExpiryTimestamp().toEpochMilli());
+		}
+	}
+
+	@Override
+	public void deleteRequest(String uuid) {
+		if (uuid == null) {
+			return;
+		}
+		UUID uuidObj;
+		try {
+			uuidObj = UUID.fromString(uuid);
+		} catch (IllegalArgumentException e) {
+			return;
+		}
+		passwordResetRequestRepository.deleteById(uuidObj);
+
+	}
+
+	@Override
+	public Long getUserAccountOauthId(String uuid) {
+		Optional<PasswordResetRequestJpaEntity> passwordResetRequestOptional = passwordResetRequestRepository
+				.findById(UUID.fromString(uuid));
 
 		if (passwordResetRequestOptional.isEmpty()) {
 			return null;

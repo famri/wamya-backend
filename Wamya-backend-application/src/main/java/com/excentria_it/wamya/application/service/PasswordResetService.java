@@ -73,11 +73,16 @@ public class PasswordResetService implements RequestPasswordResetUseCase, ResetP
 		Long userId = userAccountOptional.get().getId();
 		String userEmail = userAccountOptional.get().getEmail();
 
-		Instant requestExpiryTimestamp = passwordResetProperties.getRequestValidity().calculateExpiry();
+		Instant now = Instant.now();
+
+		Instant requestExpiryTimestamp = passwordResetProperties.getRequestValidity().calculateExpiry(now);
 
 		UUID requestUUID = passwordResetRequestPort.registerRequest(userId, requestExpiryTimestamp);
 
-		this.requestSendingPasswordResetLink(userEmail, requestUUID, requestExpiryTimestamp, locale);
+		if (!this.requestSendingPasswordResetLink(userEmail, requestUUID, requestExpiryTimestamp, locale)) {
+			passwordResetRequestPort.deleteRequest(requestUUID.toString());
+		}
+
 	}
 
 	@Override
@@ -86,17 +91,17 @@ public class PasswordResetService implements RequestPasswordResetUseCase, ResetP
 	}
 
 	@Override
-	public boolean resetPassword(String uuid, Long expiry, String password) {
+	public boolean resetPassword(String uuid, String password) {
 
-		Long userOauthId = passwordResetRequestPort.getUserAccountOauthId(uuid, expiry);
+		Long userOauthId = passwordResetRequestPort.getUserAccountOauthId(uuid);
 
 		if (userOauthId == null) {
 			return false;
 		}
-		
+
 		oAuthUserAccountPort.resetPassword(userOauthId, password);
-		passwordResetRequestPort.deleteRequest(uuid, expiry);
-		
+		passwordResetRequestPort.deleteRequest(uuid);
+
 		return true;
 
 	}
@@ -109,7 +114,7 @@ public class PasswordResetService implements RequestPasswordResetUseCase, ResetP
 		data.put("host", serverUrlProperties.getHost());
 		data.put("port", serverUrlProperties.getPort());
 		data.put("uuid", requestUUID.toString());
-		data.put("exp", Long.valueOf(requestExpiryTimestamp.toEpochMilli()).toString());
+		data.put("expiry", Long.valueOf(requestExpiryTimestamp.toEpochMilli()).toString());
 
 		String passwordResetLink = patchURL(PASSWORD_RESET_URL_TEMPLATE, data);
 
