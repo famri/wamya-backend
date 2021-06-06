@@ -29,7 +29,9 @@ check.dependsOn jacocoTestCoverageVerification
 
 
 dependencies {
-	
+	compile ("net.minidev:json-smart:2.3") {
+  		force = true
+	}
 
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'

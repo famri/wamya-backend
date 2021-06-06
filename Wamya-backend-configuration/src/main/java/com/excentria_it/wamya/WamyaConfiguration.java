@@ -24,13 +24,15 @@ import com.excentria_it.wamya.adapter.persistence.PersistenceConfiguration;
 import com.excentria_it.wamya.adapter.web.WebConfiguration;
 import com.excentria_it.wamya.adapter.web.WebSecurityConfiguration;
 import com.excentria_it.wamya.application.props.CodeGeneratorProperties;
+import com.excentria_it.wamya.application.props.PasswordResetProperties;
 import com.excentria_it.wamya.application.props.ServerUrlProperties;
 
 @Configuration
 @Import(value = { B2bRestConfiguration.class, MessagingConfiguration.class, WebSocketConfiguration.class,
 		FileStorageConfiguration.class, PersistenceConfiguration.class, WebConfiguration.class,
 		WebSecurityConfiguration.class, WebSocketSecurityConfiguration.class })
-@EnableConfigurationProperties(value = { CodeGeneratorProperties.class, ServerUrlProperties.class })
+@EnableConfigurationProperties(value = { CodeGeneratorProperties.class, ServerUrlProperties.class,
+		PasswordResetProperties.class })
 public class WamyaConfiguration {
 
 	private static final String DEFAULT_ENCODING_ALGORITHM = "bcrypt";

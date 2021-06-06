@@ -8,51 +8,31 @@ import static org.mockito.Mockito.*;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.springframework.aop.support.AopUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.context.ActiveProfiles;
 
 import com.excentria_it.wamya.application.port.out.CheckDocumentEntitlementsPort;
-import com.excentria_it.wamya.application.service.DocumentService;
+import com.excentria_it.wamya.application.port.out.LoadDocumentInfoPort;
+import com.excentria_it.wamya.application.port.out.LoadFilePort;
 import com.excentria_it.wamya.common.exception.ForbiddenAccessException;
 
-@SpringBootTest(classes = { DocumentService.class, DocumentAccessAspectTestsConfiguration.class })
-@ActiveProfiles("app-local")
+@ExtendWith(MockitoExtension.class)
 public class DocumentAccessAspectTests {
 
-	@SpyBean
-	private DocumentAccessAspect documentAccessAspect;
-
-	@Autowired
+	@Mock
+	private LoadDocumentInfoPort loadDocumentInfoPort;
+	@Mock
+	private LoadFilePort loadFilePort;
+	@Mock
 	private CheckDocumentEntitlementsPort checkDocumentEntitlementsPort;
 
-	@Autowired
 	@InjectMocks
-	private DocumentService documentService;
-
-	@Test
-	void whenDocumentService_getDocument_ThenCall_DocumentAccessAspect_beforeGetDocument() {
-
-		// given
-
-		doNothing().when(documentAccessAspect).beforeGetDocument(any(Long.class), any(String.class));
-
-		// when
-		documentService.getDocument(1L, "someHash");
-
-		// then
-		assertTrue(AopUtils.isAopProxy(documentService));
-		assertTrue(AopUtils.isCglibProxy(documentService));
-
-		verify(documentAccessAspect, times(1)).beforeGetDocument(1L, "someHash");
-
-	}
+	private DocumentAccessAspect documentAccessAspect;
 
 	@Test
 	void givenCheckReadEntitlementsReturnsTrue_whenBeforeGetDocumentThenReturnVoid() {

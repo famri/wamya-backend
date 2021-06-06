@@ -5,5 +5,6 @@ front:
     port: 8443
     
 app:
-  password-reset:
+  password.reset:
     request-validity: H3
+    purge-cron-expression: '* */5 * * * *'

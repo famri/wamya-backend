@@ -26,16 +26,19 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		//TODO for production enable csrf
+		// TODO for production enable csrf
 		// @formatter:off
-		http.csrf().disable().cors()
-		.disable().httpBasic().disable().formLogin().disable().sessionManagement()
-				.sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-				.authorizeRequests(authz -> authz.antMatchers("/actuator/**", "/content/**").permitAll()
+		http.csrf().disable().cors().disable().httpBasic().disable().formLogin().disable().sessionManagement()
+				.sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests(authz -> authz
+						.antMatchers("/actuator/**", "/content/**").permitAll()
 						.antMatchers(HttpMethod.POST, "/login/**", "/accounts/**").permitAll()
-						.antMatchers(HttpMethod.GET, "/countries/**", "/locales/**", "/genders/**", "/documents/**").permitAll()
-						.antMatchers(HttpMethod.GET,"/wamya-ws/**").hasAnyAuthority("SCOPE_journey:write", "SCOPE_offer:write")
-						.antMatchers("/user-preferences").hasAnyAuthority("SCOPE_journey:write", "SCOPE_offer:write")
+						.antMatchers(HttpMethod.GET, "/countries/**", "/locales/**", "/genders/**", "/documents/**")
+						.permitAll().antMatchers(HttpMethod.GET, "/wamya-ws/**")
+						.hasAnyAuthority("SCOPE_journey:write", "SCOPE_offer:write").antMatchers("/user-preferences")
+						.hasAnyAuthority("SCOPE_journey:write", "SCOPE_offer:write")
+						.antMatchers(HttpMethod.POST, "/accounts/do-request-password-reset/**",
+								"/accounts/password-reset/**")
+						.permitAll().antMatchers(HttpMethod.GET, "/accounts/password-reset/**").permitAll()
 						.antMatchers("/users/me/discussions/**")
 						.hasAnyAuthority("SCOPE_journey:write", "SCOPE_offer:write")
 						.antMatchers(HttpMethod.GET, "/localities/**").hasAuthority("SCOPE_journey:write")
@@ -59,26 +62,26 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 						.hasAnyAuthority("SCOPE_vehicule:write", "SCOPE_journey:write")
 						.antMatchers(HttpMethod.POST, "/users/me/vehicules/**").hasAuthority("SCOPE_vehicule:write")
 						.antMatchers(HttpMethod.GET, "/users/me/vehicules/**").hasAuthority("SCOPE_vehicule:read")
-						.antMatchers(HttpMethod.GET, "/users/me/journey-requests/**").hasAuthority("SCOPE_journey:write")
-						
+						.antMatchers(HttpMethod.GET, "/users/me/journey-requests/**")
+						.hasAuthority("SCOPE_journey:write")
+
 						.antMatchers(HttpMethod.POST, "/validation-codes/sms/send/**")
 						.hasAuthority("SCOPE_profile:write")
 						.antMatchers(HttpMethod.POST, "/validation-codes/email/send/**")
-						.hasAuthority("SCOPE_profile:write")
-						.antMatchers(HttpMethod.POST, "/users/me/identities/**").hasAuthority("SCOPE_profile:write")
-						.antMatchers(HttpMethod.POST, "/profiles/me/avatars/**").hasAuthority("SCOPE_profile:write")
-						.antMatchers(HttpMethod.POST, "/vehicules/{\\d+}/images/**").hasAuthority("SCOPE_vehicule:write")
-						.anyRequest().authenticated())
-				.oauth2ResourceServer()
-				.bearerTokenResolver(bearerTokenResolver())
-				.jwt()
+						.hasAuthority("SCOPE_profile:write").antMatchers(HttpMethod.POST, "/users/me/identities/**")
+						.hasAuthority("SCOPE_profile:write").antMatchers(HttpMethod.POST, "/profiles/me/avatars/**")
+						.hasAuthority("SCOPE_profile:write").antMatchers(HttpMethod.POST, "/vehicules/{\\d+}/images/**")
+						.hasAuthority("SCOPE_vehicule:write").anyRequest().authenticated())
+				.oauth2ResourceServer().bearerTokenResolver(bearerTokenResolver()).jwt()
 		// .jwtAuthenticationConverter(authenticationConverter)
 		;
 
 		// @formatter:on
 
 	}
-	//this is to allow sending access_token as a URI request parameter for webSocket client authentication
+
+	// this is to allow sending access_token as a URI request parameter for
+	// webSocket client authentication
 	@Bean
 	BearerTokenResolver bearerTokenResolver() {
 		DefaultBearerTokenResolver bearerTokenResolver = new DefaultBearerTokenResolver();

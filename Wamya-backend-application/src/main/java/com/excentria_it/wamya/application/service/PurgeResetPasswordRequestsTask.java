@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 public class PurgeResetPasswordRequestsTask {
 	private final PasswordResetRequestPort passwordResetRequestPort;
 
-	@Scheduled(cron = "${app.password-reset.purge-cron-expression}")
+	@Scheduled(cron = "${app.password.reset.purge-cron-expression}")
 	public void purgeExpiredPasswordResetRequests() {
 
 		passwordResetRequestPort.purgeExpired();

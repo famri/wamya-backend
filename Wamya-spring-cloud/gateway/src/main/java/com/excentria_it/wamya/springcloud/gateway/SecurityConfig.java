@@ -14,14 +14,16 @@ public class SecurityConfig {
 	SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) throws Exception {
 		http.csrf().disable().authorizeExchange()
 				.pathMatchers("/actuator/**", "/eureka/**", "/wamya-backend/login/**", "/wamya-backend/accounts/**",
-						"/oauth/**", "/wamya-backend/countries/**", "/wamya-backend/locales/**", "/wamya-backend/genders/**",
-						"/wamya-backend/content/**","/wamya-backend/documents/**")
-				.permitAll().anyExchange().authenticated().and().oauth2ResourceServer().bearerTokenConverter(authenticationConverter()).jwt();
-		
+						"/oauth/**", "/wamya-backend/countries/**", "/wamya-backend/locales/**",
+						"/wamya-backend/genders/**", "/wamya-backend/content/**", "/wamya-backend/documents/**")
+				.permitAll().anyExchange().authenticated().and().oauth2ResourceServer()
+				.bearerTokenConverter(authenticationConverter()).jwt();
+
 		return http.build();
 	}
 
-	//this converter allows using access_token as get request parameter in websocket endpoint to authenticate websocket client
+	// this converter allows using access_token as get request parameter in
+	// websocket endpoint to authenticate websocket client
 	@Bean
 	ServerAuthenticationConverter authenticationConverter() {
 		ServerBearerTokenAuthenticationConverter authenticationConverter = new ServerBearerTokenAuthenticationConverter();

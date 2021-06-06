@@ -15,6 +15,8 @@ import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
+import org.springframework.security.oauth2.server.resource.web.BearerTokenResolver;
+import org.springframework.security.oauth2.server.resource.web.DefaultBearerTokenResolver;
 
 @Configuration
 @EnableWebSecurity
@@ -34,20 +36,25 @@ class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	}
 
+	@Bean
+	BearerTokenResolver bearerTokenResolver() {
+		DefaultBearerTokenResolver bearerTokenResolver = new DefaultBearerTokenResolver();
+		bearerTokenResolver.setAllowUriQueryParameter(true);
+		return bearerTokenResolver;
+	}
+
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		// @formatter:off
 		http.authorizeRequests(authz -> authz
 
-				.antMatchers("/actuator/**").permitAll()
-				.antMatchers("/h2-console/**").permitAll()
+				.antMatchers("/actuator/**").permitAll().antMatchers("/h2-console/**").permitAll()
 				.antMatchers(HttpMethod.POST, "/oauth/users/**").permitAll()
-				.antMatchers(HttpMethod.POST,"/oauth/users/{\\d+}/do-reset-password").hasAuthority("SCOPE_password:write")
-				.mvcMatchers("/.well-known/jwks.json").permitAll()
-				.mvcMatchers("/favicon.ico").permitAll())
-				.authorizeRequests().anyRequest().authenticated()
-				.and().headers().frameOptions().disable()
-				.and().csrf().disable().cors().disable().oauth2ResourceServer().jwt();
+				.antMatchers(HttpMethod.POST, "/oauth/users/{\\d+}/do-reset-password")
+				.hasAuthority("SCOPE_password:write").mvcMatchers("/.well-known/jwks.json").permitAll()
+				.mvcMatchers("/favicon.ico").permitAll()).authorizeRequests().anyRequest().authenticated().and()
+				.headers().frameOptions().disable().and().csrf().disable().cors().disable().oauth2ResourceServer()
+				.jwt();
 		/*
 		 * .csrf(csrf -> csrf.ignoringRequestMatchers(
 		 * 

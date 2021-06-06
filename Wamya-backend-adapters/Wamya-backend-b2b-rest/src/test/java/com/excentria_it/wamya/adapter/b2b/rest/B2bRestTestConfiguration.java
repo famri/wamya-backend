@@ -8,7 +8,7 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
 @SpringBootConfiguration
 @EnableAutoConfiguration
-@Import(value = { B2bRestConfiguration.class })
+@Import(value = { B2bRestConfiguration.class, OAuthClientConfiguration.class })
 public class B2bRestTestConfiguration {
 	@Bean
 	public PropertySourcesPlaceholderConfigurer propertiesResolver() {

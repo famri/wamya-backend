@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
 
 import com.excentria_it.wamya.application.port.in.RequestPasswordResetUseCase;
 import com.excentria_it.wamya.application.port.in.ResetPasswordUseCase;
@@ -25,7 +25,7 @@ import com.excentria_it.wamya.common.utils.LocaleUtils;
 import com.excentria_it.wamya.domain.ErrorMessagesPropertiesNames;
 
 @WebAdapter
-@RestController
+@Controller
 @CrossOrigin(origins = "*")
 @RequestMapping(path = "/accounts")
 public class PasswordResetController {
@@ -34,7 +34,7 @@ public class PasswordResetController {
 	private RequestPasswordResetUseCase requestPasswordResetUseCase;
 
 	@Autowired
-	private ResetPasswordUseCase resetPaswordUseCase;
+	private ResetPasswordUseCase resetPasswordUseCase;
 
 	@Autowired
 	@ViewMessageSource
@@ -44,7 +44,8 @@ public class PasswordResetController {
 	@ResponseStatus(HttpStatus.OK)
 	public void requestPasswordReset(@NotEmpty @RequestParam(name = "username") String username, Locale locale) {
 
-		requestPasswordResetUseCase.requestPasswordReset(username, locale);
+		Locale supportedLocale = LocaleUtils.getSupporedLocale(locale);
+		requestPasswordResetUseCase.requestPasswordReset(username, supportedLocale);
 
 	}
 
@@ -55,7 +56,7 @@ public class PasswordResetController {
 
 		Locale supportedLocale = LocaleUtils.getSupporedLocale(locale);
 
-		if (resetPaswordUseCase.checkRequest(uuid, expiry)) {
+		if (resetPasswordUseCase.checkRequest(uuid, expiry)) {
 			model.addAttribute("uuid", uuid);
 			model.addAttribute("exp", expiry);
 			return "password-reset";
@@ -76,13 +77,15 @@ public class PasswordResetController {
 
 		Locale supportedLocale = LocaleUtils.getSupporedLocale(locale);
 
-		if (resetPaswordUseCase.resetPassword(uuid, password)) {
-			return "password-reset-ok";
-		} else {
+		if (!resetPasswordUseCase.checkRequest(uuid, expiry) || !resetPasswordUseCase.resetPassword(uuid, password)) {
+
 			String errorMessage = messageSource.getMessage(ErrorMessagesPropertiesNames.PASSWORED_RESET_LINK_EXPIRED,
 					null, supportedLocale);
 			model.addAttribute("error", errorMessage);
 			return "error";
+		} else {
+			return "password-reset-ok";
 		}
+
 	}
 }
