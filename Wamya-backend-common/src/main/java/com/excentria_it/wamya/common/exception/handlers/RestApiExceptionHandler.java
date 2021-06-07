@@ -33,14 +33,15 @@ import com.excentria_it.wamya.common.exception.CountryNotFoundException;
 import com.excentria_it.wamya.common.exception.DepartmentNotFoundException;
 import com.excentria_it.wamya.common.exception.DiscussionNotFoundException;
 import com.excentria_it.wamya.common.exception.DocumentAccessException;
+import com.excentria_it.wamya.common.exception.ForbiddenAccessException;
 import com.excentria_it.wamya.common.exception.GenderNotFoundException;
 import com.excentria_it.wamya.common.exception.InvalidPlaceTypeException;
 import com.excentria_it.wamya.common.exception.InvalidTransporterVehiculeException;
 import com.excentria_it.wamya.common.exception.JourneyProposalNotFoundException;
 import com.excentria_it.wamya.common.exception.JourneyRequestExpiredException;
 import com.excentria_it.wamya.common.exception.JourneyRequestNotFoundException;
+import com.excentria_it.wamya.common.exception.LinkExpiredException;
 import com.excentria_it.wamya.common.exception.OperationDeniedException;
-import com.excentria_it.wamya.common.exception.ForbiddenAccessException;
 import com.excentria_it.wamya.common.exception.UnsupportedInternationalCallingCodeException;
 import com.excentria_it.wamya.common.exception.UnsupportedMimeTypeException;
 import com.excentria_it.wamya.common.exception.UserAccountAlreadyExistsException;
@@ -392,17 +393,17 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 				error);
 		return new ResponseEntity<ApiError>(apiError, new HttpHeaders(), apiError.getStatus());
 	}
+
 	@ExceptionHandler({ ForbiddenAccessException.class })
 	@ResponseStatus(HttpStatus.FORBIDDEN)
 	public ResponseEntity<ApiError> handleForbiddenAccessException(ForbiddenAccessException exception) {
 
 		log.error("Exception at " + exception.getClass() + ": ", exception);
 		final String error = exception.getMessage();
-		final ApiError apiError = new ApiError(HttpStatus.FORBIDDEN, ErrorCode.AUTHORIZATION,
-				error);
+		final ApiError apiError = new ApiError(HttpStatus.FORBIDDEN, ErrorCode.AUTHORIZATION, error);
 		return new ResponseEntity<ApiError>(apiError, new HttpHeaders(), apiError.getStatus());
 	}
-	
+
 	@ExceptionHandler({ UnsupportedMimeTypeException.class })
 	@ResponseStatus(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
 	public ResponseEntity<ApiError> handleUnsupportedMimeTypeException(UnsupportedMimeTypeException exception) {
@@ -414,7 +415,6 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 		return new ResponseEntity<ApiError>(apiError, new HttpHeaders(), apiError.getStatus());
 	}
 
-
 	@ExceptionHandler({ VehiculeNotFoundException.class })
 	@ResponseStatus(HttpStatus.NOT_FOUND)
 	public ResponseEntity<ApiError> handleVehiculeNotFoundException(VehiculeNotFoundException exception) {
@@ -422,6 +422,16 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 		log.error("Exception at " + exception.getClass() + ": ", exception);
 		final String error = exception.getMessage();
 		final ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, ErrorCode.OBJECT_NOT_FOUND, error);
+		return new ResponseEntity<ApiError>(apiError, new HttpHeaders(), apiError.getStatus());
+	}
+
+	@ExceptionHandler({ LinkExpiredException.class })
+	@ResponseStatus(HttpStatus.NOT_FOUND)
+	public ResponseEntity<ApiError> handleLinkExpiredException(LinkExpiredException exception) {
+
+		log.error("Exception at " + exception.getClass() + ": ", exception);
+		final String error = exception.getMessage();
+		final ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, ErrorCode.NOT_FOUND, error);
 		return new ResponseEntity<ApiError>(apiError, new HttpHeaders(), apiError.getStatus());
 	}
 

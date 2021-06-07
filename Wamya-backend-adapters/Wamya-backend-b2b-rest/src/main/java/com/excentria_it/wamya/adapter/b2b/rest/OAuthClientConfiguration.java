@@ -16,7 +16,7 @@ import org.springframework.security.oauth2.core.AuthorizationGrantType;
 @Configuration
 public class OAuthClientConfiguration {
 	@Bean
-	ClientRegistration oktaClientRegistration(
+	ClientRegistration onPremAuthServerClientCredentialsClientRegistration(
 			@Value("${spring.security.oauth2.client.provider.on-prem-auth-server.token-uri}") String token_uri,
 			@Value("${spring.security.oauth2.client.registration.on-prem-auth-server-cc.client-id}") String client_id,
 			@Value("${spring.security.oauth2.client.registration.on-prem-auth-server-cc.client-secret}") String client_secret,

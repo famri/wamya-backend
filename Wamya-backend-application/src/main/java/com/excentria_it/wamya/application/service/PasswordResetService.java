@@ -93,12 +93,7 @@ public class PasswordResetService implements RequestPasswordResetUseCase, ResetP
 	@Override
 	public boolean resetPassword(String uuid, String password) {
 
-
 		Long userOauthId = passwordResetRequestPort.getUserAccountOauthId(uuid);
-
-		if (userOauthId == null) {
-			return false;
-		}
 
 		oAuthUserAccountPort.resetPassword(userOauthId, password);
 		passwordResetRequestPort.deleteRequest(uuid);

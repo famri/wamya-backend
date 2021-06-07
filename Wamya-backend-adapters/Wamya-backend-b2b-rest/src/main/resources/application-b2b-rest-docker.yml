@@ -8,7 +8,7 @@ spring:
             client-id: wamya-mobile-app
             client-secret: S3CR3T
             provider: on-prem-auth-server
-        
+            scope: 'password:write'
         provider:
           on-prem-auth-server:
             token-uri: "http://${app.auth-server}:9999/oauth/token"

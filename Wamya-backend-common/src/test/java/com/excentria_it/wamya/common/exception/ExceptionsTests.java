@@ -185,4 +185,12 @@ public class ExceptionsTests {
 		assertEquals(exception.getMessage(), message);
 	}
 
+	@Test
+	void testLinkExpiredException() {
+
+		String message = "SOME MESSAGE";
+		LinkExpiredException exception = new LinkExpiredException(message);
+		assertEquals(exception.getMessage(), message);
+	}
+
 }
