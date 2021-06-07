@@ -23,7 +23,6 @@ import com.excentria_it.wamya.application.port.out.PasswordResetRequestPort;
 import com.excentria_it.wamya.application.props.PasswordResetProperties;
 import com.excentria_it.wamya.application.props.ServerUrlProperties;
 import com.excentria_it.wamya.common.annotation.UseCase;
-import com.excentria_it.wamya.common.annotation.ViewMessageSource;
 import com.excentria_it.wamya.common.domain.EmailMessage;
 import com.excentria_it.wamya.common.domain.EmailTemplate;
 import com.excentria_it.wamya.domain.EmailSender;
@@ -56,10 +55,9 @@ public class PasswordResetService implements RequestPasswordResetUseCase, ResetP
 	private MessagingPort messagingPort;
 
 	@Autowired
-	@ViewMessageSource
 	private MessageSource messageSource;
 
-	private static final String PASSWORD_RESET_URL_TEMPLATE = "${protocol}://${host}:${port}/accounts/password-reset?uuid=${uuid}&exp=${expiry}";
+	private static final String PASSWORD_RESET_URL_TEMPLATE = "${protocol}://${host}:${port}/wamya-backend/accounts/password-reset?uuid=${uuid}&exp=${expiry}";
 
 	@Override
 	public void requestPasswordReset(String username, Locale locale) {

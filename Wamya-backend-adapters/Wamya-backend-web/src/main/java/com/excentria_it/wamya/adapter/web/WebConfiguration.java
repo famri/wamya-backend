@@ -17,9 +17,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
-import com.excentria_it.wamya.common.annotation.ValidationMessageSource;
-import com.excentria_it.wamya.common.annotation.ViewMessageSource;
-
 @Configuration
 public class WebConfiguration implements WebMvcConfigurer {
 
@@ -29,23 +26,13 @@ public class WebConfiguration implements WebMvcConfigurer {
 	}
 
 	// I18N validation messages
-	@Bean(name = "validationMessageSource")
-	@ValidationMessageSource
-	public MessageSource validationMessageSource() {
+	@Bean
+	public MessageSource messageSource() {
 		ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-		messageSource.setBasename("messages/validation/messages");
+
+		messageSource.setBasenames("messages/validation/messages", "messages/view/messages");
+		messageSource.setCacheSeconds(0);
 		messageSource.setDefaultEncoding("UTF-8");
-		return messageSource;
-
-	}
-
-	@Bean(name = "viewMessageSource")
-	@ViewMessageSource
-	public MessageSource viewMessageSource() {
-		ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-		messageSource.setBasename("messages/view/messages");
-		messageSource.setDefaultEncoding("UTF-8");
-
 		return messageSource;
 
 	}
@@ -53,14 +40,14 @@ public class WebConfiguration implements WebMvcConfigurer {
 	@Bean
 	public LocalValidatorFactoryBean getValidator() {
 		LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();
-		localValidatorFactoryBean.setValidationMessageSource(validationMessageSource());
+		localValidatorFactoryBean.setValidationMessageSource(messageSource());
 		return localValidatorFactoryBean;
 	}
 
 	@Bean
 	public LocaleResolver localeResolver() {
 		SessionLocaleResolver slr = new SessionLocaleResolver();
-		slr.setDefaultLocale(Locale.US);		
+		slr.setDefaultLocale(Locale.US);
 		return slr;
 	}
 

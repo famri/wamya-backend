@@ -12,4 +12,4 @@ front:
 app:
   password.reset:
     request-validity: H3
-    purge-cron-expression: '* */5 * * * *'
+    purge-cron-expression: '0 */5 * * * *'

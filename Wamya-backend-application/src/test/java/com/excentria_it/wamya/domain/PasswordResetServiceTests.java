@@ -164,19 +164,6 @@ public class PasswordResetServiceTests {
 		then(passwordResetRequestPort).should(times(1)).deleteRequest(uuid);
 	}
 
-	@Test
-	void givenUserOauthIdIsNotFound_whenResetPassword_thenResetPasswordAndDeleteRequest() {
-		// given
-		given(passwordResetRequestPort.getUserAccountOauthId(any(String.class))).willReturn(null);
 
-		String uuid = UUID.randomUUID().toString();
-		// When
-		assertFalse(passwordResetService.resetPassword(uuid, "MyNewPassword"));
-
-		// then
-
-		then(oAuthUserAccountPort).should(never()).resetPassword(1L, "MyNewPassword");
-		then(passwordResetRequestPort).should(never()).deleteRequest(uuid);
-	}
 
 }

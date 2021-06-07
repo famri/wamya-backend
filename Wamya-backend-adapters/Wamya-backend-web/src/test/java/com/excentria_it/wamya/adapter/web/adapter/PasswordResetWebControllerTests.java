@@ -21,9 +21,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.c4_soft.springaddons.security.oauth2.test.mockmvc.MockMvcSupport;
-import com.excentria_it.wamya.application.port.in.RequestPasswordResetUseCase;
 import com.excentria_it.wamya.application.port.in.ResetPasswordUseCase;
-import com.excentria_it.wamya.common.annotation.ViewMessageSource;
 import com.excentria_it.wamya.common.exception.handlers.RestApiExceptionHandler;
 import com.excentria_it.wamya.common.utils.LocaleUtils;
 
@@ -38,11 +36,7 @@ public class PasswordResetWebControllerTests {
 	@MockBean
 	private ResetPasswordUseCase resetPasswordUseCase;
 
-	@MockBean
-	private RequestPasswordResetUseCase requestPasswordResetUseCase;
-
-	@MockBean
-	@ViewMessageSource
+	@Autowired
 	private MessageSource messageSource;
 
 	@Test
@@ -75,10 +69,9 @@ public class PasswordResetWebControllerTests {
 		UUID uuid = UUID.randomUUID();
 		Instant expiry = Instant.now().plusMillis(3600000);
 
-		String errorMessage = "Request does not exists.";
 		given(resetPasswordUseCase.checkRequest(any(String.class), any(Long.class))).willReturn(false);
-
-		given(messageSource.getMessage(any(String.class), eq(null), eq(supportedLocale))).willReturn(errorMessage);
+		String errorMessage = messageSource.getMessage(
+				"com.excentria_it.wamya.domain.error.message.reset.password.link.expired", null, supportedLocale);
 		// when
 
 		mockMvc.perform(get("/accounts/password-reset").queryParam("lang", "fr_FR").param("uuid", uuid.toString())

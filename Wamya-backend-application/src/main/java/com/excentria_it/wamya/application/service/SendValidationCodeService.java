@@ -15,7 +15,6 @@ import com.excentria_it.wamya.application.port.out.MessagingPort;
 import com.excentria_it.wamya.application.port.out.UpdateUserAccountPort;
 import com.excentria_it.wamya.application.service.helper.CodeGenerator;
 import com.excentria_it.wamya.common.annotation.UseCase;
-import com.excentria_it.wamya.common.annotation.ViewMessageSource;
 import com.excentria_it.wamya.common.domain.EmailMessage;
 import com.excentria_it.wamya.common.domain.EmailTemplate;
 import com.excentria_it.wamya.common.domain.SMSMessage;
@@ -42,7 +41,6 @@ public class SendValidationCodeService implements SendValidationCodeUseCase {
 	private UpdateUserAccountPort updateUserAccountPort;
 
 	@Autowired
-	@ViewMessageSource
 	private MessageSource messageSource;
 
 	@Override
@@ -112,7 +110,5 @@ public class SendValidationCodeService implements SendValidationCodeUseCase {
 		}
 		return userAccountOptional.get();
 	}
-
-
 
 }

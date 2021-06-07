@@ -24,7 +24,6 @@ import com.excentria_it.wamya.application.port.out.OAuthUserAccountPort;
 import com.excentria_it.wamya.application.props.ServerUrlProperties;
 import com.excentria_it.wamya.application.service.helper.CodeGenerator;
 import com.excentria_it.wamya.common.annotation.UseCase;
-import com.excentria_it.wamya.common.annotation.ViewMessageSource;
 import com.excentria_it.wamya.common.domain.EmailMessage;
 import com.excentria_it.wamya.common.domain.EmailTemplate;
 import com.excentria_it.wamya.common.domain.SMSMessage;
@@ -67,7 +66,6 @@ public class UserAccountService implements CreateUserAccountUseCase {
 	private ServerUrlProperties serverUrlProperties;
 
 	@Autowired
-	@ViewMessageSource
 	private MessageSource messageSource;
 
 	public static final String EMAIL_VALIDATION_URL_TEMPLATE = "${protocol}://${host}:${port}/accounts/validate?email=${email}&code=${code}";

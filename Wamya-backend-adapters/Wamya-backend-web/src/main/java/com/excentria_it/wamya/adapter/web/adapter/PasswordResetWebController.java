@@ -4,7 +4,6 @@ import java.util.Locale;
 
 import javax.validation.constraints.NotEmpty;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -16,23 +15,22 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.excentria_it.wamya.application.port.in.ResetPasswordUseCase;
-import com.excentria_it.wamya.common.annotation.ViewMessageSource;
 import com.excentria_it.wamya.common.annotation.WebAdapter;
 import com.excentria_it.wamya.common.utils.LocaleUtils;
 import com.excentria_it.wamya.domain.ErrorMessagesPropertiesNames;
 
+import lombok.RequiredArgsConstructor;
+
 @WebAdapter
+@RequiredArgsConstructor
 @Controller
 @CrossOrigin(origins = "*")
 @RequestMapping(path = "/accounts")
 public class PasswordResetWebController {
 
-	@Autowired
-	private ResetPasswordUseCase resetPasswordUseCase;
+	private final ResetPasswordUseCase resetPasswordUseCase;
 
-	@Autowired
-	@ViewMessageSource
-	private MessageSource messageSource;
+	private final MessageSource messageSource;
 
 	@GetMapping(path = "/password-reset")
 	@ResponseStatus(HttpStatus.OK)

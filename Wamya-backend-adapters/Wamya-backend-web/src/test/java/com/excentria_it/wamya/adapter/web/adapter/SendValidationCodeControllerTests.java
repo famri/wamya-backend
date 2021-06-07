@@ -28,13 +28,12 @@ import com.excentria_it.wamya.adapter.web.domain.ValidationCodeRequestStatus;
 import com.excentria_it.wamya.application.port.in.SendValidationCodeUseCase;
 import com.excentria_it.wamya.application.port.in.SendValidationCodeUseCase.SendEmailValidationLinkCommand;
 import com.excentria_it.wamya.application.port.in.SendValidationCodeUseCase.SendSMSValidationCodeCommand;
-import com.excentria_it.wamya.common.annotation.ValidationMessageSource;
 import com.excentria_it.wamya.common.exception.ApiError;
 import com.excentria_it.wamya.common.exception.ApiError.ErrorCode;
-import com.excentria_it.wamya.common.exception.handlers.RestApiExceptionHandler;
 import com.excentria_it.wamya.common.exception.UserAccountNotFoundException;
 import com.excentria_it.wamya.common.exception.UserEmailValidationException;
 import com.excentria_it.wamya.common.exception.UserMobileNumberValidationException;
+import com.excentria_it.wamya.common.exception.handlers.RestApiExceptionHandler;
 import com.excentria_it.wamya.test.data.common.TestConstants;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -53,7 +52,6 @@ public class SendValidationCodeControllerTests {
 	private ObjectMapper objectMapper;
 
 	@Autowired
-	@ValidationMessageSource
 	private MessageSource validationMessageSource;
 
 	// Test sendSMSValidaionCode
