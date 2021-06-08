@@ -17,7 +17,6 @@ import org.springframework.security.oauth2.provider.request.DefaultOAuth2Request
 
 public class UserAuthoritiesCheckingOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 
-	private static final String GRANT_TYPE_PARAM_NAME = "grant_type";
 	private static final String PASSWORD_GRANT_TYPE_VALUE = "password";
 	private static final String USERNAME_PARAM_NAME = "username";
 	private UserDetailsService userDetailsService;
@@ -33,7 +32,7 @@ public class UserAuthoritiesCheckingOAuth2RequestFactory extends DefaultOAuth2Re
 	@Override
 	public TokenRequest createTokenRequest(Map<String, String> requestParameters, ClientDetails authenticatedClient) {
 
-		if (PASSWORD_GRANT_TYPE_VALUE.equals(requestParameters.get(GRANT_TYPE_PARAM_NAME))) {
+		if (PASSWORD_GRANT_TYPE_VALUE.equals(requestParameters.get(OAuth2Utils.GRANT_TYPE))) {
 			Set<String> requestedScopes = OAuth2Utils.parseParameterList(requestParameters.get(OAuth2Utils.SCOPE));
 
 			Collection<? extends GrantedAuthority> userGrantedAuthorities = this.userDetailsService
