@@ -21,9 +21,6 @@ public interface ResetPasswordUseCase {
 	class ResetPasswordCommand {
 
 		@NotEmpty
-		String username;
-
-		@NotEmpty
 		String password;
 
 		@NotEmpty

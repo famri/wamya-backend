@@ -3,7 +3,7 @@ package com.excentria_it.wamya.domain;
 import java.time.Instant;
 
 public enum Validity {
-	H3(3600000L);
+	H3(10800000L);
 
 	private long milliseconds;
 

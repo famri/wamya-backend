@@ -13,22 +13,27 @@
 	href="https://use.fontawesome.com/releases/v5.4.1/css/all.css"
 	integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz"
 	crossorigin="anonymous">
+<script type="text/javascript"
+	src="/wamya-backend/content/scripts/jquery-3.6.0.js"></script>
 </head>
 <body>
+
 	<div class="container my-5">
-		<h2 class="mb-5"
-			th:text="#{com.excentria_it.wamya.domain.error.message}"></h2>
-		<div class="row">
-			<div class="col-md-6">
-
-				<div class="row">
-					<div class="col-md-6 mt-5">
-						<h3 class="text-danger" th:text="${error}"></h3>
-					</div>
+		<div class="text-center">
+			<img src="/wamya-backend/content/images/logo_wamya.png" alt="logo" />
+		</div>
+		<div class="container my-5">
+			<div class="row">
+				<div class="col">
+					<h4 class="mb-3"
+						th:text="#{com.excentria_it.wamya.domain.error.message}"></h4>
 				</div>
-
+			</div>
+			<div class="row">
+				<p class="col text-danger" th:text="${error}"></p>
 			</div>
 		</div>
+
 	</div>
 </body>
 </html>

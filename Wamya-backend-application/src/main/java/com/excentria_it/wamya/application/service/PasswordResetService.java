@@ -57,7 +57,7 @@ public class PasswordResetService implements RequestPasswordResetUseCase, ResetP
 	@Autowired
 	private MessageSource messageSource;
 
-	private static final String PASSWORD_RESET_URL_TEMPLATE = "${protocol}://${host}:${port}/wamya-backend/accounts/password-reset?uuid=${uuid}&exp=${expiry}";
+	private static final String PASSWORD_RESET_URL_TEMPLATE = "${protocol}://${host}:${port}/wamya-backend/accounts/password-reset?uuid=${uuid}&exp=${expiry}&lang=${lang}";
 
 	@Override
 	public void requestPasswordReset(String username, Locale locale) {
@@ -109,6 +109,7 @@ public class PasswordResetService implements RequestPasswordResetUseCase, ResetP
 		data.put("port", serverUrlProperties.getPort());
 		data.put("uuid", requestUUID.toString());
 		data.put("expiry", Long.valueOf(requestExpiryTimestamp.toEpochMilli()).toString());
+		data.put("lang", locale.toString());
 
 		String passwordResetLink = patchURL(PASSWORD_RESET_URL_TEMPLATE, data);
 

@@ -1,7 +1,6 @@
 package com.excentria_it.wamya.springcloud.authorisationserver.controller;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -9,11 +8,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.excentria_it.wamya.springcloud.authorisationserver.dto.OAuthUserAccount;
+import com.excentria_it.wamya.springcloud.authorisationserver.dto.PasswordBody;
 import com.excentria_it.wamya.springcloud.authorisationserver.service.UserService;
 
 import lombok.AllArgsConstructor;
@@ -33,13 +32,12 @@ public class UserController {
 
 		return newUser;
 	}
-	
+
 	@PostMapping(path = "/users/{id}/do-reset-password", consumes = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.OK)
-	public void createUser(@NotEmpty @RequestParam(name = "password") String newPassword,
-			@PathVariable(name = "id") Long oauthId) {
+	public void createUser(@Valid @RequestBody PasswordBody passwordBody, @PathVariable(name = "id") Long oauthId) {
 
-		userService.resetPassword(oauthId, newPassword);
+		userService.resetPassword(oauthId, passwordBody.getPassword());
 
 	}
 }

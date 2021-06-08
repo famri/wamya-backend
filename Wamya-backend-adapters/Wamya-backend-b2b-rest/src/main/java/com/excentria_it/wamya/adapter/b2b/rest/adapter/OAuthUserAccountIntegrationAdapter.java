@@ -101,8 +101,8 @@ public class OAuthUserAccountIntegrationAdapter implements OAuthUserAccountPort 
 				.uri(authServerProperties.getResetPasswordUri().replace("{oAuthId}", userOauthId.toString()))
 				.headers(headers -> {
 					headers.setBearerAuth(accessToken.getTokenValue());
-
-				}).bodyValue(new PasswordBody(password)).retrieve().bodyToMono(String.class).block();
+					headers.setContentType(MediaType.APPLICATION_JSON);
+				}).bodyValue(new PasswordBody(password)).retrieve().bodyToMono(Void.class).block();
 
 	}
 

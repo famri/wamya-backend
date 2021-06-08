@@ -54,7 +54,7 @@ class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 				.hasAuthority("SCOPE_password:write").mvcMatchers("/.well-known/jwks.json").permitAll()
 				.mvcMatchers("/favicon.ico").permitAll()).authorizeRequests().anyRequest().authenticated().and()
 				.headers().frameOptions().disable().and().csrf().disable().cors().disable().oauth2ResourceServer()
-				.jwt();
+				.jwt().jwkSetUri("http://localhost:9999/.well-known/jwks.json");
 		/*
 		 * .csrf(csrf -> csrf.ignoringRequestMatchers(
 		 * 

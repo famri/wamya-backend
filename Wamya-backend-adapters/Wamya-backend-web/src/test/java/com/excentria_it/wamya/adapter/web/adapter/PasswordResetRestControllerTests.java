@@ -77,7 +77,7 @@ public class PasswordResetRestControllerTests {
 		UUID uuid = UUID.randomUUID();
 		Instant expiry = Instant.now().plusMillis(3600000);
 
-		ResetPasswordCommand command = new ResetPasswordCommand(TestConstants.DEFAULT_EMAIL, "MyNewPAssword",
+		ResetPasswordCommand command = new ResetPasswordCommand("MyNewPAssword",
 				uuid.toString(), expiry.toEpochMilli());
 
 		String resetPasswordCommandJson = objectMapper.writeValueAsString(command);
@@ -100,7 +100,7 @@ public class PasswordResetRestControllerTests {
 		UUID uuid = UUID.randomUUID();
 		Instant expiry = Instant.now().plusMillis(3600000);
 
-		ResetPasswordCommand command = new ResetPasswordCommand(TestConstants.DEFAULT_EMAIL, "MyNewPAssword",
+		ResetPasswordCommand command = new ResetPasswordCommand("MyNewPAssword",
 				uuid.toString(), expiry.toEpochMilli());
 
 		String resetPasswordCommandJson = objectMapper.writeValueAsString(command);

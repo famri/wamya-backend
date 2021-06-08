@@ -42,6 +42,7 @@ public class PasswordResetWebController {
 		if (resetPasswordUseCase.checkRequest(uuid, expiry)) {
 			model.addAttribute("uuid", uuid);
 			model.addAttribute("exp", expiry);
+			model.addAttribute("lang", supportedLocale.toString());
 			return "password-reset";
 		} else {
 			String errorMessage = messageSource.getMessage(ErrorMessagesPropertiesNames.PASSWORED_RESET_LINK_EXPIRED,
