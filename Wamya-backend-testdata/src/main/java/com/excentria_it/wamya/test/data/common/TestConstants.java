@@ -45,6 +45,8 @@ public class TestConstants {
 
 	public static LocalDate DEFAULT_DATE_OF_BIRTH = LocalDate.of(1988, 10, 17);
 
+	public static final String DEFAULT_MINIBIO = "This is a wonderful biography!";
+
 	static {
 
 		String attachementName = "dummy_email_attachement.txt";

@@ -20,7 +20,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,6 +31,7 @@ import com.excentria_it.wamya.adapter.persistence.mapper.DiscussionMapper;
 import com.excentria_it.wamya.adapter.persistence.repository.DiscussionRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.MessageRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.UserAccountRepository;
+import com.excentria_it.wamya.application.utils.DocumentUrlResolver;
 import com.excentria_it.wamya.common.SortCriterion;
 import com.excentria_it.wamya.domain.LoadDiscussionsOutput.MessageOutput;
 import com.excentria_it.wamya.domain.LoadMessagesOutputResult;
@@ -44,7 +44,9 @@ public class ChatMessagePersistenceAdapterTests {
 	private DiscussionRepository discussionRepository;
 	@Mock
 	private UserAccountRepository userAccountRepository;
-	@Spy
+	@Mock
+	private DocumentUrlResolver documentUrlResolver;
+	@Mock
 	private DiscussionMapper discussionMapper;
 
 	@InjectMocks
@@ -132,6 +134,8 @@ public class ChatMessagePersistenceAdapterTests {
 		// given
 		Page<MessageJpaEntity> messagesPage = defaultMessageJpaEntityPage();
 		given(messageRepository.findByDiscussion_Id(any(Long.class), any(Pageable.class))).willReturn(messagesPage);
+		given(discussionMapper.getMessageOutput(any(MessageJpaEntity.class)))
+				.willReturn(new MessageOutput(1L, 1L, "message", Instant.now(), false));
 		// When
 
 		LoadMessagesOutputResult result = chatMessagePersistenceAdapter.loadMessages(1L, 0, 25,

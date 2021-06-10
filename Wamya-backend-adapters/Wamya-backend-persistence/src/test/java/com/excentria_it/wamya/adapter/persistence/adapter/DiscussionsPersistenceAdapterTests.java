@@ -50,6 +50,9 @@ public class DiscussionsPersistenceAdapterTests {
 	@Mock
 	private TransporterRepository transporterRepository;
 
+	private DocumentUrlResolver documentUrlResolver = new DocumentUrlResolver("https://domain-name:port/wamya-backend",
+			"/documents");
+
 	@InjectMocks
 	private DiscussionsPersistenceAdapter discussionsPersistenceAdapter;
 
@@ -326,7 +329,7 @@ public class DiscussionsPersistenceAdapterTests {
 	private InterlocutorOutput getInterlocutorOutput(UserAccountJpaEntity userAccount) {
 		return InterlocutorOutput.builder().id(userAccount.getId()).email(userAccount.getEmail())
 				.mobileNumber(userAccount.getIcc().getValue() + "_" + userAccount.getMobileNumber())
-				.name(userAccount.getFirstname()).photoUrl(DocumentUrlResolver
+				.name(userAccount.getFirstname()).photoUrl(documentUrlResolver
 						.resolveUrl(userAccount.getProfileImage().getId(), userAccount.getProfileImage().getHash()))
 				.build();
 	}

@@ -54,7 +54,9 @@ import com.excentria_it.wamya.adapter.persistence.entity.VehiculeJpaEntity;
 import com.excentria_it.wamya.domain.ClientJourneyRequestDto;
 import com.excentria_it.wamya.domain.JourneyRequestSearchOutput;
 import com.excentria_it.wamya.domain.PlaceType;
+import com.excentria_it.wamya.domain.ValidationState;
 import com.excentria_it.wamya.test.data.common.DocumentJpaTestData;
+import com.excentria_it.wamya.test.data.common.TestConstants;
 
 @DataJpaTest
 @ActiveProfiles(profiles = { "persistence-local" })
@@ -1039,11 +1041,11 @@ public class JourneyRequestRepositoryTests {
 
 		LocalizedPlaceJpaEntity p3FR = new LocalizedPlaceJpaEntity();
 		p3FR.setLocalizedPlaceId(new LocalizedPlaceId("fr_FR"));
-		p3FR.setName("Béja");
+		p3FR.setName("Bï¿½ja");
 
 		LocalizedPlaceJpaEntity p3EN = new LocalizedPlaceJpaEntity();
 		p3EN.setLocalizedPlaceId(new LocalizedPlaceId(new PlaceId(6L, PlaceType.DEPARTMENT), "en_US"));
-		p3EN.setName("Béja");
+		p3EN.setName("Bï¿½ja");
 
 		p3FR.setPlace(p3);
 		p3EN.setPlace(p3);
@@ -1354,12 +1356,15 @@ public class JourneyRequestRepositoryTests {
 	private List<ClientJpaEntity> givenClients(InternationalCallingCodeJpaEntity icc,
 			List<DocumentJpaEntity> profileImages) {
 		List<ClientJpaEntity> clients = List.of(
-				new ClientJpaEntity(null, null, null, "Client1", null, null, "client1@gmail.com", null, null, icc,
-						"22111111", null, null, null, null, profileImages.get(0), null, null),
-				new ClientJpaEntity(null, null, null, "Client2", null, null, "client2@gmail.com", null, null, icc,
-						"22222222", null, null, null, null, profileImages.get(1), null, null),
-				new ClientJpaEntity(null, null, null, "Client3", null, null, "client3@gmail.com", null, null, icc,
-						"22333333", null, null, null, null, profileImages.get(2), null, null));
+				new ClientJpaEntity(null, null, null, "Client1", null, ValidationState.VALIDATED,
+						TestConstants.DEFAULT_MINIBIO, null, "client1@gmail.com", null, null, icc, "22111111", null,
+						null, null, null, profileImages.get(0), null, null),
+				new ClientJpaEntity(null, null, null, "Client2", null, ValidationState.VALIDATED,
+						TestConstants.DEFAULT_MINIBIO, null, "client2@gmail.com", null, null, icc, "22222222", null,
+						null, null, null, profileImages.get(1), null, null),
+				new ClientJpaEntity(null, null, null, "Client3", null, ValidationState.VALIDATED,
+						TestConstants.DEFAULT_MINIBIO, null, "client3@gmail.com", null, null, icc, "22333333", null,
+						null, null, null, profileImages.get(2), null, null));
 
 		return clientRepository.saveAll(clients);
 	}
@@ -1367,16 +1372,19 @@ public class JourneyRequestRepositoryTests {
 	private List<TransporterJpaEntity> givenTransporters(List<List<VehiculeJpaEntity>> vehicules,
 			List<DocumentJpaEntity> profileImages) {
 
-		TransporterJpaEntity t1 = new TransporterJpaEntity(null, null, null, "Transporter1", null, null, null, null,
-				null, null, null, null, null, null, null, profileImages.get(0), null, null);
+		TransporterJpaEntity t1 = new TransporterJpaEntity(null, null, null, "Transporter1", null,
+				ValidationState.VALIDATED, TestConstants.DEFAULT_MINIBIO, null, null, null, null, null, null, null,
+				null, null, null, profileImages.get(0), null, null);
 		vehicules.get(0).forEach(v -> t1.addVehicule(v));
 
-		TransporterJpaEntity t2 = new TransporterJpaEntity(null, null, null, "Transporter2", null, null, null, null,
-				null, null, null, null, null, null, null, profileImages.get(1), null, null);
+		TransporterJpaEntity t2 = new TransporterJpaEntity(null, null, null, "Transporter2", null,
+				ValidationState.VALIDATED, TestConstants.DEFAULT_MINIBIO, null, null, null, null, null, null, null,
+				null, null, null, profileImages.get(1), null, null);
 		vehicules.get(1).forEach(v -> t2.addVehicule(v));
 
-		TransporterJpaEntity t3 = new TransporterJpaEntity(null, null, null, "Transporter3", null, null, null, null,
-				null, null, null, null, null, null, null, profileImages.get(2), null, null);
+		TransporterJpaEntity t3 = new TransporterJpaEntity(null, null, null, "Transporter3", null,
+				ValidationState.VALIDATED, TestConstants.DEFAULT_MINIBIO, null, null, null, null, null, null, null,
+				null, null, null, profileImages.get(2), null, null);
 		vehicules.get(2).forEach(v -> t1.addVehicule(v));
 
 		List<TransporterJpaEntity> transporters = List.of(t1, t2, t3);
@@ -1470,7 +1478,7 @@ public class JourneyRequestRepositoryTests {
 				new BigDecimal(10.737296664741075));
 		d2.setId(4L);
 
-		DepartmentJpaEntity d3 = new DepartmentJpaEntity("Béja", new HashMap<String, LocalizedDepartmentJpaEntity>(),
+		DepartmentJpaEntity d3 = new DepartmentJpaEntity("Bï¿½ja", new HashMap<String, LocalizedDepartmentJpaEntity>(),
 				country, Collections.<DelegationJpaEntity>emptySet(), new BigDecimal(36.80157399848794),
 				new BigDecimal(10.178896922512495));
 		d3.setId(5L);

@@ -16,8 +16,9 @@ import com.excentria_it.wamya.test.data.common.DocumentJpaTestData;
 import com.excentria_it.wamya.test.data.common.VehiculeJpaEntityTestData;
 
 public class JourneyProposalMapperTests {
-
-	private JourneyProposalMapper journeyProposalMapper = new JourneyProposalMapper();
+	private DocumentUrlResolver documentUrlResolver = new DocumentUrlResolver("https://domain-name:port/wamya-backend",
+			"/documents");
+	private JourneyProposalMapper journeyProposalMapper = new JourneyProposalMapper(documentUrlResolver);
 	private static final Double JOURNEY_PRICE = 250.0;
 
 	@Test
@@ -54,7 +55,7 @@ public class JourneyProposalMapperTests {
 		assertEquals(journeyProposalJpaEntity.getTransporter().getGlobalRating(),
 				journeyProposalDto.getTransporter().getGlobalRating());
 		assertEquals(
-				DocumentUrlResolver.resolveUrl(journeyProposalJpaEntity.getTransporter().getProfileImage().getId(),
+				documentUrlResolver.resolveUrl(journeyProposalJpaEntity.getTransporter().getProfileImage().getId(),
 						journeyProposalJpaEntity.getTransporter().getProfileImage().getHash()),
 				journeyProposalDto.getTransporter().getPhotoUrl());
 
@@ -88,7 +89,7 @@ public class JourneyProposalMapperTests {
 		assertEquals(journeyProposalJpaEntity.getTransporter().getGlobalRating(),
 				journeyProposalDto.getTransporter().getGlobalRating());
 		assertEquals(
-				DocumentUrlResolver.resolveUrl(journeyProposalJpaEntity.getTransporter().getProfileImage().getId(),
+				documentUrlResolver.resolveUrl(journeyProposalJpaEntity.getTransporter().getProfileImage().getId(),
 						journeyProposalJpaEntity.getTransporter().getProfileImage().getHash()),
 				journeyProposalDto.getTransporter().getPhotoUrl());
 
@@ -111,8 +112,8 @@ public class JourneyProposalMapperTests {
 
 	private String getVehiculeImageUrl(VehiculeJpaEntity vehicule) {
 		return (vehicule.getImage() != null)
-				? DocumentUrlResolver.resolveUrl(vehicule.getImage().getId(), vehicule.getImage().getHash())
-				: DocumentUrlResolver.resolveUrl(vehicule.getType().getImage().getId(),
+				? documentUrlResolver.resolveUrl(vehicule.getImage().getId(), vehicule.getImage().getHash())
+				: documentUrlResolver.resolveUrl(vehicule.getType().getImage().getId(),
 						vehicule.getType().getImage().getHash());
 	}
 }

@@ -36,6 +36,9 @@ public class TransporterPersistenceAdapterTests {
 	@InjectMocks
 	private TransporterPersistenceAdapter transporterPersistenceAdapter;
 
+	private DocumentUrlResolver documentUrlResolver = new DocumentUrlResolver("https://domain-name:port/wamya-backend",
+			"/documents");
+
 	@Test
 	void givenEmptyTransporterJpaEntity_WhenLoadTransporterVehiculesByEmail_ThenReturnEmptySet() {
 
@@ -213,20 +216,19 @@ public class TransporterPersistenceAdapterTests {
 	@Test
 	void givenBadUsername_whenIsUserVehicule_thenReturnFalse() {
 		// given
-	
+
 		// When
 
 		// then
 		assertFalse(transporterPersistenceAdapter.isUserVehicule("BadUserName", 1L));
 
 	}
-	
-	
+
 	private String getVehiculeImageUrl(VehiculeJpaEntity vehiculeJpaEntity) {
 		return vehiculeJpaEntity.getImage() != null
-				? DocumentUrlResolver.resolveUrl(vehiculeJpaEntity.getImage().getId(),
+				? documentUrlResolver.resolveUrl(vehiculeJpaEntity.getImage().getId(),
 						vehiculeJpaEntity.getImage().getHash())
-				: DocumentUrlResolver.resolveUrl(vehiculeJpaEntity.getType().getImage().getId(),
+				: documentUrlResolver.resolveUrl(vehiculeJpaEntity.getType().getImage().getId(),
 						vehiculeJpaEntity.getType().getImage().getHash());
 	}
 }

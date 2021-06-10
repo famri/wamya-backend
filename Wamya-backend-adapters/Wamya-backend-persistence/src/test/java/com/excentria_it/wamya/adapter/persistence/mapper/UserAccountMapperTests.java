@@ -3,6 +3,8 @@ package com.excentria_it.wamya.adapter.persistence.mapper;
 import static com.excentria_it.wamya.test.data.common.DocumentJpaTestData.*;
 import static com.excentria_it.wamya.test.data.common.GenderJpaTestData.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.BDDMockito.*;
 
 import java.time.ZoneOffset;
 
@@ -14,14 +16,17 @@ import com.excentria_it.wamya.adapter.persistence.entity.GenderJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.InternationalCallingCodeJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.TransporterJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.UserAccountJpaEntity;
+import com.excentria_it.wamya.application.utils.DocumentUrlResolver;
+import com.excentria_it.wamya.domain.ProfileInfoDto;
 import com.excentria_it.wamya.domain.UserAccount;
 import com.excentria_it.wamya.test.data.common.InternationalCallingCodeJpaEntityTestData;
 import com.excentria_it.wamya.test.data.common.UserAccountJpaEntityTestData;
 import com.excentria_it.wamya.test.data.common.UserAccountTestData;
 
 public class UserAccountMapperTests {
-
-	private UserAccountMapper userAccountMapper = new UserAccountMapper();
+	private DocumentUrlResolver documentUrlResolver = new DocumentUrlResolver("https://domain-name:port/wamya-backend",
+			"/documents");
+	private UserAccountMapper userAccountMapper = new UserAccountMapper(documentUrlResolver);
 
 	@Test
 	void testMapClientUserAccountToJpaEntity() {
@@ -215,6 +220,50 @@ public class UserAccountMapperTests {
 		UserAccount userAccount = userAccountMapper.mapToDomainEntity(null);
 
 		assertNull(userAccount);
+
+	}
+
+	@Test
+	void testMapToProfileInfoDto() {
+
+		// given
+		UserAccountJpaEntity userAccountJpaEntity = UserAccountJpaEntityTestData.defaultExistentClientJpaEntity();
+		// when
+
+		ProfileInfoDto profileInfoDto = userAccountMapper.mapToProfileInfoDto(userAccountJpaEntity, "fr_FR");
+
+		// then
+		assertEquals(userAccountJpaEntity.getGender().getId(), profileInfoDto.getGender().getId());
+		assertEquals(userAccountJpaEntity.getGender().getName("fr_FR"), profileInfoDto.getGender().getValue());
+
+		assertEquals(userAccountJpaEntity.getFirstname(), profileInfoDto.getName().getFirstname());
+		assertEquals(userAccountJpaEntity.getLastname(), profileInfoDto.getName().getLastname());
+
+		assertEquals(userAccountJpaEntity.getIdentityValidationState().isValidated(),
+				profileInfoDto.getName().getValidationInfo().getIsValidated());
+		assertEquals(userAccountJpaEntity.getIdentityValidationState().name(),
+				profileInfoDto.getName().getValidationInfo().getState());
+
+		assertEquals(userAccountJpaEntity.getClass().equals(TransporterJpaEntity.class),
+				profileInfoDto.getIsTransporter());
+
+		assertEquals(documentUrlResolver.resolveUrl(userAccountJpaEntity.getProfileImage().getId(),
+				userAccountJpaEntity.getProfileImage().getHash()), profileInfoDto.getPhotoUrl());
+
+		assertEquals(userAccountJpaEntity.getDateOfBirth(), profileInfoDto.getDateOfBirth());
+
+		assertEquals(userAccountJpaEntity.getMiniBio(), profileInfoDto.getMiniBio());
+
+		assertEquals(userAccountJpaEntity.getEmail(), profileInfoDto.getEmail().getValue());
+		assertEquals(userAccountJpaEntity.getIsValidatedEmail(), profileInfoDto.getEmail().getChecked());
+
+		assertEquals(userAccountJpaEntity.getMobileNumber(), profileInfoDto.getMobile().getValue());
+
+		assertEquals(userAccountJpaEntity.getIcc().getValue(), profileInfoDto.getMobile().getIcc().getValue());
+
+		assertEquals(userAccountJpaEntity.getIcc().getId(), profileInfoDto.getMobile().getIcc().getId());
+
+		assertEquals(userAccountJpaEntity.getIsValidatedMobileNumber(), profileInfoDto.getMobile().getChecked());
 
 	}
 

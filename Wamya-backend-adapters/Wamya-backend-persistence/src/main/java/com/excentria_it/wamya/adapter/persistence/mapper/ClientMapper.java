@@ -12,6 +12,7 @@ import com.excentria_it.wamya.adapter.persistence.entity.InternationalCallingCod
 import com.excentria_it.wamya.adapter.persistence.entity.UserPreferenceId;
 import com.excentria_it.wamya.adapter.persistence.entity.UserPreferenceJpaEntity;
 import com.excentria_it.wamya.domain.UserAccount;
+import com.excentria_it.wamya.domain.ValidationState;
 
 @Component
 public class ClientMapper {
@@ -29,8 +30,8 @@ public class ClientMapper {
 		}
 
 		return new ClientJpaEntity(userAccount.getId(), userAccount.getOauthId(), gender, userAccount.getFirstname(),
-				userAccount.getLastname(), userAccount.getDateOfBirth(), userAccount.getEmail(),
-				userAccount.getEmailValidationCode(), userAccount.getIsValidatedEmail(), icc,
+				userAccount.getLastname(), ValidationState.NOT_VALIDATED, "", userAccount.getDateOfBirth(),
+				userAccount.getEmail(), userAccount.getEmailValidationCode(), userAccount.getIsValidatedEmail(), icc,
 				userAccount.getMobilePhoneNumber().getMobileNumber(), userAccount.getMobileNumberValidationCode(),
 				userAccount.getIsValidatedMobileNumber(), userAccount.getReceiveNewsletter(),
 				userAccount.getCreationDateTime().toInstant(), profileImage, preferences, identityDocument);

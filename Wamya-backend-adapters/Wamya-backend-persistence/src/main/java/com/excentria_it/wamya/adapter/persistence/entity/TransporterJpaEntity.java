@@ -15,6 +15,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.excentria_it.wamya.common.annotation.Generated;
+import com.excentria_it.wamya.domain.ValidationState;
 
 import lombok.NoArgsConstructor;
 
@@ -64,13 +65,13 @@ public class TransporterJpaEntity extends UserAccountJpaEntity {
 	}
 
 	public TransporterJpaEntity(Long id, Long oauthId, GenderJpaEntity gender, String firstname, String lastname,
-			LocalDate dateOfBirth, String email, String emailValidationCode, Boolean isValidatedEmail,
-			InternationalCallingCodeJpaEntity icc, String mobileNumber, String mobileNumberValidationCode,
-			Boolean isValidatedMobileNumber, Boolean receiveNewsletter, Instant creationDateTime,
-			DocumentJpaEntity profileImage, Map<String, UserPreferenceJpaEntity> preferences,
-			DocumentJpaEntity identityDocument) {
+			ValidationState identityValidationState, String minibio, LocalDate dateOfBirth, String email,
+			String emailValidationCode, Boolean isValidatedEmail, InternationalCallingCodeJpaEntity icc,
+			String mobileNumber, String mobileNumberValidationCode, Boolean isValidatedMobileNumber,
+			Boolean receiveNewsletter, Instant creationDateTime, DocumentJpaEntity profileImage,
+			Map<String, UserPreferenceJpaEntity> preferences, DocumentJpaEntity identityDocument) {
 
-		super(id, oauthId, gender, firstname, lastname, dateOfBirth, email, emailValidationCode, isValidatedEmail, icc,
+		super(id, oauthId, gender, firstname, lastname, identityValidationState, minibio, dateOfBirth, email, emailValidationCode, isValidatedEmail, icc,
 				mobileNumber, mobileNumberValidationCode, isValidatedMobileNumber, receiveNewsletter, creationDateTime,
 				profileImage, preferences, identityDocument);
 

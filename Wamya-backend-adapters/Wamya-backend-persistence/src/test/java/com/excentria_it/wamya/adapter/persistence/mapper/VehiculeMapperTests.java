@@ -12,8 +12,9 @@ import com.excentria_it.wamya.domain.JourneyProposalDto.VehiculeDto;
 import com.excentria_it.wamya.test.data.common.DocumentJpaTestData;
 
 public class VehiculeMapperTests {
-
-	private VehiculeMapper vehiculeMapper = new VehiculeMapper();
+	private DocumentUrlResolver documentUrlResolver = new DocumentUrlResolver("https://domain-name:port/wamya-backend",
+			"/documents");
+	private VehiculeMapper vehiculeMapper = new VehiculeMapper(documentUrlResolver);
 
 	@Test
 	void testMapVehiculeJpaEntityWithExistentConstructorAndModelToDomainEntity() {
@@ -57,8 +58,8 @@ public class VehiculeMapperTests {
 
 	private String getVehiculeImageUrl(VehiculeJpaEntity vehicule) {
 		return (vehicule.getImage() != null)
-				? DocumentUrlResolver.resolveUrl(vehicule.getImage().getId(), vehicule.getImage().getHash())
-				: DocumentUrlResolver.resolveUrl(vehicule.getType().getImage().getId(),
+				? documentUrlResolver.resolveUrl(vehicule.getImage().getId(), vehicule.getImage().getHash())
+				: documentUrlResolver.resolveUrl(vehicule.getType().getImage().getId(),
 						vehicule.getType().getImage().getHash());
 	}
 }

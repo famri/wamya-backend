@@ -10,8 +10,13 @@ import com.excentria_it.wamya.domain.LoadDiscussionsOutput;
 import com.excentria_it.wamya.domain.LoadDiscussionsOutput.InterlocutorOutput;
 import com.excentria_it.wamya.domain.LoadDiscussionsOutput.MessageOutput;
 
+import lombok.RequiredArgsConstructor;
+
 @Component
+@RequiredArgsConstructor
 public class DiscussionMapper {
+
+	private final DocumentUrlResolver documentUrlResolver;
 
 	public LoadDiscussionsOutput mapToLoadDiscussionsOutput(DiscussionJpaEntity discussionJpaEntity) {
 		if (discussionJpaEntity == null)
@@ -30,7 +35,7 @@ public class DiscussionMapper {
 				.email(userAccount.getEmail())
 				.mobileNumber((userAccount.getIcc() != null ? userAccount.getIcc().getValue() + "_" : "")
 						+ userAccount.getMobileNumber())
-				.photoUrl(DocumentUrlResolver.resolveUrl(userAccount.getProfileImage().getId(),
+				.photoUrl(documentUrlResolver.resolveUrl(userAccount.getProfileImage().getId(),
 						userAccount.getProfileImage().getHash()))
 				.build();
 	}

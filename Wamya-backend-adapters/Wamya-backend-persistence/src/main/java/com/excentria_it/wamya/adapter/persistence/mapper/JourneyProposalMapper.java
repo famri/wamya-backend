@@ -12,8 +12,13 @@ import com.excentria_it.wamya.common.domain.StatusCode;
 import com.excentria_it.wamya.domain.JourneyProposalDto;
 import com.excentria_it.wamya.domain.JourneyProposalDto.VehiculeDto;
 
+import lombok.RequiredArgsConstructor;
+
 @Component
+@RequiredArgsConstructor
 public class JourneyProposalMapper {
+
+	private final DocumentUrlResolver documentUrlResolver;
 
 	public JourneyProposalJpaEntity mapToJpaEntity(Double proposalPrice,
 			TransporterJpaEntity transporterAccountJpaEntity, VehiculeJpaEntity vehiculeJpaEntity) {
@@ -27,19 +32,18 @@ public class JourneyProposalMapper {
 			return null;
 
 		VehiculeJpaEntity vehicule = journeyProposalJpaEntity.getVehicule();
-		
+
 		String vehiculeImageUrl = (vehicule.getImage() != null)
-				? DocumentUrlResolver.resolveUrl(vehicule.getImage().getId(),
-						vehicule.getImage().getHash())
-				: DocumentUrlResolver.resolveUrl(vehicule.getType().getImage().getId(),
+				? documentUrlResolver.resolveUrl(vehicule.getImage().getId(), vehicule.getImage().getHash())
+				: documentUrlResolver.resolveUrl(vehicule.getType().getImage().getId(),
 						vehicule.getType().getImage().getHash());
-		
+
 		JourneyProposalDto.VehiculeDto vehiculeDto = new VehiculeDto(vehicule.getId(),
 				vehicule.getModel().getConstructor().getName(), vehicule.getModel().getName(), vehiculeImageUrl);
 
 		TransporterJpaEntity transporter = journeyProposalJpaEntity.getTransporter();
 		JourneyProposalDto.TransporterDto transporterDto = new JourneyProposalDto.TransporterDto(
-				transporter.getOauthId(), transporter.getFirstname(), DocumentUrlResolver
+				transporter.getOauthId(), transporter.getFirstname(), documentUrlResolver
 						.resolveUrl(transporter.getProfileImage().getId(), transporter.getProfileImage().getHash()),
 				transporter.getGlobalRating());
 

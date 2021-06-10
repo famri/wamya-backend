@@ -69,7 +69,6 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 						.hasAuthority("SCOPE_profile:write")
 						.antMatchers(HttpMethod.POST, "/validation-codes/email/send/**")
 						.hasAuthority("SCOPE_profile:write").antMatchers(HttpMethod.POST, "/users/me/identities/**")
-						.hasAuthority("SCOPE_profile:write").antMatchers(HttpMethod.POST, "/profiles/me/avatars/**")
 						.hasAuthority("SCOPE_profile:write").antMatchers(HttpMethod.POST, "/vehicules/{\\d+}/images/**")
 						.hasAuthority("SCOPE_vehicule:write").anyRequest().authenticated())
 				.oauth2ResourceServer().bearerTokenResolver(bearerTokenResolver()).jwt()

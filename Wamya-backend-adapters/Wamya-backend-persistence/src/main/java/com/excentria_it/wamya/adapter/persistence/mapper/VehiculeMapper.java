@@ -6,15 +6,20 @@ import com.excentria_it.wamya.adapter.persistence.entity.VehiculeJpaEntity;
 import com.excentria_it.wamya.application.utils.DocumentUrlResolver;
 import com.excentria_it.wamya.domain.JourneyProposalDto.VehiculeDto;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 @Component
 public class VehiculeMapper {
+
+	private final DocumentUrlResolver documentUrlResolver;
 
 	public VehiculeDto mapToDomainEntity(VehiculeJpaEntity vehiculeJpaEntity) {
 
 		String vehiculeImageUrl = (vehiculeJpaEntity.getImage() != null)
-				? DocumentUrlResolver.resolveUrl(vehiculeJpaEntity.getImage().getId(),
+				? documentUrlResolver.resolveUrl(vehiculeJpaEntity.getImage().getId(),
 						vehiculeJpaEntity.getImage().getHash())
-				: DocumentUrlResolver.resolveUrl(vehiculeJpaEntity.getType().getImage().getId(),
+				: documentUrlResolver.resolveUrl(vehiculeJpaEntity.getType().getImage().getId(),
 						vehiculeJpaEntity.getType().getImage().getHash());
 
 		if (vehiculeJpaEntity.getTemporaryModel() != null) {

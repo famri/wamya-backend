@@ -1,15 +1,21 @@
 package com.excentria_it.wamya.application.utils;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import lombok.AllArgsConstructor;
+
+@Component
+@AllArgsConstructor
 public class DocumentUrlResolver {
 
-	private static final String DOCUMENTS_API_BASE_URL = "/documents";
+	@Value("${app.server.base.url}")
+	private String serverBaseUrl;
 
-	private DocumentUrlResolver() {
-
-	}
-
-	public static String resolveUrl(Long documentId, String documentHash) {
-		return DOCUMENTS_API_BASE_URL + "/" + documentId + "?hash=" + documentHash;
+	private String documentsApiBaseUrl = "/documents";
+	
+	public String resolveUrl(Long documentId, String documentHash) {
+		return serverBaseUrl + documentsApiBaseUrl + "/" + documentId + "?hash=" + documentHash;
 
 	}
 }

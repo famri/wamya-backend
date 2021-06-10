@@ -14,8 +14,10 @@ import com.excentria_it.wamya.domain.LoadDiscussionsOutput.InterlocutorOutput;
 import com.excentria_it.wamya.domain.LoadDiscussionsOutput.MessageOutput;
 
 public class DiscussionMapperTests {
+	private DocumentUrlResolver documentUrlResolver = new DocumentUrlResolver("https://domain-name:port/wamya-backend",
+			"/documents");
 
-	private DiscussionMapper discussionMapper = new DiscussionMapper();
+	private DiscussionMapper discussionMapper = new DiscussionMapper(documentUrlResolver);
 
 	@Test
 	void testMapToLoadDiscussionsOutputFromNullDiscussionJpaEntity() {
@@ -61,7 +63,7 @@ public class DiscussionMapperTests {
 				loadDiscussionsOutput.getTransporter().getMobileNumber());
 
 		assertEquals(
-				DocumentUrlResolver.resolveUrl(discussionJpaEntity.getTransporter().getProfileImage().getId(),
+				documentUrlResolver.resolveUrl(discussionJpaEntity.getTransporter().getProfileImage().getId(),
 						discussionJpaEntity.getTransporter().getProfileImage().getHash()),
 				loadDiscussionsOutput.getTransporter().getPhotoUrl());
 
@@ -73,7 +75,7 @@ public class DiscussionMapperTests {
 				loadDiscussionsOutput.getClient().getMobileNumber());
 
 		assertEquals(
-				DocumentUrlResolver.resolveUrl(discussionJpaEntity.getClient().getProfileImage().getId(),
+				documentUrlResolver.resolveUrl(discussionJpaEntity.getClient().getProfileImage().getId(),
 						discussionJpaEntity.getTransporter().getProfileImage().getHash()),
 				loadDiscussionsOutput.getClient().getPhotoUrl());
 

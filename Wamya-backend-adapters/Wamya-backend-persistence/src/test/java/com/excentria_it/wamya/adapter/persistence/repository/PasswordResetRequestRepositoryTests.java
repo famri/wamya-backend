@@ -16,6 +16,8 @@ import org.springframework.test.context.ActiveProfiles;
 
 import com.excentria_it.wamya.adapter.persistence.entity.ClientJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.PasswordResetRequestJpaEntity;
+import com.excentria_it.wamya.domain.ValidationState;
+import com.excentria_it.wamya.test.data.common.TestConstants;
 
 @DataJpaTest
 @ActiveProfiles(profiles = { "persistence-local" })
@@ -54,7 +56,7 @@ public class PasswordResetRequestRepositoryTests {
 
 	private List<PasswordResetRequestJpaEntity> givenPasswordResetRequests(Instant startInstant) {
 
-		ClientJpaEntity userAccount = new ClientJpaEntity(null, null, null, "Client1", null, null, "client1@gmail.com",
+		ClientJpaEntity userAccount = new ClientJpaEntity(null, null, null, "Client1", null,ValidationState.VALIDATED, TestConstants.DEFAULT_MINIBIO,  null, "client1@gmail.com",
 				null, null, null, "22111111", null, null, null, null, null, null, null);
 
 		userAccount = clientRepository.save(userAccount);

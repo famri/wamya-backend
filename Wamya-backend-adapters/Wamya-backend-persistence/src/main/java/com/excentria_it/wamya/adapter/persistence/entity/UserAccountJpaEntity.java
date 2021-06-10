@@ -21,6 +21,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import com.excentria_it.wamya.common.annotation.Generated;
+import com.excentria_it.wamya.domain.ValidationState;
 
 import lombok.NoArgsConstructor;
 
@@ -47,6 +48,10 @@ public abstract class UserAccountJpaEntity {
 	protected String firstname;
 
 	protected String lastname;
+
+	protected ValidationState identityValidationState;
+
+	protected String miniBio;
 
 	protected LocalDate dateOfBirth;
 
@@ -82,17 +87,19 @@ public abstract class UserAccountJpaEntity {
 	protected Map<String, UserPreferenceJpaEntity> preferences = new HashMap<>();
 
 	public UserAccountJpaEntity(Long id, Long oauthId, GenderJpaEntity gender, String firstname, String lastname,
-			LocalDate dateOfBirth, String email, String emailValidationCode, Boolean isValidatedEmail,
-			InternationalCallingCodeJpaEntity icc, String mobileNumber, String mobileNumberValidationCode,
-			Boolean isValidatedMobileNumber, Boolean receiveNewsletter, Instant creationDateTime,
-			DocumentJpaEntity profileImage, Map<String, UserPreferenceJpaEntity> preferences,
-			DocumentJpaEntity identityDocument) {
+			ValidationState identityValidationState, String minibio, LocalDate dateOfBirth, String email,
+			String emailValidationCode, Boolean isValidatedEmail, InternationalCallingCodeJpaEntity icc,
+			String mobileNumber, String mobileNumberValidationCode, Boolean isValidatedMobileNumber,
+			Boolean receiveNewsletter, Instant creationDateTime, DocumentJpaEntity profileImage,
+			Map<String, UserPreferenceJpaEntity> preferences, DocumentJpaEntity identityDocument) {
 		super();
 		this.id = id;
 		this.oauthId = oauthId;
 		this.gender = gender;
 		this.firstname = firstname;
 		this.lastname = lastname;
+		this.identityValidationState = identityValidationState;
+		this.miniBio = minibio;
 		this.dateOfBirth = dateOfBirth;
 		this.email = email;
 		this.emailValidationCode = emailValidationCode;
@@ -155,6 +162,22 @@ public abstract class UserAccountJpaEntity {
 
 	public void setLastname(String lastname) {
 		this.lastname = lastname;
+	}
+
+	public ValidationState getIdentityValidationState() {
+		return identityValidationState;
+	}
+
+	public void setIdentityValidationState(ValidationState identityValidationState) {
+		this.identityValidationState = identityValidationState;
+	}
+
+	public String getMiniBio() {
+		return miniBio;
+	}
+
+	public void setMiniBio(String miniBio) {
+		this.miniBio = miniBio;
 	}
 
 	public LocalDate getDateOfBirth() {
@@ -284,7 +307,8 @@ public abstract class UserAccountJpaEntity {
 	@Override
 	public String toString() {
 		return "UserAccountJpaEntity [id=" + id + ", oauthId=" + oauthId + ", gender=" + gender + ", firstname="
-				+ firstname + ", lastname=" + lastname + ", dateOfBirth=" + dateOfBirth + ", email=" + email
+				+ firstname + ", lastname=" + lastname + ", identityValidationState=" + identityValidationState
+				+ ", miniBio=" + miniBio + ", dateOfBirth=" + dateOfBirth + ", email=" + email
 				+ ", emailValidationCode=" + emailValidationCode + ", isValidatedEmail=" + isValidatedEmail + ", icc="
 				+ icc + ", mobileNumber=" + mobileNumber + ", mobileNumberValidationCode=" + mobileNumberValidationCode
 				+ ", isValidatedMobileNumber=" + isValidatedMobileNumber + ", receiveNewsletter=" + receiveNewsletter
