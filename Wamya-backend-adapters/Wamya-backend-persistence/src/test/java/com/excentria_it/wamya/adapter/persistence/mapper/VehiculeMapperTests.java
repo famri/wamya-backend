@@ -3,6 +3,7 @@ package com.excentria_it.wamya.adapter.persistence.mapper;
 import static com.excentria_it.wamya.test.data.common.VehiculeJpaEntityTestData.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.excentria_it.wamya.adapter.persistence.entity.TemporaryModelJpaEntity;
@@ -12,9 +13,14 @@ import com.excentria_it.wamya.domain.JourneyProposalDto.VehiculeDto;
 import com.excentria_it.wamya.test.data.common.DocumentJpaTestData;
 
 public class VehiculeMapperTests {
-	private DocumentUrlResolver documentUrlResolver = new DocumentUrlResolver("https://domain-name:port/wamya-backend",
-			"/documents");
+	private DocumentUrlResolver documentUrlResolver = new DocumentUrlResolver();
+
 	private VehiculeMapper vehiculeMapper = new VehiculeMapper(documentUrlResolver);
+
+	@BeforeEach
+	void initDocumentUrlResolver() {
+		documentUrlResolver.setServerBaseUrl("https://domain-name:port/wamya-backend");
+	}
 
 	@Test
 	void testMapVehiculeJpaEntityWithExistentConstructorAndModelToDomainEntity() {

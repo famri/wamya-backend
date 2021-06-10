@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -50,11 +52,15 @@ public class DiscussionsPersistenceAdapterTests {
 	@Mock
 	private TransporterRepository transporterRepository;
 
-	private DocumentUrlResolver documentUrlResolver = new DocumentUrlResolver("https://domain-name:port/wamya-backend",
-			"/documents");
+	private DocumentUrlResolver documentUrlResolver = new DocumentUrlResolver();
 
 	@InjectMocks
 	private DiscussionsPersistenceAdapter discussionsPersistenceAdapter;
+
+	@BeforeEach
+	void initDocumentUrlResolver() {
+		documentUrlResolver.setServerBaseUrl("https://domain-name:port/wamya-backend");
+	}
 
 	@Test
 	void givenTransporterDiscussion_WhenLoadDiscussion_ThenReturnLoadDiscussionsOutputResult() {

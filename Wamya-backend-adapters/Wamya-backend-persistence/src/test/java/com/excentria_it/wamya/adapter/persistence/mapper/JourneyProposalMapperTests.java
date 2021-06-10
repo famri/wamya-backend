@@ -5,6 +5,7 @@ import static com.excentria_it.wamya.test.data.common.UserAccountJpaEntityTestDa
 import static com.excentria_it.wamya.test.data.common.VehiculeJpaEntityTestData.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.excentria_it.wamya.adapter.persistence.entity.JourneyProposalJpaEntity;
@@ -16,10 +17,14 @@ import com.excentria_it.wamya.test.data.common.DocumentJpaTestData;
 import com.excentria_it.wamya.test.data.common.VehiculeJpaEntityTestData;
 
 public class JourneyProposalMapperTests {
-	private DocumentUrlResolver documentUrlResolver = new DocumentUrlResolver("https://domain-name:port/wamya-backend",
-			"/documents");
+	private DocumentUrlResolver documentUrlResolver = new DocumentUrlResolver();
 	private JourneyProposalMapper journeyProposalMapper = new JourneyProposalMapper(documentUrlResolver);
 	private static final Double JOURNEY_PRICE = 250.0;
+
+	@BeforeEach
+	void initDocumentUrlResolver() {
+		documentUrlResolver.setServerBaseUrl("https://domain-name:port/wamya-backend");
+	}
 
 	@Test
 	void testMapToJpaEntity() {

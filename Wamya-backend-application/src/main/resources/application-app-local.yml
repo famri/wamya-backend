@@ -10,6 +10,7 @@ front:
     port: 8443
 
 app:
+  server.base.url: https://localhost:8443/wamya-backend
   password.reset:
     request-validity: H3
     purge-cron-expression: '0 */5 * * * *'

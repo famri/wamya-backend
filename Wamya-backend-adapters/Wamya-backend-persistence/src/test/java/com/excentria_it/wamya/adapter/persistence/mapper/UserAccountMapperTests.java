@@ -3,11 +3,10 @@ package com.excentria_it.wamya.adapter.persistence.mapper;
 import static com.excentria_it.wamya.test.data.common.DocumentJpaTestData.*;
 import static com.excentria_it.wamya.test.data.common.GenderJpaTestData.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.BDDMockito.*;
 
 import java.time.ZoneOffset;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.excentria_it.wamya.adapter.persistence.entity.ClientJpaEntity;
@@ -24,9 +23,13 @@ import com.excentria_it.wamya.test.data.common.UserAccountJpaEntityTestData;
 import com.excentria_it.wamya.test.data.common.UserAccountTestData;
 
 public class UserAccountMapperTests {
-	private DocumentUrlResolver documentUrlResolver = new DocumentUrlResolver("https://domain-name:port/wamya-backend",
-			"/documents");
+	private DocumentUrlResolver documentUrlResolver = new DocumentUrlResolver();
 	private UserAccountMapper userAccountMapper = new UserAccountMapper(documentUrlResolver);
+
+	@BeforeEach
+	void initDocumentUrlResolver() {
+		documentUrlResolver.setServerBaseUrl("https://domain-name:port/wamya-backend");
+	}
 
 	@Test
 	void testMapClientUserAccountToJpaEntity() {

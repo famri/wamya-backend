@@ -4,6 +4,7 @@ import static com.excentria_it.wamya.test.data.common.DiscussionJpaTestData.*;
 import static com.excentria_it.wamya.test.data.common.UserAccountJpaEntityTestData.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.excentria_it.wamya.adapter.persistence.entity.DiscussionJpaEntity;
@@ -14,10 +15,14 @@ import com.excentria_it.wamya.domain.LoadDiscussionsOutput.InterlocutorOutput;
 import com.excentria_it.wamya.domain.LoadDiscussionsOutput.MessageOutput;
 
 public class DiscussionMapperTests {
-	private DocumentUrlResolver documentUrlResolver = new DocumentUrlResolver("https://domain-name:port/wamya-backend",
-			"/documents");
+	private DocumentUrlResolver documentUrlResolver = new DocumentUrlResolver();
 
 	private DiscussionMapper discussionMapper = new DiscussionMapper(documentUrlResolver);
+
+	@BeforeEach
+	void initDocumentUrlResolver() {
+		documentUrlResolver.setServerBaseUrl("https://domain-name:port/wamya-backend");
+	}
 
 	@Test
 	void testMapToLoadDiscussionsOutputFromNullDiscussionJpaEntity() {
