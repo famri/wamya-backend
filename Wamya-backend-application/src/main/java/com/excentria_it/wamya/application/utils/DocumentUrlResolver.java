@@ -15,7 +15,7 @@ public class DocumentUrlResolver {
 	private String documentsApiBaseUrl = "/documents";
 
 	public String resolveUrl(Long documentId, String documentHash) {
-		return serverBaseUrl + documentsApiBaseUrl + "/" + documentId + "?hash=" + documentHash;
+		return serverBaseUrl + documentsApiBaseUrl + "/" + documentId + "?h=" + documentHash;
 
 	}
 }

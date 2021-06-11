@@ -14,7 +14,7 @@ public class DocumentUrlResolverTests {
 		String documentUrl = documentUrlResolver.resolveUrl(1L,
 				"2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824");
 		assertEquals(
-				"https://domain-name:port/wamya-backend/documents/1?hash=2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824",
+				"https://domain-name:port/wamya-backend/documents/1?h=2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824",
 				documentUrl);
 	}
 }
