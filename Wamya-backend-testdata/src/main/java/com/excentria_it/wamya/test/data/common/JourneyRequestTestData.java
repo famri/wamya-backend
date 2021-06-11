@@ -65,7 +65,7 @@ public class JourneyRequestTestData {
 
 		@Override
 		public EngineTypeDto getEngineType() {
-			return new EngineTypeDto(1L, "engineType1");
+			return new EngineTypeDto(1L, "engineType1", "UTILITY");
 		}
 
 		@Override
@@ -123,7 +123,7 @@ public class JourneyRequestTestData {
 
 		@Override
 		public EngineTypeDto getEngineType() {
-			return new EngineTypeDto(2L, "engineType2");
+			return new EngineTypeDto(2L, "engineType2", "UTILITY");
 		}
 
 		@Override
@@ -186,7 +186,7 @@ public class JourneyRequestTestData {
 				@Override
 				public EngineTypeDto getEngineType() {
 
-					return new EngineTypeDto(1L, "engineType1");
+					return new EngineTypeDto(1L, "engineType1", "UTILITY");
 				}
 
 				@Override
@@ -260,7 +260,7 @@ public class JourneyRequestTestData {
 				@Override
 				public EngineTypeDto getEngineType() {
 
-					return new EngineTypeDto(2L, "engineType2");
+					return new EngineTypeDto(2L, "engineType2", "UTILITY");
 				}
 
 				@Override

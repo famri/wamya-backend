@@ -18,7 +18,7 @@ public interface ClientJourneyRequestDto {
 	@Value("#{new com.excentria_it.wamya.domain.ClientJourneyRequestDto.PlaceDto(target.arrivalPlaceId, target.arrivalPlaceType.name(), target.arrivalPlaceName, target.arrivalPlaceLatitude, target.arrivalPlaceLongitude, target.arrivalPlaceDepartmentId)}")
 	PlaceDto getArrivalPlace();
 
-	@Value("#{new com.excentria_it.wamya.domain.ClientJourneyRequestDto.EngineTypeDto(target.engineTypeId, target.engineTypeName)}")
+	@Value("#{new com.excentria_it.wamya.domain.ClientJourneyRequestDto.EngineTypeDto(target.engineTypeId, target.engineTypeName, target.engineTypeCode)}")
 	EngineTypeDto getEngineType();
 
 	Integer getDistance();
@@ -40,6 +40,9 @@ public interface ClientJourneyRequestDto {
 		private Long id;
 
 		private String name;
+		
+		private String code;
+		
 
 	}
 
