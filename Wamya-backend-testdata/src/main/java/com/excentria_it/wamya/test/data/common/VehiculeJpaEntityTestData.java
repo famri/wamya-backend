@@ -5,10 +5,10 @@ import java.util.Set;
 
 import com.excentria_it.wamya.adapter.persistence.entity.ConstructorJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.EngineTypeJpaEntity;
-import com.excentria_it.wamya.adapter.persistence.entity.EngineTypeJpaEntity.EngineTypeCode;
 import com.excentria_it.wamya.adapter.persistence.entity.ModelJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.VehiculeJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.VehiculeJpaEntity.VehiculeJpaEntityBuilder;
+import com.excentria_it.wamya.domain.EngineTypeCode;
 
 public class VehiculeJpaEntityTestData {
 

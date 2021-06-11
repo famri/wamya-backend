@@ -2,7 +2,7 @@ package com.excentria_it.wamya.test.data.common;
 
 import java.util.List;
 
-import com.excentria_it.wamya.adapter.persistence.entity.EngineTypeJpaEntity.EngineTypeCode;
+import com.excentria_it.wamya.domain.EngineTypeCode;
 import com.excentria_it.wamya.domain.EngineTypeDto;
 import com.excentria_it.wamya.domain.LoadEngineTypesDto;
 

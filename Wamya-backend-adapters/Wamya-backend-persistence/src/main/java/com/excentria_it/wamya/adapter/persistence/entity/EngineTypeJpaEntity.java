@@ -17,6 +17,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import com.excentria_it.wamya.common.annotation.Generated;
+import com.excentria_it.wamya.domain.EngineTypeCode;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -118,11 +119,6 @@ public class EngineTypeJpaEntity {
 		} else if (!id.equals(other.id))
 			return false;
 		return true;
-	}
-
-	public enum EngineTypeCode {
-		UTILITY, PICKUP, BUS, MINIBUS, VAN_L1H1, VAN_L2H2, VAN_L3H3, VAN_L4H3, FLATBED_TRUCK, BOX_TRUCK,
-		REFRIGERATED_TRUCK, TANKER, DUMP_TRUCK, HOOK_LIFT_TRUCK, TANK_TRANSPORTER;
 	}
 
 }

@@ -19,9 +19,9 @@ import org.springframework.data.domain.Sort.Order;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.excentria_it.wamya.adapter.persistence.entity.EngineTypeJpaEntity;
-import com.excentria_it.wamya.adapter.persistence.entity.EngineTypeJpaEntity.EngineTypeCode;
 import com.excentria_it.wamya.adapter.persistence.entity.LocalizedEngineTypeJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.LocalizedId;
+import com.excentria_it.wamya.domain.EngineTypeCode;
 import com.excentria_it.wamya.domain.EngineTypeDto;
 import com.excentria_it.wamya.domain.LoadEngineTypesDto;
 
@@ -81,7 +81,7 @@ public class EngineTypeRepositoryTests {
 		let11en.setLocalizedId(new LocalizedId("en_US"));
 		let11en.setEngineType(et11);
 		let11en.setName("EngineType11");
-		let11en.setDescription("ùèéà");
+		let11en.setDescription("ï¿½ï¿½ï¿½ï¿½");
 		et11.getLocalizations().put("en_US", let11en);
 
 		LocalizedEngineTypeJpaEntity let11fr = new LocalizedEngineTypeJpaEntity();
