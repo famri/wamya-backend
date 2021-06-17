@@ -34,7 +34,7 @@ public class ClientMapper {
 				userAccount.getEmail(), userAccount.getEmailValidationCode(), userAccount.getIsValidatedEmail(), icc,
 				userAccount.getMobilePhoneNumber().getMobileNumber(), userAccount.getMobileNumberValidationCode(),
 				userAccount.getIsValidatedMobileNumber(), userAccount.getReceiveNewsletter(),
-				userAccount.getCreationDateTime().toInstant(), profileImage, preferences, identityDocument);
+				userAccount.getCreationDateTime().toInstant(), profileImage, preferences, identityDocument, null);
 
 	}
 }

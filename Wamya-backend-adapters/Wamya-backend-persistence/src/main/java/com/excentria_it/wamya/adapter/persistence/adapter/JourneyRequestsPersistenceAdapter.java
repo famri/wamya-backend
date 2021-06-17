@@ -17,7 +17,6 @@ import com.excentria_it.wamya.adapter.persistence.entity.DepartmentJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.EngineTypeJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.JourneyRequestJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.JourneyRequestStatusJpaEntity;
-import com.excentria_it.wamya.adapter.persistence.entity.JourneyRequestStatusJpaEntity.JourneyRequestStatusCode;
 import com.excentria_it.wamya.adapter.persistence.entity.LocalizedPlaceJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.PlaceId;
 import com.excentria_it.wamya.adapter.persistence.entity.PlaceJpaEntity;
@@ -30,10 +29,12 @@ import com.excentria_it.wamya.adapter.persistence.repository.JourneyRequestStatu
 import com.excentria_it.wamya.adapter.persistence.repository.PlaceRepository;
 import com.excentria_it.wamya.adapter.persistence.utils.DepartmentJpaEntityResolver;
 import com.excentria_it.wamya.adapter.persistence.utils.LocalizedPlaceJpaEntityResolver;
+import com.excentria_it.wamya.application.port.out.CancelJourneyRequestPort;
 import com.excentria_it.wamya.application.port.out.CreateJourneyRequestPort;
 import com.excentria_it.wamya.application.port.out.LoadClientJourneyRequestsPort;
 import com.excentria_it.wamya.application.port.out.LoadJourneyRequestPort;
 import com.excentria_it.wamya.application.port.out.SearchJourneyRequestsPort;
+import com.excentria_it.wamya.application.port.out.UpdateJourneyRequestPort;
 import com.excentria_it.wamya.common.SortCriterion;
 import com.excentria_it.wamya.common.annotation.PersistenceAdapter;
 import com.excentria_it.wamya.common.utils.LocaleUtils;
@@ -42,6 +43,7 @@ import com.excentria_it.wamya.domain.ClientJourneyRequestDto;
 import com.excentria_it.wamya.domain.ClientJourneyRequests;
 import com.excentria_it.wamya.domain.JourneyRequestInputOutput;
 import com.excentria_it.wamya.domain.JourneyRequestSearchOutput;
+import com.excentria_it.wamya.domain.JourneyRequestStatusCode;
 import com.excentria_it.wamya.domain.JourneyRequestsSearchOutputResult;
 import com.excentria_it.wamya.domain.LoadClientJourneyRequestsCriteria;
 import com.excentria_it.wamya.domain.SearchJourneyRequestsInput;
@@ -53,7 +55,7 @@ import lombok.extern.slf4j.Slf4j;
 @PersistenceAdapter
 @Slf4j
 public class JourneyRequestsPersistenceAdapter implements SearchJourneyRequestsPort, CreateJourneyRequestPort,
-		LoadJourneyRequestPort, LoadClientJourneyRequestsPort {
+		LoadJourneyRequestPort, LoadClientJourneyRequestsPort, UpdateJourneyRequestPort, CancelJourneyRequestPort {
 
 	private final JourneyRequestRepository journeyRequestRepository;
 
@@ -284,14 +286,143 @@ public class JourneyRequestsPersistenceAdapter implements SearchJourneyRequestsP
 	}
 
 	@Override
-	public boolean isExistentAndNotExpiredJourneyRequestByIdAndClientEmail(Long journeyRequestId, String clientUsername) {
+	public boolean isExistentAndNotExpiredJourneyRequestByIdAndClientEmail(Long journeyRequestId,
+			String clientUsername) {
 		return journeyRequestRepository.existsAndNotExpiredByIdAndClient_Email(journeyRequestId, clientUsername);
 	}
 
 	@Override
-	public boolean isExistentAndNotExpiredJourneyRequestByIdAndClientMobileNumberAndIcc(Long journeyRequestId, String icc,
-			String mobileNumber) {
-		return journeyRequestRepository.existsAndNotExpiredByIdAndClient_Icc_ValueAndClient_MobileNumber(journeyRequestId, icc,
-				mobileNumber);
+	public boolean isExistentAndNotExpiredJourneyRequestByIdAndClientMobileNumberAndIcc(Long journeyRequestId,
+			String icc, String mobileNumber) {
+		return journeyRequestRepository
+				.existsAndNotExpiredByIdAndClient_Icc_ValueAndClient_MobileNumber(journeyRequestId, icc, mobileNumber);
+	}
+
+	@Override
+	public void updateJourneyRequest(JourneyRequestInputOutput journeyRequest) {
+
+		JourneyRequestJpaEntity journeyRequestJpaEntity = journeyRequestRepository.findById(journeyRequest.getId())
+				.get();
+
+		if (journeyRequest.getDeparturePlace() != null) {
+
+			Optional<DepartmentJpaEntity> departureDepartmentJpaEntity = departmentResolver.resolveDepartment(
+					journeyRequest.getDeparturePlace().getId(), journeyRequest.getDeparturePlace().getType());
+
+			if (departureDepartmentJpaEntity.isEmpty()) {
+				log.error(String.format("Could not find department by place ID: %d and place type: %s",
+						journeyRequest.getDeparturePlace().getId(),
+						journeyRequest.getDeparturePlace().getType().name()));
+				return;
+			}
+
+			Optional<PlaceJpaEntity> departurePlaceOptional = placeRepository.findById(new PlaceId(
+					journeyRequest.getDeparturePlace().getId(), journeyRequest.getDeparturePlace().getType()));
+
+			PlaceJpaEntity departurePlaceJpaEntity;
+
+			if (departurePlaceOptional.isEmpty()) {
+
+				departurePlaceJpaEntity = placeMapper.mapToJpaEntity(journeyRequest.getDeparturePlace(),
+						departureDepartmentJpaEntity.get());
+
+				List<LocalizedPlaceJpaEntity> departurePlaceLocalizations = localizedPlaceResolver
+						.resolveLocalizedPlaces(journeyRequest.getDeparturePlace().getId(),
+								journeyRequest.getDeparturePlace().getType());
+				for (LocalizedPlaceJpaEntity lpje : departurePlaceLocalizations) {
+					lpje.setPlace(departurePlaceJpaEntity);
+					departurePlaceJpaEntity.getLocalizations().put(lpje.getLocalizedPlaceId().getLocale(), lpje);
+				}
+				departurePlaceJpaEntity = placeRepository.save(departurePlaceJpaEntity);
+
+			} else {
+				departurePlaceJpaEntity = departurePlaceOptional.get();
+			}
+
+			journeyRequestJpaEntity.setDeparturePlace(departurePlaceJpaEntity);
+		}
+
+		if (journeyRequest.getArrivalPlace() != null) {
+
+			Optional<DepartmentJpaEntity> arrivalDepartmentJpaEntity = departmentResolver.resolveDepartment(
+					journeyRequest.getArrivalPlace().getId(), journeyRequest.getArrivalPlace().getType());
+
+			if (arrivalDepartmentJpaEntity.isEmpty()) {
+				log.error(String.format("Could not find department by place ID: %d and place type: %s",
+						journeyRequest.getArrivalPlace().getId(), journeyRequest.getArrivalPlace().getType().name()));
+				return;
+			}
+
+			Optional<PlaceJpaEntity> arrivalPlaceOptional = placeRepository.findById(
+					new PlaceId(journeyRequest.getArrivalPlace().getId(), journeyRequest.getArrivalPlace().getType()));
+
+			PlaceJpaEntity arrivalPlaceJpaEntity;
+
+			if (arrivalPlaceOptional.isEmpty()) {
+
+				arrivalPlaceJpaEntity = placeMapper.mapToJpaEntity(journeyRequest.getArrivalPlace(),
+						arrivalDepartmentJpaEntity.get());
+
+				List<LocalizedPlaceJpaEntity> arrivalPlaceLocalizations = localizedPlaceResolver.resolveLocalizedPlaces(
+						journeyRequest.getArrivalPlace().getId(), journeyRequest.getArrivalPlace().getType());
+				for (LocalizedPlaceJpaEntity lpje : arrivalPlaceLocalizations) {
+					lpje.setPlace(arrivalPlaceJpaEntity);
+					arrivalPlaceJpaEntity.getLocalizations().put(lpje.getLocalizedPlaceId().getLocale(), lpje);
+				}
+				arrivalPlaceJpaEntity = placeRepository.save(arrivalPlaceJpaEntity);
+
+			} else {
+				arrivalPlaceJpaEntity = arrivalPlaceOptional.get();
+			}
+
+			journeyRequestJpaEntity.setArrivalPlace(arrivalPlaceJpaEntity);
+		}
+
+		if (journeyRequest.getEngineType() != null) {
+			Optional<EngineTypeJpaEntity> engineTypeJpaEntity = engineTypeRepository
+					.findById(journeyRequest.getEngineType().getId());
+			if (engineTypeJpaEntity.isEmpty()) {
+				log.error(
+						String.format("Could not find engine type by ID: %d", journeyRequest.getEngineType().getId()));
+				return;
+			}
+
+			journeyRequestJpaEntity.setEngineType(engineTypeJpaEntity.get());
+		}
+
+		if (journeyRequest.getWorkers() != null) {
+			journeyRequestJpaEntity.setWorkers(journeyRequest.getWorkers());
+		}
+		if (journeyRequest.getDescription() != null) {
+			journeyRequestJpaEntity.setDescription(journeyRequest.getDescription());
+		}
+
+		if (journeyRequest.getDateTime() != null) {
+			journeyRequestJpaEntity.setDateTime(journeyRequest.getDateTime());
+		}
+		if (journeyRequest.getHours() != null) {
+			journeyRequestJpaEntity.setHours(journeyRequest.getHours());
+		}
+
+		if (journeyRequest.getMinutes() != null) {
+			journeyRequestJpaEntity.setMinutes(journeyRequest.getMinutes());
+		}
+
+		if (journeyRequest.getDistance() != null) {
+			journeyRequestJpaEntity.setDistance(journeyRequest.getDistance());
+		}
+
+		journeyRequestRepository.save(journeyRequestJpaEntity);
+
+	}
+
+	@Override
+	public void cancelJourneyRequest(Long journeyRequestId) {
+
+		JourneyRequestStatusJpaEntity cancelledStatusJpaEntity = journeyRequestStatusRepository
+				.findByCode(JourneyRequestStatusCode.CANCELED);
+
+		journeyRequestRepository.updateStatus(journeyRequestId, cancelledStatusJpaEntity);
+
 	}
 }

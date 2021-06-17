@@ -713,4 +713,28 @@ public class UserAccountPersistenceAdapterTests {
 
 		assertNull(location);
 	}
+
+	@Test
+	void givenInexistentUserAccountById_whenUpdateDeviceRegistrationToken_thenThrowUserAccountNotFoundException() {
+		// given
+		given(userAccountRepository.findById(any(Long.class))).willReturn(Optional.empty());
+		// when // then
+		assertThrows(UserAccountNotFoundException.class, () -> userAccountPersistenceAdapter
+				.updateDeviceRegistrationToken(1L, "some-device-registration-token"));
+
+	}
+
+	@Test
+	void givenExistentUserAccountById_whenUpdateDeviceRegistrationToken_thenUpdateDeviceRegistrationToken() {
+		// given
+		UserAccountJpaEntity userAccount = UserAccountJpaEntityTestData.defaultExistentClientJpaEntity();
+		given(userAccountRepository.findById(any(Long.class))).willReturn(Optional.of(userAccount));
+		// when
+		userAccountPersistenceAdapter.updateDeviceRegistrationToken(1L, "some-device-registration-token");
+		// then
+		ArgumentCaptor<UserAccountJpaEntity> captor = ArgumentCaptor.forClass(UserAccountJpaEntity.class);
+		then(userAccountRepository).should(times(1)).save(captor.capture());
+
+		assertEquals("some-device-registration-token", captor.getValue().getDeviceRegistrationToken());
+	}
 }

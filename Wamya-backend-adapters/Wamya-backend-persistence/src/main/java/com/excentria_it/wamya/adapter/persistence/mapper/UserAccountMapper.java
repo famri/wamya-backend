@@ -55,7 +55,7 @@ public class UserAccountMapper {
 					userAccount.getReceiveNewsletter(),
 					userAccount.getCreationDateTime() != null ? userAccount.getCreationDateTime().toInstant()
 							: Instant.now(),
-					profileImage, preferences, identityDocument);
+					profileImage, preferences, identityDocument, null);
 
 		} else {
 			return new ClientJpaEntity(userAccount.getId(), userAccount.getOauthId(), gender,
@@ -66,7 +66,7 @@ public class UserAccountMapper {
 					userAccount.getReceiveNewsletter(),
 					userAccount.getCreationDateTime() != null ? userAccount.getCreationDateTime().toInstant()
 							: Instant.now(),
-					profileImage, preferences, identityDocument);
+					profileImage, preferences, identityDocument,null);
 		}
 
 	}

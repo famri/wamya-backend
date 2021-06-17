@@ -34,7 +34,7 @@ public class CreateJourneyRequestsController {
 
 	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
-	public CreateJourneyRequestDto createJourneyRequestFromPlaceId(
+	public CreateJourneyRequestDto createJourneyRequest(
 			@Valid @RequestBody CreateJourneyRequestCommand command,
 			final @AuthenticationPrincipal JwtAuthenticationToken principal, Locale locale) {
 

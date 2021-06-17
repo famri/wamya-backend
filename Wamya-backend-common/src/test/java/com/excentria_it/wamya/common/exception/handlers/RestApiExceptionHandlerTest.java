@@ -51,6 +51,7 @@ import com.excentria_it.wamya.common.exception.InvalidTransporterVehiculeExcepti
 import com.excentria_it.wamya.common.exception.JourneyProposalNotFoundException;
 import com.excentria_it.wamya.common.exception.JourneyRequestExpiredException;
 import com.excentria_it.wamya.common.exception.JourneyRequestNotFoundException;
+import com.excentria_it.wamya.common.exception.JourneyRequestUpdateException;
 import com.excentria_it.wamya.common.exception.LinkExpiredException;
 import com.excentria_it.wamya.common.exception.MyBindException;
 import com.excentria_it.wamya.common.exception.OperationDeniedException;
@@ -690,6 +691,30 @@ public class RestApiExceptionHandlerTest {
 		then(((ApiError) responseEntity.getBody()).getErrorCode()).isEqualTo(ErrorCode.NOT_FOUND);
 		then(((ApiError) responseEntity.getBody()).getErrors()).containsExactly(SOME_MESSAGE);
 		then(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+	}
+
+	@Test
+	void whenHandleJourneyRequestUpdateException_thenStatusIsBadRequest() {
+		// given
+		JourneyRequestUpdateException exception = givenJourneyRequestUpdateException();
+
+		// When
+		ResponseEntity<ApiError> responseEntity = restApiExceptionHandler
+				.handleJourneyRequestUpdateException(exception);
+
+		// Then
+		then(responseEntity.getBody() instanceof ApiError);
+		then(((ApiError) responseEntity.getBody()).getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
+		then(((ApiError) responseEntity.getBody()).getErrorCode()).isEqualTo(ErrorCode.VALIDATION_ERROR);
+		then(((ApiError) responseEntity.getBody()).getErrors()).containsExactly(SOME_MESSAGE);
+		then(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+	}
+
+	private JourneyRequestUpdateException givenJourneyRequestUpdateException() {
+		JourneyRequestUpdateException exception = Mockito.mock(JourneyRequestUpdateException.class);
+		given(exception.getMessage()).willReturn(SOME_MESSAGE);
+
+		return exception;
 	}
 
 	private LinkExpiredException givenLinkExpiredException() {

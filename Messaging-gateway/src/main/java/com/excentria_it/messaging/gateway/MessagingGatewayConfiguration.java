@@ -14,9 +14,11 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.web.client.RestTemplate;
 
 import com.excentria_it.messaging.gateway.email.EmailRequestReceiver;
+import com.excentria_it.messaging.gateway.push.PushRequestReceiver;
 import com.excentria_it.messaging.gateway.sms.SMSGatewayProperties;
 import com.excentria_it.messaging.gateway.sms.SMSRequestReceiver;
 import com.excentria_it.wamya.common.domain.EmailMessage;
+import com.excentria_it.wamya.common.domain.PushMessage;
 import com.excentria_it.wamya.common.domain.SMSMessage;
 import com.excentria_it.wamya.common.rabbitmq.RabbitMqQueue;
 
@@ -110,4 +112,29 @@ public class MessagingGatewayConfiguration {
 //
 //	}
 
+	@Bean
+	public SimpleMessageListenerContainer pushMessageListenerContainer(ConnectionFactory connectionFactory,
+			PushRequestReceiver receiver) {
+		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+		container.setConnectionFactory(connectionFactory);
+		container.setQueueNames(RabbitMqQueue.PUSH_QUEUE);
+		container.setExposeListenerChannel(true);
+		container.setAcknowledgeMode(AcknowledgeMode.MANUAL);
+		container.setDefaultRequeueRejected(false);
+		container.setExclusive(true);
+		container.setConcurrentConsumers(1);
+		container.setMessageListener(getPushMessageMessageListener(receiver));
+
+		return container;
+	}
+
+	protected ChannelAwareMessageListener getPushMessageMessageListener(PushRequestReceiver receiver) {
+		return (ChannelAwareMessageListener) (message, channel) -> {
+			PushMessage pushMessage = (PushMessage) jackson2JsonMessageConverter().fromMessage(message);
+			boolean success = receiver.receivePushRequest(pushMessage);
+			if (success) {
+				channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+			}
+		};
+	}
 }

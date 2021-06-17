@@ -283,4 +283,20 @@ public class UserAccountPersistenceAdapter
 			throw new UserAccountNotFoundException(String.format("No account was found by ID %d.", userId));
 	}
 
+	@Override
+	public void updateDeviceRegistrationToken(Long userId, String token) {
+
+		Optional<UserAccountJpaEntity> userAccountEntityOptional = userAccountRepository.findById(userId);
+		if (userAccountEntityOptional.isPresent()) {
+			UserAccountJpaEntity userAccountEntity = userAccountEntityOptional.get();
+			userAccountEntity.setDeviceRegistrationToken(token);
+
+			userAccountRepository.save(userAccountEntity);
+
+		} else {
+			throw new UserAccountNotFoundException(String.format("No account was found by ID %d.", userId));
+		}
+
+	}
+
 }

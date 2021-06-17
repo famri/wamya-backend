@@ -1,7 +1,6 @@
 package com.excentria_it.wamya.application.port.in;
 
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 
 import com.excentria_it.wamya.common.annotation.Among;
 
@@ -16,11 +15,10 @@ public interface SaveUserPreferenceUseCase {
 	@NoArgsConstructor
 	@AllArgsConstructor
 	class SaveUserPreferenceCommand {
-		@NotNull
-		@Among(value = "timezone")
+		@NotEmpty
+		@Among(value = { "timezone", "locale" })
 		private String key;
 
-		@NotNull
 		@NotEmpty
 		private String value;
 	}

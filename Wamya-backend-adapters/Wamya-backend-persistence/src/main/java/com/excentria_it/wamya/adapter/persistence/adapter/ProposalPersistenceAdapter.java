@@ -6,9 +6,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 
@@ -36,6 +33,7 @@ import com.excentria_it.wamya.domain.JourneyProposalDto;
 import com.excentria_it.wamya.domain.JourneyRequestProposals;
 import com.excentria_it.wamya.domain.LoadJourneyProposalsCriteria;
 import com.excentria_it.wamya.domain.MakeProposalDto;
+import com.excentria_it.wamya.domain.TransporterNotificationInfo;
 
 import lombok.RequiredArgsConstructor;
 
@@ -98,27 +96,25 @@ public class ProposalPersistenceAdapter
 	@Override
 	public JourneyRequestProposals loadJourneyProposals(LoadJourneyProposalsCriteria criteria, String locale) {
 		Sort sort = convertToSort(criteria.getSortingCriterion());
-		Pageable pagingSort = PageRequest.of(criteria.getPageNumber(), criteria.getPageSize(), sort);
-		Page<JourneyProposalJpaEntity> page = null;
+		List<JourneyProposalJpaEntity> list;
+
 		if (criteria.getStatusCodes().isEmpty()) {
-			page = journeyProposalRepository.findByJourneyRequest_Id(criteria.getJourneyRequestId(), pagingSort);
+			list = journeyProposalRepository.findByJourneyRequest_Id(criteria.getJourneyRequestId(), sort);
 		} else {
 			List<JourneyProposalStatusCode> statusCodes = criteria.getStatusCodes().stream()
 					.map(s -> JourneyProposalStatusCode.valueOf(s.name())).collect(Collectors.toList());
-			page = journeyProposalRepository.findByJourneyRequest_IdAndStatus_CodeIn(criteria.getJourneyRequestId(),
-					statusCodes, pagingSort);
+			list = journeyProposalRepository.findByJourneyRequest_IdAndStatus_CodeIn(criteria.getJourneyRequestId(),
+					statusCodes, sort);
 		}
 
-		if (page == null) {
-			return new JourneyRequestProposals(0, 0, criteria.getPageNumber(), criteria.getPageSize(), false,
-					Collections.<JourneyProposalDto>emptyList());
+		if (list == null) {
+			return new JourneyRequestProposals(0, Collections.<JourneyProposalDto>emptyList());
 		}
 
-		List<JourneyProposalDto> journeyProposalDtoList = page.getContent().stream()
+		List<JourneyProposalDto> journeyProposalDtoList = list.stream()
 				.map(p -> journeyProposalMapper.mapToDomainEntity(p, locale)).collect(Collectors.toList());
 
-		return new JourneyRequestProposals(page.getTotalPages(), page.getTotalElements(), page.getNumber(),
-				page.getSize(), page.hasNext(), journeyProposalDtoList);
+		return new JourneyRequestProposals(list.size(), journeyProposalDtoList);
 
 	}
 
@@ -202,6 +198,12 @@ public class ProposalPersistenceAdapter
 
 		return journeyProposalRepository.existsByIdAndJourneyRequestIdAndStatusCode(proposalId, journeyRequestId,
 				JourneyProposalStatusCode.valueOf(statusCode.name()));
+
+	}
+
+	@Override
+	public Set<TransporterNotificationInfo> loadTransportersNotificationInfo(Long journeyRequestId) {
+		return journeyProposalRepository.loadTransportersNotificationInfo(journeyRequestId);
 
 	}
 }

@@ -11,7 +11,6 @@ import java.util.Optional;
 import javax.transaction.Transactional;
 
 import org.apache.commons.text.StrSubstitutor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -37,36 +36,30 @@ import com.excentria_it.wamya.domain.OAuthUserAccount;
 import com.excentria_it.wamya.domain.UserAccount;
 import com.excentria_it.wamya.domain.UserAccount.MobilePhoneNumber;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @UseCase
+@RequiredArgsConstructor
 @Transactional
 @Slf4j
 public class UserAccountService implements CreateUserAccountUseCase {
 
-	@Autowired
-	private LoadUserAccountPort loadUserAccountPort;
+	private final LoadUserAccountPort loadUserAccountPort;
 
-	@Autowired
-	private CreateUserAccountPort createUserAccountPort;
+	private final CreateUserAccountPort createUserAccountPort;
 
-	@Autowired
-	private OAuthUserAccountPort oAuthUserAccountPort;
+	private final OAuthUserAccountPort oAuthUserAccountPort;
 
-	@Autowired
-	private MessagingPort messagingPort;
+	private final MessagingPort messagingPort;
 
-	@Autowired
-	private CodeGenerator codeGenerator;
+	private final CodeGenerator codeGenerator;
 
-	@Autowired
-	private PasswordEncoder passwordEncoder;
+	private final PasswordEncoder passwordEncoder;
 
-	@Autowired
-	private ServerUrlProperties serverUrlProperties;
+	private final ServerUrlProperties serverUrlProperties;
 
-	@Autowired
-	private MessageSource messageSource;
+	private final MessageSource messageSource;
 
 	public static final String EMAIL_VALIDATION_URL_TEMPLATE = "${protocol}://${host}:${port}/accounts/validate?email=${email}&code=${code}";
 

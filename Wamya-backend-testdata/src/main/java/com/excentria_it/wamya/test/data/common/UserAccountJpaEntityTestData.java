@@ -30,7 +30,7 @@ public class UserAccountJpaEntityTestData {
 				userAccount.getIsValidatedMobileNumber(), userAccount.getReceiveNewsletter(),
 				userAccount.getCreationDateTime().toInstant(),
 				DocumentJpaTestData.defaultManProfileImageDocumentJpaEntity(), preferences,
-				DocumentJpaTestData.jpegIdentityDocumentJpaEntity());
+				DocumentJpaTestData.jpegIdentityDocumentJpaEntity(), null);
 		t.setGlobalRating(4.3);
 		return t;
 	}
@@ -46,7 +46,7 @@ public class UserAccountJpaEntityTestData {
 				userAccount.getMobilePhoneNumber().getMobileNumber(), userAccount.getMobileNumberValidationCode(),
 				userAccount.getIsValidatedMobileNumber(), userAccount.getReceiveNewsletter(),
 				userAccount.getCreationDateTime().toInstant(),
-				DocumentJpaTestData.defaultManProfileImageDocumentJpaEntity(), Collections.emptyMap(), null);
+				DocumentJpaTestData.defaultManProfileImageDocumentJpaEntity(), Collections.emptyMap(), null, null);
 		t.setGlobalRating(5.0);
 		return t;
 	}
@@ -64,7 +64,7 @@ public class UserAccountJpaEntityTestData {
 				userAccount.getMobilePhoneNumber().getMobileNumber(), userAccount.getMobileNumberValidationCode(),
 				userAccount.getIsValidatedMobileNumber(), userAccount.getReceiveNewsletter(),
 				userAccount.getCreationDateTime().toInstant(),
-				DocumentJpaTestData.defaultManProfileImageDocumentJpaEntity(), preferences, null);
+				DocumentJpaTestData.defaultManProfileImageDocumentJpaEntity(), preferences, null, null);
 
 	}
 
@@ -81,7 +81,7 @@ public class UserAccountJpaEntityTestData {
 				userAccount.getMobilePhoneNumber().getMobileNumber(), userAccount.getMobileNumberValidationCode(),
 				userAccount.getIsValidatedMobileNumber(), userAccount.getReceiveNewsletter(),
 				userAccount.getCreationDateTime().toInstant(),
-				DocumentJpaTestData.defaultManProfileImageDocumentJpaEntity(), preferences, null);
+				DocumentJpaTestData.defaultManProfileImageDocumentJpaEntity(), preferences, null, null);
 
 	}
 
@@ -94,7 +94,7 @@ public class UserAccountJpaEntityTestData {
 				userAccount.getMobilePhoneNumber().getMobileNumber(), userAccount.getMobileNumberValidationCode(),
 				userAccount.getIsValidatedMobileNumber(), userAccount.getReceiveNewsletter(),
 				userAccount.getCreationDateTime().toInstant(),
-				DocumentJpaTestData.defaultManProfileImageDocumentJpaEntity(), Collections.emptyMap(), null);
+				DocumentJpaTestData.defaultManProfileImageDocumentJpaEntity(), Collections.emptyMap(), null, null);
 	}
 
 	public static final ClientJpaEntity defaultExistentClientJpaEntityWithNoProfileImage() {
@@ -109,7 +109,7 @@ public class UserAccountJpaEntityTestData {
 				InternationalCallingCodeJpaEntityTestData.defaultExistentInternationalCallingCodeJpaEntity(),
 				userAccount.getMobilePhoneNumber().getMobileNumber(), userAccount.getMobileNumberValidationCode(),
 				userAccount.getIsValidatedMobileNumber(), userAccount.getReceiveNewsletter(),
-				userAccount.getCreationDateTime().toInstant(), null, preferences, null);
+				userAccount.getCreationDateTime().toInstant(), null, preferences, null, null);
 
 	}
 
@@ -126,7 +126,7 @@ public class UserAccountJpaEntityTestData {
 				userAccount.getMobilePhoneNumber().getMobileNumber(), userAccount.getMobileNumberValidationCode(),
 				userAccount.getIsValidatedMobileNumber(), userAccount.getReceiveNewsletter(),
 				userAccount.getCreationDateTime().toInstant(),
-				DocumentJpaTestData.nonDefaultManProfileImageDocumentJpaEntity(), preferences, null);
+				DocumentJpaTestData.nonDefaultManProfileImageDocumentJpaEntity(), preferences, null, null);
 
 	}
 
@@ -144,7 +144,7 @@ public class UserAccountJpaEntityTestData {
 				userAccount.getIsValidatedMobileNumber(), userAccount.getReceiveNewsletter(),
 				userAccount.getCreationDateTime().toInstant(),
 				DocumentJpaTestData.nonDefaultManProfileImageDocumentJpaEntity(), preferences,
-				DocumentJpaTestData.jpegIdentityDocumentJpaEntity());
+				DocumentJpaTestData.jpegIdentityDocumentJpaEntity(), null);
 
 	}
 }

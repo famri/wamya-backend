@@ -193,4 +193,11 @@ public class ExceptionsTests {
 		assertEquals(exception.getMessage(), message);
 	}
 
+	@Test
+	void testJourneyRequestUpdateException() {
+
+		String message = "SOME MESSAGE";
+		JourneyRequestUpdateException exception = new JourneyRequestUpdateException(message);
+		assertEquals(exception.getMessage(), message);
+	}
 }

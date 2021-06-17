@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import com.excentria_it.wamya.adapter.persistence.entity.JourneyRequestJpaEntity;
+import com.excentria_it.wamya.adapter.persistence.entity.JourneyRequestStatusJpaEntity;
 import com.excentria_it.wamya.domain.ClientJourneyRequestDto;
 import com.excentria_it.wamya.domain.JourneyRequestSearchOutput;
 
@@ -45,4 +46,7 @@ public interface JourneyRequestRepository extends JpaRepository<JourneyRequestJp
 	@Query(value = "SELECT CASE WHEN COUNT(j) > 0 THEN true ELSE false END FROM JourneyRequestJpaEntity j JOIN j.client c JOIN c.icc i WHERE j.id = ?1 AND j.dateTime > CURRENT_TIMESTAMP AND c.mobileNumber = ?3 AND i.value = ?2")
 	boolean existsAndNotExpiredByIdAndClient_Icc_ValueAndClient_MobileNumber(Long journeyRequestId, String icc,
 			String mobileNumber);
+
+	@Query(value = "UPDATE JourneyRequestJpaEntity j SET j.status = ?2 WHERE j.id = ?1")
+	void updateStatus(Long journeyRequestId, JourneyRequestStatusJpaEntity cancelledStatusJpaEntity);
 }

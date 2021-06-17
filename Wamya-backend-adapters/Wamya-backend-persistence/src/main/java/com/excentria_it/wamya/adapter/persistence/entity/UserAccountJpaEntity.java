@@ -81,6 +81,8 @@ public abstract class UserAccountJpaEntity {
 	@OneToOne
 	protected DocumentJpaEntity identityDocument;
 
+	protected String deviceRegistrationToken;
+
 	@OneToMany(mappedBy = "userAccount", cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST,
 			CascadeType.REFRESH }, orphanRemoval = true)
 	@MapKey(name = "userPreferenceId.key")
@@ -91,7 +93,8 @@ public abstract class UserAccountJpaEntity {
 			String emailValidationCode, Boolean isValidatedEmail, InternationalCallingCodeJpaEntity icc,
 			String mobileNumber, String mobileNumberValidationCode, Boolean isValidatedMobileNumber,
 			Boolean receiveNewsletter, Instant creationDateTime, DocumentJpaEntity profileImage,
-			Map<String, UserPreferenceJpaEntity> preferences, DocumentJpaEntity identityDocument) {
+			Map<String, UserPreferenceJpaEntity> preferences, DocumentJpaEntity identityDocument,
+			String deviceRegistrationToken) {
 		super();
 		this.id = id;
 		this.oauthId = oauthId;
@@ -112,7 +115,7 @@ public abstract class UserAccountJpaEntity {
 		this.creationDateTime = creationDateTime;
 		this.profileImage = profileImage;
 		this.identityDocument = identityDocument;
-
+		this.deviceRegistrationToken = deviceRegistrationToken;
 		if (preferences != null) {
 			preferences.forEach((k, v) -> v.setUserAccount(this));
 		}
@@ -280,6 +283,14 @@ public abstract class UserAccountJpaEntity {
 		this.identityDocument = identityDocument;
 	}
 
+	public String getDeviceRegistrationToken() {
+		return deviceRegistrationToken;
+	}
+
+	public void setDeviceRegistrationToken(String deviceRegistrationToken) {
+		this.deviceRegistrationToken = deviceRegistrationToken;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -313,7 +324,7 @@ public abstract class UserAccountJpaEntity {
 				+ icc + ", mobileNumber=" + mobileNumber + ", mobileNumberValidationCode=" + mobileNumberValidationCode
 				+ ", isValidatedMobileNumber=" + isValidatedMobileNumber + ", receiveNewsletter=" + receiveNewsletter
 				+ ", creationDateTime=" + creationDateTime + ", profileImage=" + profileImage + ", identityDocument="
-				+ identityDocument + "]";
+				+ identityDocument + ", deviceRegistrationToken=" + deviceRegistrationToken + "]";
 	}
 
 }

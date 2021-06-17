@@ -17,9 +17,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -34,7 +36,6 @@ import com.excentria_it.wamya.adapter.persistence.entity.DepartmentJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.EngineTypeJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.JourneyRequestJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.JourneyRequestStatusJpaEntity;
-import com.excentria_it.wamya.adapter.persistence.entity.JourneyRequestStatusJpaEntity.JourneyRequestStatusCode;
 import com.excentria_it.wamya.adapter.persistence.entity.PlaceId;
 import com.excentria_it.wamya.adapter.persistence.entity.PlaceJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.mapper.JourneyRequestMapper;
@@ -52,9 +53,15 @@ import com.excentria_it.wamya.domain.ClientJourneyRequests;
 import com.excentria_it.wamya.domain.JourneyRequestInputOutput;
 import com.excentria_it.wamya.domain.JourneyRequestSearchDto;
 import com.excentria_it.wamya.domain.JourneyRequestSearchOutput;
+import com.excentria_it.wamya.domain.JourneyRequestStatusCode;
 import com.excentria_it.wamya.domain.JourneyRequestsSearchOutputResult;
 import com.excentria_it.wamya.domain.LoadClientJourneyRequestsCriteria;
 import com.excentria_it.wamya.domain.SearchJourneyRequestsInput;
+import com.excentria_it.wamya.test.data.common.DepartmentJpaTestData;
+import com.excentria_it.wamya.test.data.common.EngineTypeJpaTestData;
+import com.excentria_it.wamya.test.data.common.JourneyRequestJpaTestData;
+import com.excentria_it.wamya.test.data.common.JourneyRequestTestData;
+import com.excentria_it.wamya.test.data.common.PlaceJpaTestData;
 import com.excentria_it.wamya.test.data.common.TestConstants;
 
 @ExtendWith(MockitoExtension.class)
@@ -567,7 +574,8 @@ public class JourneyRequestsPersistenceAdapterTests {
 	@Test
 	void testTrueIsExistentJourneyRequestByIdAndClientEmail() {
 		// given
-		given(journeyRequestRepository.existsAndNotExpiredByIdAndClient_Email(any(Long.class), any(String.class))).willReturn(true);
+		given(journeyRequestRepository.existsAndNotExpiredByIdAndClient_Email(any(Long.class), any(String.class)))
+				.willReturn(true);
 		// when
 		boolean result = journeyRequestsPersistenceAdapter.isExistentAndNotExpiredJourneyRequestByIdAndClientEmail(1L,
 				TestConstants.DEFAULT_EMAIL);
@@ -582,8 +590,9 @@ public class JourneyRequestsPersistenceAdapterTests {
 				any(String.class), any(String.class))).willReturn(true);
 		// when
 		String[] mobileNumber = TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME.split("_");
-		boolean result = journeyRequestsPersistenceAdapter.isExistentAndNotExpiredJourneyRequestByIdAndClientMobileNumberAndIcc(1L,
-				mobileNumber[0], mobileNumber[1]);
+		boolean result = journeyRequestsPersistenceAdapter
+				.isExistentAndNotExpiredJourneyRequestByIdAndClientMobileNumberAndIcc(1L, mobileNumber[0],
+						mobileNumber[1]);
 		// then
 		assertTrue(result);
 	}
@@ -591,7 +600,8 @@ public class JourneyRequestsPersistenceAdapterTests {
 	@Test
 	void testFalseIsExistentJourneyRequestByIdAndClientEmail() {
 		// given
-		given(journeyRequestRepository.existsAndNotExpiredByIdAndClient_Email(any(Long.class), any(String.class))).willReturn(false);
+		given(journeyRequestRepository.existsAndNotExpiredByIdAndClient_Email(any(Long.class), any(String.class)))
+				.willReturn(false);
 		// when
 		boolean result = journeyRequestsPersistenceAdapter.isExistentAndNotExpiredJourneyRequestByIdAndClientEmail(1L,
 				TestConstants.DEFAULT_EMAIL);
@@ -606,8 +616,9 @@ public class JourneyRequestsPersistenceAdapterTests {
 				any(String.class), any(String.class))).willReturn(false);
 		// when
 		String[] mobileNumber = TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME.split("_");
-		boolean result = journeyRequestsPersistenceAdapter.isExistentAndNotExpiredJourneyRequestByIdAndClientMobileNumberAndIcc(1L,
-				mobileNumber[0], mobileNumber[1]);
+		boolean result = journeyRequestsPersistenceAdapter
+				.isExistentAndNotExpiredJourneyRequestByIdAndClientMobileNumberAndIcc(1L, mobileNumber[0],
+						mobileNumber[1]);
 		// then
 		assertFalse(result);
 	}
@@ -628,6 +639,256 @@ public class JourneyRequestsPersistenceAdapterTests {
 
 		assertEquals(sort3.get().toArray().length, 1);
 		assertTrue(sort3.getOrderFor("distance") != null && sort3.getOrderFor("distance").getDirection().isAscending());
+	}
+
+	@Test
+	void testUpdateJourneyRequest() {
+
+		// given
+
+		JourneyRequestInputOutput journeyRequestInputOutput = JourneyRequestTestData
+				.defaultJourneyRequestInputOutputBuilder().build();
+
+		JourneyRequestJpaEntity journeyRequestJpaEntity = JourneyRequestJpaTestData
+				.defaultExistentJourneyRequestJpaEntity();
+
+		given(journeyRequestRepository.findById(any(Long.class))).willReturn(Optional.of(journeyRequestJpaEntity));
+
+		// DeparturePlace data
+
+		DepartmentJpaEntity departureDepartmentJpaEntity = DepartmentJpaTestData
+				.defaultExistentDepartureDepartmentJpaEntity();
+		given(departmentResolver.resolveDepartment(journeyRequestInputOutput.getDeparturePlace().getId(),
+				journeyRequestInputOutput.getDeparturePlace().getType()))
+						.willReturn(Optional.of(departureDepartmentJpaEntity));
+
+		PlaceJpaEntity departurePlaceJpaEntity = PlaceJpaTestData.defaultPlaceJpaEntity();
+		given(placeRepository.findById(new PlaceId(journeyRequestInputOutput.getDeparturePlace().getId(),
+				journeyRequestInputOutput.getDeparturePlace().getType())))
+						.willReturn(Optional.of(departurePlaceJpaEntity));
+
+		// ArrivalPlace data
+
+		DepartmentJpaEntity arrivalDepartmentJpaEntity = DepartmentJpaTestData
+				.defaultExistentArrivalDepartmentJpaEntity();
+		given(departmentResolver.resolveDepartment(journeyRequestInputOutput.getArrivalPlace().getId(),
+				journeyRequestInputOutput.getArrivalPlace().getType()))
+						.willReturn(Optional.of(arrivalDepartmentJpaEntity));
+
+		PlaceJpaEntity arrivalPlaceJpaEntity = PlaceJpaTestData.defaultPlaceJpaEntity();
+		given(placeRepository.findById(new PlaceId(journeyRequestInputOutput.getArrivalPlace().getId(),
+				journeyRequestInputOutput.getArrivalPlace().getType()))).willReturn(Optional.of(arrivalPlaceJpaEntity));
+
+		// EngineType data
+		EngineTypeJpaEntity engineTypeJpaEntity = EngineTypeJpaTestData.defaultEngineTypeJpaEntity();
+		given(engineTypeRepository.findById(journeyRequestInputOutput.getEngineType().getId()))
+				.willReturn(Optional.of(engineTypeJpaEntity));
+
+		// when
+		journeyRequestsPersistenceAdapter.updateJourneyRequest(journeyRequestInputOutput);
+		// then
+		ArgumentCaptor<JourneyRequestJpaEntity> captor = ArgumentCaptor.forClass(JourneyRequestJpaEntity.class);
+		then(journeyRequestRepository).should(times(1)).save(captor.capture());
+
+		assertEquals(departurePlaceJpaEntity, captor.getValue().getDeparturePlace());
+		assertEquals(arrivalPlaceJpaEntity, captor.getValue().getArrivalPlace());
+		assertEquals(engineTypeJpaEntity, captor.getValue().getEngineType());
+		assertEquals(journeyRequestInputOutput.getWorkers(), captor.getValue().getWorkers());
+		assertEquals(journeyRequestInputOutput.getDescription(), captor.getValue().getDescription());
+		assertEquals(journeyRequestInputOutput.getDateTime(), captor.getValue().getDateTime());
+		assertEquals(journeyRequestInputOutput.getHours(), captor.getValue().getHours());
+		assertEquals(journeyRequestInputOutput.getMinutes(), captor.getValue().getMinutes());
+		assertEquals(journeyRequestInputOutput.getDistance(), captor.getValue().getDistance());
+
+	}
+
+	@Test
+	void givenDeparturePlaceDepartmentNotFound_whentUpdateJourneyRequest_thenNeverUpdate() {
+
+		// given
+
+		JourneyRequestInputOutput journeyRequestInputOutput = JourneyRequestTestData
+				.defaultJourneyRequestInputOutputBuilder().build();
+
+		JourneyRequestJpaEntity journeyRequestJpaEntity = JourneyRequestJpaTestData
+				.defaultExistentJourneyRequestJpaEntity();
+
+		given(journeyRequestRepository.findById(any(Long.class))).willReturn(Optional.of(journeyRequestJpaEntity));
+
+		// DeparturePlace data
+
+		given(departmentResolver.resolveDepartment(journeyRequestInputOutput.getDeparturePlace().getId(),
+				journeyRequestInputOutput.getDeparturePlace().getType())).willReturn(Optional.empty());
+
+		// ArrivalPlace data
+
+		// EngineType data
+
+		// when
+		journeyRequestsPersistenceAdapter.updateJourneyRequest(journeyRequestInputOutput);
+		// then
+		then(journeyRequestRepository).should(never()).save(any(JourneyRequestJpaEntity.class));
+
+	}
+
+	@Test
+	void givenExistentDeparturePlaceDepartment_andArrivalPlaceDepartmentNotFound_whentUpdateJourneyRequest_thenNeverUpdate() {
+
+		// given
+
+		JourneyRequestInputOutput journeyRequestInputOutput = JourneyRequestTestData
+				.defaultJourneyRequestInputOutputBuilder().build();
+
+		JourneyRequestJpaEntity journeyRequestJpaEntity = JourneyRequestJpaTestData
+				.defaultExistentJourneyRequestJpaEntity();
+
+		given(journeyRequestRepository.findById(any(Long.class))).willReturn(Optional.of(journeyRequestJpaEntity));
+
+		// DeparturePlace data
+		DepartmentJpaEntity departureDepartmentJpaEntity = DepartmentJpaTestData
+				.defaultExistentDepartureDepartmentJpaEntity();
+		given(departmentResolver.resolveDepartment(journeyRequestInputOutput.getDeparturePlace().getId(),
+				journeyRequestInputOutput.getDeparturePlace().getType()))
+						.willReturn(Optional.of(departureDepartmentJpaEntity));
+
+		// ArrivalPlace data
+		given(departmentResolver.resolveDepartment(journeyRequestInputOutput.getArrivalPlace().getId(),
+				journeyRequestInputOutput.getArrivalPlace().getType())).willReturn(Optional.empty());
+		// EngineType data
+
+		// when
+		journeyRequestsPersistenceAdapter.updateJourneyRequest(journeyRequestInputOutput);
+		// then
+		then(journeyRequestRepository).should(never()).save(any(JourneyRequestJpaEntity.class));
+
+	}
+
+	@Test
+	void givenExistentDeparturePlaceDepartment_andArrivalPlaceDepartment_andEngineTypeNotFoundById_whentUpdateJourneyRequest_thenNeverUpdate() {
+
+		// given
+
+		JourneyRequestInputOutput journeyRequestInputOutput = JourneyRequestTestData
+				.defaultJourneyRequestInputOutputBuilder().build();
+
+		JourneyRequestJpaEntity journeyRequestJpaEntity = JourneyRequestJpaTestData
+				.defaultExistentJourneyRequestJpaEntity();
+
+		given(journeyRequestRepository.findById(any(Long.class))).willReturn(Optional.of(journeyRequestJpaEntity));
+
+		// DeparturePlace data
+		DepartmentJpaEntity departureDepartmentJpaEntity = DepartmentJpaTestData
+				.defaultExistentDepartureDepartmentJpaEntity();
+		given(departmentResolver.resolveDepartment(journeyRequestInputOutput.getDeparturePlace().getId(),
+				journeyRequestInputOutput.getDeparturePlace().getType()))
+						.willReturn(Optional.of(departureDepartmentJpaEntity));
+
+		// ArrivalPlace data
+		DepartmentJpaEntity arrivalDepartmentJpaEntity = DepartmentJpaTestData
+				.defaultExistentArrivalDepartmentJpaEntity();
+		given(departmentResolver.resolveDepartment(journeyRequestInputOutput.getArrivalPlace().getId(),
+				journeyRequestInputOutput.getArrivalPlace().getType()))
+						.willReturn(Optional.of(arrivalDepartmentJpaEntity));
+		// EngineType data
+		given(engineTypeRepository.findById(any(Long.class))).willReturn(Optional.empty());
+
+		// when
+		journeyRequestsPersistenceAdapter.updateJourneyRequest(journeyRequestInputOutput);
+		// then
+		then(journeyRequestRepository).should(never()).save(any(JourneyRequestJpaEntity.class));
+
+	}
+
+	@Test
+	void givenDeparturePlaceAndArrivalPlaceNotFoundById_whenUpdateJourneyRequest_thenCreateDeparturePlace_andArrivalPlace_andUpdateJourneyREquest() {
+
+		// given
+
+		JourneyRequestInputOutput journeyRequestInputOutput = JourneyRequestTestData
+				.defaultJourneyRequestInputOutputBuilder().build();
+
+		JourneyRequestJpaEntity journeyRequestJpaEntity = JourneyRequestJpaTestData
+				.defaultExistentJourneyRequestJpaEntity();
+
+		given(journeyRequestRepository.findById(any(Long.class))).willReturn(Optional.of(journeyRequestJpaEntity));
+
+		// DeparturePlace data
+
+		DepartmentJpaEntity departureDepartmentJpaEntity = DepartmentJpaTestData
+				.defaultExistentDepartureDepartmentJpaEntity();
+		given(departmentResolver.resolveDepartment(journeyRequestInputOutput.getDeparturePlace().getId(),
+				journeyRequestInputOutput.getDeparturePlace().getType()))
+						.willReturn(Optional.of(departureDepartmentJpaEntity));
+
+		PlaceJpaEntity departurePlaceJpaEntity = PlaceJpaTestData.defaultPlaceJpaEntity();
+		given(placeRepository.findById(new PlaceId(journeyRequestInputOutput.getDeparturePlace().getId(),
+				journeyRequestInputOutput.getDeparturePlace().getType()))).willReturn(Optional.empty());
+
+		given(placeMapper.mapToJpaEntity(journeyRequestInputOutput.getDeparturePlace(), departureDepartmentJpaEntity))
+				.willReturn(departurePlaceJpaEntity);
+
+		given(localizedPlaceResolver.resolveLocalizedPlaces(journeyRequestInputOutput.getDeparturePlace().getId(),
+				journeyRequestInputOutput.getDeparturePlace().getType())).willReturn(
+						departurePlaceJpaEntity.getLocalizations().values().stream().collect(Collectors.toList()));
+
+		given(placeRepository.save(departurePlaceJpaEntity)).willReturn(departurePlaceJpaEntity);
+
+		// ArrivalPlace data
+
+		DepartmentJpaEntity arrivalDepartmentJpaEntity = DepartmentJpaTestData
+				.defaultExistentArrivalDepartmentJpaEntity();
+		given(departmentResolver.resolveDepartment(journeyRequestInputOutput.getArrivalPlace().getId(),
+				journeyRequestInputOutput.getArrivalPlace().getType()))
+						.willReturn(Optional.of(arrivalDepartmentJpaEntity));
+
+		PlaceJpaEntity arrivalPlaceJpaEntity = PlaceJpaTestData.defaultPlaceJpaEntity();
+		given(placeRepository.findById(new PlaceId(journeyRequestInputOutput.getArrivalPlace().getId(),
+				journeyRequestInputOutput.getArrivalPlace().getType()))).willReturn(Optional.empty());
+
+		given(placeMapper.mapToJpaEntity(journeyRequestInputOutput.getArrivalPlace(), arrivalDepartmentJpaEntity))
+				.willReturn(arrivalPlaceJpaEntity);
+		given(localizedPlaceResolver.resolveLocalizedPlaces(journeyRequestInputOutput.getArrivalPlace().getId(),
+				journeyRequestInputOutput.getArrivalPlace().getType())).willReturn(
+						arrivalPlaceJpaEntity.getLocalizations().values().stream().collect(Collectors.toList()));
+
+		given(placeRepository.save(arrivalPlaceJpaEntity)).willReturn(arrivalPlaceJpaEntity);
+
+		// EngineType data
+		EngineTypeJpaEntity engineTypeJpaEntity = EngineTypeJpaTestData.defaultEngineTypeJpaEntity();
+		given(engineTypeRepository.findById(journeyRequestInputOutput.getEngineType().getId()))
+				.willReturn(Optional.of(engineTypeJpaEntity));
+
+		// when
+		journeyRequestsPersistenceAdapter.updateJourneyRequest(journeyRequestInputOutput);
+		// then
+		ArgumentCaptor<JourneyRequestJpaEntity> captor = ArgumentCaptor.forClass(JourneyRequestJpaEntity.class);
+		then(journeyRequestRepository).should(times(1)).save(captor.capture());
+
+		assertEquals(departurePlaceJpaEntity, captor.getValue().getDeparturePlace());
+		assertEquals(arrivalPlaceJpaEntity, captor.getValue().getArrivalPlace());
+		assertEquals(engineTypeJpaEntity, captor.getValue().getEngineType());
+		assertEquals(journeyRequestInputOutput.getWorkers(), captor.getValue().getWorkers());
+		assertEquals(journeyRequestInputOutput.getDescription(), captor.getValue().getDescription());
+		assertEquals(journeyRequestInputOutput.getDateTime(), captor.getValue().getDateTime());
+		assertEquals(journeyRequestInputOutput.getHours(), captor.getValue().getHours());
+		assertEquals(journeyRequestInputOutput.getMinutes(), captor.getValue().getMinutes());
+		assertEquals(journeyRequestInputOutput.getDistance(), captor.getValue().getDistance());
+
+	}
+
+	@Test
+	public void testCancelJourneyRequest() {
+
+		// given
+		JourneyRequestStatusJpaEntity status = canceledJourneyRequestStatusJpaEntity();
+
+		given(journeyRequestStatusRepository.findByCode(JourneyRequestStatusCode.CANCELED)).willReturn(status);
+
+		// when
+		journeyRequestsPersistenceAdapter.cancelJourneyRequest(1L);
+
+		// then
+		then(journeyRequestRepository).should(times(1)).updateStatus(1L, status);
 	}
 
 	private Page<JourneyRequestSearchDto> givenNullJourneyRequestsPageByDeparturePlace_RegionIdAndArrivalPlace_RegionIdInAndEngineType_IdInAndDateBetween() {

@@ -9,7 +9,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
 
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,6 +27,7 @@ import com.excentria_it.wamya.adapter.persistence.repository.DelegationRepositor
 import com.excentria_it.wamya.adapter.persistence.repository.DepartmentRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.GeoPlaceRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.LocalityRepository;
+import com.excentria_it.wamya.adapter.persistence.repository.PlaceRepository;
 import com.excentria_it.wamya.domain.GeoCoordinates;
 import com.excentria_it.wamya.domain.PlaceType;
 
@@ -38,7 +41,8 @@ public class PlacePersistenceAdapterTests {
 	private DepartmentRepository departmentRepository;
 	@Mock
 	private GeoPlaceRepository geoPlaceRepository;
-
+	@Mock
+	private PlaceRepository placeRepository;
 	@InjectMocks
 	private PlacePersistenceAdapter placePersistenceAdapter;
 
@@ -149,4 +153,18 @@ public class PlacePersistenceAdapterTests {
 		assertThat(geoCoordinates).isEmpty();
 	}
 
+	@Test
+	void testLoadPlaceNames() {
+		// given
+		given(placeRepository.findNameByLocale(any(Long.class), any(PlaceType.class), eq("fr_FR")))
+				.willReturn("Place Name FR");
+		given(placeRepository.findNameByLocale(any(Long.class), any(PlaceType.class), eq("en_US")))
+				.willReturn("Place Name EN");
+		// when
+		Map<String, String> placeNamesByLocale = placePersistenceAdapter.loadPlaceNames(1L, PlaceType.DEPARTMENT,
+				Set.of("fr_FR", "en_US"));
+		// then
+		assertEquals("Place Name FR", placeNamesByLocale.get("fr_FR"));
+		assertEquals("Place Name EN", placeNamesByLocale.get("en_US"));
+	}
 }

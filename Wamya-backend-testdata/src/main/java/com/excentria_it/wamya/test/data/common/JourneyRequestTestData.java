@@ -389,7 +389,7 @@ public class JourneyRequestTestData {
 				.arrivalPlace(new JourneyRequestInputOutput.Place(2L, PlaceType.LOCALITY, new BigDecimal(37.8015),
 						new BigDecimal(11.1788)))
 				.dateTime(startDate.toInstant()).engineType(new JourneyRequestInputOutput.EngineType(1L, "EngineType1"))
-				.workers(2).description("Need a transporter URGENT!!!");
+				.workers(2).description("Need a transporter URGENT!!!").hours(1).minutes(30).distance(150000);
 	}
 
 	public static LoadClientJourneyRequestsCriteriaBuilder defaultLoadClientJourneyRequestsCriteriaBuilder() {
@@ -423,6 +423,68 @@ public class JourneyRequestTestData {
 
 	public static ClientJourneyRequestDto defaultClientJourneyRequestDto() {
 		return clientJourneyRequestDtos.get(0);
+	}
+
+	public static ClientJourneyRequestDto defaultClientJourneyRequestDtoWithNoProposals() {
+		return new ClientJourneyRequestDto() {
+
+			@Override
+			public Long getId() {
+
+				return 1L;
+			}
+
+			@Override
+			public PlaceDto getDeparturePlace() {
+
+				return new PlaceDto(1L, "DEPARTMENT", "departurePlaceName", new BigDecimal(34.486523),
+						new BigDecimal(10.486523), 1L);
+			}
+
+			@Override
+			public PlaceDto getArrivalPlace() {
+				return new PlaceDto(2L, "DEPARTMENT", "arrivalPlaceName1", new BigDecimal(36.486523),
+						new BigDecimal(10.486523), 2L);
+			}
+
+			@Override
+			public EngineTypeDto getEngineType() {
+				return new EngineTypeDto(1L, "engineType1", "UTILITY");
+			}
+
+			@Override
+			public Integer getDistance() {
+				return 100000;
+			}
+
+			@Override
+			public Instant getDateTime() {
+				return startDate.toInstant();
+			}
+
+			@Override
+			public Instant getCreationDateTime() {
+				return endDate.minusDays(1).toInstant();
+			}
+
+			@Override
+			public Integer getWorkers() {
+				return 2;
+			}
+
+			@Override
+			public String getDescription() {
+
+				return "Journey description 1";
+			}
+
+			@Override
+			public Integer getProposalsCount() {
+
+				return 0;
+			}
+
+		};
 	}
 
 	public static List<ClientJourneyRequestDto> defaultClientJourneyRequestDtoList() {

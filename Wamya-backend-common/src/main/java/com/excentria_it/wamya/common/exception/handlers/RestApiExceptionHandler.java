@@ -40,6 +40,7 @@ import com.excentria_it.wamya.common.exception.InvalidTransporterVehiculeExcepti
 import com.excentria_it.wamya.common.exception.JourneyProposalNotFoundException;
 import com.excentria_it.wamya.common.exception.JourneyRequestExpiredException;
 import com.excentria_it.wamya.common.exception.JourneyRequestNotFoundException;
+import com.excentria_it.wamya.common.exception.JourneyRequestUpdateException;
 import com.excentria_it.wamya.common.exception.LinkExpiredException;
 import com.excentria_it.wamya.common.exception.OperationDeniedException;
 import com.excentria_it.wamya.common.exception.UnsupportedInternationalCallingCodeException;
@@ -435,4 +436,14 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 		return new ResponseEntity<ApiError>(apiError, new HttpHeaders(), apiError.getStatus());
 	}
 
+	@ExceptionHandler({ JourneyRequestUpdateException.class })
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public ResponseEntity<ApiError> handleJourneyRequestUpdateException(JourneyRequestUpdateException exception) {
+
+		log.error("Exception at " + exception.getClass() + ": ", exception);
+		final String error = exception.getMessage();
+		final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ErrorCode.VALIDATION_ERROR, error);
+		return new ResponseEntity<ApiError>(apiError, new HttpHeaders(), apiError.getStatus());
+	}
+	
 }

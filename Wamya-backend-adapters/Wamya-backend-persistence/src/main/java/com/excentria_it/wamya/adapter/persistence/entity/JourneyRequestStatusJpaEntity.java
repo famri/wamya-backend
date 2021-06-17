@@ -16,6 +16,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import com.excentria_it.wamya.common.annotation.Generated;
+import com.excentria_it.wamya.domain.JourneyRequestStatusCode;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -98,7 +99,4 @@ public class JourneyRequestStatusJpaEntity {
 		return "JourneyRequestStatusJpaEntity [id=" + id + ", code=" + code + ", description=" + description + "]";
 	}
 
-	public enum JourneyRequestStatusCode {
-		OPENED, CANCELED, EXPIRED, FULFILLED;
-	}
 }

@@ -13,7 +13,6 @@ import com.excentria_it.wamya.adapter.persistence.entity.DepartmentJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.EngineTypeJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.JourneyRequestJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.JourneyRequestStatusJpaEntity;
-import com.excentria_it.wamya.adapter.persistence.entity.JourneyRequestStatusJpaEntity.JourneyRequestStatusCode;
 import com.excentria_it.wamya.adapter.persistence.entity.JourneyRequestStatusJpaEntity.JourneyRequestStatusJpaEntityBuilder;
 import com.excentria_it.wamya.adapter.persistence.entity.LocalizedEngineTypeJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.LocalizedId;
@@ -22,6 +21,7 @@ import com.excentria_it.wamya.adapter.persistence.entity.LocalizedPlaceId;
 import com.excentria_it.wamya.adapter.persistence.entity.LocalizedPlaceJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.PlaceId;
 import com.excentria_it.wamya.adapter.persistence.entity.PlaceJpaEntity;
+import com.excentria_it.wamya.domain.JourneyRequestStatusCode;
 import com.excentria_it.wamya.domain.PlaceType;
 
 public class JourneyRequestJpaTestData {
@@ -89,7 +89,7 @@ public class JourneyRequestJpaTestData {
 	public static JourneyRequestJpaEntity defaultExistentJourneyRequestJpaEntity() {
 		Map<String, LocalizedJourneyRequestStatusJpaEntity> localizations = new HashMap<>();
 		LocalizedJourneyRequestStatusJpaEntity ljrsFR = new LocalizedJourneyRequestStatusJpaEntity(
-				new LocalizedId(1L, "fr_FR"), null, "créé");
+				new LocalizedId(1L, "fr_FR"), null, "crï¿½ï¿½");
 		LocalizedJourneyRequestStatusJpaEntity ljrsEN = new LocalizedJourneyRequestStatusJpaEntity(
 				new LocalizedId(1L, "en_US"), null, "opened");
 		localizations.put("fr_FR", ljrsFR);
@@ -113,4 +113,13 @@ public class JourneyRequestJpaTestData {
 				.localizations(Map.of("en_US", localizedStatusJpaEntity));
 	}
 
+	public static JourneyRequestStatusJpaEntity canceledJourneyRequestStatusJpaEntity() {
+
+		LocalizedJourneyRequestStatusJpaEntity localizedStatusJpaEntity = LocalizedJourneyRequestStatusJpaEntity
+				.builder().localizedId(new LocalizedId(1L, "en_US")).value("canceled").build();
+
+		return JourneyRequestStatusJpaEntity.builder().id(2L).code(JourneyRequestStatusCode.CANCELED)
+				.description("Journey request wascanceled by client.")
+				.localizations(Map.of("en_US", localizedStatusJpaEntity)).build();
+	}
 }

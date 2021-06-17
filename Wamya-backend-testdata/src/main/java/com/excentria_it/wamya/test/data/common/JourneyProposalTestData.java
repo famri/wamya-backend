@@ -41,7 +41,7 @@ public class JourneyProposalTestData {
 	}
 
 	public static final JourneyRequestProposals defaultJourneyRequestProposals() {
-		return new JourneyRequestProposals(1, 3, 0, 25, false, journeyProposalDtos);
+		return new JourneyRequestProposals(3, journeyProposalDtos);
 	}
 
 	public static final JourneyProposalDto defaultJourneyProposalDto() {
@@ -50,7 +50,7 @@ public class JourneyProposalTestData {
 
 	public static final LoadJourneyProposalsCriteriaBuilder defaultLoadJourneyProposalsCriteriaBuilder() {
 		return LoadJourneyProposalsCriteria.builder().clientUsername(TestConstants.DEFAULT_EMAIL).journeyRequestId(1L)
-				.pageNumber(0).pageSize(25).sortingCriterion(new SortCriterion("price", "asc"))
+				.sortingCriterion(new SortCriterion("price", "asc"))
 				.statusCodes(List.of(StatusCode.SUBMITTED, StatusCode.ACCEPTED));
 	}
 

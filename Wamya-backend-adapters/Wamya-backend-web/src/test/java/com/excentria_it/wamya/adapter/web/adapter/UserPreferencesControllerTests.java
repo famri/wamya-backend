@@ -66,8 +66,8 @@ public class UserPreferencesControllerTests {
 		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
 				.authorities("SCOPE_offer:write"))
 				.perform(post("/user-preferences").contentType(MediaType.APPLICATION_JSON_VALUE).content(commandJson))
-				.andExpect(status().isBadRequest()).andExpect(responseBody()
-						.containsApiErrors(List.of("key: Wrong value: 'bad key'. Valid values are: [timezone].")));
+				.andExpect(status().isBadRequest()).andExpect(responseBody().containsApiErrors(
+						List.of("key: Wrong value: 'bad key'. Valid values are: [timezone, locale].")));
 
 		then(saveUserPreferenceUseCase).should(never()).saveUserPreference(any(String.class), any(String.class),
 				any(String.class));

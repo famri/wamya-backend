@@ -71,7 +71,7 @@ public class JourneyProposalService implements MakeProposalUseCase, LoadProposal
 
 		LoadJourneyProposalsCriteria criteria = LoadJourneyProposalsCriteria.builder()
 				.journeyRequestId(command.getJourneyRequestId()).clientUsername(command.getClientUsername())
-				.pageNumber(command.getPageNumber()).pageSize(command.getPageSize())
+
 				.sortingCriterion(command.getSortingCriterion()).statusCodes(command.getStatusCodes()).build();
 
 		return loadPropsalsPort.loadJourneyProposals(criteria, locale);
@@ -149,14 +149,15 @@ public class JourneyProposalService implements MakeProposalUseCase, LoadProposal
 
 		if (clientUsername.contains("@")) {
 
-			journeyRequestExists = loadJourneyRequestPort.isExistentAndNotExpiredJourneyRequestByIdAndClientEmail(journeyRequestId,
-					clientUsername);
+			journeyRequestExists = loadJourneyRequestPort
+					.isExistentAndNotExpiredJourneyRequestByIdAndClientEmail(journeyRequestId, clientUsername);
 		} else {
 
 			String[] mobileNumber = clientUsername.split("_");
 
-			journeyRequestExists = loadJourneyRequestPort.isExistentAndNotExpiredJourneyRequestByIdAndClientMobileNumberAndIcc(
-					journeyRequestId, mobileNumber[1], mobileNumber[0]);
+			journeyRequestExists = loadJourneyRequestPort
+					.isExistentAndNotExpiredJourneyRequestByIdAndClientMobileNumberAndIcc(journeyRequestId,
+							mobileNumber[1], mobileNumber[0]);
 		}
 
 		if (!journeyRequestExists) {

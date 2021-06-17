@@ -12,4 +12,6 @@ public interface UpdateUserAccountPort {
 
 	void updateIdentityDocument(Long userId, String location, String hash, DocumentType documentType);
 
+	void updateDeviceRegistrationToken(Long userId, String token);
+
 }

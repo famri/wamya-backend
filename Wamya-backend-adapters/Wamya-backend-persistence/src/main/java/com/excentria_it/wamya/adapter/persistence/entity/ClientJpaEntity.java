@@ -43,12 +43,13 @@ public class ClientJpaEntity extends UserAccountJpaEntity {
 			String emailValidationCode, Boolean isValidatedEmail, InternationalCallingCodeJpaEntity icc,
 			String mobileNumber, String mobileNumberValidationCode, Boolean isValidatedMobileNumber,
 			Boolean receiveNewsletter, Instant creationDateTime, DocumentJpaEntity profileImage,
-			Map<String, UserPreferenceJpaEntity> preferences, DocumentJpaEntity identityDocument) {
+			Map<String, UserPreferenceJpaEntity> preferences, DocumentJpaEntity identityDocument,
+			String deviceRegistrationToken) {
 
 		super(id, oauthId, gender, firstname, lastname, identityValidationState, minibio, dateOfBirth, email,
 				emailValidationCode, isValidatedEmail, icc, mobileNumber, mobileNumberValidationCode,
 				isValidatedMobileNumber, receiveNewsletter, creationDateTime, profileImage, preferences,
-				identityDocument);
+				identityDocument, deviceRegistrationToken);
 
 	}
 
