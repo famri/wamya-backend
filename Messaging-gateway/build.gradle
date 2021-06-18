@@ -26,8 +26,9 @@ jacocoTestCoverageVerification {
 			minimum = 1.0
 			}
 			excludes = [
-					//'com.excentria_it.wamya.WamyaApplication' #commented because redendent when @Generated is used
+					'com.excentria_it.messaging.gateway.push.*' 
 				]
+			
 		}
 	}
 }

@@ -15,18 +15,23 @@ import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.listener.api.ChannelAwareMessageListener;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.excentria_it.messaging.gateway.email.EmailRequestReceiver;
+import com.excentria_it.messaging.gateway.push.PushRequestReceiver;
+import com.excentria_it.messaging.gateway.push.PushTestConfiguration;
 import com.excentria_it.messaging.gateway.sms.SMSRequestReceiver;
 import com.excentria_it.wamya.common.domain.EmailMessage;
+import com.excentria_it.wamya.common.domain.PushMessage;
 import com.excentria_it.wamya.common.domain.SMSMessage;
 import com.rabbitmq.client.Channel;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles(profiles = "localtest")
-@SpringBootTest(webEnvironment = RANDOM_PORT, properties = {"eureka.client.enabled=false"})
+@Import(PushTestConfiguration.class)
+@SpringBootTest(webEnvironment = RANDOM_PORT, properties = { "eureka.client.enabled=false" })
 public class MessagingGatewayApplicationTests {
 
 	@Mock
@@ -37,6 +42,9 @@ public class MessagingGatewayApplicationTests {
 
 	@Mock
 	private EmailRequestReceiver emailRequestReceiver;
+
+	@Mock
+	private PushRequestReceiver pushRequestReceiver;
 
 	@InjectMocks
 	@Spy
@@ -86,6 +94,27 @@ public class MessagingGatewayApplicationTests {
 		emailMessageListener.onMessage(message, channel);
 
 		then(emailRequestReceiver).should(times(1)).receiveEmailRequest(emailMessage);
+		then(channel).should(times(1)).basicAck(-1, false);
+	}
+
+	@Test
+	void testPushMessageListener() throws Exception {
+		Jackson2JsonMessageConverter jackson2JsonMessageConverter = Mockito.mock(Jackson2JsonMessageConverter.class);
+		Message message = Mockito.mock(Message.class);
+		PushMessage pushMessage = Mockito.mock(PushMessage.class);
+		MessageProperties properties = Mockito.mock(MessageProperties.class);
+		Channel channel = Mockito.mock(Channel.class);
+		doReturn(jackson2JsonMessageConverter).when(conf).jackson2JsonMessageConverter();
+		doReturn(pushMessage).when(jackson2JsonMessageConverter).fromMessage(message);
+		doReturn(true).when(pushRequestReceiver).receivePushRequest(pushMessage);
+		doReturn(properties).when(message).getMessageProperties();
+		doReturn(-1L).when(properties).getDeliveryTag();
+
+		ChannelAwareMessageListener pushMessageListener = conf.getPushMessageMessageListener(pushRequestReceiver);
+
+		pushMessageListener.onMessage(message, channel);
+
+		then(pushRequestReceiver).should(times(1)).receivePushRequest(pushMessage);
 		then(channel).should(times(1)).basicAck(-1, false);
 	}
 }
