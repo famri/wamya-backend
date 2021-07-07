@@ -30,7 +30,7 @@ public class UpdateJourneyRequestStatusController {
 
 	private final UpdateJourneyRequestStatusUseCase updatelJourneyRequestStatusUseCase;
 
-	@PatchMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, params = {"status"})
+	@PatchMapping(path = "/{id}/status", consumes = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void updateJourneyRequest(@PathVariable(name = "id") Long journeyRequestId,
 			@Valid @RequestBody UpdateJourneyRequestStatusCommand command,

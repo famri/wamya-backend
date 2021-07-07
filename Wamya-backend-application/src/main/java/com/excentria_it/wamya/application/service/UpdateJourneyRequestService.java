@@ -6,7 +6,6 @@ import java.time.ZoneId;
 import java.util.Optional;
 
 import javax.transaction.Transactional;
-import javax.validation.Valid;
 
 import com.excentria_it.wamya.application.port.in.CreateJourneyRequestUseCase.CreateJourneyRequestCommand;
 import com.excentria_it.wamya.application.port.in.UpdateJourneyRequestUseCase;
@@ -47,8 +46,7 @@ public class UpdateJourneyRequestService implements UpdateJourneyRequestUseCase 
 	private final DateTimeHelper dateTimeHelper;
 
 	@Override
-	public void updateJourneyRequest(Long journeyRequestId, @Valid CreateJourneyRequestCommand command,
-			String username) {
+	public void updateJourneyRequest(Long journeyRequestId, CreateJourneyRequestCommand command, String username) {
 		boolean shouldUpdateJourneyRequest = false;
 		boolean updateJourneyTravelInfo = false;
 

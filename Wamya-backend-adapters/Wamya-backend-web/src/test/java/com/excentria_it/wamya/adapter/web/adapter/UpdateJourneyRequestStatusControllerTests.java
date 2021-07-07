@@ -46,7 +46,7 @@ public class UpdateJourneyRequestStatusControllerTests {
 
 		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
 				.authorities("SCOPE_journey:write"))
-				.perform(patch("/journey-requests/{id}", 1L).contentType(MediaType.APPLICATION_JSON_VALUE)
+				.perform(patch("/journey-requests/{id}/status", 1L).contentType(MediaType.APPLICATION_JSON_VALUE)
 						.content(commandJson))
 				.andExpect(status().isNoContent()).andReturn();
 

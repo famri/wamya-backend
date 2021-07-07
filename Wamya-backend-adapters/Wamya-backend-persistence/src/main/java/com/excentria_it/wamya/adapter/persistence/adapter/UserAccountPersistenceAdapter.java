@@ -20,6 +20,7 @@ import com.excentria_it.wamya.adapter.persistence.repository.TransporterReposito
 import com.excentria_it.wamya.adapter.persistence.repository.UserAccountRepository;
 import com.excentria_it.wamya.adapter.persistence.utils.DefaultIds;
 import com.excentria_it.wamya.application.port.out.CreateUserAccountPort;
+import com.excentria_it.wamya.application.port.out.LoadMobileValidationCodePort;
 import com.excentria_it.wamya.application.port.out.LoadUserAccountPort;
 import com.excentria_it.wamya.application.port.out.UpdateUserAccountPort;
 import com.excentria_it.wamya.common.annotation.PersistenceAdapter;
@@ -36,7 +37,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @PersistenceAdapter
 public class UserAccountPersistenceAdapter
-		implements CreateUserAccountPort, LoadUserAccountPort, UpdateUserAccountPort {
+		implements CreateUserAccountPort, LoadUserAccountPort, UpdateUserAccountPort, LoadMobileValidationCodePort {
 
 	private final UserAccountRepository userAccountRepository;
 
@@ -296,6 +297,16 @@ public class UserAccountPersistenceAdapter
 		} else {
 			throw new UserAccountNotFoundException(String.format("No account was found by ID %d.", userId));
 		}
+
+	}
+
+	@Override
+	public Optional<String> loadMobileValidationCode(String username) {
+		if (username == null || !username.contains("@")) {
+			return Optional.empty();
+		}
+
+		return userAccountRepository.findMobileNumberValidationCodeByEmail(username);
 
 	}
 

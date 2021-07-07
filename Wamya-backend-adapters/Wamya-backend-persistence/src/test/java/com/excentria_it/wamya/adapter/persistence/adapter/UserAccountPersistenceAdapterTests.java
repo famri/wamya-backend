@@ -737,4 +737,37 @@ public class UserAccountPersistenceAdapterTests {
 
 		assertEquals("some-device-registration-token", captor.getValue().getDeviceRegistrationToken());
 	}
+
+	@Test
+	void givenNullUsername_whenLoadMobileValidationCode_thenReturnEmpty() {
+		// given
+
+		// When
+		Optional<String> mobileValidationCodeOptional = userAccountPersistenceAdapter.loadMobileValidationCode(null);
+		// Then
+		assertTrue(mobileValidationCodeOptional.isEmpty());
+	}
+
+	@Test
+	void givenNotAnEmailUsername_whenLoadMobileValidationCode_thenReturnEmpty() {
+		// given
+
+		// When
+		Optional<String> mobileValidationCodeOptional = userAccountPersistenceAdapter
+				.loadMobileValidationCode("NOT_EMAIL_USERNAME");
+		// Then
+		assertTrue(mobileValidationCodeOptional.isEmpty());
+	}
+
+	@Test
+	void givenEmailUsername_whenLoadMobileValidationCode_thenReturnEmpty() {
+		// given
+		given(userAccountRepository.findMobileNumberValidationCodeByEmail(any(String.class)))
+				.willReturn(Optional.of("1234"));
+		// When
+		Optional<String> mobileValidationCodeOptional = userAccountPersistenceAdapter
+				.loadMobileValidationCode(TestConstants.DEFAULT_EMAIL);
+		// Then
+		assertEquals("1234", mobileValidationCodeOptional.get());
+	}
 }
