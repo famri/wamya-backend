@@ -106,6 +106,39 @@ public class OAuthUserAccountIntegrationAdapter implements OAuthUserAccountPort 
 
 	}
 
+	@Override
+	public void updateMobileNumber(Long userOauthId, String internationalCallingCode, String mobileNumber) {
+		OAuth2AuthorizeRequest authorizeRequest = OAuth2AuthorizeRequest
+				.withClientRegistrationId("on-prem-auth-server-cc").principal("wamya-mobile-app").build();
+		OAuth2AuthorizedClient authorizedClient = this.authorizedClientServiceAndManager.authorize(authorizeRequest);
+		OAuth2AccessToken accessToken = Objects.requireNonNull(authorizedClient).getAccessToken();
+
+		getWebClient().patch()
+				.uri(authServerProperties.getUpdateMobileUri().replace("{oAuthId}", userOauthId.toString()))
+				.headers(headers -> {
+					headers.setBearerAuth(accessToken.getTokenValue());
+					headers.setContentType(MediaType.APPLICATION_JSON);
+				}).bodyValue(new UpdateMobileBody(internationalCallingCode, mobileNumber)).retrieve()
+				.bodyToMono(Void.class).block();
+
+	}
+
+	@Override
+	public void updateEmail(Long userOauthId, String email) {
+		OAuth2AuthorizeRequest authorizeRequest = OAuth2AuthorizeRequest
+				.withClientRegistrationId("on-prem-auth-server-cc").principal("wamya-mobile-app").build();
+		OAuth2AuthorizedClient authorizedClient = this.authorizedClientServiceAndManager.authorize(authorizeRequest);
+		OAuth2AccessToken accessToken = Objects.requireNonNull(authorizedClient).getAccessToken();
+
+		getWebClient().patch()
+				.uri(authServerProperties.getUpdateEmailUri().replace("{oAuthId}", userOauthId.toString()))
+				.headers(headers -> {
+					headers.setBearerAuth(accessToken.getTokenValue());
+					headers.setContentType(MediaType.APPLICATION_JSON);
+				}).bodyValue(new UpdateEmailBody(email)).retrieve().bodyToMono(Void.class).block();
+
+	}
+
 	private WebClient getWebClient() {
 		if (webClient == null) {
 			webClient = webClientBuilder.build();
@@ -168,4 +201,21 @@ public class OAuthUserAccountIntegrationAdapter implements OAuthUserAccountPort 
 	static class PasswordBody {
 		private String password;
 	}
+
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	static class UpdateMobileBody {
+		private String icc;
+		private String mobileNumber;
+	}
+
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	static class UpdateEmailBody {
+		private String email;
+
+	}
+
 }

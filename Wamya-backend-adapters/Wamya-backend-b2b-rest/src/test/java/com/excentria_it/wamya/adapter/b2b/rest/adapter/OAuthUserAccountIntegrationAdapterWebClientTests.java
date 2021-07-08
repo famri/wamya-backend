@@ -30,6 +30,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import com.excentria_it.wamya.adapter.b2b.rest.adapter.OAuthUserAccountIntegrationAdapter.PasswordBody;
+import com.excentria_it.wamya.adapter.b2b.rest.adapter.OAuthUserAccountIntegrationAdapter.UpdateEmailBody;
+import com.excentria_it.wamya.adapter.b2b.rest.adapter.OAuthUserAccountIntegrationAdapter.UpdateMobileBody;
 import com.excentria_it.wamya.adapter.b2b.rest.props.AuthServerProperties;
 import com.excentria_it.wamya.common.exception.ApiError;
 import com.excentria_it.wamya.common.exception.AuthServerError;
@@ -88,6 +90,8 @@ public class OAuthUserAccountIntegrationAdapterWebClientTests {
 		authServerProperties.setCreateUserUri(baseUrl + "/oauth/users");
 		authServerProperties.setTokenUri(baseUrl + "/oauth/token");
 		authServerProperties.setResetPasswordUri(baseUrl + "/oauth/users/{oAuthId}/do-reset-password");
+		authServerProperties.setUpdateMobileUri(baseUrl + "/oauth/users/{oAuthId}/mobile");
+		authServerProperties.setUpdateEmailUri(baseUrl + "/oauth/users/{oAuthId}/email");
 
 		oAuthUserAccountIntegrationAdapter = new OAuthUserAccountIntegrationAdapter(authServerProperties,
 				webClientBuilder, objectMapper, authorizedClientServiceAndManager);
@@ -99,14 +103,14 @@ public class OAuthUserAccountIntegrationAdapterWebClientTests {
 		Long userOAuthId = 1L;
 
 		OAuthUserAccount oAuthUserAccountResponse = new OAuthUserAccount(userOAuthId, "foued", "amri", "test@test.com",
-				"+21622222222", "password", true, true, true, true, List.of(new OAuthRole("ROLE_TRANSPORTER")));
+				"+216_22222222", "password", true, true, true, true, List.of(new OAuthRole("ROLE_TRANSPORTER")));
 
 		mockBackEnd.enqueue(new MockResponse().setBody(objectMapper.writeValueAsString(oAuthUserAccountResponse))
 				.setResponseCode(HttpStatus.CREATED.value())
 				.addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON));
 
-		OAuthUserAccount oAuthUserAccount = new OAuthUserAccount(null, "foued", "amri", "test@test.com", "+21622222222",
-				"password", true, true, true, true, List.of(new OAuthRole("ROLE_TRANSPORTER")));
+		OAuthUserAccount oAuthUserAccount = new OAuthUserAccount(null, "foued", "amri", "test@test.com",
+				"+216_22222222", "password", true, true, true, true, List.of(new OAuthRole("ROLE_TRANSPORTER")));
 
 		Long result = oAuthUserAccountIntegrationAdapter.createOAuthUserAccount(oAuthUserAccount);
 
@@ -135,8 +139,8 @@ public class OAuthUserAccountIntegrationAdapterWebClientTests {
 				.setResponseCode(HttpStatus.BAD_REQUEST.value())
 				.addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON));
 
-		OAuthUserAccount oAuthUserAccount = new OAuthUserAccount(null, "foued", "amri", "test@test.com", "+21622222222",
-				"password", true, true, true, true, List.of(new OAuthRole("ROLE_TRANSPORTER")));
+		OAuthUserAccount oAuthUserAccount = new OAuthUserAccount(null, "foued", "amri", "test@test.com",
+				"+216_22222222", "password", true, true, true, true, List.of(new OAuthRole("ROLE_TRANSPORTER")));
 
 		assertThrows(UserAccountAlreadyExistsException.class,
 				() -> oAuthUserAccountIntegrationAdapter.createOAuthUserAccount(oAuthUserAccount));
@@ -163,8 +167,8 @@ public class OAuthUserAccountIntegrationAdapterWebClientTests {
 				.setResponseCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
 				.addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON));
 
-		OAuthUserAccount oAuthUserAccount = new OAuthUserAccount(null, "foued", "amri", "test@test.com", "+21622222222",
-				"password", true, true, true, true, List.of(new OAuthRole("ROLE_TRANSPORTER")));
+		OAuthUserAccount oAuthUserAccount = new OAuthUserAccount(null, "foued", "amri", "test@test.com",
+				"+216_22222222", "password", true, true, true, true, List.of(new OAuthRole("ROLE_TRANSPORTER")));
 
 		assertThrows(WebClientResponseException.class,
 				() -> oAuthUserAccountIntegrationAdapter.createOAuthUserAccount(oAuthUserAccount));
@@ -188,8 +192,8 @@ public class OAuthUserAccountIntegrationAdapterWebClientTests {
 		mockBackEnd.enqueue(new MockResponse().setBody(error).setResponseCode(HttpStatus.BAD_REQUEST.value())
 				.addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON));
 
-		OAuthUserAccount oAuthUserAccount = new OAuthUserAccount(null, "foued", "amri", "test@test.com", "+21622222222",
-				"password", true, true, true, true, List.of(new OAuthRole("ROLE_TRANSPORTER")));
+		OAuthUserAccount oAuthUserAccount = new OAuthUserAccount(null, "foued", "amri", "test@test.com",
+				"+216_22222222", "password", true, true, true, true, List.of(new OAuthRole("ROLE_TRANSPORTER")));
 
 		try {
 			oAuthUserAccountIntegrationAdapter.createOAuthUserAccount(oAuthUserAccount);
@@ -366,6 +370,63 @@ public class OAuthUserAccountIntegrationAdapterWebClientTests {
 
 		assertEquals("myNewPassword",
 				objectMapper.readValue(recordedRequest.getBody().readUtf8(), PasswordBody.class).getPassword());
+
+		assertEquals("Bearer " + "SOME_OAUTH2_BEARER_TOKEN", recordedRequest.getHeader(HttpHeaders.AUTHORIZATION));
+	}
+
+	@Test
+	void testUpdateMobile() throws JsonMappingException, JsonProcessingException, InterruptedException {
+		OAuth2AuthorizedClient oAuth2AuthorizedClient = Mockito.mock(OAuth2AuthorizedClient.class);
+		OAuth2AccessToken oAuth2AccessToken = Mockito.mock(OAuth2AccessToken.class);
+		given(oAuth2AccessToken.getTokenValue()).willReturn("SOME_OAUTH2_BEARER_TOKEN");
+		given(oAuth2AuthorizedClient.getAccessToken()).willReturn(oAuth2AccessToken);
+
+		given(authorizedClientServiceAndManager.authorize(any(OAuth2AuthorizeRequest.class)))
+				.willReturn(oAuth2AuthorizedClient);
+
+		mockBackEnd.enqueue(new MockResponse().setBody("OK").setResponseCode(HttpStatus.OK.value())
+				.addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON));
+
+		oAuthUserAccountIntegrationAdapter.updateMobileNumber(1L, "+216", "12121212");
+
+		RecordedRequest recordedRequest = mockBackEnd.takeRequest();
+
+		assertEquals(HttpMethod.PATCH.name(), recordedRequest.getMethod());
+
+		assertEquals("/oauth/users/1/mobile", recordedRequest.getPath());
+
+		UpdateMobileBody updateMobileBody = objectMapper.readValue(recordedRequest.getBody().readUtf8(),
+				UpdateMobileBody.class);
+
+		assertEquals("+216", updateMobileBody.getIcc());
+		assertEquals("12121212", updateMobileBody.getMobileNumber());
+
+		assertEquals("Bearer " + "SOME_OAUTH2_BEARER_TOKEN", recordedRequest.getHeader(HttpHeaders.AUTHORIZATION));
+	}
+
+	@Test
+	void testUpdateEmail() throws JsonMappingException, JsonProcessingException, InterruptedException {
+		OAuth2AuthorizedClient oAuth2AuthorizedClient = Mockito.mock(OAuth2AuthorizedClient.class);
+		OAuth2AccessToken oAuth2AccessToken = Mockito.mock(OAuth2AccessToken.class);
+		given(oAuth2AccessToken.getTokenValue()).willReturn("SOME_OAUTH2_BEARER_TOKEN");
+		given(oAuth2AuthorizedClient.getAccessToken()).willReturn(oAuth2AccessToken);
+
+		given(authorizedClientServiceAndManager.authorize(any(OAuth2AuthorizeRequest.class)))
+				.willReturn(oAuth2AuthorizedClient);
+
+		mockBackEnd.enqueue(new MockResponse().setBody("OK").setResponseCode(HttpStatus.OK.value())
+				.addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON));
+
+		oAuthUserAccountIntegrationAdapter.updateEmail(1L, "new.email@gmail.com");
+
+		RecordedRequest recordedRequest = mockBackEnd.takeRequest();
+
+		assertEquals(HttpMethod.PATCH.name(), recordedRequest.getMethod());
+
+		assertEquals("/oauth/users/1/email", recordedRequest.getPath());
+
+		assertEquals("new.email@gmail.com",
+				objectMapper.readValue(recordedRequest.getBody().readUtf8(), UpdateEmailBody.class).getEmail());
 
 		assertEquals("Bearer " + "SOME_OAUTH2_BEARER_TOKEN", recordedRequest.getHeader(HttpHeaders.AUTHORIZATION));
 	}

@@ -10,4 +10,8 @@ public interface UserService {
 	OAuthUserAccount loadUserInfoByUsername(String username);
 
 	void resetPassword(Long oauthId, @NotEmpty String newPassword);
+
+	void updateMobile(Long oauthId, String icc, String mobileNumber);
+
+	void updateEmail(Long oauthId, String email);
 }

@@ -10,4 +10,8 @@ public interface OAuthUserAccountPort {
 
 	void resetPassword(Long userOauthId, String password);
 
+	void updateMobileNumber(Long oauthId, String internationalCallingCode, String mobileNumber);
+
+	public void updateEmail(Long oauthId, String email);
+
 }

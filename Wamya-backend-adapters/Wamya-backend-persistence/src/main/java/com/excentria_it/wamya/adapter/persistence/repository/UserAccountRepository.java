@@ -30,5 +30,5 @@ public interface UserAccountRepository extends JpaRepository<UserAccountJpaEntit
 	Optional<UserAccountJpaEntity> findByOauthId(Long userOauthId);
 	
 	@Query("SELECT u.mobileNumberValidationCode FROM UserAccountJpaEntity u WHERE u.email = :email")
-	Optional<String> findMobileNumberValidationCodeByEmail(String username);
+	Optional<String> findMobileNumberValidationCodeByEmail(String email);
 }

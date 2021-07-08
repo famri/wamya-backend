@@ -25,6 +25,8 @@ app:
     client-id: wamya-mobile-app
     client-secret: S3CR3T
     reset-password-uri: "http://${app.auth-server}:9999/oauth/users/{oAuthId}/do-reset-password"
+    update-mobile-uri: "http://${app.auth-server}:9999/oauth/users/{oAuthId}/mobile"
+    update-email-uri: "http://${app.auth-server}:9999/oauth/users/{oAuthId}/email"
     
   google-api:
     api-key: AIzaSyD5ZWuXfEdL8BGnQ4lW4cziV1I5uFl6oFQ

@@ -39,5 +39,14 @@ public class AuthServerProperties {
 	@NotEmpty
 	@NotNull
 	private String resetPasswordUri;
+	
+	@NotEmpty
+	@NotNull
+	private String updateMobileUri;
+	
+	@NotEmpty
+	@NotNull
+	private String updateEmailUri;
+	
 
 }

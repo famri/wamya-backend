@@ -136,4 +136,32 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 		userRepository.save(entity);
 
 	}
+
+	@Override
+	public void updateMobile(Long oauthId, String icc, String mobileNumber) {
+		Optional<UserEntity> userEntityOptional = userRepository.findById(oauthId);
+		if (userEntityOptional.isEmpty()) {
+			throw new UserAccountNotFoundException(String.format("Account not found by ID: %d", oauthId));
+		}
+
+		UserEntity entity = userEntityOptional.get();
+		entity.setPhoneNumber(icc + "_" + mobileNumber);
+
+		userRepository.save(entity);
+
+	}
+
+	@Override
+	public void updateEmail(Long oauthId, String email) {
+		Optional<UserEntity> userEntityOptional = userRepository.findById(oauthId);
+		if (userEntityOptional.isEmpty()) {
+			throw new UserAccountNotFoundException(String.format("Account not found by ID: %d", oauthId));
+		}
+
+		UserEntity entity = userEntityOptional.get();
+		entity.setEmail(email);
+
+		userRepository.save(entity);
+
+	}
 }
