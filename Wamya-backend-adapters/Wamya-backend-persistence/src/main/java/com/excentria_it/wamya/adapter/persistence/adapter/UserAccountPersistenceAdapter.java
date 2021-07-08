@@ -20,7 +20,6 @@ import com.excentria_it.wamya.adapter.persistence.repository.TransporterReposito
 import com.excentria_it.wamya.adapter.persistence.repository.UserAccountRepository;
 import com.excentria_it.wamya.adapter.persistence.utils.DefaultIds;
 import com.excentria_it.wamya.application.port.out.CreateUserAccountPort;
-import com.excentria_it.wamya.application.port.out.LoadMobileValidationCodePort;
 import com.excentria_it.wamya.application.port.out.LoadUserAccountPort;
 import com.excentria_it.wamya.application.port.out.UpdateUserAccountPort;
 import com.excentria_it.wamya.common.annotation.PersistenceAdapter;
@@ -37,7 +36,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @PersistenceAdapter
 public class UserAccountPersistenceAdapter
-		implements CreateUserAccountPort, LoadUserAccountPort, UpdateUserAccountPort, LoadMobileValidationCodePort {
+		implements CreateUserAccountPort, LoadUserAccountPort, UpdateUserAccountPort {
 
 	private final UserAccountRepository userAccountRepository;
 
@@ -301,12 +300,18 @@ public class UserAccountPersistenceAdapter
 	}
 
 	@Override
-	public Optional<String> loadMobileValidationCode(String username) {
-		if (username == null || !username.contains("@")) {
-			return Optional.empty();
-		}
+	public void updateIsValidatedMobileNumber(Long userId, boolean isValidated) {
 
-		return userAccountRepository.findMobileNumberValidationCodeByEmail(username);
+		Optional<UserAccountJpaEntity> userAccountEntityOptional = userAccountRepository.findById(userId);
+		if (userAccountEntityOptional.isPresent()) {
+			UserAccountJpaEntity userAccountEntity = userAccountEntityOptional.get();
+			userAccountEntity.setIsValidatedMobileNumber(isValidated);
+
+			userAccountRepository.save(userAccountEntity);
+
+		} else {
+			throw new UserAccountNotFoundException(String.format("No account was found by ID %d.", userId));
+		}
 
 	}
 

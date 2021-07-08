@@ -14,4 +14,6 @@ public interface UpdateUserAccountPort {
 
 	void updateDeviceRegistrationToken(Long userId, String token);
 
+	void updateIsValidatedMobileNumber(Long userId, boolean isValidated);
+
 }
