@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.excentria_it.wamya.application.port.in.CreateJourneyRequestUseCase.CreateJourneyRequestCommand;
 import com.excentria_it.wamya.application.port.in.UpdateJourneyRequestUseCase;
 import com.excentria_it.wamya.common.annotation.WebAdapter;
+import com.excentria_it.wamya.common.utils.LocaleUtils;
 
 import lombok.RequiredArgsConstructor;
 
@@ -37,7 +38,8 @@ public class UpdateJourneyRequestController {
 			@Valid @RequestBody CreateJourneyRequestCommand command,
 			final @AuthenticationPrincipal JwtAuthenticationToken principal, Locale locale) {
 
-		updateJourneyRequestUseCase.updateJourneyRequest(journeyRequestId, command, principal.getName());
+		updateJourneyRequestUseCase.updateJourneyRequest(journeyRequestId, command, principal.getName(),
+				LocaleUtils.getSupporedLocale(locale).toString());
 
 	}
 

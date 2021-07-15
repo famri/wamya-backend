@@ -8,10 +8,7 @@ import com.excentria_it.wamya.domain.JourneyRequestInputOutput;
 public interface LoadJourneyRequestPort {
 	Optional<JourneyRequestInputOutput> loadJourneyRequestById(Long id);
 
-	Optional<ClientJourneyRequestDto> loadJourneyRequestByIdAndClientEmail(Long id, String email);
-
-	Optional<ClientJourneyRequestDto> loadJourneyRequestByIdAndClientMobileNumberAndIcc(Long id, String mobileNumber,
-			String icc);
+	Optional<ClientJourneyRequestDto> loadJourneyRequestByIdAndClientEmail(Long id, String email, String locale);
 
 	boolean isExistentAndNotExpiredJourneyRequestByIdAndClientEmail(Long journeyRequestId, String clientUsername);
 

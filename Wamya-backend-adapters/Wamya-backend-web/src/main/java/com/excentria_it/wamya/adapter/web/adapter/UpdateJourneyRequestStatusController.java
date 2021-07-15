@@ -1,5 +1,7 @@
 package com.excentria_it.wamya.adapter.web.adapter;
 
+import java.util.Locale;
+
 import javax.validation.Valid;
 
 import org.springframework.http.HttpStatus;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.excentria_it.wamya.application.port.in.UpdateJourneyRequestStatusUseCase;
 import com.excentria_it.wamya.application.port.in.UpdateJourneyRequestStatusUseCase.UpdateJourneyRequestStatusCommand;
 import com.excentria_it.wamya.common.annotation.WebAdapter;
+import com.excentria_it.wamya.common.utils.LocaleUtils;
 import com.excentria_it.wamya.domain.JourneyRequestStatusCode;
 
 import lombok.RequiredArgsConstructor;
@@ -34,10 +37,11 @@ public class UpdateJourneyRequestStatusController {
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void updateJourneyRequest(@PathVariable(name = "id") Long journeyRequestId,
 			@Valid @RequestBody UpdateJourneyRequestStatusCommand command,
-			final @AuthenticationPrincipal JwtAuthenticationToken principal) {
+			final @AuthenticationPrincipal JwtAuthenticationToken principal, Locale locale) {
 
 		updatelJourneyRequestStatusUseCase.updateStatus(journeyRequestId, principal.getName(),
-				JourneyRequestStatusCode.valueOf(command.getStatus().toUpperCase()));
+				JourneyRequestStatusCode.valueOf(command.getStatus().toUpperCase()),
+				LocaleUtils.getSupporedLocale(locale).toString());
 
 	}
 

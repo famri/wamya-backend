@@ -190,32 +190,8 @@ public class JourneyProposalServiceTests {
 		// given
 		LoadProposalsCommand command = defaultLoadProposalsCommandBuilder().build();
 		ClientJourneyRequestDto clientJourneyRequestDto = defaultClientJourneyRequestDto();
-		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class)))
-				.willReturn(Optional.of(clientJourneyRequestDto));
-
-		JourneyRequestProposals journeyRequestProposals = defaultJourneyRequestProposals();
-		given(loadPropsalsPort.loadJourneyProposals(any(LoadJourneyProposalsCriteria.class), any(String.class)))
-				.willReturn(journeyRequestProposals);
-		// when
-
-		JourneyRequestProposals result = journeyProposalService.loadProposals(command, "en_US");
-		// then
-
-		then(loadPropsalsPort).should(times(1)).loadJourneyProposals(any(LoadJourneyProposalsCriteria.class),
-				eq("en_US"));
-
-		assertThat(result).isEqualTo(journeyRequestProposals);
-
-	}
-
-	@Test
-	void givenLoadProposalsCommandAndClientMobileNumber_WhenLoadProposals_ThenSucceed() {
-		// given
-		LoadProposalsCommand command = defaultLoadProposalsCommandBuilder()
-				.clientUsername(TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME).build();
-		ClientJourneyRequestDto clientJourneyRequestDto = defaultClientJourneyRequestDto();
-		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientMobileNumberAndIcc(any(Long.class),
-				any(String.class), any(String.class))).willReturn(Optional.of(clientJourneyRequestDto));
+		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class),
+				any(String.class))).willReturn(Optional.of(clientJourneyRequestDto));
 
 		JourneyRequestProposals journeyRequestProposals = defaultJourneyRequestProposals();
 		given(loadPropsalsPort.loadJourneyProposals(any(LoadJourneyProposalsCriteria.class), any(String.class)))
@@ -237,8 +213,8 @@ public class JourneyProposalServiceTests {
 		// given
 		LoadProposalsCommand command = defaultLoadProposalsCommandBuilder().build();
 
-		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class)))
-				.willReturn(Optional.empty());
+		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class),
+				any(String.class))).willReturn(Optional.empty());
 
 		// when // then
 
@@ -251,8 +227,8 @@ public class JourneyProposalServiceTests {
 	void givenClientEmailAndInexistentClientJourneyRequest_WhenAcceptProposal_ThenThrowJourneyRequestNotFoundException() {
 
 		// given
-		given(loadJourneyRequestPort.isExistentAndNotExpiredJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class)))
-				.willReturn(false);
+		given(loadJourneyRequestPort.isExistentAndNotExpiredJourneyRequestByIdAndClientEmail(any(Long.class),
+				any(String.class))).willReturn(false);
 
 		// when //then
 		assertThrows(JourneyRequestNotFoundException.class,
@@ -264,8 +240,8 @@ public class JourneyProposalServiceTests {
 	void givenClientMobileNumberAndInexistentClientJourneyRequest_WhenAcceptProposal_ThenThrowJourneyRequestNotFoundException() {
 
 		// given
-		given(loadJourneyRequestPort.isExistentAndNotExpiredJourneyRequestByIdAndClientMobileNumberAndIcc(any(Long.class),
-				any(String.class), any(String.class))).willReturn(false);
+		given(loadJourneyRequestPort.isExistentAndNotExpiredJourneyRequestByIdAndClientMobileNumberAndIcc(
+				any(Long.class), any(String.class), any(String.class))).willReturn(false);
 
 		// when //then
 		assertThrows(JourneyRequestNotFoundException.class, () -> journeyProposalService.updateProposal(1L, 1L,
@@ -277,8 +253,8 @@ public class JourneyProposalServiceTests {
 	void givenClientEmailAndInexistentJourneyProposal_WhenAcceptProposal_ThenThrowJourneyProposalNotFoundException() {
 
 		// given
-		given(loadJourneyRequestPort.isExistentAndNotExpiredJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class)))
-				.willReturn(true);
+		given(loadJourneyRequestPort.isExistentAndNotExpiredJourneyRequestByIdAndClientEmail(any(Long.class),
+				any(String.class))).willReturn(true);
 
 		given(loadPropsalsPort.isExistentJourneyProposalByIdAndJourneyRequestIdAndStatusCode(any(Long.class),
 				any(Long.class), any(StatusCode.class))).willReturn(false);
@@ -293,8 +269,8 @@ public class JourneyProposalServiceTests {
 	void givenClientMobileNumberAndInexistentJourneyProposal_WhenAcceptProposal_ThenThrowJourneyProposalNotFoundException() {
 
 		// given
-		given(loadJourneyRequestPort.isExistentAndNotExpiredJourneyRequestByIdAndClientMobileNumberAndIcc(any(Long.class),
-				any(String.class), any(String.class))).willReturn(true);
+		given(loadJourneyRequestPort.isExistentAndNotExpiredJourneyRequestByIdAndClientMobileNumberAndIcc(
+				any(Long.class), any(String.class), any(String.class))).willReturn(true);
 
 		given(loadPropsalsPort.isExistentJourneyProposalByIdAndJourneyRequestIdAndStatusCode(any(Long.class),
 				any(Long.class), any(StatusCode.class))).willReturn(false);
@@ -310,8 +286,8 @@ public class JourneyProposalServiceTests {
 
 		// given
 
-		given(loadJourneyRequestPort.isExistentAndNotExpiredJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class)))
-				.willReturn(true);
+		given(loadJourneyRequestPort.isExistentAndNotExpiredJourneyRequestByIdAndClientEmail(any(Long.class),
+				any(String.class))).willReturn(true);
 
 		given(loadPropsalsPort.isExistentJourneyProposalByIdAndJourneyRequestIdAndStatusCode(any(Long.class),
 				any(Long.class), any(StatusCode.class))).willReturn(true);
@@ -326,8 +302,8 @@ public class JourneyProposalServiceTests {
 	void givenClientEmailAndInexistentClientJourneyRequest_WhenRejectProposal_ThenThrowJourneyRequestNotFoundException() {
 
 		// given
-		given(loadJourneyRequestPort.isExistentAndNotExpiredJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class)))
-				.willReturn(false);
+		given(loadJourneyRequestPort.isExistentAndNotExpiredJourneyRequestByIdAndClientEmail(any(Long.class),
+				any(String.class))).willReturn(false);
 
 		// when //then
 		assertThrows(JourneyRequestNotFoundException.class,
@@ -339,8 +315,8 @@ public class JourneyProposalServiceTests {
 	void givenClientMobileNumberAndInexistentClientJourneyRequest_WhenRejectProposal_ThenThrowJourneyRequestNotFoundException() {
 
 		// given
-		given(loadJourneyRequestPort.isExistentAndNotExpiredJourneyRequestByIdAndClientMobileNumberAndIcc(any(Long.class),
-				any(String.class), any(String.class))).willReturn(false);
+		given(loadJourneyRequestPort.isExistentAndNotExpiredJourneyRequestByIdAndClientMobileNumberAndIcc(
+				any(Long.class), any(String.class), any(String.class))).willReturn(false);
 
 		// when //then
 		assertThrows(JourneyRequestNotFoundException.class, () -> journeyProposalService.updateProposal(1L, 1L,
@@ -352,8 +328,8 @@ public class JourneyProposalServiceTests {
 	void givenClientEmailAndInexistentJourneyProposal_WhenRejectProposal_ThenThrowJourneyProposalNotFoundException() {
 
 		// given
-		given(loadJourneyRequestPort.isExistentAndNotExpiredJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class)))
-				.willReturn(true);
+		given(loadJourneyRequestPort.isExistentAndNotExpiredJourneyRequestByIdAndClientEmail(any(Long.class),
+				any(String.class))).willReturn(true);
 
 		given(loadPropsalsPort.isExistentJourneyProposalByIdAndJourneyRequestIdAndStatusCode(any(Long.class),
 				any(Long.class), any(StatusCode.class))).willReturn(false);
@@ -368,8 +344,8 @@ public class JourneyProposalServiceTests {
 	void givenClientMobileNumberAndInexistentJourneyProposal_WhenRejectProposal_ThenThrowJourneyProposalNotFoundException() {
 
 		// given
-		given(loadJourneyRequestPort.isExistentAndNotExpiredJourneyRequestByIdAndClientMobileNumberAndIcc(any(Long.class),
-				any(String.class), any(String.class))).willReturn(true);
+		given(loadJourneyRequestPort.isExistentAndNotExpiredJourneyRequestByIdAndClientMobileNumberAndIcc(
+				any(Long.class), any(String.class), any(String.class))).willReturn(true);
 
 		given(loadPropsalsPort.isExistentJourneyProposalByIdAndJourneyRequestIdAndStatusCode(any(Long.class),
 				any(Long.class), any(StatusCode.class))).willReturn(false);
@@ -385,8 +361,8 @@ public class JourneyProposalServiceTests {
 
 		// given
 
-		given(loadJourneyRequestPort.isExistentAndNotExpiredJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class)))
-				.willReturn(true);
+		given(loadJourneyRequestPort.isExistentAndNotExpiredJourneyRequestByIdAndClientEmail(any(Long.class),
+				any(String.class))).willReturn(true);
 
 		given(loadPropsalsPort.isExistentJourneyProposalByIdAndJourneyRequestIdAndStatusCode(any(Long.class),
 				any(Long.class), any(StatusCode.class))).willReturn(true);

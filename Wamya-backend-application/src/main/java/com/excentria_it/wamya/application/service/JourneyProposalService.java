@@ -67,7 +67,7 @@ public class JourneyProposalService implements MakeProposalUseCase, LoadProposal
 	@Override
 	public JourneyRequestProposals loadProposals(LoadProposalsCommand command, String locale) {
 
-		checkClientJourneyRequest(command.getClientUsername(), command.getJourneyRequestId());
+		checkClientJourneyRequest(command.getClientUsername(), command.getJourneyRequestId(), locale);
 
 		LoadJourneyProposalsCriteria criteria = LoadJourneyProposalsCriteria.builder()
 				.journeyRequestId(command.getJourneyRequestId()).clientUsername(command.getClientUsername())
@@ -112,17 +112,10 @@ public class JourneyProposalService implements MakeProposalUseCase, LoadProposal
 
 	}
 
-	private void checkClientJourneyRequest(String clientUsername, Long journeyRequestId) {
+	private void checkClientJourneyRequest(String clientUsername, Long journeyRequestId, String locale) {
 		Optional<ClientJourneyRequestDto> journeyRequestOptional = null;
-		if (clientUsername.contains("@")) {
-			journeyRequestOptional = loadJourneyRequestPort.loadJourneyRequestByIdAndClientEmail(journeyRequestId,
-					clientUsername);
-		} else {
-
-			String[] mobileNumber = clientUsername.split("_");
-			journeyRequestOptional = loadJourneyRequestPort.loadJourneyRequestByIdAndClientMobileNumberAndIcc(
-					journeyRequestId, mobileNumber[1], mobileNumber[0]);
-		}
+		journeyRequestOptional = loadJourneyRequestPort.loadJourneyRequestByIdAndClientEmail(journeyRequestId,
+				clientUsername,locale);
 
 		if (journeyRequestOptional.isEmpty()) {
 			throw new JourneyRequestNotFoundException(String.format("Journey request not found: %d", journeyRequestId));

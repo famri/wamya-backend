@@ -247,20 +247,11 @@ public class JourneyRequestsPersistenceAdapter implements SearchJourneyRequestsP
 
 		Pageable pagingSort = PageRequest.of(criteria.getPageNumber(), criteria.getPageSize(), sort);
 		Page<ClientJourneyRequestDto> journeyRequestsPage = null;
-		if (criteria.getClientUsername().contains("@")) {
-			journeyRequestsPage = journeyRequestRepository.findByCreationDateTimeBetweenAndClient_Email(
-					criteria.getPeriodCriterion().getLowerEdge().toInstant(),
-					criteria.getPeriodCriterion().getHigherEdge().toInstant(), criteria.getClientUsername(),
-					criteria.getLocale(), pagingSort);
-		} else {
 
-			String[] mobileNumber = criteria.getClientUsername().split("_");
-			journeyRequestsPage = journeyRequestRepository
-					.findByCreationDateTimeBetweenAndClient_MobileNumberAndClient_IccValue(
-							criteria.getPeriodCriterion().getLowerEdge().toInstant(),
-							criteria.getPeriodCriterion().getHigherEdge().toInstant(), mobileNumber[0], mobileNumber[1],
-							criteria.getLocale(), pagingSort);
-		}
+		journeyRequestsPage = journeyRequestRepository.findByCreationDateTimeBetweenAndClient_Email(
+				criteria.getPeriodCriterion().getLowerEdge().toInstant(),
+				criteria.getPeriodCriterion().getHigherEdge().toInstant(), criteria.getClientUsername(),
+				criteria.getLocale(), pagingSort);
 
 		if (journeyRequestsPage != null) {
 
@@ -274,15 +265,10 @@ public class JourneyRequestsPersistenceAdapter implements SearchJourneyRequestsP
 	}
 
 	@Override
-	public Optional<ClientJourneyRequestDto> loadJourneyRequestByIdAndClientEmail(Long id, String email) {
+	public Optional<ClientJourneyRequestDto> loadJourneyRequestByIdAndClientEmail(Long id, String email,
+			String locale) {
 
-		return journeyRequestRepository.findByIdAndClient_Email(id, email);
-	}
-
-	@Override
-	public Optional<ClientJourneyRequestDto> loadJourneyRequestByIdAndClientMobileNumberAndIcc(Long id,
-			String mobileNumber, String icc) {
-		return journeyRequestRepository.findByIdAndClient_MobileNumberAndClient_IccValue(id, mobileNumber, icc);
+		return journeyRequestRepository.findByIdAndClient_Email(id, email, locale);
 	}
 
 	@Override

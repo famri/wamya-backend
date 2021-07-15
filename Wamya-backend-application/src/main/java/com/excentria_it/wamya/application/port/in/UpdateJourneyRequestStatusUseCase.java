@@ -10,7 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 public interface UpdateJourneyRequestStatusUseCase {
-	void updateStatus(Long journeyRequestId, String username, JourneyRequestStatusCode status);
+	void updateStatus(Long journeyRequestId, String username, JourneyRequestStatusCode status, String locale);
 
 	@Data
 	@NoArgsConstructor

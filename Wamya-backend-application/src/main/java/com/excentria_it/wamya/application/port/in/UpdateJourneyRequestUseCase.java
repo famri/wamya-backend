@@ -4,6 +4,6 @@ import com.excentria_it.wamya.application.port.in.CreateJourneyRequestUseCase.Cr
 
 public interface UpdateJourneyRequestUseCase {
 
-	void updateJourneyRequest(Long journeyRequestId, CreateJourneyRequestCommand command, String name);
+	void updateJourneyRequest(Long journeyRequestId, CreateJourneyRequestCommand command, String username, String locale);
 
 }

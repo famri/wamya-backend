@@ -472,87 +472,21 @@ public class JourneyRequestsPersistenceAdapterTests {
 	}
 
 	@Test
-	void givenNotNullJourneyRequestsPageAnClientMobileNumber_WhenLoadClientJourneyRequests_ThenReturnClientJourneyRequests() {
-
-		// given
-
-		Page<ClientJourneyRequestDto> page = createPageFromClientJourneyRequestDto(
-				defaultClientJourneyRequestDtoList());
-		given(journeyRequestRepository.findByCreationDateTimeBetweenAndClient_MobileNumberAndClient_IccValue(
-				any(Instant.class), any(Instant.class), any(String.class), any(String.class), any(String.class),
-				any(Pageable.class))).willReturn(page);
-
-		LoadClientJourneyRequestsCriteria criteria = defaultLoadClientJourneyRequestsCriteriaBuilder()
-				.clientUsername(TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME).build();
-		// when
-		ClientJourneyRequests result = journeyRequestsPersistenceAdapter.loadClientJourneyRequests(criteria);
-		// then
-		assertEquals(page.getTotalPages(), result.getTotalPages());
-		assertEquals(page.hasNext(), result.isHasNext());
-		assertEquals(page.getSize(), result.getPageSize());
-		assertEquals(page.getTotalElements(), result.getTotalElements());
-		assertEquals(page.getNumber(), result.getPageNumber());
-		assertEquals(page.getContent(), result.getContent());
-	}
-
-	@Test
-	void givenNullJourneyRequestsPageAndClientMobileNumber_WhenLoadClientJourneyRequests_ThenReturnClientJourneyRequests() {
-
-		// given
-
-		given(journeyRequestRepository.findByCreationDateTimeBetweenAndClient_MobileNumberAndClient_IccValue(
-				any(Instant.class), any(Instant.class), any(String.class), any(String.class), any(String.class),
-				any(Pageable.class))).willReturn(null);
-		LoadClientJourneyRequestsCriteria criteria = defaultLoadClientJourneyRequestsCriteriaBuilder()
-				.clientUsername(TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME).build();
-		// when
-		ClientJourneyRequests result = journeyRequestsPersistenceAdapter.loadClientJourneyRequests(criteria);
-		// then
-
-		assertEquals(criteria.getPageSize(), result.getPageSize());
-		assertEquals(criteria.getPageNumber(), result.getPageNumber());
-		assertEquals(0, result.getTotalPages());
-		assertEquals(0, result.getTotalElements());
-
-		assertEquals(false, result.isHasNext());
-		assertEquals(Collections.<ClientJourneyRequestDto>emptyList(), result.getContent());
-	}
-
-	@Test
 	void testLoadJourneyRequestByIdAndClientEmail() {
 
 		// given
 
 		ClientJourneyRequestDto clientJourneyRequestDto = defaultClientJourneyRequestDto();
-		given(journeyRequestRepository.findByIdAndClient_Email(eq(1L), eq(TestConstants.DEFAULT_EMAIL)))
+		given(journeyRequestRepository.findByIdAndClient_Email(eq(1L), eq(TestConstants.DEFAULT_EMAIL), eq("fr_FR")))
 				.willReturn(Optional.of(clientJourneyRequestDto));
 		// when
 		Optional<ClientJourneyRequestDto> result = journeyRequestsPersistenceAdapter
-				.loadJourneyRequestByIdAndClientEmail(1L, TestConstants.DEFAULT_EMAIL);
+				.loadJourneyRequestByIdAndClientEmail(1L, TestConstants.DEFAULT_EMAIL, "fr_FR");
 
 		// then
-		then(journeyRequestRepository).should(times(1)).findByIdAndClient_Email(eq(1L),
-				eq(TestConstants.DEFAULT_EMAIL));
+		then(journeyRequestRepository).should(times(1)).findByIdAndClient_Email(eq(1L), eq(TestConstants.DEFAULT_EMAIL),
+				eq("fr_FR"));
 		assertEquals(clientJourneyRequestDto.getId(), result.get().getId());
-	}
-
-	@Test
-	void testLoadJourneyRequestByIdAndClientMobileNumberAndIcc() {
-		// given
-
-		String[] clientMobileNumber = TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME.split("_");
-		ClientJourneyRequestDto clientJourneyRequestDto = defaultClientJourneyRequestDto();
-		given(journeyRequestRepository.findByIdAndClient_MobileNumberAndClient_IccValue(eq(1L),
-				eq(clientMobileNumber[1]), eq(clientMobileNumber[0]))).willReturn(Optional.of(clientJourneyRequestDto));
-		// when
-		Optional<ClientJourneyRequestDto> result = journeyRequestsPersistenceAdapter
-				.loadJourneyRequestByIdAndClientMobileNumberAndIcc(1L, clientMobileNumber[1], clientMobileNumber[0]);
-
-		// then
-		then(journeyRequestRepository).should(times(1)).findByIdAndClient_MobileNumberAndClient_IccValue(eq(1L),
-				eq(clientMobileNumber[1]), eq(clientMobileNumber[0]));
-		assertEquals(clientJourneyRequestDto.getId(), result.get().getId());
-
 	}
 
 	@Test

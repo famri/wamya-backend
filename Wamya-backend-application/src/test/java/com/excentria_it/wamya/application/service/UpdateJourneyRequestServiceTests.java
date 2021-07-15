@@ -52,30 +52,30 @@ public class UpdateJourneyRequestServiceTests {
 	@Test
 	void givenJourneyRequestNotFoundByIdAndClientEmail_whenUpdateJourneyRequest_thenThrowJourneyRequestNotFoundException() {
 		// given
-		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class)))
-				.willReturn(Optional.empty());
+		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class),
+				any(String.class))).willReturn(Optional.empty());
 		CreateJourneyRequestCommand command = JourneyRequestTestData.defaultCreateJourneyRequestCommandBuilder()
 				.build();
 		// when
 
 		// then
-		assertThrows(JourneyRequestNotFoundException.class,
-				() -> updateJourneyRequestService.updateJourneyRequest(1L, command, TestConstants.DEFAULT_EMAIL));
+		assertThrows(JourneyRequestNotFoundException.class, () -> updateJourneyRequestService.updateJourneyRequest(1L,
+				command, TestConstants.DEFAULT_EMAIL, "fr_FR"));
 	}
 
 	@Test
 	void givenJourneyRequestExistsByIdAndClientEmail_andOffersHaveBeenMade_whenUpdateJourneyRequest_thenThrowJourneyRequestUpdateException() {
 		// given
 		ClientJourneyRequestDto clientJourneyRequestDto = JourneyRequestTestData.defaultClientJourneyRequestDto();
-		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class)))
-				.willReturn(Optional.of(clientJourneyRequestDto));
+		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class),
+				any(String.class))).willReturn(Optional.of(clientJourneyRequestDto));
 		CreateJourneyRequestCommand command = JourneyRequestTestData.defaultCreateJourneyRequestCommandBuilder()
 				.build();
 		// when
 
 		// then
-		assertThrows(JourneyRequestUpdateException.class,
-				() -> updateJourneyRequestService.updateJourneyRequest(1L, command, TestConstants.DEFAULT_EMAIL));
+		assertThrows(JourneyRequestUpdateException.class, () -> updateJourneyRequestService.updateJourneyRequest(1L,
+				command, TestConstants.DEFAULT_EMAIL, "fr_FR"));
 	}
 
 	@Test
@@ -83,8 +83,8 @@ public class UpdateJourneyRequestServiceTests {
 		// given
 		ClientJourneyRequestDto clientJourneyRequestDto = JourneyRequestTestData
 				.defaultClientJourneyRequestDtoWithNoProposals();
-		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class)))
-				.willReturn(Optional.of(clientJourneyRequestDto));
+		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class),
+				any(String.class))).willReturn(Optional.of(clientJourneyRequestDto));
 		given(dateTimeHelper.findUserZoneId(any(String.class))).willReturn(ZoneOffset.UTC);
 		given(dateTimeHelper.userLocalToSystemDateTime(any(LocalDateTime.class), any(ZoneId.class)))
 				.willReturn(clientJourneyRequestDto.getDateTime());
@@ -99,7 +99,7 @@ public class UpdateJourneyRequestServiceTests {
 				.workers(clientJourneyRequestDto.getWorkers()).description(clientJourneyRequestDto.getDescription())
 				.build();
 		// when
-		updateJourneyRequestService.updateJourneyRequest(1L, command, TestConstants.DEFAULT_EMAIL);
+		updateJourneyRequestService.updateJourneyRequest(1L, command, TestConstants.DEFAULT_EMAIL, "fr_FR");
 		// then
 		then(updateJourneyRequestPort).should(never()).updateJourneyRequest(any(JourneyRequestInputOutput.class));
 	}
@@ -109,8 +109,8 @@ public class UpdateJourneyRequestServiceTests {
 		// given
 		ClientJourneyRequestDto clientJourneyRequestDto = JourneyRequestTestData
 				.defaultClientJourneyRequestDtoWithNoProposals();
-		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class)))
-				.willReturn(Optional.of(clientJourneyRequestDto));
+		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class),
+				any(String.class))).willReturn(Optional.of(clientJourneyRequestDto));
 		given(dateTimeHelper.findUserZoneId(any(String.class))).willReturn(ZoneOffset.UTC);
 		given(dateTimeHelper.userLocalToSystemDateTime(any(LocalDateTime.class), any(ZoneId.class)))
 				.willReturn(clientJourneyRequestDto.getDateTime().plusSeconds(3600));
@@ -135,7 +135,7 @@ public class UpdateJourneyRequestServiceTests {
 //		given(loadPlaceGeoCoordinatesPort.loadPlaceGeoCoordinates(command.getArrivalPlaceId(), PlaceType.LOCALITY))
 //				.willReturn(Optional.of(new GeoCoordinates(BigDecimal.valueOf(10.1212), BigDecimal.valueOf(34.1212))));
 		// when
-		updateJourneyRequestService.updateJourneyRequest(1L, command, TestConstants.DEFAULT_EMAIL);
+		updateJourneyRequestService.updateJourneyRequest(1L, command, TestConstants.DEFAULT_EMAIL, "fr_FR");
 		// then
 		ArgumentCaptor<JourneyRequestInputOutput> argumentCaptor = ArgumentCaptor
 				.forClass(JourneyRequestInputOutput.class);
@@ -167,8 +167,8 @@ public class UpdateJourneyRequestServiceTests {
 		// given
 		ClientJourneyRequestDto clientJourneyRequestDto = JourneyRequestTestData
 				.defaultClientJourneyRequestDtoWithNoProposals();
-		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class)))
-				.willReturn(Optional.of(clientJourneyRequestDto));
+		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class),
+				any(String.class))).willReturn(Optional.of(clientJourneyRequestDto));
 		given(dateTimeHelper.findUserZoneId(any(String.class))).willReturn(ZoneOffset.UTC);
 		given(dateTimeHelper.userLocalToSystemDateTime(any(LocalDateTime.class), any(ZoneId.class)))
 				.willReturn(clientJourneyRequestDto.getDateTime().plusSeconds(3600));
@@ -193,7 +193,7 @@ public class UpdateJourneyRequestServiceTests {
 		given(loadPlaceGeoCoordinatesPort.loadPlaceGeoCoordinates(command.getArrivalPlaceId(), PlaceType.LOCALITY))
 				.willReturn(Optional.of(new GeoCoordinates(BigDecimal.valueOf(10.1212), BigDecimal.valueOf(34.1212))));
 		// when
-		updateJourneyRequestService.updateJourneyRequest(1L, command, TestConstants.DEFAULT_EMAIL);
+		updateJourneyRequestService.updateJourneyRequest(1L, command, TestConstants.DEFAULT_EMAIL, "fr_FR");
 		// then
 		ArgumentCaptor<JourneyRequestInputOutput> argumentCaptor = ArgumentCaptor
 				.forClass(JourneyRequestInputOutput.class);

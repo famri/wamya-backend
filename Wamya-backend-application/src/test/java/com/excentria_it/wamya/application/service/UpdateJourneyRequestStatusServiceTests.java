@@ -53,20 +53,20 @@ public class UpdateJourneyRequestStatusServiceTests {
 	@Test
 	void givenJourneyRequestNotFoundByIdAndClientEmail_whenCancelJourneyRequest_thenThrowJourneyRequestNotFoundException() {
 		// given
-		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class)))
-				.willReturn(Optional.empty());
+		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class),
+				any(String.class))).willReturn(Optional.empty());
 		// when
 		// then
 		assertThrows(JourneyRequestNotFoundException.class, () -> updateJourneyRequestStatusService.updateStatus(1L,
-				TestConstants.DEFAULT_EMAIL, JourneyRequestStatusCode.CANCELED));
+				TestConstants.DEFAULT_EMAIL, JourneyRequestStatusCode.CANCELED, "fr_FR"));
 	}
 
 	@Test
 	void givenJourneyRequestExistsByIdAndClientEmail_whenCancelJourneyRequest_thenCancelJourneyRequest() {
 		// given
 		ClientJourneyRequestDto clientJourneyRequestDto = JourneyRequestTestData.defaultClientJourneyRequestDto();
-		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class)))
-				.willReturn(Optional.of(clientJourneyRequestDto));
+		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class),
+				any(String.class))).willReturn(Optional.of(clientJourneyRequestDto));
 
 		Set<TransporterNotificationInfo> tniSet = Set.of(
 				new TransporterNotificationInfo("transporter1DeviceRegistrationToken", "Africa/Tunis", "fr_FR"),
@@ -87,7 +87,7 @@ public class UpdateJourneyRequestStatusServiceTests {
 				.willReturn(LocalDateTime.of(2020, 12, 10, 12, 0));
 		// when
 		updateJourneyRequestStatusService.updateStatus(1L, TestConstants.DEFAULT_EMAIL,
-				JourneyRequestStatusCode.CANCELED);
+				JourneyRequestStatusCode.CANCELED, "fr_FR");
 		// then
 		then(cancelJourneyRequestPort).should(times(1)).cancelJourneyRequest(1L);
 		then(messagingPort).should(times(3)).sendPushMessage(any(PushMessage.class));
@@ -97,8 +97,8 @@ public class UpdateJourneyRequestStatusServiceTests {
 	void givenJourneyRequestExistsByIdAndClientEmail_andExceptionWhenSendingNotification_whenCancelJourneyRequest_thenCancelJourneyRequest() {
 		// given
 		ClientJourneyRequestDto clientJourneyRequestDto = JourneyRequestTestData.defaultClientJourneyRequestDto();
-		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class)))
-				.willReturn(Optional.of(clientJourneyRequestDto));
+		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class),
+				any(String.class))).willReturn(Optional.of(clientJourneyRequestDto));
 
 		Set<TransporterNotificationInfo> tniSet = Set.of(
 				new TransporterNotificationInfo("transporter1DeviceRegistrationToken", "Africa/Tunis", "fr_FR"),
@@ -121,7 +121,7 @@ public class UpdateJourneyRequestStatusServiceTests {
 		doThrow(IllegalArgumentException.class).when(messagingPort).sendPushMessage(any(PushMessage.class));
 		// when
 		updateJourneyRequestStatusService.updateStatus(1L, TestConstants.DEFAULT_EMAIL,
-				JourneyRequestStatusCode.CANCELED);
+				JourneyRequestStatusCode.CANCELED, "fr_FR");
 		// then
 		then(cancelJourneyRequestPort).should(times(1)).cancelJourneyRequest(1L);
 		then(messagingPort).should(times(1)).sendPushMessage(any(PushMessage.class));

@@ -47,9 +47,9 @@ public class UpdateJourneyRequestStatusService implements UpdateJourneyRequestSt
 	private final DateTimeHelper dateTimeHelper;
 
 	@Override
-	public void updateStatus(Long journeyRequestId, String username, JourneyRequestStatusCode status) {
+	public void updateStatus(Long journeyRequestId, String username, JourneyRequestStatusCode status, String locale) {
 		ClientJourneyRequestDto clientJourneyRequestDto = loadJourneyRequestPort
-				.loadJourneyRequestByIdAndClientEmail(journeyRequestId, username)
+				.loadJourneyRequestByIdAndClientEmail(journeyRequestId, username, locale)
 				.orElseThrow(() -> new JourneyRequestNotFoundException(
 						String.format("Journey request not found by ID: %d", journeyRequestId)));
 

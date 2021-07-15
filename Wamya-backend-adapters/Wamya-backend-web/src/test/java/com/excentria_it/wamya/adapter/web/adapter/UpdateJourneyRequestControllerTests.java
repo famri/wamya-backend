@@ -46,10 +46,10 @@ public class UpdateJourneyRequestControllerTests {
 
 		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
 				.authorities("SCOPE_journey:write"))
-				.perform(patch("/journey-requests/{id}", 1L).contentType(MediaType.APPLICATION_JSON_VALUE)
+				.perform(patch("/journey-requests/{id}", 1L).param("lang", "fr_FR").contentType(MediaType.APPLICATION_JSON_VALUE)
 						.content(commandJson))
 				.andExpect(status().isNoContent()).andReturn();
 
-		then(updateJourneyRequestUseCase).should(times(1)).updateJourneyRequest(1L, command, TestConstants.DEFAULT_EMAIL);
+		then(updateJourneyRequestUseCase).should(times(1)).updateJourneyRequest(1L, command, TestConstants.DEFAULT_EMAIL, "fr_FR");
 	}
 }

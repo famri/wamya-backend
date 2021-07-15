@@ -46,12 +46,13 @@ public class UpdateJourneyRequestService implements UpdateJourneyRequestUseCase 
 	private final DateTimeHelper dateTimeHelper;
 
 	@Override
-	public void updateJourneyRequest(Long journeyRequestId, CreateJourneyRequestCommand command, String username) {
+	public void updateJourneyRequest(Long journeyRequestId, CreateJourneyRequestCommand command, String username,
+			String locale) {
 		boolean shouldUpdateJourneyRequest = false;
 		boolean updateJourneyTravelInfo = false;
 
 		ClientJourneyRequestDto clientJourneyRequest = loadJourneyRequestPort
-				.loadJourneyRequestByIdAndClientEmail(journeyRequestId, username)
+				.loadJourneyRequestByIdAndClientEmail(journeyRequestId, username, locale)
 				.orElseThrow(() -> new JourneyRequestNotFoundException(
 						String.format("Journey request not found by ID: %d", journeyRequestId)));
 
