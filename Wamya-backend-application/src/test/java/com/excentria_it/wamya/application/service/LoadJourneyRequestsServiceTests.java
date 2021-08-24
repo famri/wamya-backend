@@ -6,6 +6,8 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.*;
 
+import java.time.ZoneId;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -16,7 +18,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.excentria_it.wamya.application.port.in.LoadClientJourneyRequestsUseCase.LoadJourneyRequestsCommand;
 import com.excentria_it.wamya.application.port.out.LoadClientJourneyRequestsPort;
-import com.excentria_it.wamya.domain.ClientJourneyRequests;
+import com.excentria_it.wamya.application.utils.DateTimeHelper;
+import com.excentria_it.wamya.domain.ClientJourneyRequestsOutput;
 import com.excentria_it.wamya.domain.LoadClientJourneyRequestsCriteria;
 
 @ExtendWith(MockitoExtension.class)
@@ -24,6 +27,10 @@ public class LoadJourneyRequestsServiceTests {
 
 	@Mock
 	private LoadClientJourneyRequestsPort loadClientJourneyRequestsPort;
+
+	@Mock
+	private DateTimeHelper dateTimeHelper;
+
 	@Spy
 	@InjectMocks
 	private LoadJourneyRequestsService loadJourneyRequestsService;
@@ -32,7 +39,7 @@ public class LoadJourneyRequestsServiceTests {
 	void givenLoadJourneyRequestsCommand_WhenLoadJourneyRequests_Then_Succeed() {
 		// given
 		LoadJourneyRequestsCommand command = defaultLoadJourneyRequestsCommandBuilder().build();
-		ClientJourneyRequests clientJourneyRequests = defaultClientJourneyRequests();
+		ClientJourneyRequestsOutput clientJourneyRequests = defaultClientJourneyRequestsOutput();
 		// when
 
 		ArgumentCaptor<LoadClientJourneyRequestsCriteria> criteriaCaptor = ArgumentCaptor
@@ -40,6 +47,7 @@ public class LoadJourneyRequestsServiceTests {
 
 		given(loadClientJourneyRequestsPort.loadClientJourneyRequests(any(LoadClientJourneyRequestsCriteria.class)))
 				.willReturn(clientJourneyRequests);
+		given(dateTimeHelper.findUserZoneId(command.getClientUsername())).willReturn(ZoneId.of("Africa/Tunis"));
 		// when
 		loadJourneyRequestsService.loadJourneyRequests(command, "en_US");
 

@@ -20,7 +20,7 @@ import com.excentria_it.wamya.common.annotation.UseCase;
 import com.excentria_it.wamya.common.domain.PushMessage;
 import com.excentria_it.wamya.common.domain.PushTemplate;
 import com.excentria_it.wamya.common.exception.JourneyRequestNotFoundException;
-import com.excentria_it.wamya.domain.ClientJourneyRequestDto;
+import com.excentria_it.wamya.domain.ClientJourneyRequestDtoOutput;
 import com.excentria_it.wamya.domain.JourneyRequestStatusCode;
 import com.excentria_it.wamya.domain.PlaceType;
 import com.excentria_it.wamya.domain.TransporterNotificationInfo;
@@ -48,7 +48,7 @@ public class UpdateJourneyRequestStatusService implements UpdateJourneyRequestSt
 
 	@Override
 	public void updateStatus(Long journeyRequestId, String username, JourneyRequestStatusCode status, String locale) {
-		ClientJourneyRequestDto clientJourneyRequestDto = loadJourneyRequestPort
+		ClientJourneyRequestDtoOutput clientJourneyRequestDto = loadJourneyRequestPort
 				.loadJourneyRequestByIdAndClientEmail(journeyRequestId, username, locale)
 				.orElseThrow(() -> new JourneyRequestNotFoundException(
 						String.format("Journey request not found by ID: %d", journeyRequestId)));

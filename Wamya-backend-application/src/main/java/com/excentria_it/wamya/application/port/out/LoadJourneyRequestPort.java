@@ -2,13 +2,13 @@ package com.excentria_it.wamya.application.port.out;
 
 import java.util.Optional;
 
-import com.excentria_it.wamya.domain.ClientJourneyRequestDto;
+import com.excentria_it.wamya.domain.ClientJourneyRequestDtoOutput;
 import com.excentria_it.wamya.domain.JourneyRequestInputOutput;
 
 public interface LoadJourneyRequestPort {
 	Optional<JourneyRequestInputOutput> loadJourneyRequestById(Long id);
 
-	Optional<ClientJourneyRequestDto> loadJourneyRequestByIdAndClientEmail(Long id, String email, String locale);
+	Optional<ClientJourneyRequestDtoOutput> loadJourneyRequestByIdAndClientEmail(Long id, String email, String locale);
 
 	boolean isExistentAndNotExpiredJourneyRequestByIdAndClientEmail(Long journeyRequestId, String clientUsername);
 

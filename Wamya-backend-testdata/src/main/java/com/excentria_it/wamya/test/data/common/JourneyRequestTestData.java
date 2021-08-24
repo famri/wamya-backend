@@ -19,7 +19,9 @@ import com.excentria_it.wamya.common.PeriodCriterion;
 import com.excentria_it.wamya.common.PeriodCriterion.PeriodValue;
 import com.excentria_it.wamya.common.SortCriterion;
 import com.excentria_it.wamya.domain.ClientJourneyRequestDto;
+import com.excentria_it.wamya.domain.ClientJourneyRequestDtoOutput;
 import com.excentria_it.wamya.domain.ClientJourneyRequests;
+import com.excentria_it.wamya.domain.ClientJourneyRequestsOutput;
 import com.excentria_it.wamya.domain.CreateJourneyRequestDto;
 import com.excentria_it.wamya.domain.CreateJourneyRequestDto.CreateJourneyRequestDtoBuilder;
 import com.excentria_it.wamya.domain.JourneyRequestInputOutput;
@@ -42,123 +44,124 @@ public class JourneyRequestTestData {
 	private static ZonedDateTime startDate = ZonedDateTime.of(2020, 12, 10, 12, 0, 0, 0, ZoneOffset.UTC);
 	private static ZonedDateTime endDate = startDate.minusDays(1);
 
-	private static List<ClientJourneyRequestDto> clientJourneyRequestDtos = List.of(new ClientJourneyRequestDto() {
+	private static List<ClientJourneyRequestDtoOutput> clientJourneyRequestDtos = List
+			.of(new ClientJourneyRequestDtoOutput() {
 
-		@Override
-		public Long getId() {
+				@Override
+				public Long getId() {
 
-			return 1L;
-		}
+					return 1L;
+				}
 
-		@Override
-		public PlaceDto getDeparturePlace() {
+				@Override
+				public PlaceDto getDeparturePlace() {
 
-			return new PlaceDto(1L, "DEPARTMENT", "departurePlaceName", new BigDecimal(34.486523),
-					new BigDecimal(10.486523), 1L);
-		}
+					return new PlaceDto(1L, "DEPARTMENT", "departurePlaceName", new BigDecimal(34.486523),
+							new BigDecimal(10.486523), 1L);
+				}
 
-		@Override
-		public PlaceDto getArrivalPlace() {
-			return new PlaceDto(2L, "DEPARTMENT", "arrivalPlaceName1", new BigDecimal(36.486523),
-					new BigDecimal(10.486523), 2L);
-		}
+				@Override
+				public PlaceDto getArrivalPlace() {
+					return new PlaceDto(2L, "DEPARTMENT", "arrivalPlaceName1", new BigDecimal(36.486523),
+							new BigDecimal(10.486523), 2L);
+				}
 
-		@Override
-		public EngineTypeDto getEngineType() {
-			return new EngineTypeDto(1L, "engineType1", "UTILITY");
-		}
+				@Override
+				public EngineTypeDto getEngineType() {
+					return new EngineTypeDto(1L, "engineType1", "UTILITY");
+				}
 
-		@Override
-		public Integer getDistance() {
-			return 100000;
-		}
+				@Override
+				public Integer getDistance() {
+					return 100000;
+				}
 
-		@Override
-		public Instant getDateTime() {
-			return startDate.toInstant();
-		}
+				@Override
+				public Instant getDateTime() {
+					return startDate.toInstant();
+				}
 
-		@Override
-		public Instant getCreationDateTime() {
-			return endDate.minusDays(1).toInstant();
-		}
+				@Override
+				public Instant getCreationDateTime() {
+					return endDate.minusDays(1).toInstant();
+				}
 
-		@Override
-		public Integer getWorkers() {
-			return 2;
-		}
+				@Override
+				public Integer getWorkers() {
+					return 2;
+				}
 
-		@Override
-		public String getDescription() {
+				@Override
+				public String getDescription() {
 
-			return "Journey description 1";
-		}
+					return "Journey description 1";
+				}
 
-		@Override
-		public Integer getProposalsCount() {
+				@Override
+				public Integer getProposalsCount() {
 
-			return 3;
-		}
+					return 3;
+				}
 
-	}, new ClientJourneyRequestDto() {
+			}, new ClientJourneyRequestDtoOutput() {
 
-		@Override
-		public Long getId() {
+				@Override
+				public Long getId() {
 
-			return 2L;
-		}
+					return 2L;
+				}
 
-		@Override
-		public PlaceDto getDeparturePlace() {
+				@Override
+				public PlaceDto getDeparturePlace() {
 
-			return new PlaceDto(3L, "DEPARTMENT", "departurePlaceName2", new BigDecimal(35.486523),
-					new BigDecimal(11.486523), 3L);
-		}
+					return new PlaceDto(3L, "DEPARTMENT", "departurePlaceName2", new BigDecimal(35.486523),
+							new BigDecimal(11.486523), 3L);
+				}
 
-		@Override
-		public PlaceDto getArrivalPlace() {
-			return new PlaceDto(4L, "DEPARTMENT", "arrivalPlaceName2", new BigDecimal(37.486523),
-					new BigDecimal(12.486523), 4L);
-		}
+				@Override
+				public PlaceDto getArrivalPlace() {
+					return new PlaceDto(4L, "DEPARTMENT", "arrivalPlaceName2", new BigDecimal(37.486523),
+							new BigDecimal(12.486523), 4L);
+				}
 
-		@Override
-		public EngineTypeDto getEngineType() {
-			return new EngineTypeDto(2L, "engineType2", "UTILITY");
-		}
+				@Override
+				public EngineTypeDto getEngineType() {
+					return new EngineTypeDto(2L, "engineType2", "UTILITY");
+				}
 
-		@Override
-		public Integer getDistance() {
-			return 200000;
-		}
+				@Override
+				public Integer getDistance() {
+					return 200000;
+				}
 
-		@Override
-		public Instant getDateTime() {
-			return startDate.toInstant();
-		}
+				@Override
+				public Instant getDateTime() {
+					return startDate.toInstant();
+				}
 
-		@Override
-		public Instant getCreationDateTime() {
-			return endDate.minusDays(1).toInstant();
-		}
+				@Override
+				public Instant getCreationDateTime() {
+					return endDate.minusDays(1).toInstant();
+				}
 
-		@Override
-		public Integer getWorkers() {
-			return 2;
-		}
+				@Override
+				public Integer getWorkers() {
+					return 2;
+				}
 
-		@Override
-		public String getDescription() {
+				@Override
+				public String getDescription() {
 
-			return "Journey description 1";
-		}
+					return "Journey description 1";
+				}
 
-		@Override
-		public Integer getProposalsCount() {
+				@Override
+				public Integer getProposalsCount() {
 
-			return 3;
-		}
+					return 3;
+				}
 
-	});
+			});
 	private static List<JourneyRequestSearchOutput> journeyRequestSearchOutputList =
 
 			List.of(new JourneyRequestSearchOutput() {
@@ -418,15 +421,20 @@ public class JourneyRequestTestData {
 	}
 
 	public static ClientJourneyRequests defaultClientJourneyRequests() {
-		return new ClientJourneyRequests(5, 10, 0, 2, true, clientJourneyRequestDtos);
+		return new ClientJourneyRequests(5, 10, 0, 2, true, clientJourneyRequestDtos.stream()
+				.map(e -> mapclientJourneyRequestDtoOutputToclientJourneyRequestDto(e)).collect(Collectors.toList()));
 	}
 
-	public static ClientJourneyRequestDto defaultClientJourneyRequestDto() {
+	public static ClientJourneyRequestsOutput defaultClientJourneyRequestsOutput() {
+		return new ClientJourneyRequestsOutput(5, 10, 0, 2, true, clientJourneyRequestDtos);
+	}
+
+	public static ClientJourneyRequestDtoOutput defaultClientJourneyRequestDto() {
 		return clientJourneyRequestDtos.get(0);
 	}
 
-	public static ClientJourneyRequestDto defaultClientJourneyRequestDtoWithNoProposals() {
-		return new ClientJourneyRequestDto() {
+	public static ClientJourneyRequestDtoOutput defaultClientJourneyRequestDtoWithNoProposals() {
+		return new ClientJourneyRequestDtoOutput() {
 
 			@Override
 			public Long getId() {
@@ -487,7 +495,7 @@ public class JourneyRequestTestData {
 		};
 	}
 
-	public static List<ClientJourneyRequestDto> defaultClientJourneyRequestDtoList() {
+	public static List<ClientJourneyRequestDtoOutput> defaultClientJourneyRequestDtoList() {
 		return clientJourneyRequestDtos;
 	}
 
@@ -507,6 +515,23 @@ public class JourneyRequestTestData {
 				.description(jrso.getDescription()).client(new Client(jrso.getClient().getId(),
 						jrso.getClient().getFirstname(), jrso.getClient().getPhotoUrl()))
 				.minPrice(jrso.getMinPrice()).build();
+
+	}
+
+	private static ClientJourneyRequestDto mapclientJourneyRequestDtoOutputToclientJourneyRequestDto(
+			ClientJourneyRequestDtoOutput cjrdo) {
+		return new ClientJourneyRequestDto(cjrdo.getId(),
+				new ClientJourneyRequestDto.PlaceDto(cjrdo.getDeparturePlace().getId(),
+						cjrdo.getDeparturePlace().getType(), cjrdo.getDeparturePlace().getName(),
+						cjrdo.getDeparturePlace().getLatitude(), cjrdo.getDeparturePlace().getLongitude(),
+						cjrdo.getDeparturePlace().getDepartmentId()),
+				new ClientJourneyRequestDto.PlaceDto(cjrdo.getArrivalPlace().getId(), cjrdo.getArrivalPlace().getType(),
+						cjrdo.getArrivalPlace().getName(), cjrdo.getArrivalPlace().getLatitude(),
+						cjrdo.getArrivalPlace().getLongitude(), cjrdo.getArrivalPlace().getDepartmentId()),
+				new ClientJourneyRequestDto.EngineTypeDto(cjrdo.getEngineType().getId(),
+						cjrdo.getEngineType().getName(), cjrdo.getEngineType().getCode()),
+				cjrdo.getDistance(), cjrdo.getDateTime().atZone(ZoneId.of("Africa/Tunis")).toLocalDateTime(),
+				cjrdo.getCreationDateTime(), cjrdo.getWorkers(), cjrdo.getDescription(), cjrdo.getProposalsCount());
 
 	}
 }

@@ -25,7 +25,7 @@ import com.excentria_it.wamya.application.port.out.UpdateJourneyRequestPort;
 import com.excentria_it.wamya.application.utils.DateTimeHelper;
 import com.excentria_it.wamya.common.exception.JourneyRequestNotFoundException;
 import com.excentria_it.wamya.common.exception.JourneyRequestUpdateException;
-import com.excentria_it.wamya.domain.ClientJourneyRequestDto;
+import com.excentria_it.wamya.domain.ClientJourneyRequestDtoOutput;
 import com.excentria_it.wamya.domain.GeoCoordinates;
 import com.excentria_it.wamya.domain.JourneyRequestInputOutput;
 import com.excentria_it.wamya.domain.JourneyTravelInfo;
@@ -66,7 +66,7 @@ public class UpdateJourneyRequestServiceTests {
 	@Test
 	void givenJourneyRequestExistsByIdAndClientEmail_andOffersHaveBeenMade_whenUpdateJourneyRequest_thenThrowJourneyRequestUpdateException() {
 		// given
-		ClientJourneyRequestDto clientJourneyRequestDto = JourneyRequestTestData.defaultClientJourneyRequestDto();
+		ClientJourneyRequestDtoOutput clientJourneyRequestDto = JourneyRequestTestData.defaultClientJourneyRequestDto();
 		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class),
 				any(String.class))).willReturn(Optional.of(clientJourneyRequestDto));
 		CreateJourneyRequestCommand command = JourneyRequestTestData.defaultCreateJourneyRequestCommandBuilder()
@@ -81,7 +81,7 @@ public class UpdateJourneyRequestServiceTests {
 	@Test
 	void givenJourneyRequestExistsByIdAndClientEmail_andNoOffersHaveBeenMade_andNoChangeFromUpdateCommand_whenUpdateJourneyRequest_thenDonotUpdateJourneyRequest() {
 		// given
-		ClientJourneyRequestDto clientJourneyRequestDto = JourneyRequestTestData
+		ClientJourneyRequestDtoOutput clientJourneyRequestDto = JourneyRequestTestData
 				.defaultClientJourneyRequestDtoWithNoProposals();
 		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class),
 				any(String.class))).willReturn(Optional.of(clientJourneyRequestDto));
@@ -107,7 +107,7 @@ public class UpdateJourneyRequestServiceTests {
 	@Test
 	void givenJourneyRequestExistsByIdAndClientEmail_andNoOffersHaveBeenMade_andChangeMadeUpdateCommand_andNoGeoCoordinates_whenUpdateJourneyRequest_thenUpdateJourneyRequest() {
 		// given
-		ClientJourneyRequestDto clientJourneyRequestDto = JourneyRequestTestData
+		ClientJourneyRequestDtoOutput clientJourneyRequestDto = JourneyRequestTestData
 				.defaultClientJourneyRequestDtoWithNoProposals();
 		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class),
 				any(String.class))).willReturn(Optional.of(clientJourneyRequestDto));
@@ -165,7 +165,7 @@ public class UpdateJourneyRequestServiceTests {
 	@Test
 	void givenJourneyRequestExistsByIdAndClientEmail_andNoOffersHaveBeenMade_andChangeMadeUpdateCommand_whenUpdateJourneyRequest_thenUpdateJourneyRequest() {
 		// given
-		ClientJourneyRequestDto clientJourneyRequestDto = JourneyRequestTestData
+		ClientJourneyRequestDtoOutput clientJourneyRequestDto = JourneyRequestTestData
 				.defaultClientJourneyRequestDtoWithNoProposals();
 		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class),
 				any(String.class))).willReturn(Optional.of(clientJourneyRequestDto));

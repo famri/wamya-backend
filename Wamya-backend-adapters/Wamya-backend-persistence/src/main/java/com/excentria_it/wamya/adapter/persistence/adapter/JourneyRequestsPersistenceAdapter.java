@@ -39,8 +39,8 @@ import com.excentria_it.wamya.common.SortCriterion;
 import com.excentria_it.wamya.common.annotation.PersistenceAdapter;
 import com.excentria_it.wamya.common.utils.LocaleUtils;
 import com.excentria_it.wamya.common.utils.ParameterUtils;
-import com.excentria_it.wamya.domain.ClientJourneyRequestDto;
-import com.excentria_it.wamya.domain.ClientJourneyRequests;
+import com.excentria_it.wamya.domain.ClientJourneyRequestDtoOutput;
+import com.excentria_it.wamya.domain.ClientJourneyRequestsOutput;
 import com.excentria_it.wamya.domain.JourneyRequestInputOutput;
 import com.excentria_it.wamya.domain.JourneyRequestSearchOutput;
 import com.excentria_it.wamya.domain.JourneyRequestStatusCode;
@@ -242,11 +242,11 @@ public class JourneyRequestsPersistenceAdapter implements SearchJourneyRequestsP
 	}
 
 	@Override
-	public ClientJourneyRequests loadClientJourneyRequests(LoadClientJourneyRequestsCriteria criteria) {
+	public ClientJourneyRequestsOutput loadClientJourneyRequests(LoadClientJourneyRequestsCriteria criteria) {
 		Sort sort = convertToSort(criteria.getSortingCriterion());
 
 		Pageable pagingSort = PageRequest.of(criteria.getPageNumber(), criteria.getPageSize(), sort);
-		Page<ClientJourneyRequestDto> journeyRequestsPage = null;
+		Page<ClientJourneyRequestDtoOutput> journeyRequestsPage = null;
 
 		journeyRequestsPage = journeyRequestRepository.findByCreationDateTimeBetweenAndClient_Email(
 				criteria.getPeriodCriterion().getLowerEdge().toInstant(),
@@ -255,17 +255,17 @@ public class JourneyRequestsPersistenceAdapter implements SearchJourneyRequestsP
 
 		if (journeyRequestsPage != null) {
 
-			return new ClientJourneyRequests(journeyRequestsPage.getTotalPages(),
+			return new ClientJourneyRequestsOutput(journeyRequestsPage.getTotalPages(),
 					journeyRequestsPage.getTotalElements(), journeyRequestsPage.getNumber(),
 					journeyRequestsPage.getSize(), journeyRequestsPage.hasNext(), journeyRequestsPage.getContent());
 		}
 
-		return new ClientJourneyRequests(0, 0, criteria.getPageNumber(), criteria.getPageSize(), false,
-				Collections.<ClientJourneyRequestDto>emptyList());
+		return new ClientJourneyRequestsOutput(0, 0, criteria.getPageNumber(), criteria.getPageSize(), false,
+				Collections.<ClientJourneyRequestDtoOutput>emptyList());
 	}
 
 	@Override
-	public Optional<ClientJourneyRequestDto> loadJourneyRequestByIdAndClientEmail(Long id, String email,
+	public Optional<ClientJourneyRequestDtoOutput> loadJourneyRequestByIdAndClientEmail(Long id, String email,
 			String locale) {
 
 		return journeyRequestRepository.findByIdAndClient_Email(id, email, locale);

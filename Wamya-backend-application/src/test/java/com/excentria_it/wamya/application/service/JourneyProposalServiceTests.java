@@ -33,7 +33,7 @@ import com.excentria_it.wamya.common.exception.InvalidTransporterVehiculeExcepti
 import com.excentria_it.wamya.common.exception.JourneyProposalNotFoundException;
 import com.excentria_it.wamya.common.exception.JourneyRequestExpiredException;
 import com.excentria_it.wamya.common.exception.JourneyRequestNotFoundException;
-import com.excentria_it.wamya.domain.ClientJourneyRequestDto;
+import com.excentria_it.wamya.domain.ClientJourneyRequestDtoOutput;
 import com.excentria_it.wamya.domain.JourneyProposalDto.VehiculeDto;
 import com.excentria_it.wamya.domain.JourneyRequestInputOutput.JourneyRequestInputOutputBuilder;
 import com.excentria_it.wamya.domain.JourneyRequestProposals;
@@ -189,7 +189,7 @@ public class JourneyProposalServiceTests {
 	void givenLoadProposalsCommandAndClientEmail_WhenLoadProposals_ThenSucceed() {
 		// given
 		LoadProposalsCommand command = defaultLoadProposalsCommandBuilder().build();
-		ClientJourneyRequestDto clientJourneyRequestDto = defaultClientJourneyRequestDto();
+		ClientJourneyRequestDtoOutput clientJourneyRequestDto = defaultClientJourneyRequestDto();
 		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class),
 				any(String.class))).willReturn(Optional.of(clientJourneyRequestDto));
 

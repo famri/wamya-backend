@@ -50,7 +50,7 @@ import com.excentria_it.wamya.adapter.persistence.entity.PlaceJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.TimeZoneJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.TransporterJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.VehiculeJpaEntity;
-import com.excentria_it.wamya.domain.ClientJourneyRequestDto;
+import com.excentria_it.wamya.domain.ClientJourneyRequestDtoOutput;
 import com.excentria_it.wamya.domain.EngineTypeCode;
 import com.excentria_it.wamya.domain.JourneyRequestSearchOutput;
 import com.excentria_it.wamya.domain.PlaceType;
@@ -806,7 +806,7 @@ public class JourneyRequestRepositoryTests {
 		ZonedDateTime higherEdge = ZonedDateTime.now(ZoneOffset.UTC);
 		ZonedDateTime lowerEdge = endDates.get(0).minusDays(1);
 
-		Page<ClientJourneyRequestDto> journeyRequests = journeyRequestRepository
+		Page<ClientJourneyRequestDtoOutput> journeyRequests = journeyRequestRepository
 				.findByCreationDateTimeBetweenAndClient_Email(lowerEdge.toInstant(), higherEdge.toInstant(),
 						clients.get(0).getEmail(), "en_US", PageRequest.of(0, 25,
 

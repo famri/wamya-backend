@@ -48,8 +48,8 @@ import com.excentria_it.wamya.adapter.persistence.repository.PlaceRepository;
 import com.excentria_it.wamya.adapter.persistence.utils.DepartmentJpaEntityResolver;
 import com.excentria_it.wamya.adapter.persistence.utils.LocalizedPlaceJpaEntityResolver;
 import com.excentria_it.wamya.common.SortCriterion;
-import com.excentria_it.wamya.domain.ClientJourneyRequestDto;
-import com.excentria_it.wamya.domain.ClientJourneyRequests;
+import com.excentria_it.wamya.domain.ClientJourneyRequestDtoOutput;
+import com.excentria_it.wamya.domain.ClientJourneyRequestsOutput;
 import com.excentria_it.wamya.domain.JourneyRequestInputOutput;
 import com.excentria_it.wamya.domain.JourneyRequestSearchDto;
 import com.excentria_it.wamya.domain.JourneyRequestSearchOutput;
@@ -436,13 +436,13 @@ public class JourneyRequestsPersistenceAdapterTests {
 
 		// given
 
-		Page<ClientJourneyRequestDto> page = createPageFromClientJourneyRequestDto(
+		Page<ClientJourneyRequestDtoOutput> page = createPageFromClientJourneyRequestDto(
 				defaultClientJourneyRequestDtoList());
 		given(journeyRequestRepository.findByCreationDateTimeBetweenAndClient_Email(any(Instant.class),
 				any(Instant.class), any(String.class), any(String.class), any(Pageable.class))).willReturn(page);
 		LoadClientJourneyRequestsCriteria criteria = defaultLoadClientJourneyRequestsCriteriaBuilder().build();
 		// when
-		ClientJourneyRequests result = journeyRequestsPersistenceAdapter.loadClientJourneyRequests(criteria);
+		ClientJourneyRequestsOutput result = journeyRequestsPersistenceAdapter.loadClientJourneyRequests(criteria);
 		// then
 		assertEquals(page.getTotalPages(), result.getTotalPages());
 		assertEquals(page.hasNext(), result.isHasNext());
@@ -461,14 +461,14 @@ public class JourneyRequestsPersistenceAdapterTests {
 				any(Instant.class), any(String.class), any(String.class), any(Pageable.class))).willReturn(null);
 		LoadClientJourneyRequestsCriteria criteria = defaultLoadClientJourneyRequestsCriteriaBuilder().build();
 		// when
-		ClientJourneyRequests result = journeyRequestsPersistenceAdapter.loadClientJourneyRequests(criteria);
+		ClientJourneyRequestsOutput result = journeyRequestsPersistenceAdapter.loadClientJourneyRequests(criteria);
 		// then
 		assertEquals(0, result.getTotalPages());
 		assertEquals(criteria.getPageSize(), result.getPageSize());
 		assertEquals(0, result.getTotalElements());
 		assertEquals(criteria.getPageNumber(), result.getPageNumber());
 		assertEquals(false, result.isHasNext());
-		assertEquals(Collections.<ClientJourneyRequestDto>emptyList(), result.getContent());
+		assertEquals(Collections.<ClientJourneyRequestDtoOutput>emptyList(), result.getContent());
 	}
 
 	@Test
@@ -476,11 +476,11 @@ public class JourneyRequestsPersistenceAdapterTests {
 
 		// given
 
-		ClientJourneyRequestDto clientJourneyRequestDto = defaultClientJourneyRequestDto();
+		ClientJourneyRequestDtoOutput clientJourneyRequestDto = defaultClientJourneyRequestDto();
 		given(journeyRequestRepository.findByIdAndClient_Email(eq(1L), eq(TestConstants.DEFAULT_EMAIL), eq("fr_FR")))
 				.willReturn(Optional.of(clientJourneyRequestDto));
 		// when
-		Optional<ClientJourneyRequestDto> result = journeyRequestsPersistenceAdapter
+		Optional<ClientJourneyRequestDtoOutput> result = journeyRequestsPersistenceAdapter
 				.loadJourneyRequestByIdAndClientEmail(1L, TestConstants.DEFAULT_EMAIL, "fr_FR");
 
 		// then
@@ -969,9 +969,9 @@ public class JourneyRequestsPersistenceAdapterTests {
 		};
 	}
 
-	private Page<ClientJourneyRequestDto> createPageFromClientJourneyRequestDto(
-			List<ClientJourneyRequestDto> clientJourneyRequestDto) {
-		return new Page<ClientJourneyRequestDto>() {
+	private Page<ClientJourneyRequestDtoOutput> createPageFromClientJourneyRequestDto(
+			List<ClientJourneyRequestDtoOutput> clientJourneyRequestDto) {
+		return new Page<ClientJourneyRequestDtoOutput>() {
 
 			@Override
 			public int getNumber() {
@@ -992,7 +992,7 @@ public class JourneyRequestsPersistenceAdapterTests {
 			}
 
 			@Override
-			public List<ClientJourneyRequestDto> getContent() {
+			public List<ClientJourneyRequestDtoOutput> getContent() {
 
 				return clientJourneyRequestDto;
 			}
@@ -1046,7 +1046,7 @@ public class JourneyRequestsPersistenceAdapterTests {
 			}
 
 			@Override
-			public Iterator<ClientJourneyRequestDto> iterator() {
+			public Iterator<ClientJourneyRequestDtoOutput> iterator() {
 
 				return clientJourneyRequestDto.iterator();
 			}
@@ -1064,7 +1064,7 @@ public class JourneyRequestsPersistenceAdapterTests {
 			}
 
 			@Override
-			public <U> Page<U> map(Function<? super ClientJourneyRequestDto, ? extends U> converter) {
+			public <U> Page<U> map(Function<? super ClientJourneyRequestDtoOutput, ? extends U> converter) {
 				// TODO Auto-generated method stub
 				return null;
 			}

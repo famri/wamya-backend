@@ -28,6 +28,7 @@ import com.excentria_it.wamya.application.port.in.LoadClientJourneyRequestsUseCa
 import com.excentria_it.wamya.application.port.in.LoadClientJourneyRequestsUseCase.LoadJourneyRequestsCommand;
 import com.excentria_it.wamya.common.exception.handlers.RestApiExceptionHandler;
 import com.excentria_it.wamya.domain.ClientJourneyRequests;
+import com.excentria_it.wamya.domain.ClientJourneyRequestsOutput;
 import com.excentria_it.wamya.test.data.common.JourneyRequestTestData;
 import com.excentria_it.wamya.test.data.common.TestConstants;
 import com.fasterxml.jackson.databind.ObjectMapper;

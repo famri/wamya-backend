@@ -25,7 +25,7 @@ import com.excentria_it.wamya.application.port.out.MessagingPort;
 import com.excentria_it.wamya.application.utils.DateTimeHelper;
 import com.excentria_it.wamya.common.domain.PushMessage;
 import com.excentria_it.wamya.common.exception.JourneyRequestNotFoundException;
-import com.excentria_it.wamya.domain.ClientJourneyRequestDto;
+import com.excentria_it.wamya.domain.ClientJourneyRequestDtoOutput;
 import com.excentria_it.wamya.domain.JourneyRequestStatusCode;
 import com.excentria_it.wamya.domain.PlaceType;
 import com.excentria_it.wamya.domain.TransporterNotificationInfo;
@@ -64,7 +64,7 @@ public class UpdateJourneyRequestStatusServiceTests {
 	@Test
 	void givenJourneyRequestExistsByIdAndClientEmail_whenCancelJourneyRequest_thenCancelJourneyRequest() {
 		// given
-		ClientJourneyRequestDto clientJourneyRequestDto = JourneyRequestTestData.defaultClientJourneyRequestDto();
+		ClientJourneyRequestDtoOutput clientJourneyRequestDto = JourneyRequestTestData.defaultClientJourneyRequestDto();
 		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class),
 				any(String.class))).willReturn(Optional.of(clientJourneyRequestDto));
 
@@ -96,7 +96,7 @@ public class UpdateJourneyRequestStatusServiceTests {
 	@Test
 	void givenJourneyRequestExistsByIdAndClientEmail_andExceptionWhenSendingNotification_whenCancelJourneyRequest_thenCancelJourneyRequest() {
 		// given
-		ClientJourneyRequestDto clientJourneyRequestDto = JourneyRequestTestData.defaultClientJourneyRequestDto();
+		ClientJourneyRequestDtoOutput clientJourneyRequestDto = JourneyRequestTestData.defaultClientJourneyRequestDto();
 		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class),
 				any(String.class))).willReturn(Optional.of(clientJourneyRequestDto));
 

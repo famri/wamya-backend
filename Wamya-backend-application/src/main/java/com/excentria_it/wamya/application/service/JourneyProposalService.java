@@ -24,7 +24,7 @@ import com.excentria_it.wamya.common.exception.InvalidTransporterVehiculeExcepti
 import com.excentria_it.wamya.common.exception.JourneyProposalNotFoundException;
 import com.excentria_it.wamya.common.exception.JourneyRequestExpiredException;
 import com.excentria_it.wamya.common.exception.JourneyRequestNotFoundException;
-import com.excentria_it.wamya.domain.ClientJourneyRequestDto;
+import com.excentria_it.wamya.domain.ClientJourneyRequestDtoOutput;
 import com.excentria_it.wamya.domain.JourneyProposalDto.VehiculeDto;
 import com.excentria_it.wamya.domain.JourneyRequestInputOutput;
 import com.excentria_it.wamya.domain.JourneyRequestProposals;
@@ -113,7 +113,7 @@ public class JourneyProposalService implements MakeProposalUseCase, LoadProposal
 	}
 
 	private void checkClientJourneyRequest(String clientUsername, Long journeyRequestId, String locale) {
-		Optional<ClientJourneyRequestDto> journeyRequestOptional = null;
+		Optional<ClientJourneyRequestDtoOutput> journeyRequestOptional = null;
 		journeyRequestOptional = loadJourneyRequestPort.loadJourneyRequestByIdAndClientEmail(journeyRequestId,
 				clientUsername,locale);
 

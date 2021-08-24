@@ -2,53 +2,50 @@ package com.excentria_it.wamya.domain;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-
-import org.springframework.beans.factory.annotation.Value;
+import java.time.LocalDateTime;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-public interface ClientJourneyRequestDto {
+@AllArgsConstructor
+@Data
+public class ClientJourneyRequestDto {
 
-	Long getId();
+	private Long id;
 
-	@Value("#{new  com.excentria_it.wamya.domain.ClientJourneyRequestDto.PlaceDto(target.departurePlaceId, target.departurePlaceType.name(), target.departurePlaceName, target.departurePlaceLatitude, target.departurePlaceLongitude, target.departurePlaceDepartmentId)}")
-	PlaceDto getDeparturePlace();
+	private PlaceDto departurePlace;
 
-	@Value("#{new com.excentria_it.wamya.domain.ClientJourneyRequestDto.PlaceDto(target.arrivalPlaceId, target.arrivalPlaceType.name(), target.arrivalPlaceName, target.arrivalPlaceLatitude, target.arrivalPlaceLongitude, target.arrivalPlaceDepartmentId)}")
-	PlaceDto getArrivalPlace();
+	private PlaceDto arrivalPlace;
 
-	@Value("#{new com.excentria_it.wamya.domain.ClientJourneyRequestDto.EngineTypeDto(target.engineTypeId, target.engineTypeName, target.engineTypeCode)}")
-	EngineTypeDto getEngineType();
+	private EngineTypeDto engineType;
 
-	Integer getDistance();
+	private Integer distance;
 
-	Instant getDateTime();
+	private LocalDateTime dateTime;
 
-	Instant getCreationDateTime();
+	private Instant creationDateTime;
 
-	Integer getWorkers();
+	private Integer workers;
 
-	String getDescription();
+	private String description;
 
-	Integer getProposalsCount();
+	private Integer proposalsCount;
 
 	@AllArgsConstructor
 	@Data
-	class EngineTypeDto {
+	public static class EngineTypeDto {
 
 		private Long id;
 
 		private String name;
-		
+
 		private String code;
-		
 
 	}
 
 	@AllArgsConstructor
 	@Data
-	class PlaceDto {
+	public static class PlaceDto {
 
 		private Long id;
 
