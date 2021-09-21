@@ -12,13 +12,28 @@ import lombok.NoArgsConstructor;
 
 public interface FindDiscussionUseCase {
 
-	LoadDiscussionsDto findDiscussion(FindDiscussionCommand command);
+	LoadDiscussionsDto findDiscussionById(FindDiscussionByIdCommand command);
+
+	LoadDiscussionsDto findDiscussionByClientIdAndTransporterId(
+			FindDiscussionByClientIdAndTransporterIdCommand command);
 
 	@Data
 	@NoArgsConstructor
 	@AllArgsConstructor
 	@Builder
-	class FindDiscussionCommand {
+	class FindDiscussionByIdCommand {
+		@NotEmpty
+		private String username;
+		@NotNull
+		private Long discussionId;
+
+	}
+	
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	@Builder
+	class FindDiscussionByClientIdAndTransporterIdCommand {
 		@NotEmpty
 		private String username;
 		@NotNull

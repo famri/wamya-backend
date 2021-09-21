@@ -15,7 +15,8 @@ public interface LoadDiscussionsPort {
 	LoadDiscussionsOutputResult loadDiscussions(Long userAccountId, Boolean isTransporter, Integer pageNumber,
 			Integer pageSize, SortCriterion sortingCriterion);
 
-	Optional<LoadDiscussionsOutput> loadDiscusssion(Long clientId, Long transporterId, boolean isTransporter);
+	Optional<LoadDiscussionsOutput> loadDiscussionByClientIdAndTransporterId(Long clientOauthId,
+			Long transporterOauthId);
 
 	Optional<LoadDiscussionsOutput> loadDiscussionById(Long discussionId);
 

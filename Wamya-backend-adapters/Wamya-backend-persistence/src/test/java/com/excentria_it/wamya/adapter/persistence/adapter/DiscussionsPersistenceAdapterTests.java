@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -224,8 +223,7 @@ public class DiscussionsPersistenceAdapterTests {
 		LoadDiscussionsOutput discussionOutput = defaultClientLoadDiscussionsOutput();
 		given(discussionMapper.mapToLoadDiscussionsOutput(discussionJpaEntity)).willReturn(discussionOutput);
 		// when
-		Optional<LoadDiscussionsOutput> discussionOptional = discussionsPersistenceAdapter.loadDiscusssion(1L, 2L,
-				false);
+		Optional<LoadDiscussionsOutput> discussionOptional = discussionsPersistenceAdapter.loadDiscussionByClientIdAndTransporterId(1L, 2L);
 
 		// then
 		assertThat(discussionOptional).isNotEmpty();
@@ -240,8 +238,7 @@ public class DiscussionsPersistenceAdapterTests {
 				.willReturn(Optional.empty());
 
 		// when
-		Optional<LoadDiscussionsOutput> discussionOptional = discussionsPersistenceAdapter.loadDiscusssion(1L, 2L,
-				false);
+		Optional<LoadDiscussionsOutput> discussionOptional = discussionsPersistenceAdapter.loadDiscussionByClientIdAndTransporterId(1L, 2L);
 
 		// then
 		assertThat(discussionOptional).isEmpty();
@@ -284,7 +281,7 @@ public class DiscussionsPersistenceAdapterTests {
 		given(clientRepository.findByOauthId(any(Long.class))).willReturn(Optional.empty());
 
 		// when
-		LoadDiscussionsOutput result = discussionsPersistenceAdapter.createDiscussion(1L, 2L, false);
+		LoadDiscussionsOutput result = discussionsPersistenceAdapter.createDiscussion(1L, 2L);
 		// then
 		assertNull(result);
 	}
@@ -297,7 +294,7 @@ public class DiscussionsPersistenceAdapterTests {
 		given(transporterRepository.findByOauthId(any(Long.class))).willReturn(Optional.empty());
 
 		// when
-		LoadDiscussionsOutput result = discussionsPersistenceAdapter.createDiscussion(1L, 2L, false);
+		LoadDiscussionsOutput result = discussionsPersistenceAdapter.createDiscussion(1L, 2L);
 		// then
 		assertNull(result);
 	}
@@ -318,13 +315,14 @@ public class DiscussionsPersistenceAdapterTests {
 		given(discussionMapper.mapToLoadDiscussionsOutput(discussionJpaEntity)).willReturn(loadDiscussionsOutput);
 
 		// when
-		LoadDiscussionsOutput result = discussionsPersistenceAdapter.createDiscussion(1L, 2L, false);
+		LoadDiscussionsOutput result = discussionsPersistenceAdapter.createDiscussion(1L, 2L);
 
 		// then
 		assertEquals(loadDiscussionsOutput, result);
 
 	}
 
+	
 	private MessageOutput getMessageOutput(MessageJpaEntity m) {
 		return MessageOutput.builder().id(m.getId()).authorId(m.getAuthor().getId())
 

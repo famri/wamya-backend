@@ -72,7 +72,8 @@ public class DiscussionsService implements LoadDiscussionsUseCase, FindDiscussio
 	}
 
 	@Override
-	public LoadDiscussionsDto findDiscussion(FindDiscussionCommand command) {
+	public LoadDiscussionsDto findDiscussionByClientIdAndTransporterId(
+			FindDiscussionByClientIdAndTransporterIdCommand command) {
 
 		Optional<UserAccount> userAccountOptional = loadUserAccountPort
 				.loadUserAccountByUsername(command.getUsername());
@@ -83,15 +84,35 @@ public class DiscussionsService implements LoadDiscussionsUseCase, FindDiscussio
 					String.format("Discussion not found by clientOauthId %d and transporterOauthId %d",
 							command.getClientId(), command.getTransporterId()));
 		}
-		boolean isTransporter = userAccountOptional.get().getIsTransporter();
 
-		Optional<LoadDiscussionsOutput> result = loadDiscussionsPort.loadDiscusssion(command.getClientId(),
-				command.getTransporterId(), isTransporter);
+		Optional<LoadDiscussionsOutput> result = loadDiscussionsPort
+				.loadDiscussionByClientIdAndTransporterId(command.getClientId(), command.getTransporterId());
 		if (result.isEmpty()) {
 			throw new DiscussionNotFoundException(
 					String.format("Discussion not found by clientOauthId %d and transporterOauthId %d",
 							command.getClientId(), command.getTransporterId()));
 		}
+		ZoneId userZoneId = dateTimeHelper.findUserZoneId(command.getUsername());
+		return DiscussionUtils.mapToLoadDiscussionsDto(dateTimeHelper, result.get(), userZoneId);
+
+	}
+
+	@Override
+	public LoadDiscussionsDto findDiscussionById(FindDiscussionByIdCommand command) {
+
+		Optional<LoadDiscussionsOutput> result = loadDiscussionsPort.loadDiscussionById(command.getDiscussionId());
+
+		if (result.isEmpty()) {
+			throw new DiscussionNotFoundException(
+					String.format("Discussion not found by discussionId %d", command.getDiscussionId()));
+		}
+
+		if (!result.get().getClient().getEmail().equals(command.getUsername())
+				&& !result.get().getTransporter().getEmail().equals(command.getUsername())) {
+			throw new DiscussionNotFoundException(
+					String.format("Discussion not found by discussionId %d", command.getDiscussionId()));
+		}
+
 		ZoneId userZoneId = dateTimeHelper.findUserZoneId(command.getUsername());
 		return DiscussionUtils.mapToLoadDiscussionsDto(dateTimeHelper, result.get(), userZoneId);
 
@@ -118,7 +139,7 @@ public class DiscussionsService implements LoadDiscussionsUseCase, FindDiscussio
 		}
 
 		LoadDiscussionsOutput loadDiscussionOutput = createDiscussionPort.createDiscussion(command.getClientId(),
-				command.getTransporterId(), isTransporter);
+				command.getTransporterId());
 
 		ZoneId userZoneId = dateTimeHelper.findUserZoneId(username);
 

@@ -38,6 +38,7 @@ import com.excentria_it.wamya.adapter.persistence.entity.EngineTypeJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.InternationalCallingCodeJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.JourneyProposalJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.JourneyRequestJpaEntity;
+import com.excentria_it.wamya.adapter.persistence.entity.JourneyRequestStatusJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.LocalizedCountryJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.LocalizedDepartmentJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.LocalizedEngineTypeJpaEntity;
@@ -53,6 +54,7 @@ import com.excentria_it.wamya.adapter.persistence.entity.VehiculeJpaEntity;
 import com.excentria_it.wamya.domain.ClientJourneyRequestDtoOutput;
 import com.excentria_it.wamya.domain.EngineTypeCode;
 import com.excentria_it.wamya.domain.JourneyRequestSearchOutput;
+import com.excentria_it.wamya.domain.JourneyRequestStatusCode;
 import com.excentria_it.wamya.domain.PlaceType;
 import com.excentria_it.wamya.domain.ValidationState;
 import com.excentria_it.wamya.test.data.common.DocumentJpaTestData;
@@ -101,6 +103,9 @@ public class JourneyRequestRepositoryTests {
 
 	@Autowired
 	private DocumentRepository documentRepository;
+
+	@Autowired
+	private JourneyRequestStatusRepository journeyRequestStatusRepository;
 
 	@BeforeEach
 	public void cleanDatabase() {
@@ -151,8 +156,10 @@ public class JourneyRequestRepositoryTests {
 
 		Map<Integer, Set<JourneyProposalJpaEntity>> proposalsMap = givenProposals(transporters, vehicules);
 
+		List<JourneyRequestStatusJpaEntity> jrStatuses = givenStatuses();
+
 		givenJourneyRequests(departurePlaces, arrivalPlaces, engineTypes, distances, dates, endDates, List.of(2, 2, 2),
-				descriptions, clients, proposalsMap);
+				descriptions, clients, proposalsMap, jrStatuses);
 
 		List<ZonedDateTime> searchStartAndEndDates = getDateBeforeAndDateAfter(dates.get(0));
 
@@ -234,8 +241,10 @@ public class JourneyRequestRepositoryTests {
 
 		Map<Integer, Set<JourneyProposalJpaEntity>> proposalsMap = givenProposals(transporters, vehicules);
 
+		List<JourneyRequestStatusJpaEntity> jrStatuses = givenStatuses();
+
 		givenJourneyRequests(departurePlaces, arrivalPlaces, engineTypes, distances, dates, endDates, List.of(2, 2, 2),
-				descriptions, clients, proposalsMap);
+				descriptions, clients, proposalsMap, jrStatuses);
 
 		List<ZonedDateTime> searchStartAndEndDates = getDateBeforeAndDateAfter(dates.get(0));
 
@@ -315,8 +324,11 @@ public class JourneyRequestRepositoryTests {
 
 		Map<Integer, Set<JourneyProposalJpaEntity>> proposalsMap = givenProposals(transporters, vehicules);
 
+		List<JourneyRequestStatusJpaEntity> jrStatuses = givenStatuses();
+
 		List<JourneyRequestJpaEntity> createdJourneyRequests = givenJourneyRequests(departurePlaces, arrivalPlaces,
-				engineTypes, distances, dates, endDates, List.of(2, 2, 2), descriptions, clients, proposalsMap);
+				engineTypes, distances, dates, endDates, List.of(2, 2, 2), descriptions, clients, proposalsMap,
+				jrStatuses);
 
 		List<ZonedDateTime> searchStartAndEndDates = getDateBeforeAndDateAfter(dates.get(0));
 
@@ -390,8 +402,10 @@ public class JourneyRequestRepositoryTests {
 
 		Map<Integer, Set<JourneyProposalJpaEntity>> proposalsMap = givenProposals(transporters, vehicules);
 
+		List<JourneyRequestStatusJpaEntity> jrStatuses = givenStatuses();
+
 		givenJourneyRequests(departurePlaces, arrivalPlaces, engineTypes, distances, dates, endDates, List.of(2, 2, 2),
-				descriptions, clients, proposalsMap);
+				descriptions, clients, proposalsMap, jrStatuses);
 
 		List<ZonedDateTime> searchStartAndEndDates = getDateBeforeAndDateAfter(dates.get(0));
 
@@ -464,8 +478,10 @@ public class JourneyRequestRepositoryTests {
 
 		Map<Integer, Set<JourneyProposalJpaEntity>> proposalsMap = givenProposals(transporters, vehicules);
 
+		List<JourneyRequestStatusJpaEntity> jrStatuses = givenStatuses();
+
 		givenJourneyRequests(departurePlaces, arrivalPlaces, engineTypes, distances, dates, endDates, List.of(2, 2, 2),
-				descriptions, clients, proposalsMap);
+				descriptions, clients, proposalsMap, jrStatuses);
 
 		List<ZonedDateTime> searchStartAndEndDates = getDateBeforeAndDateAfter(dates.get(0));
 
@@ -548,8 +564,10 @@ public class JourneyRequestRepositoryTests {
 
 		Map<Integer, Set<JourneyProposalJpaEntity>> proposalsMap = givenProposals(transporters, vehicules);
 
+		List<JourneyRequestStatusJpaEntity> jrStatuses = givenStatuses();
+
 		givenJourneyRequests(departurePlaces, arrivalPlaces, engineTypes, distances, dates, endDates, List.of(2, 2, 2),
-				descriptions, clients, proposalsMap);
+				descriptions, clients, proposalsMap, jrStatuses);
 
 		List<ZonedDateTime> searchStartAndEndDates = getDateBeforeAndDateAfter(dates.get(0));
 
@@ -629,8 +647,10 @@ public class JourneyRequestRepositoryTests {
 
 		Map<Integer, Set<JourneyProposalJpaEntity>> proposalsMap = givenProposals(transporters, vehicules);
 
+		List<JourneyRequestStatusJpaEntity> jrStatuses = givenStatuses();
+
 		givenJourneyRequests(departurePlaces, arrivalPlaces, engineTypes, List.of(112700, 205500, 308200), dates,
-				endDates, List.of(2, 2, 2), descriptions, clients, proposalsMap);
+				endDates, List.of(2, 2, 2), descriptions, clients, proposalsMap, jrStatuses);
 
 		List<ZonedDateTime> searchStartAndEndDates = getDateBeforeAndDateAfter(dates.get(0));
 
@@ -718,8 +738,10 @@ public class JourneyRequestRepositoryTests {
 
 		Map<Integer, Set<JourneyProposalJpaEntity>> proposalsMap = givenProposals(transporters, vehicules);
 
+		List<JourneyRequestStatusJpaEntity> jrStatuses = givenStatuses();
+
 		givenJourneyRequests(departurePlaces, arrivalPlaces, engineTypes, List.of(112700, 205500, 308200), dates,
-				endDates, List.of(2, 2, 2), descriptions, clients, proposalsMap);
+				endDates, List.of(2, 2, 2), descriptions, clients, proposalsMap, jrStatuses);
 
 		List<ZonedDateTime> searchStartAndEndDates = getDateBeforeAndDateAfter(dates.get(0));
 
@@ -798,8 +820,9 @@ public class JourneyRequestRepositoryTests {
 
 		Map<Integer, Set<JourneyProposalJpaEntity>> proposalsMap = givenProposals(transporters, vehicules);
 
+		List<JourneyRequestStatusJpaEntity> jrStatuses = givenStatuses();
 		givenJourneyRequests(departurePlaces, arrivalPlaces, engineTypes, List.of(112700, 205500, 308200), dates,
-				endDates, List.of(2, 2, 2), descriptions, clients, proposalsMap);
+				endDates, List.of(2, 2, 2), descriptions, clients, proposalsMap, jrStatuses);
 
 		// When
 
@@ -825,6 +848,13 @@ public class JourneyRequestRepositoryTests {
 
 		assertTrue(journeyRequests.getContent().get(0).getCreationDateTime().compareTo(higherEdge.toInstant()) <= 0);
 
+	}
+
+	private List<JourneyRequestStatusJpaEntity> givenStatuses() {
+		JourneyRequestStatusJpaEntity jrs1 = JourneyRequestStatusJpaEntity.builder()
+				.code(JourneyRequestStatusCode.OPENED).description("Opened journey request status").build();
+		jrs1 = journeyRequestStatusRepository.save(jrs1);
+		return List.of(jrs1, jrs1, jrs1);
 	}
 
 	private List<Integer> givenDistances() {
@@ -1364,13 +1394,14 @@ public class JourneyRequestRepositoryTests {
 	private List<JourneyRequestJpaEntity> givenJourneyRequests(List<PlaceJpaEntity> departurePlaces,
 			List<PlaceJpaEntity> arrivalPlaces, List<EngineTypeJpaEntity> engineTypes, List<Integer> distances,
 			List<ZonedDateTime> dates, List<ZonedDateTime> endDates, List<Integer> workers, List<String> descriptions,
-			List<ClientJpaEntity> clients, Map<Integer, Set<JourneyProposalJpaEntity>> proposalsMap) {
+			List<ClientJpaEntity> clients, Map<Integer, Set<JourneyProposalJpaEntity>> proposalsMap,
+			List<JourneyRequestStatusJpaEntity> jrStatuses) {
 
 		JourneyRequestJpaEntity jrToday = JourneyRequestJpaEntity.builder().departurePlace(departurePlaces.get(0))
 				.arrivalPlace(arrivalPlaces.get(0)).engineType(engineTypes.get(0)).distance(distances.get(0))
 				.dateTime(dates.get(0).toInstant()).workers(workers.get(0)).description(descriptions.get(0))
 				.client(clients.get(0)).proposals(proposalsMap.get(0))
-				.creationDateTime(endDates.get(0).minusDays(1).toInstant()).build();
+				.creationDateTime(endDates.get(0).minusDays(1).toInstant()).status(jrStatuses.get(0)).build();
 		proposalsMap.get(0).forEach(p -> p.setJourneyRequest(jrToday));
 		clients.get(0).addJourneyRequest(jrToday);
 
@@ -1378,7 +1409,7 @@ public class JourneyRequestRepositoryTests {
 				.arrivalPlace(arrivalPlaces.get(1)).engineType(engineTypes.get(1)).distance(distances.get(1))
 				.dateTime(dates.get(1).toInstant()).workers(workers.get(1)).description(descriptions.get(1))
 				.client(clients.get(1)).proposals(proposalsMap.get(1))
-				.creationDateTime(endDates.get(1).minusDays(1).toInstant()).build();
+				.creationDateTime(endDates.get(1).minusDays(1).toInstant()).status(jrStatuses.get(1)).build();
 		proposalsMap.get(1).forEach(p -> p.setJourneyRequest(jrTomorrow));
 		clients.get(1).addJourneyRequest(jrTomorrow);
 
@@ -1386,7 +1417,8 @@ public class JourneyRequestRepositoryTests {
 				.arrivalPlace(arrivalPlaces.get(2)).engineType(engineTypes.get(2)).distance(distances.get(2))
 				.dateTime(dates.get(2).toInstant()).workers(workers.get(2)).description(descriptions.get(2))
 				.client(clients.get(2)).proposals(proposalsMap.get(2))
-				.creationDateTime(endDates.get(2).minusDays(1).toInstant()).build();
+				.creationDateTime(endDates.get(2).minusDays(1).toInstant()).status(jrStatuses.get(2)).build();
+
 		proposalsMap.get(2).forEach(p -> p.setJourneyRequest(jrOvermorrow));
 		clients.get(2).addJourneyRequest(jrOvermorrow);
 

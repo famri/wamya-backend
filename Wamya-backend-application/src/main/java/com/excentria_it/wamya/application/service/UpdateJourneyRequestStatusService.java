@@ -53,24 +53,27 @@ public class UpdateJourneyRequestStatusService implements UpdateJourneyRequestSt
 				.orElseThrow(() -> new JourneyRequestNotFoundException(
 						String.format("Journey request not found by ID: %d", journeyRequestId)));
 
-		if (clientJourneyRequestDto.getProposalsCount() > 0) {
-			Set<TransporterNotificationInfo> notifInfo = loadProposalsPort
-					.loadTransportersNotificationInfo(journeyRequestId);
-			Set<String> locales = notifInfo.stream().map(ni -> ni.getLocale()).collect(Collectors.toSet());
+		if (JourneyRequestStatusCode.CANCELED.equals(status)) {
+			if (clientJourneyRequestDto.getProposalsCount() > 0) {
+				Set<TransporterNotificationInfo> notifInfo = loadProposalsPort
+						.loadTransportersNotificationInfo(journeyRequestId);
+				Set<String> locales = notifInfo.stream().map(ni -> ni.getLocale()).collect(Collectors.toSet());
 
-			Map<String, String> departurePlaceNames = loadPlaceNamesPort.loadPlaceNames(
-					clientJourneyRequestDto.getDeparturePlace().getId(),
-					PlaceType.valueOf(clientJourneyRequestDto.getDeparturePlace().getType()), locales);
+				Map<String, String> departurePlaceNames = loadPlaceNamesPort.loadPlaceNames(
+						clientJourneyRequestDto.getDeparturePlace().getId(),
+						PlaceType.valueOf(clientJourneyRequestDto.getDeparturePlace().getType()), locales);
 
-			Map<String, String> arrivalPlaceNames = loadPlaceNamesPort.loadPlaceNames(
-					clientJourneyRequestDto.getArrivalPlace().getId(),
-					PlaceType.valueOf(clientJourneyRequestDto.getArrivalPlace().getType()), locales);
+				Map<String, String> arrivalPlaceNames = loadPlaceNamesPort.loadPlaceNames(
+						clientJourneyRequestDto.getArrivalPlace().getId(),
+						PlaceType.valueOf(clientJourneyRequestDto.getArrivalPlace().getType()), locales);
 
-			requestSendingPushNotifications(notifInfo, departurePlaceNames, arrivalPlaceNames,
-					clientJourneyRequestDto.getDateTime());
+				requestSendingPushNotifications(notifInfo, departurePlaceNames, arrivalPlaceNames,
+						clientJourneyRequestDto.getDateTime());
 
+			}
+			cancelJourneyRequestPort.cancelJourneyRequest(journeyRequestId);
 		}
-		cancelJourneyRequestPort.cancelJourneyRequest(journeyRequestId);
+
 	}
 
 	private boolean requestSendingPushNotifications(Set<TransporterNotificationInfo> notifInfo,

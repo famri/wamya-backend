@@ -8,8 +8,10 @@ import java.util.stream.Collectors;
 
 import com.excentria_it.wamya.application.port.in.CreateDiscussionUseCase.CreateDiscussionCommand;
 import com.excentria_it.wamya.application.port.in.CreateDiscussionUseCase.CreateDiscussionCommand.CreateDiscussionCommandBuilder;
-import com.excentria_it.wamya.application.port.in.FindDiscussionUseCase.FindDiscussionCommand;
-import com.excentria_it.wamya.application.port.in.FindDiscussionUseCase.FindDiscussionCommand.FindDiscussionCommandBuilder;
+import com.excentria_it.wamya.application.port.in.FindDiscussionUseCase.FindDiscussionByClientIdAndTransporterIdCommand;
+import com.excentria_it.wamya.application.port.in.FindDiscussionUseCase.FindDiscussionByClientIdAndTransporterIdCommand.FindDiscussionByClientIdAndTransporterIdCommandBuilder;
+import com.excentria_it.wamya.application.port.in.FindDiscussionUseCase.FindDiscussionByIdCommand;
+import com.excentria_it.wamya.application.port.in.FindDiscussionUseCase.FindDiscussionByIdCommand.FindDiscussionByIdCommandBuilder;
 import com.excentria_it.wamya.application.port.in.LoadDiscussionsUseCase.LoadDiscussionsCommand;
 import com.excentria_it.wamya.application.port.in.LoadDiscussionsUseCase.LoadDiscussionsCommand.LoadDiscussionsCommandBuilder;
 import com.excentria_it.wamya.common.FilterCriterion;
@@ -64,7 +66,7 @@ public class DiscussionTestData {
 
 		return loadDiscussionsOutputList.get(0);
 	}
-	
+
 	public static LoadDiscussionsOutput defaultTransporterLoadDiscussionsOutput() {
 
 		return loadDiscussionsOutputList.get(0);
@@ -109,9 +111,13 @@ public class DiscussionTestData {
 				.filteringCriterion(new FilterCriterion("active", "true"));
 	}
 
-	public static FindDiscussionCommandBuilder defaultFindDiscussionCommandBuilder() {
-		return FindDiscussionCommand.builder().clientId(100L).transporterId(200L).username("client1@gmail.com");
+	public static FindDiscussionByClientIdAndTransporterIdCommandBuilder defaultFindDiscussionByClientIdAndTransporterIdCommandBuilder() {
+		return FindDiscussionByClientIdAndTransporterIdCommand.builder().clientId(100L).transporterId(200L)
+				.username("client1@gmail.com");
+	}
 
+	public static FindDiscussionByIdCommandBuilder defaultFindDiscussionByIdCommandBuilder() {
+		return FindDiscussionByIdCommand.builder().discussionId(100L).username("client1@gmail.com");
 	}
 
 	public static CreateDiscussionCommandBuilder defaultCreateDiscussionCommandBuilder() {
@@ -137,7 +143,7 @@ public class DiscussionTestData {
 	}
 
 	public static LoadMessagesOutputResult defaultLoadMessagesOutputResult() {
-		LoadMessagesOutputResult result = new LoadMessagesOutputResult(1,2,0,25,false, clientDiscussion1Messages);
+		LoadMessagesOutputResult result = new LoadMessagesOutputResult(1, 2, 0, 25, false, clientDiscussion1Messages);
 		return result;
 	}
 

@@ -137,10 +137,23 @@ public class DiscussionsPersistenceAdapter implements LoadDiscussionsPort, Creat
 
 	}
 
-	@Override
-	public Optional<LoadDiscussionsOutput> loadDiscusssion(Long clientOauthId, Long transporterOauthId,
-			boolean isTransporter) {
 
+
+	@Override
+	public Optional<LoadDiscussionsOutput> loadDiscussionById(Long discussionId) {
+		Optional<DiscussionJpaEntity> discussionOptional = discussionsRepository.findById(discussionId);
+		if (discussionOptional.isEmpty())
+			return Optional.empty();
+		return Optional.of(discussionMapper.mapToLoadDiscussionsOutput(discussionOptional.get()));
+	}
+
+	public enum DiscussionFilterField {
+		ACTIVE;
+	}
+
+	@Override
+	public Optional<LoadDiscussionsOutput> loadDiscussionByClientIdAndTransporterId(Long clientOauthId,
+			Long transporterOauthId) {
 		Optional<DiscussionJpaEntity> discussionOptional = discussionsRepository
 				.findByClient_OauthIdAndTransporter_OauthId(clientOauthId, transporterOauthId);
 
@@ -148,11 +161,10 @@ public class DiscussionsPersistenceAdapter implements LoadDiscussionsPort, Creat
 			return Optional.empty();
 
 		return Optional.of(discussionMapper.mapToLoadDiscussionsOutput(discussionOptional.get()));
-
 	}
 
 	@Override
-	public LoadDiscussionsOutput createDiscussion(Long clientOauthId, Long transporterOauthId, boolean isTransporter) {
+	public LoadDiscussionsOutput createDiscussion(Long clientOauthId, Long transporterOauthId) {
 
 		Optional<ClientJpaEntity> clientAccount = clientRepository.findByOauthId(clientOauthId);
 		if (clientAccount.isEmpty()) {
@@ -167,17 +179,7 @@ public class DiscussionsPersistenceAdapter implements LoadDiscussionsPort, Creat
 
 		return discussionMapper.mapToLoadDiscussionsOutput(discussionsRepository.save(discussionJpaEntity));
 	}
+	
 
-	@Override
-	public Optional<LoadDiscussionsOutput> loadDiscussionById(Long discussionId) {
-		Optional<DiscussionJpaEntity> discussionOptional = discussionsRepository.findById(discussionId);
-		if (discussionOptional.isEmpty())
-			return Optional.empty();
-		return Optional.of(discussionMapper.mapToLoadDiscussionsOutput(discussionOptional.get()));
-	}
-
-	public enum DiscussionFilterField {
-		ACTIVE;
-	}
 
 }
