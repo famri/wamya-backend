@@ -96,7 +96,7 @@ public class ChatMessageService implements SendMessageUseCase, LoadMessagesComma
 
 		sendMessagePort.sendMessage(toReceiverMessageDto, loadDiscussionsOutput.getId(), receiverUsername);
 
-		sendMessagePort.sendMessage(toSenderMessageDto, loadDiscussionsOutput.getId(), username);
+		//sendMessagePort.sendMessage(toSenderMessageDto, loadDiscussionsOutput.getId(), username);
 
 		return toSenderMessageDto;
 	}
@@ -132,11 +132,12 @@ public class ChatMessageService implements SendMessageUseCase, LoadMessagesComma
 				command.getPageNumber(), command.getPageSize(), command.getSortingCriterion());
 
 		List<Long> messagesIds = messagesOutputResult.getContent().stream()
-				.filter(m -> !m.getRead() && m.getAuthorId().equals(userAccountOptional.get().getOauthId()))
+				.filter(m -> !m.getRead() && !m.getAuthorId().equals(userAccountOptional.get().getOauthId()))
 				.map(m -> m.getId()).collect(Collectors.toList());
 		if (!messagesIds.isEmpty()) {
-
+			
 			updateMessagePort.updateRead(messagesIds, true);
+			
 			if (isTransporter) {
 				sendMessageNotificationPort.sendReadNotification(loadDiscussionsOutput.getClient().getEmail(),
 						command.getDiscussionId(), messagesIds);

@@ -105,15 +105,15 @@ public class ChatMessageServiceTests {
 				dateTimeHelper.systemToUserLocalDateTime(messageOutput.getDateTime(), receiverZoneId),
 				messageOutput.getRead());
 
-		MessageDto toSenderMessageDto = new MessageDto(messageOutput.getId(), messageOutput.getAuthorId(),
-				messageOutput.getContent(),
-				dateTimeHelper.systemToUserLocalDateTime(messageOutput.getDateTime(), senderZoneId),
-				messageOutput.getRead());
+//		MessageDto toSenderMessageDto = new MessageDto(messageOutput.getId(), messageOutput.getAuthorId(),
+//				messageOutput.getContent(),
+//				dateTimeHelper.systemToUserLocalDateTime(messageOutput.getDateTime(), senderZoneId),
+//				messageOutput.getRead());
 
 		then(sendMessagePort).should(times(1)).sendMessage(eq(toReceiverMessageDto), eq(loadDiscussionsOutput.getId()),
 				eq(loadDiscussionsOutput.getTransporter().getEmail()));
-		then(sendMessagePort).should(times(1)).sendMessage(eq(toSenderMessageDto), eq(loadDiscussionsOutput.getId()),
-				eq(clientUserAccount.getEmail()));
+//		then(sendMessagePort).should(times(1)).sendMessage(eq(toSenderMessageDto), eq(loadDiscussionsOutput.getId()),
+//				eq(clientUserAccount.getEmail()));
 
 		assertEquals(messageOutput.getId(), messageDto.getId());
 		assertEquals(messageOutput.getAuthorId(), messageDto.getAuthorId());
@@ -163,15 +163,15 @@ public class ChatMessageServiceTests {
 				dateTimeHelper.systemToUserLocalDateTime(messageOutput.getDateTime(), receiverZoneId),
 				messageOutput.getRead());
 
-		MessageDto toSenderMessageDto = new MessageDto(messageOutput.getId(), messageOutput.getAuthorId(),
-				messageOutput.getContent(),
-				dateTimeHelper.systemToUserLocalDateTime(messageOutput.getDateTime(), senderZoneId),
-				messageOutput.getRead());
+//		MessageDto toSenderMessageDto = new MessageDto(messageOutput.getId(), messageOutput.getAuthorId(),
+//				messageOutput.getContent(),
+//				dateTimeHelper.systemToUserLocalDateTime(messageOutput.getDateTime(), senderZoneId),
+//				messageOutput.getRead());
 
 		then(sendMessagePort).should(times(1)).sendMessage(eq(toReceiverMessageDto), eq(loadDiscussionsOutput.getId()),
 				eq(loadDiscussionsOutput.getClient().getEmail()));
-		then(sendMessagePort).should(times(1)).sendMessage(eq(toSenderMessageDto), eq(loadDiscussionsOutput.getId()),
-				eq(transporterUserAccount.getEmail()));
+//		then(sendMessagePort).should(times(1)).sendMessage(eq(toSenderMessageDto), eq(loadDiscussionsOutput.getId()),
+//				eq(transporterUserAccount.getEmail()));
 
 		assertEquals(messageOutput.getId(), messageDto.getId());
 		assertEquals(messageOutput.getAuthorId(), messageDto.getAuthorId());
@@ -324,7 +324,7 @@ public class ChatMessageServiceTests {
 		LoadMessagesResult result = chatMessageService.loadMessages(command);
 		// then
 		List<Long> messageIds = messagesOutputResult.getContent().stream()
-				.filter(m -> !m.getRead() && m.getAuthorId().equals(transporterUserAccount.getOauthId()))
+				.filter(m -> !m.getRead() && !m.getAuthorId().equals(transporterUserAccount.getOauthId()))
 				.map(m -> m.getId()).collect(Collectors.toList());
 
 		then(updateMessagePort).should(times(1)).updateRead(messageIds, true);
@@ -368,7 +368,7 @@ public class ChatMessageServiceTests {
 		LoadMessagesResult result = chatMessageService.loadMessages(command);
 		// then
 		List<Long> messageIds = messagesOutputResult.getContent().stream()
-				.filter(m -> !m.getRead() && m.getAuthorId().equals(clientUserAccount.getOauthId())).map(m -> m.getId())
+				.filter(m -> !m.getRead() && !m.getAuthorId().equals(clientUserAccount.getOauthId())).map(m -> m.getId())
 				.collect(Collectors.toList());
 
 		then(updateMessagePort).should(times(1)).updateRead(messageIds, true);
