@@ -23,12 +23,12 @@ import com.excentria_it.wamya.domain.ReadUpdate;
 import com.excentria_it.wamya.test.data.common.TestConstants;
 
 @ExtendWith(MockitoExtension.class)
-public class ChatMessageAdapterTests {
+public class SimpChatMessageAdapterTests {
 	@Mock
 	private SimpMessageSendingOperations simpMessagingTemplate;
 
 	@InjectMocks
-	private ChatMessageAdapter chatMessageAdapter;
+	private SimpChatMessageAdapter chatMessageAdapter;
 
 	@Test
 	void testSendMessage() {
@@ -36,7 +36,7 @@ public class ChatMessageAdapterTests {
 		ArgumentCaptor<ChatMessage> chatMessageCaptor = ArgumentCaptor.forClass(ChatMessage.class);
 
 		MessageDto messageDto = new MessageDto(1L, 1L, "some message",
-				Instant.now().atZone(ZoneId.of("Africa/Tunis")).toLocalDateTime(), false);
+				Instant.now().atZone(ZoneId.of("Africa/Tunis")).toLocalDateTime(), false, true);
 		// When
 		chatMessageAdapter.sendMessage(messageDto, 1L, TestConstants.DEFAULT_EMAIL);
 		// Then

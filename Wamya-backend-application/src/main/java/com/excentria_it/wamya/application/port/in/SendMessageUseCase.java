@@ -11,14 +11,14 @@ import lombok.NoArgsConstructor;
 
 public interface SendMessageUseCase {
 
-	MessageDto sendMessage(SendMessageCommand command, Long discussionId, String username);
+	MessageDto sendMessage(SendMessageCommand command, Long discussionId, String senderUsername);
 
 	@Data
 	@NoArgsConstructor
 	@AllArgsConstructor
 	@Builder
-	class SendMessageCommand {
 
+	class SendMessageCommand {
 		@NotEmpty
 		private String content;
 

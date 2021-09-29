@@ -15,9 +15,9 @@ import com.excentria_it.wamya.domain.LoadMessagesResult;
 public class MessageTestData {
 
 	private static final List<MessageDto> messages = List.of(
-			new MessageDto(1L, 1L, "Hello!", Instant.now().atZone(ZoneId.of("Africa/Tunis")).toLocalDateTime(), true),
+			new MessageDto(1L, 1L, "Hello!", Instant.now().atZone(ZoneId.of("Africa/Tunis")).toLocalDateTime(), true, true),
 			new MessageDto(2L, 2L, "Hello Sir!How can I help you?",
-					Instant.now().atZone(ZoneId.of("Africa/Tunis")).toLocalDateTime(), false));
+					Instant.now().atZone(ZoneId.of("Africa/Tunis")).toLocalDateTime(), false, true));
 
 	public static SendMessageCommandBuilder defaultSendMessageCommandBuilder() {
 		return SendMessageCommand.builder().content("Hello!");

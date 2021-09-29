@@ -53,6 +53,8 @@ public class UserAccount {
 
 	private Map<String, String> preferences;
 
+	private String deviceRegistrationToken;
+
 	@NoArgsConstructor
 	@AllArgsConstructor
 	@Data

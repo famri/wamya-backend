@@ -35,6 +35,7 @@ public class LoadDiscussionsDto {
 		private String content;
 		private LocalDateTime dateTime;
 		private Boolean read;
+		private Boolean sent;
 	}
 
 	@AllArgsConstructor

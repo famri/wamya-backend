@@ -56,9 +56,8 @@ public class PushRequestReceiverImpl implements PushRequestReceiver {
 			// See documentation on defining a message payload.
 			Message notification = Message.builder()
 					.setNotification(Notification.builder().setTitle("FRETTO").setBody(templateContent).build())
-					.putData("route", "/")
 
-					.setToken(registrationToken).build();
+					.putAllData(message.getData()).setToken(registrationToken).build();
 
 			// Send a message to the device corresponding to the provided
 			// registration token.

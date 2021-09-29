@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import com.excentria_it.wamya.application.port.out.LoadUserPreferencesPort;
 import com.excentria_it.wamya.domain.UserPreference;
+import com.excentria_it.wamya.domain.UserPreferenceKey;
 
 import lombok.NoArgsConstructor;
 
@@ -21,11 +22,11 @@ public class DateTimeHelper {
 	@Autowired
 	private LoadUserPreferencesPort loadUserPreferencesPort;
 
-	private static final String USER_TIME_ZONE_KEY = "timezone";
+
 
 	public ZoneId findUserZoneId(String username) {
 		Optional<UserPreference> userPreferenceOptional = loadUserPreferencesPort
-				.loadUserPreferenceByKeyAndUsername(USER_TIME_ZONE_KEY, username);
+				.loadUserPreferenceByKeyAndUsername(UserPreferenceKey.TIMEZONE, username);
 		if (userPreferenceOptional.isEmpty())
 			return null;
 
@@ -34,7 +35,7 @@ public class DateTimeHelper {
 	
 	public ZoneId findUserZoneId(Long userId) {
 		Optional<UserPreference> userPreferenceOptional = loadUserPreferencesPort
-				.loadUserPreferenceByKeyAndUserId(USER_TIME_ZONE_KEY, userId);
+				.loadUserPreferenceByKeyAndUserId(UserPreferenceKey.TIMEZONE, userId);
 		if (userPreferenceOptional.isEmpty())
 			return null;
 

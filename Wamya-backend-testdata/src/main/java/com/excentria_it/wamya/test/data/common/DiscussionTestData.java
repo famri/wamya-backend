@@ -82,7 +82,7 @@ public class DiscussionTestData {
 						loadDiscussionsOutputList.get(0).getLatestMessage().getContent(),
 						loadDiscussionsOutputList.get(0).getLatestMessage().getDateTime()
 								.atZone(ZoneId.of("Africa/Tunis")).toLocalDateTime(),
-						loadDiscussionsOutputList.get(0).getLatestMessage().getRead()),
+						loadDiscussionsOutputList.get(0).getLatestMessage().getRead(), true),
 				new InterlocutorDto(loadDiscussionsOutputList.get(0).getClient().getId(),
 						loadDiscussionsOutputList.get(0).getClient().getName(),
 						loadDiscussionsOutputList.get(0).getClient().getMobileNumber(),
@@ -134,7 +134,7 @@ public class DiscussionTestData {
 										ldo.getLatestMessage().getContent(),
 										ldo.getLatestMessage().getDateTime().atZone(ZoneId.of("Africa/Tunis"))
 												.toLocalDateTime(),
-										ldo.getLatestMessage().getRead()),
+										ldo.getLatestMessage().getRead(), true),
 								new InterlocutorDto(ldo.getClient().getId(), ldo.getClient().getName(),
 										ldo.getClient().getMobileNumber(), ldo.getClient().getPhotoUrl()),
 								new InterlocutorDto(ldo.getTransporter().getId(), ldo.getTransporter().getName(),

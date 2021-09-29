@@ -30,6 +30,7 @@ public class UserAccountTestData {
 	public static UserAccountBuilder defaultClientUserAccountBuilder() {
 		Map<String, String> preferences = new HashMap<>();
 		preferences.put("timezone", "Africa/Tunis");
+		preferences.put("locale", "fr_FR");
 		return UserAccount.builder().id(1L).isTransporter(false).genderId(1L).firstname("client1").oauthId(100L)
 				.lastname("client1").dateOfBirth(DEFAULT_DATE_OF_BIRTH).email("client1@gmail.com")
 				.emailValidationCode(DEFAULT_VALIDATION_CODE).isValidatedEmail(true)
@@ -42,7 +43,8 @@ public class UserAccountTestData {
 
 	public static UserAccountBuilder defaultTransporterUserAccountBuilder() {
 		Map<String, String> preferences = new HashMap<>();
-		preferences.put("timezone", "Africa/Tunis");
+		preferences.put("timezone", "Europe/Helsinki");
+		preferences.put("locale", "fr_FR");
 		return UserAccount.builder().id(2L).isTransporter(true).genderId(1L).firstname("transporter1").oauthId(200L)
 				.lastname("transporter1").dateOfBirth(DEFAULT_DATE_OF_BIRTH).email("transporter1@gmail.com")
 				.emailValidationCode(DEFAULT_VALIDATION_CODE).isValidatedEmail(true)

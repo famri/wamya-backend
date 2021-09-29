@@ -2,6 +2,7 @@ package com.excentria_it.wamya.application.service;
 
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -13,12 +14,14 @@ import com.excentria_it.wamya.application.port.out.AddMessageToDiscussionPort;
 import com.excentria_it.wamya.application.port.out.LoadDiscussionsPort;
 import com.excentria_it.wamya.application.port.out.LoadMessagesPort;
 import com.excentria_it.wamya.application.port.out.LoadUserAccountPort;
+import com.excentria_it.wamya.application.port.out.MessagingPort;
 import com.excentria_it.wamya.application.port.out.SendMessageNotificationPort;
-import com.excentria_it.wamya.application.port.out.SendMessagePort;
 import com.excentria_it.wamya.application.port.out.UpdateMessagePort;
 import com.excentria_it.wamya.application.utils.DateTimeHelper;
 import com.excentria_it.wamya.application.utils.DiscussionUtils;
 import com.excentria_it.wamya.common.annotation.UseCase;
+import com.excentria_it.wamya.common.domain.PushMessage;
+import com.excentria_it.wamya.common.domain.PushTemplate;
 import com.excentria_it.wamya.common.exception.DiscussionNotFoundException;
 import com.excentria_it.wamya.common.exception.OperationDeniedException;
 import com.excentria_it.wamya.domain.LoadDiscussionsDto.MessageDto;
@@ -26,31 +29,39 @@ import com.excentria_it.wamya.domain.LoadDiscussionsOutput;
 import com.excentria_it.wamya.domain.LoadDiscussionsOutput.MessageOutput;
 import com.excentria_it.wamya.domain.LoadMessagesOutputResult;
 import com.excentria_it.wamya.domain.LoadMessagesResult;
+import com.excentria_it.wamya.domain.MessageNotification;
 import com.excentria_it.wamya.domain.UserAccount;
+import com.excentria_it.wamya.domain.UserPreferenceKey;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @UseCase
 @Transactional
 @RequiredArgsConstructor
+@Slf4j
 public class ChatMessageService implements SendMessageUseCase, LoadMessagesCommandUseCase {
 
 	private final LoadDiscussionsPort loadDiscussionsPort;
 	private final LoadUserAccountPort loadUserAccountPort;
 	private final AddMessageToDiscussionPort addMessageToDiscussionPort;
-	private final SendMessagePort sendMessagePort;
+	private final MessagingPort messagingPort;
 
 	private final LoadMessagesPort loadMessagesPort;
 	private final UpdateMessagePort updateMessagePort;
 	private final DateTimeHelper dateTimeHelper;
 	private final SendMessageNotificationPort sendMessageNotificationPort;
 
+	private final ObjectMapper mapper;
+
 	@Override
-	public MessageDto sendMessage(SendMessageCommand command, Long discussionId, String username) {
+	public MessageDto sendMessage(SendMessageCommand command, Long discussionId, String senderUsername) {
 
-		Optional<UserAccount> userAccountOptional = loadUserAccountPort.loadUserAccountByUsername(username);
+		Optional<UserAccount> senderAccountOptional = loadUserAccountPort.loadUserAccountByUsername(senderUsername);
 
-		Boolean isTransporter = userAccountOptional.get().getIsTransporter();
+		Boolean isTransporter = senderAccountOptional.get().getIsTransporter();
 
 		Optional<LoadDiscussionsOutput> loadDiscussionsOutputOptional = loadDiscussionsPort
 				.loadDiscussionById(discussionId);
@@ -72,33 +83,53 @@ public class ChatMessageService implements SendMessageUseCase, LoadMessagesComma
 
 		}
 
-		if ((isTransporter && !loadDiscussionsOutput.getTransporter().getId().equals(userAccountOptional.get().getOauthId()))
-				|| (!isTransporter
-						&& !loadDiscussionsOutput.getClient().getId().equals(userAccountOptional.get().getOauthId()))) {
+		if ((isTransporter
+				&& !loadDiscussionsOutput.getTransporter().getId().equals(senderAccountOptional.get().getOauthId()))
+				|| (!isTransporter && !loadDiscussionsOutput.getClient().getId()
+						.equals(senderAccountOptional.get().getOauthId()))) {
 			throw new OperationDeniedException("Discussion does not belong to user.");
 		}
 
-		ZoneId senderZoneId = dateTimeHelper.findUserZoneId(username);
-		ZoneId receiverZoneId = dateTimeHelper.findUserZoneId(receiverUsername);
+		Optional<UserAccount> receiverAccountOptional = loadUserAccountPort.loadUserAccountByUsername(receiverUsername);
+
+		ZoneId senderZoneId = ZoneId.of(senderAccountOptional.get().getPreferences().get(UserPreferenceKey.TIMEZONE));
+		ZoneId receiverZoneId = ZoneId
+				.of(receiverAccountOptional.get().getPreferences().get(UserPreferenceKey.TIMEZONE));
 
 		MessageOutput messageOutput = addMessageToDiscussionPort.addMessage(discussionId,
-				userAccountOptional.get().getOauthId(), command.getContent());
+				senderAccountOptional.get().getOauthId(), command.getContent());
 
-		MessageDto toReceiverMessageDto = new MessageDto(messageOutput.getId(), messageOutput.getAuthorId(),
-				messageOutput.getContent(),
-				dateTimeHelper.systemToUserLocalDateTime(messageOutput.getDateTime(), receiverZoneId),
-				messageOutput.getRead());
+		MessageDto.MessageDtoBuilder toReceiverMessageDtoBuilder = MessageDto.builder().id(messageOutput.getId())
+				.authorId(messageOutput.getAuthorId()).content(messageOutput.getContent())
+				.dateTime(dateTimeHelper.systemToUserLocalDateTime(messageOutput.getDateTime(), receiverZoneId))
+				.read(false);
 
-		MessageDto toSenderMessageDto = new MessageDto(messageOutput.getId(), messageOutput.getAuthorId(),
-				messageOutput.getContent(),
-				dateTimeHelper.systemToUserLocalDateTime(messageOutput.getDateTime(), senderZoneId),
-				messageOutput.getRead());
+		MessageDto.MessageDtoBuilder toSenderMessageDtoBuilder = MessageDto.builder().id(messageOutput.getId())
+				.authorId(messageOutput.getAuthorId()).content(messageOutput.getContent())
+				.dateTime(dateTimeHelper.systemToUserLocalDateTime(messageOutput.getDateTime(), senderZoneId))
+				.read(messageOutput.getRead());
 
-		sendMessagePort.sendMessage(toReceiverMessageDto, loadDiscussionsOutput.getId(), receiverUsername);
+		try {
+			String messageNotification = mapper.writeValueAsString(
+					new MessageNotification(toReceiverMessageDtoBuilder.sent(true).build(), discussionId));
 
-		//sendMessagePort.sendMessage(toSenderMessageDto, loadDiscussionsOutput.getId(), username);
+			PushMessage pushMessage = PushMessage.builder()
+					.to(receiverAccountOptional.get().getDeviceRegistrationToken())
+					.template(PushTemplate.MESSAGE_RECEIVED)
+					.params(Map.of(PushTemplate.MESSAGE_RECEIVED.getTemplateParams().get(0),
+							senderAccountOptional.get().getFirstname() + " "
+									+ senderAccountOptional.get().getLastname()))
+					.data(Map.of("type", "message", "content", messageNotification))
+					.language(receiverAccountOptional.get().getPreferences().get(UserPreferenceKey.LOCALE)).build();
 
-		return toSenderMessageDto;
+			messagingPort.sendPushMessage(pushMessage);
+
+			return toSenderMessageDtoBuilder.sent(true).build();
+		} catch (JsonProcessingException e) {
+			log.error("Exception converting object to json", e);
+			return toSenderMessageDtoBuilder.sent(false).build();
+		}
+
 	}
 
 	@Override
@@ -119,7 +150,8 @@ public class ChatMessageService implements SendMessageUseCase, LoadMessagesComma
 		LoadDiscussionsOutput loadDiscussionsOutput = loadDiscussionsOutputOptional.get();
 
 		// check that authenticated user is loading his own discussion messages
-		if ((isTransporter && !userAccountOptional.get().getOauthId().equals(loadDiscussionsOutput.getTransporter().getId()))
+		if ((isTransporter
+				&& !userAccountOptional.get().getOauthId().equals(loadDiscussionsOutput.getTransporter().getId()))
 				|| (!isTransporter
 						&& !userAccountOptional.get().getOauthId().equals(loadDiscussionsOutput.getClient().getId()))) {
 
@@ -135,9 +167,9 @@ public class ChatMessageService implements SendMessageUseCase, LoadMessagesComma
 				.filter(m -> !m.getRead() && !m.getAuthorId().equals(userAccountOptional.get().getOauthId()))
 				.map(m -> m.getId()).collect(Collectors.toList());
 		if (!messagesIds.isEmpty()) {
-			
+
 			updateMessagePort.updateRead(messagesIds, true);
-			
+
 			if (isTransporter) {
 				sendMessageNotificationPort.sendReadNotification(loadDiscussionsOutput.getClient().getEmail(),
 						command.getDiscussionId(), messagesIds);

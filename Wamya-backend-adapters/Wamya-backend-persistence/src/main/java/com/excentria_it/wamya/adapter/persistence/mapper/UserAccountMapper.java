@@ -66,7 +66,7 @@ public class UserAccountMapper {
 					userAccount.getReceiveNewsletter(),
 					userAccount.getCreationDateTime() != null ? userAccount.getCreationDateTime().toInstant()
 							: Instant.now(),
-					profileImage, preferences, identityDocument,null);
+					profileImage, preferences, identityDocument, null);
 		}
 
 	}
@@ -94,7 +94,8 @@ public class UserAccountMapper {
 				.creationDateTime(userAccountJpaEntity.getCreationDateTime().atZone(ZoneOffset.UTC))
 				.photoUrl(documentUrlResolver.resolveUrl(userAccountJpaEntity.getProfileImage().getId(),
 						userAccountJpaEntity.getProfileImage().getHash()))
-				.preferences(preferences).build();
+				.deviceRegistrationToken(userAccountJpaEntity.getDeviceRegistrationToken()).preferences(preferences)
+				.build();
 	}
 
 	public ProfileInfoDto mapToProfileInfoDto(UserAccountJpaEntity userAccount, String locale) {

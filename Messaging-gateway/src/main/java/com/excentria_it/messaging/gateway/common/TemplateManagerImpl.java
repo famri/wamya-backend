@@ -38,8 +38,8 @@ public class TemplateManagerImpl implements TemplateManager {
 			throw new IllegalStateException(String
 					.format("TemplateManager should be configured via configure() before calling loadTemplate()"));
 
-		String localeTemplateName = new StringBuilder(templateName).append("_").append(language).toString()
-				.toLowerCase();
+		String localeTemplateName = new StringBuilder(templateName.toLowerCase()).append("_").append(language)
+				.toString();
 
 		String templateSubDir = new StringBuilder(templatesBaseDir).append(File.separator)
 				.append(templateType.name().toLowerCase()).toString();

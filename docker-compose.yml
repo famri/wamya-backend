@@ -159,6 +159,7 @@ services:
       - RABBITMQ_PASS=dev
       - REDIS_PASSWORD=changeme
       
+      
     volumes:
       - file-storage:/file-storage       
     entrypoint: ["java", "-Djava.security.egd=file:/dev/./urandom", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:9090", "-Xms256m","-Xmx768m", "-jar", "/wamya-backend.jar"]
@@ -265,7 +266,7 @@ services:
       - SMS_GATEWAY_PASSWORD=user
       - RABBITMQ_USER=dev
       - RABBITMQ_PASS=dev
-      - GOOGLE_APPLICATION_CREDENTIALS=/credentials/fretto-fe591-firebase-adminsdk-tz5e1-bed5344cdb.json 
+      - GOOGLE_APPLICATION_CREDENTIALS=/credentials/service-account-file.json
     entrypoint: ["java", "-Djava.security.egd=file:/dev/./urandom", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:9595", "-Xms128m","-Xmx250m", "-jar", "/messaging-gateway.jar"]
     depends_on:
       - "kannel"

@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 
 @WebSocketAdapter
 @RequiredArgsConstructor
-public class ChatMessageAdapter implements SendMessagePort, SendMessageNotificationPort {
+public class SimpChatMessageAdapter implements SendMessagePort, SendMessageNotificationPort {
 
 	private final SimpMessageSendingOperations simpMessagingTemplate;
 

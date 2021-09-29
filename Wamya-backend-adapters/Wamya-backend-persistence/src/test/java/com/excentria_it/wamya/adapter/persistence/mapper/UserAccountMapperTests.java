@@ -72,7 +72,9 @@ public class UserAccountMapperTests {
 		assertEquals(userAccount.getIsValidatedMobileNumber(), userAccountJpaEntity.getIsValidatedMobileNumber());
 
 		assertEquals(userAccount.getReceiveNewsletter(), userAccountJpaEntity.getReceiveNewsletter());
-
+		
+		assertEquals(userAccount.getDeviceRegistrationToken(), userAccountJpaEntity.getDeviceRegistrationToken());
+		
 		assertTrue(userAccount.getCreationDateTime()
 				.isEqual(userAccountJpaEntity.getCreationDateTime().atZone(ZoneOffset.UTC)));
 
@@ -121,7 +123,9 @@ public class UserAccountMapperTests {
 		assertEquals(userAccount.getIsValidatedMobileNumber(), userAccountJpaEntity.getIsValidatedMobileNumber());
 
 		assertEquals(userAccount.getReceiveNewsletter(), userAccountJpaEntity.getReceiveNewsletter());
-
+		
+		assertEquals(userAccount.getDeviceRegistrationToken(), userAccountJpaEntity.getDeviceRegistrationToken());
+		
 		assertTrue(userAccount.getCreationDateTime()
 				.isEqual(userAccountJpaEntity.getCreationDateTime().atZone(ZoneOffset.UTC)));
 
@@ -211,7 +215,9 @@ public class UserAccountMapperTests {
 		assertEquals(userAccount.getIsValidatedMobileNumber(), userAccountJpaEntity.getIsValidatedMobileNumber());
 
 		assertEquals(userAccount.getReceiveNewsletter(), userAccountJpaEntity.getReceiveNewsletter());
-
+		
+		assertEquals(userAccount.getDeviceRegistrationToken(), userAccountJpaEntity.getDeviceRegistrationToken());
+		
 		assertTrue(userAccount.getCreationDateTime()
 				.isEqual(userAccountJpaEntity.getCreationDateTime().atZone(ZoneOffset.UTC)));
 

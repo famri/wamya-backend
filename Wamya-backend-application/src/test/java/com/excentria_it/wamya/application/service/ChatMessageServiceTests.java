@@ -10,6 +10,7 @@ import static org.mockito.Mockito.*;
 
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -28,11 +29,13 @@ import com.excentria_it.wamya.application.port.out.AddMessageToDiscussionPort;
 import com.excentria_it.wamya.application.port.out.LoadDiscussionsPort;
 import com.excentria_it.wamya.application.port.out.LoadMessagesPort;
 import com.excentria_it.wamya.application.port.out.LoadUserAccountPort;
+import com.excentria_it.wamya.application.port.out.MessagingPort;
 import com.excentria_it.wamya.application.port.out.SendMessageNotificationPort;
-import com.excentria_it.wamya.application.port.out.SendMessagePort;
 import com.excentria_it.wamya.application.port.out.UpdateMessagePort;
 import com.excentria_it.wamya.application.utils.DateTimeHelper;
 import com.excentria_it.wamya.application.utils.DiscussionUtils;
+import com.excentria_it.wamya.common.domain.PushMessage;
+import com.excentria_it.wamya.common.domain.PushTemplate;
 import com.excentria_it.wamya.common.exception.DiscussionNotFoundException;
 import com.excentria_it.wamya.common.exception.OperationDeniedException;
 import com.excentria_it.wamya.domain.LoadDiscussionsDto.MessageDto;
@@ -40,7 +43,11 @@ import com.excentria_it.wamya.domain.LoadDiscussionsOutput;
 import com.excentria_it.wamya.domain.LoadDiscussionsOutput.MessageOutput;
 import com.excentria_it.wamya.domain.LoadMessagesOutputResult;
 import com.excentria_it.wamya.domain.LoadMessagesResult;
+import com.excentria_it.wamya.domain.MessageNotification;
 import com.excentria_it.wamya.domain.UserAccount;
+import com.excentria_it.wamya.domain.UserPreferenceKey;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @ExtendWith(MockitoExtension.class)
 public class ChatMessageServiceTests {
@@ -51,7 +58,7 @@ public class ChatMessageServiceTests {
 	@Mock
 	private AddMessageToDiscussionPort addMessageToDiscussionPort;
 	@Mock
-	private SendMessagePort sendMessagePort;
+	private MessagingPort messagingPort;
 	@Mock
 	private LoadMessagesPort loadMessagesPort;
 
@@ -63,32 +70,35 @@ public class ChatMessageServiceTests {
 	@Spy
 	private DateTimeHelper dateTimeHelper;
 
+	@Spy
+	private ObjectMapper mapper;
+
 	@InjectMocks
 	private ChatMessageService chatMessageService;
 
 	@Test
-	void givenClientUsername_WhenSendMessage_ThenReturnSentMessage() {
+	void givenClientUsername_WhenSendPushMessage_ThenReturnSentMessage() throws JsonProcessingException {
 		// given
 		SendMessageCommandBuilder commandBuilder = defaultSendMessageCommandBuilder();
 		SendMessageCommand command = commandBuilder.build();
 		UserAccount clientUserAccount = defaultClientUserAccountBuilder().build();
+		UserAccount transporterUserAccount = defaultTransporterUserAccountBuilder().build();
 
-		given(loadUserAccountPort.loadUserAccountByUsername(any(String.class)))
+		given(loadUserAccountPort.loadUserAccountByUsername(clientUserAccount.getEmail()))
 				.willReturn(Optional.of(clientUserAccount));
 
 		LoadDiscussionsOutput loadDiscussionsOutput = defaultClientLoadDiscussionsOutput();
 		given(loadDiscussionsPort.loadDiscussionById(any(Long.class))).willReturn(Optional.of(loadDiscussionsOutput));
 
+		given(loadUserAccountPort.loadUserAccountByUsername(loadDiscussionsOutput.getTransporter().getEmail()))
+				.willReturn(Optional.of(transporterUserAccount));
+
 		MessageOutput messageOutput = defaultClient1MessageOutput();
 		given(addMessageToDiscussionPort.addMessage(any(Long.class), any(Long.class), any(String.class)))
 				.willReturn(messageOutput);
 
-		ZoneId senderZoneId = ZoneId.of("Africa/Tunis");
-		ZoneId receiverZoneId = ZoneId.of("Europe/Helsinki");
-
-		doReturn(senderZoneId).when(dateTimeHelper).findUserZoneId(clientUserAccount.getEmail());
-
-		doReturn(receiverZoneId).when(dateTimeHelper).findUserZoneId(loadDiscussionsOutput.getTransporter().getEmail());
+		ZoneId senderZoneId = ZoneId.of(clientUserAccount.getPreferences().get(UserPreferenceKey.TIMEZONE));
+		ZoneId receiverZoneId = ZoneId.of(transporterUserAccount.getPreferences().get(UserPreferenceKey.TIMEZONE));
 
 		// when
 		MessageDto messageDto = chatMessageService.sendMessage(command, loadDiscussionsOutput.getId(),
@@ -96,6 +106,7 @@ public class ChatMessageServiceTests {
 		// then
 
 		then(loadUserAccountPort).should(times(1)).loadUserAccountByUsername(clientUserAccount.getEmail());
+		then(loadUserAccountPort).should(times(1)).loadUserAccountByUsername(transporterUserAccount.getEmail());
 		then(loadDiscussionsPort).should(times(1)).loadDiscussionById(loadDiscussionsOutput.getId());
 		then(addMessageToDiscussionPort).should(times(1)).addMessage(loadDiscussionsOutput.getId(),
 				clientUserAccount.getOauthId(), command.getContent());
@@ -103,17 +114,18 @@ public class ChatMessageServiceTests {
 		MessageDto toReceiverMessageDto = new MessageDto(messageOutput.getId(), messageOutput.getAuthorId(),
 				messageOutput.getContent(),
 				dateTimeHelper.systemToUserLocalDateTime(messageOutput.getDateTime(), receiverZoneId),
-				messageOutput.getRead());
+				messageOutput.getRead(), true);
 
-//		MessageDto toSenderMessageDto = new MessageDto(messageOutput.getId(), messageOutput.getAuthorId(),
-//				messageOutput.getContent(),
-//				dateTimeHelper.systemToUserLocalDateTime(messageOutput.getDateTime(), senderZoneId),
-//				messageOutput.getRead());
+		String messageNotification = mapper
+				.writeValueAsString(new MessageNotification(toReceiverMessageDto, loadDiscussionsOutput.getId()));
 
-		then(sendMessagePort).should(times(1)).sendMessage(eq(toReceiverMessageDto), eq(loadDiscussionsOutput.getId()),
-				eq(loadDiscussionsOutput.getTransporter().getEmail()));
-//		then(sendMessagePort).should(times(1)).sendMessage(eq(toSenderMessageDto), eq(loadDiscussionsOutput.getId()),
-//				eq(clientUserAccount.getEmail()));
+		PushMessage pushMessage = PushMessage.builder().to(clientUserAccount.getDeviceRegistrationToken())
+				.template(PushTemplate.MESSAGE_RECEIVED)
+				.params(Map.of(PushTemplate.MESSAGE_RECEIVED.getTemplateParams().get(0),
+						clientUserAccount.getFirstname() + " " + clientUserAccount.getLastname()))
+				.data(Map.of("type", "message", "content", messageNotification)).language("fr").build();
+
+		then(messagingPort).should(times(1)).sendPushMessage(eq(pushMessage));
 
 		assertEquals(messageOutput.getId(), messageDto.getId());
 		assertEquals(messageOutput.getAuthorId(), messageDto.getAuthorId());
@@ -122,31 +134,32 @@ public class ChatMessageServiceTests {
 				messageDto.getDateTime());
 
 		assertEquals(messageOutput.getRead(), messageDto.getRead());
+		assertEquals(true, messageDto.getSent());
 	}
 
 	@Test
-	void givenTransporterUsername_WhenSendMessage_ThenReturnSentMessage() {
+	void givenTransporterUsername_WhenSendPushMessage_ThenReturnSentMessage() throws JsonProcessingException {
 		// given
 		SendMessageCommandBuilder commandBuilder = defaultSendMessageCommandBuilder();
 		SendMessageCommand command = commandBuilder.build();
 		UserAccount transporterUserAccount = defaultTransporterUserAccountBuilder().build();
+		UserAccount clientUserAccount = defaultClientUserAccountBuilder().build();
 
-		given(loadUserAccountPort.loadUserAccountByUsername(any(String.class)))
+		given(loadUserAccountPort.loadUserAccountByUsername(eq(transporterUserAccount.getEmail())))
 				.willReturn(Optional.of(transporterUserAccount));
 
 		LoadDiscussionsOutput loadDiscussionsOutput = defaultClientLoadDiscussionsOutput();
 		given(loadDiscussionsPort.loadDiscussionById(any(Long.class))).willReturn(Optional.of(loadDiscussionsOutput));
 
+		given(loadUserAccountPort.loadUserAccountByUsername(eq(loadDiscussionsOutput.getClient().getEmail())))
+				.willReturn(Optional.of(clientUserAccount));
+
 		MessageOutput messageOutput = defaultTransporter1MessageOutput();
 		given(addMessageToDiscussionPort.addMessage(any(Long.class), any(Long.class), any(String.class)))
 				.willReturn(messageOutput);
 
-		ZoneId senderZoneId = ZoneId.of("Africa/Tunis");
-		ZoneId receiverZoneId = ZoneId.of("Europe/Helsinki");
-
-		doReturn(senderZoneId).when(dateTimeHelper).findUserZoneId(transporterUserAccount.getEmail());
-
-		doReturn(receiverZoneId).when(dateTimeHelper).findUserZoneId(loadDiscussionsOutput.getClient().getEmail());
+		ZoneId senderZoneId = ZoneId.of(transporterUserAccount.getPreferences().get(UserPreferenceKey.TIMEZONE));
+		ZoneId receiverZoneId = ZoneId.of(clientUserAccount.getPreferences().get(UserPreferenceKey.TIMEZONE));
 
 		// when
 		MessageDto messageDto = chatMessageService.sendMessage(command, loadDiscussionsOutput.getId(),
@@ -154,6 +167,7 @@ public class ChatMessageServiceTests {
 		// then
 
 		then(loadUserAccountPort).should(times(1)).loadUserAccountByUsername(transporterUserAccount.getEmail());
+		then(loadUserAccountPort).should(times(1)).loadUserAccountByUsername(clientUserAccount.getEmail());
 		then(loadDiscussionsPort).should(times(1)).loadDiscussionById(loadDiscussionsOutput.getId());
 		then(addMessageToDiscussionPort).should(times(1)).addMessage(loadDiscussionsOutput.getId(),
 				transporterUserAccount.getOauthId(), command.getContent());
@@ -161,17 +175,18 @@ public class ChatMessageServiceTests {
 		MessageDto toReceiverMessageDto = new MessageDto(messageOutput.getId(), messageOutput.getAuthorId(),
 				messageOutput.getContent(),
 				dateTimeHelper.systemToUserLocalDateTime(messageOutput.getDateTime(), receiverZoneId),
-				messageOutput.getRead());
+				messageOutput.getRead(), true);
 
-//		MessageDto toSenderMessageDto = new MessageDto(messageOutput.getId(), messageOutput.getAuthorId(),
-//				messageOutput.getContent(),
-//				dateTimeHelper.systemToUserLocalDateTime(messageOutput.getDateTime(), senderZoneId),
-//				messageOutput.getRead());
+		String messageNotification = mapper
+				.writeValueAsString(new MessageNotification(toReceiverMessageDto, loadDiscussionsOutput.getId()));
 
-		then(sendMessagePort).should(times(1)).sendMessage(eq(toReceiverMessageDto), eq(loadDiscussionsOutput.getId()),
-				eq(loadDiscussionsOutput.getClient().getEmail()));
-//		then(sendMessagePort).should(times(1)).sendMessage(eq(toSenderMessageDto), eq(loadDiscussionsOutput.getId()),
-//				eq(transporterUserAccount.getEmail()));
+		PushMessage pushMessage = PushMessage.builder().to(clientUserAccount.getDeviceRegistrationToken())
+				.template(PushTemplate.MESSAGE_RECEIVED)
+				.params(Map.of(PushTemplate.MESSAGE_RECEIVED.getTemplateParams().get(0),
+						transporterUserAccount.getFirstname() + " " + transporterUserAccount.getLastname()))
+				.data(Map.of("type", "message", "content", messageNotification)).language("fr").build();
+
+		then(messagingPort).should(times(1)).sendPushMessage(eq(pushMessage));
 
 		assertEquals(messageOutput.getId(), messageDto.getId());
 		assertEquals(messageOutput.getAuthorId(), messageDto.getAuthorId());
@@ -180,6 +195,58 @@ public class ChatMessageServiceTests {
 				messageDto.getDateTime());
 
 		assertEquals(messageOutput.getRead(), messageDto.getRead());
+		assertEquals(true, messageDto.getSent());
+	}
+
+	@Test
+	void givenClientUsernameAndJsonProcessingException_WhenSendPushMessage_ThenReturnNotSentMessage()
+			throws JsonProcessingException {
+		// given
+		SendMessageCommandBuilder commandBuilder = defaultSendMessageCommandBuilder();
+		SendMessageCommand command = commandBuilder.build();
+		UserAccount clientUserAccount = defaultClientUserAccountBuilder().build();
+		UserAccount transporterUserAccount = defaultTransporterUserAccountBuilder().build();
+
+		given(loadUserAccountPort.loadUserAccountByUsername(clientUserAccount.getEmail()))
+				.willReturn(Optional.of(clientUserAccount));
+
+		LoadDiscussionsOutput loadDiscussionsOutput = defaultClientLoadDiscussionsOutput();
+		given(loadDiscussionsPort.loadDiscussionById(any(Long.class))).willReturn(Optional.of(loadDiscussionsOutput));
+
+		given(loadUserAccountPort.loadUserAccountByUsername(loadDiscussionsOutput.getTransporter().getEmail()))
+				.willReturn(Optional.of(transporterUserAccount));
+
+		MessageOutput messageOutput = defaultClient1MessageOutput();
+		given(addMessageToDiscussionPort.addMessage(any(Long.class), any(Long.class), any(String.class)))
+				.willReturn(messageOutput);
+
+		ZoneId senderZoneId = ZoneId.of(clientUserAccount.getPreferences().get(UserPreferenceKey.TIMEZONE));
+		// ZoneId receiverZoneId =
+		// ZoneId.of(transporterUserAccount.getPreferences().get(UserPreferenceKey.TIMEZONE));
+
+		doThrow(JsonProcessingException.class).when(mapper).writeValueAsString(any(Object.class));
+
+		// when
+		MessageDto messageDto = chatMessageService.sendMessage(command, loadDiscussionsOutput.getId(),
+				clientUserAccount.getEmail());
+		// then
+
+		then(loadUserAccountPort).should(times(1)).loadUserAccountByUsername(clientUserAccount.getEmail());
+		then(loadUserAccountPort).should(times(1)).loadUserAccountByUsername(transporterUserAccount.getEmail());
+		then(loadDiscussionsPort).should(times(1)).loadDiscussionById(loadDiscussionsOutput.getId());
+		then(addMessageToDiscussionPort).should(times(1)).addMessage(loadDiscussionsOutput.getId(),
+				clientUserAccount.getOauthId(), command.getContent());
+
+		then(messagingPort).should(never()).sendPushMessage(any(PushMessage.class));
+
+		assertEquals(messageOutput.getId(), messageDto.getId());
+		assertEquals(messageOutput.getAuthorId(), messageDto.getAuthorId());
+		assertEquals(messageOutput.getContent(), messageDto.getContent());
+		assertEquals(dateTimeHelper.systemToUserLocalDateTime(messageOutput.getDateTime(), senderZoneId),
+				messageDto.getDateTime());
+
+		assertEquals(messageOutput.getRead(), messageDto.getRead());
+		assertEquals(false, messageDto.getSent());
 	}
 
 	@Test
@@ -368,8 +435,8 @@ public class ChatMessageServiceTests {
 		LoadMessagesResult result = chatMessageService.loadMessages(command);
 		// then
 		List<Long> messageIds = messagesOutputResult.getContent().stream()
-				.filter(m -> !m.getRead() && !m.getAuthorId().equals(clientUserAccount.getOauthId())).map(m -> m.getId())
-				.collect(Collectors.toList());
+				.filter(m -> !m.getRead() && !m.getAuthorId().equals(clientUserAccount.getOauthId()))
+				.map(m -> m.getId()).collect(Collectors.toList());
 
 		then(updateMessagePort).should(times(1)).updateRead(messageIds, true);
 
