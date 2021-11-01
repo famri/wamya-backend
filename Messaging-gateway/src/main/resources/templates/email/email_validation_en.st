@@ -73,7 +73,7 @@
 
 <!-- HIDDEN PREHEADER TEXT -->
 <div style="display: none; font-size: 1px; color: #fefefe; line-height: 1px; font-family: 'Lato', Helvetica, Arial, sans-serif; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden;">
-    Nous sommes excité de vous avoir ici! Préparez vous à explorer votre nouveau compte!
+    Nous sommes excitï¿½ de vous avoir ici! Prï¿½parez vous ï¿½ explorer votre nouveau compte!
 </div>
 
 <table border="0" cellpadding="0" cellspacing="0" width="100%">
@@ -135,7 +135,7 @@
               <!-- COPY -->
               <tr>
                 <td bgcolor="#ffffff" align="left" style="padding: 20px 30px 40px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;" mc:edit="lead">
-                  <p style="margin: 0;">Nous sommes excité de vous avoir ici! Préparez vous à explorer votre nouveau compte!. D'abord, vous devez valider votre adresse email. Juste cliquez sur le bouton suivant.</p>
+                  <p style="margin: 0;">Nous sommes excitï¿½ de vous avoir ici! Prï¿½parez vous ï¿½ explorer votre nouveau compte!. D'abord, vous devez valider votre adresse email. Juste cliquez sur le bouton suivant.</p>
                 </td>
               </tr>
               <!-- BULLETPROOF BUTTON -->
@@ -146,7 +146,7 @@
                       <td bgcolor="#ffffff" align="center" style="padding: 20px 30px 60px 30px;">
                         <table border="0" cellspacing="0" cellpadding="0">
                           <tr>
-                              <td align="center" style="border-radius: 3px;" bgcolor="#01B2D4" mc:edit="cta button"><a href="https://litmus.com" target="_blank" style="font-size: 20px; font-family: Helvetica, Arial, sans-serif; color: #ffffff; text-decoration: none; color: #ffffff; text-decoration: none; padding: 15px 25px; border-radius: 2px; border: 1px solid #01B2D4; display: inline-block;">Valider mon email</a></td>
+                              <td align="center" style="border-radius: 3px;" bgcolor="#01B2D4" mc:edit="cta button"><a href="$validation_url$" target="_blank" style="font-size: 20px; font-family: Helvetica, Arial, sans-serif; color: #ffffff; text-decoration: none; color: #ffffff; text-decoration: none; padding: 15px 25px; border-radius: 2px; border: 1px solid #01B2D4; display: inline-block;">Valider mon email</a></td>
                           </tr>
                         </table>
                       </td>
@@ -157,7 +157,7 @@
               <!-- COPY -->
               <tr>
                 <td bgcolor="#ffffff" align="left" style="padding: 0px 30px 0px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;" mc:edit="copy block 2">
-                  <p style="margin: 0;">Si le bouton précédent ne marche pas, copiez et coller le lien suivant dans votre naviagateur:</p>
+                  <p style="margin: 0;">Si le bouton prï¿½cï¿½dent ne marche pas, copiez et coller le lien suivant dans votre naviagateur:</p>
                 </td>
               </tr>
               <!-- COPY -->
@@ -169,13 +169,13 @@
               <!-- COPY -->
               <tr>
                 <td bgcolor="#ffffff" align="left" style="padding: 0px 30px 20px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;" mc:edit="copy block 3">
-                  <p style="margin: 0;">Si vous avez des questions, contactez nous. Nous sommes toujours prêt à vous aider!</p>
+                  <p style="margin: 0;">Si vous avez des questions, contactez nous. Nous sommes toujours prï¿½t ï¿½ vous aider!</p>
                 </td>
               </tr>
               <!-- COPY -->
               <tr>
                 <td bgcolor="#ffffff" align="left" style="padding: 0px 30px 40px 30px; border-radius: 0px 0px 4px 4px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;" mc:edit="copy block 4">
-                  <p style="margin: 0;">À bientôt!,<br>L&rsquo;équipe Wamya</p>
+                  <p style="margin: 0;">ï¿½ bientï¿½t!,<br>L&rsquo;ï¿½quipe Wamya</p>
                 </td>
               </tr>
             </table>
@@ -199,7 +199,7 @@
                 <tr>
                   <td bgcolor="#FFECD1" align="center" style="padding: 30px 30px 30px 30px; border-radius: 4px 4px 4px 4px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;" mc:edit="support copy">
                     <h2 style="font-size: 20px; font-weight: 400; color: #111111; margin: 0;">Besoin d'aide?</h2>
-                    <p style="margin: 0;"><a href="http://www.wamya.com" target="_blank" style="color: #01B2D4;">Nous sommes prêt à vous assister</a></p>
+                    <p style="margin: 0;"><a href="http://www.wamya.com" target="_blank" style="color: #01B2D4;">Nous sommes prï¿½t ï¿½ vous assister</a></p>
                   </td>
                 </tr>
             </table>
