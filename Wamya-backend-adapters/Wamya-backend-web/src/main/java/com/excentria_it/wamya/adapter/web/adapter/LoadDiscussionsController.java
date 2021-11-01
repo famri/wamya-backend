@@ -6,7 +6,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,13 +26,12 @@ import lombok.RequiredArgsConstructor;
 @WebAdapter
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 @RequestMapping(path = "/users", produces = MediaType.APPLICATION_JSON_VALUE)
 public class LoadDiscussionsController {
 
 	private final LoadDiscussionsUseCase loadDiscussionsUseCase;
 	private final ValidationHelper validationHelper;
-	
+
 	@GetMapping(path = "/me/discussions")
 	@ResponseStatus(HttpStatus.OK)
 	public LoadDiscussionsResult loadDiscussions(@RequestParam(name = "page", defaultValue = "0") Integer pageNumber,
@@ -47,7 +45,7 @@ public class LoadDiscussionsController {
 		LoadDiscussionsCommand command = LoadDiscussionsCommand.builder().username(principal.getName())
 				.pageNumber(pageNumber).pageSize(pageSize).sortingCriterion(sortingCriterion)
 				.filteringCriterion(filteringCriterion).build();
-		
+
 		validationHelper.validateInput(command);
 
 		return loadDiscussionsUseCase.loadDiscussions(command);

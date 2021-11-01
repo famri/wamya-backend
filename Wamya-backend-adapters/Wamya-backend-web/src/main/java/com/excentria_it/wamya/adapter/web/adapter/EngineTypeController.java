@@ -6,7 +6,6 @@ import java.util.Locale;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -23,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 @WebAdapter
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 @RequestMapping(path = "/engine-types", produces = MediaType.APPLICATION_JSON_VALUE)
 
 public class EngineTypeController {
