@@ -31,7 +31,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		// TODO for production enable csrf
 		// @formatter:off
-		http.csrf().disable().cors().and().httpBasic().disable().formLogin().disable().sessionManagement()
+		http.csrf().disable().cors().disable().httpBasic().disable().formLogin().disable().sessionManagement()
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests(authz -> authz
 						.antMatchers("/actuator/**", "/content/**").permitAll()
 						.antMatchers(HttpMethod.POST, "/login/**", "/accounts/**").permitAll()
@@ -99,7 +99,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 		return bearerTokenResolver;
 	}
 
-	@Bean
+	//@Bean
 	CorsConfigurationSource corsConfigurationSource() {
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
