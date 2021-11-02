@@ -51,7 +51,7 @@ public class CreateJourneyRequestService implements CreateJourneyRequestUseCase 
 	public CreateJourneyRequestDto createJourneyRequest(CreateJourneyRequestCommand command, String username,
 			String locale) {
 
-		checkUserMobileNumberIsVerified(username);
+		//checkUserMobileNumberIsVerified(username);
 
 		PlaceType departurePlaceType = PlaceUtils.placeTypeStringToEnum(command.getDeparturePlaceType());
 		PlaceType arrivalPlaceType = PlaceUtils.placeTypeStringToEnum(command.getArrivalPlaceType());
