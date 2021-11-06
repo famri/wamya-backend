@@ -11,6 +11,8 @@ import java.util.stream.Collectors;
 
 import com.excentria_it.wamya.application.port.in.CreateJourneyRequestUseCase.CreateJourneyRequestCommand;
 import com.excentria_it.wamya.application.port.in.CreateJourneyRequestUseCase.CreateJourneyRequestCommand.CreateJourneyRequestCommandBuilder;
+import com.excentria_it.wamya.application.port.in.LoadClientJourneyRequestsUseCase.LoadJourneyRequestCommand;
+import com.excentria_it.wamya.application.port.in.LoadClientJourneyRequestsUseCase.LoadJourneyRequestCommand.LoadJourneyRequestCommandBuilder;
 import com.excentria_it.wamya.application.port.in.LoadClientJourneyRequestsUseCase.LoadJourneyRequestsCommand;
 import com.excentria_it.wamya.application.port.in.LoadClientJourneyRequestsUseCase.LoadJourneyRequestsCommand.LoadJourneyRequestsCommandBuilder;
 import com.excentria_it.wamya.application.port.in.SearchJourneyRequestsUseCase.SearchJourneyRequestsCommand;
@@ -420,6 +422,11 @@ public class JourneyRequestTestData {
 				.periodCriterion(new PeriodCriterion("Y1", ldt.minusYears(1), ldt));
 	}
 
+	public static LoadJourneyRequestCommandBuilder defaultLoadJourneyRequestCommandBuilder() {
+
+		return LoadJourneyRequestCommand.builder().clientUsername(TestConstants.DEFAULT_EMAIL).journeyRequestId(1L);
+	}
+
 	public static ClientJourneyRequests defaultClientJourneyRequests() {
 		return new ClientJourneyRequests(5, 10, 0, 2, true, clientJourneyRequestDtos.stream()
 				.map(e -> mapclientJourneyRequestDtoOutputToclientJourneyRequestDto(e)).collect(Collectors.toList()));
@@ -429,8 +436,39 @@ public class JourneyRequestTestData {
 		return new ClientJourneyRequestsOutput(5, 10, 0, 2, true, clientJourneyRequestDtos);
 	}
 
-	public static ClientJourneyRequestDtoOutput defaultClientJourneyRequestDto() {
+	public static ClientJourneyRequestDtoOutput defaultClientJourneyRequestDtoOutput() {
 		return clientJourneyRequestDtos.get(0);
+	}
+
+	public static ClientJourneyRequestDto defaultClientJourneyRequestDto() {
+
+		ZoneId userZoneId = ZoneId.of("Africa/Tunis");
+		ZonedDateTime userDateTimeZoned = clientJourneyRequestDtos.get(0).getDateTime().atZone(userZoneId);
+
+		return new ClientJourneyRequestDto(clientJourneyRequestDtos.get(0).getId(),
+				new ClientJourneyRequestDto.PlaceDto(clientJourneyRequestDtos.get(0).getDeparturePlace().getId(),
+						clientJourneyRequestDtos.get(0).getDeparturePlace().getType(),
+						clientJourneyRequestDtos.get(0).getDeparturePlace().getName(),
+						clientJourneyRequestDtos.get(0).getDeparturePlace().getLatitude(),
+						clientJourneyRequestDtos.get(0).getDeparturePlace().getLongitude(),
+						clientJourneyRequestDtos.get(0).getDeparturePlace().getDepartmentId()),
+				new ClientJourneyRequestDto.PlaceDto(clientJourneyRequestDtos.get(0).getArrivalPlace().getId(),
+						clientJourneyRequestDtos.get(0).getArrivalPlace().getType(),
+						clientJourneyRequestDtos.get(0).getArrivalPlace().getName(),
+						clientJourneyRequestDtos.get(0).getArrivalPlace().getLatitude(),
+						clientJourneyRequestDtos.get(0).getArrivalPlace().getLongitude(),
+						clientJourneyRequestDtos.get(0).getArrivalPlace().getDepartmentId()),
+				new ClientJourneyRequestDto.EngineTypeDto(clientJourneyRequestDtos.get(0).getEngineType().getId(),
+						clientJourneyRequestDtos.get(0).getEngineType().getName(),
+						clientJourneyRequestDtos.get(0).getEngineType().getCode()),
+				clientJourneyRequestDtos.get(0).getDistance(),
+
+				userDateTimeZoned.toLocalDateTime(), clientJourneyRequestDtos.get(0).getCreationDateTime(),
+				clientJourneyRequestDtos.get(0).getWorkers(), clientJourneyRequestDtos.get(0).getDescription(),
+				clientJourneyRequestDtos.get(0).getProposalsCount()
+
+		);
+
 	}
 
 	public static ClientJourneyRequestDtoOutput defaultClientJourneyRequestDtoWithNoProposals() {

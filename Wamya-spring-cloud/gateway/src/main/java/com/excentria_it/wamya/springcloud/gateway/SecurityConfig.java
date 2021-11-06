@@ -1,5 +1,7 @@
 package com.excentria_it.wamya.springcloud.gateway;
 
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
@@ -10,7 +12,10 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.CorsConfigurationSource;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 
+import lombok.extern.slf4j.Slf4j;
+
 @EnableWebFluxSecurity
+@Slf4j
 public class SecurityConfig {
 
 	@Bean
@@ -38,7 +43,10 @@ public class SecurityConfig {
 	@Bean
 	CorsConfigurationSource corsConfigurationSource() {
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
+		CorsConfiguration combinedCorsConfiguration = new CorsConfiguration();
+		combinedCorsConfiguration.applyPermitDefaultValues().setAllowedMethods(List.of("*"));
+		source.registerCorsConfiguration("/**", combinedCorsConfiguration);
+
 		return source;
 	}
 }

@@ -189,7 +189,7 @@ public class JourneyProposalServiceTests {
 	void givenLoadProposalsCommandAndClientEmail_WhenLoadProposals_ThenSucceed() {
 		// given
 		LoadProposalsCommand command = defaultLoadProposalsCommandBuilder().build();
-		ClientJourneyRequestDtoOutput clientJourneyRequestDto = defaultClientJourneyRequestDto();
+		ClientJourneyRequestDtoOutput clientJourneyRequestDto = defaultClientJourneyRequestDtoOutput();
 		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class),
 				any(String.class))).willReturn(Optional.of(clientJourneyRequestDto));
 

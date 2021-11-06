@@ -128,18 +128,18 @@ public class CreateJourneyRequestService implements CreateJourneyRequestUseCase 
 
 	}
 
-	private void checkUserMobileNumberIsVerified(String username) {
-		Optional<UserAccount> userAccountOptional = loadUserAccountPort.loadUserAccountByUsername(username);
-
-		if (userAccountOptional.isEmpty()) {
-			throw new UserAccountNotFoundException("User " + username + " does not exist.");
-		}
-
-		UserAccount userAccount = userAccountOptional.get();
-
-		if (!userAccount.getIsValidatedMobileNumber()) {
-			throw new UserMobileNumberValidationException("User " + username + " mobile number is not yet validated.");
-		}
-
-	}
+//	private void checkUserMobileNumberIsVerified(String username) {
+//		Optional<UserAccount> userAccountOptional = loadUserAccountPort.loadUserAccountByUsername(username);
+//
+//		if (userAccountOptional.isEmpty()) {
+//			throw new UserAccountNotFoundException("User " + username + " does not exist.");
+//		}
+//
+//		UserAccount userAccount = userAccountOptional.get();
+//
+//		if (!userAccount.getIsValidatedMobileNumber()) {
+//			throw new UserMobileNumberValidationException("User " + username + " mobile number is not yet validated.");
+//		}
+//
+//	}
 }

@@ -123,7 +123,7 @@ public class ChatMessageServiceTests {
 				.template(PushTemplate.MESSAGE_RECEIVED)
 				.params(Map.of(PushTemplate.MESSAGE_RECEIVED.getTemplateParams().get(0),
 						clientUserAccount.getFirstname() + " " + clientUserAccount.getLastname()))
-				.data(Map.of("type", "message", "content", messageNotification)).language("fr").build();
+				.data(Map.of("type", "message", "content", messageNotification)).language("fr_FR").build();
 
 		then(messagingPort).should(times(1)).sendPushMessage(eq(pushMessage));
 
@@ -184,7 +184,7 @@ public class ChatMessageServiceTests {
 				.template(PushTemplate.MESSAGE_RECEIVED)
 				.params(Map.of(PushTemplate.MESSAGE_RECEIVED.getTemplateParams().get(0),
 						transporterUserAccount.getFirstname() + " " + transporterUserAccount.getLastname()))
-				.data(Map.of("type", "message", "content", messageNotification)).language("fr").build();
+				.data(Map.of("type", "message", "content", messageNotification)).language("fr_FR").build();
 
 		then(messagingPort).should(times(1)).sendPushMessage(eq(pushMessage));
 

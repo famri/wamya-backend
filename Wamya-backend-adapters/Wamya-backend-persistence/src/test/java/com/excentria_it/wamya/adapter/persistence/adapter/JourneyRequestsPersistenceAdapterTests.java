@@ -476,7 +476,7 @@ public class JourneyRequestsPersistenceAdapterTests {
 
 		// given
 
-		ClientJourneyRequestDtoOutput clientJourneyRequestDto = defaultClientJourneyRequestDto();
+		ClientJourneyRequestDtoOutput clientJourneyRequestDto = defaultClientJourneyRequestDtoOutput();
 		given(journeyRequestRepository.findByIdAndClient_Email(eq(1L), eq(TestConstants.DEFAULT_EMAIL), eq("fr_FR")))
 				.willReturn(Optional.of(clientJourneyRequestDto));
 		// when

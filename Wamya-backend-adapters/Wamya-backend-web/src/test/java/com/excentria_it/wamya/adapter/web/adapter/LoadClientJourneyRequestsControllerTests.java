@@ -25,10 +25,12 @@ import org.springframework.test.web.servlet.MvcResult;
 import com.c4_soft.springaddons.security.oauth2.test.mockmvc.MockMvcSupport;
 import com.excentria_it.wamya.adapter.web.utils.ValidationHelper;
 import com.excentria_it.wamya.application.port.in.LoadClientJourneyRequestsUseCase;
+import com.excentria_it.wamya.application.port.in.LoadClientJourneyRequestsUseCase.LoadJourneyRequestCommand;
 import com.excentria_it.wamya.application.port.in.LoadClientJourneyRequestsUseCase.LoadJourneyRequestsCommand;
+import com.excentria_it.wamya.common.exception.JourneyRequestNotFoundException;
 import com.excentria_it.wamya.common.exception.handlers.RestApiExceptionHandler;
+import com.excentria_it.wamya.domain.ClientJourneyRequestDto;
 import com.excentria_it.wamya.domain.ClientJourneyRequests;
-import com.excentria_it.wamya.domain.ClientJourneyRequestsOutput;
 import com.excentria_it.wamya.test.data.common.JourneyRequestTestData;
 import com.excentria_it.wamya.test.data.common.TestConstants;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -109,11 +111,54 @@ public class LoadClientJourneyRequestsControllerTests {
 				.andExpect(responseBody().containsApiErrors(List.of(
 						"periodCriterion: Wrong period: 'PeriodCriterion(value=not_valid_period, lowerEdge=null, higherEdge=null)'. Valid period values are: [y1, m6, m3, m1, w1].",
 						"sortingCriterion: Wrong sort criterion: 'SortCriterion(field=not_valid_sort_field, direction=desc)'. Valid sort fields are:[creation-date-time, date-time]. Valid sort directions are:[asc, desc].")))
-				.andExpect(status().isBadRequest()).andReturn();
+				.andExpect(status().isBadRequest());
 
 		// then
 		then(loadClientJourneyRequestsUseCase).should(never())
 				.loadJourneyRequests(any(LoadJourneyRequestsCommand.class), any(String.class));
 
+	}
+
+	@Test
+	void givenInexistentJourneyRequest_WhenLoadClientJourneyRequest_ThenReturnBadRequest() throws Exception {
+
+		// given
+		LoadJourneyRequestCommand command = JourneyRequestTestData.defaultLoadJourneyRequestCommandBuilder().build();
+
+		doThrow(new JourneyRequestNotFoundException("SOME ERROR DESCRIPTION")).when(loadClientJourneyRequestsUseCase)
+				.loadJourneyRequest(eq(command), any(String.class));
+		// when //then
+		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
+				.authorities("SCOPE_journey:write"))
+				.perform(get("/users/me/journey-requests/{journeyRequestId}", 1L).param("lang", "fr_FR"))
+				.andExpect(responseBody().containsApiErrors(List.of("SOME ERROR DESCRIPTION")))
+				.andExpect(status().isBadRequest()).andReturn();
+		// then
+		then(loadClientJourneyRequestsUseCase).should(times(1)).loadJourneyRequest(eq(command), eq("fr_FR"));
+	}
+
+	@Test
+	void givenExistentJourneyRequest_WhenLoadClientJourneyRequest_ThenReturnJourneyRequest() throws Exception {
+
+		// given
+		LoadJourneyRequestCommand command = JourneyRequestTestData.defaultLoadJourneyRequestCommandBuilder().build();
+
+		ClientJourneyRequestDto expectedResult = JourneyRequestTestData.defaultClientJourneyRequestDto();
+
+		given(loadClientJourneyRequestsUseCase.loadJourneyRequest(eq(command), any(String.class)))
+				.willReturn(expectedResult);
+
+		// when
+		MvcResult mvcResult = api
+				.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
+						.authorities("SCOPE_journey:write"))
+				.perform(get("/users/me/journey-requests/{journeyRequestId}", 1L).param("lang", "fr_FR"))
+
+				.andExpect(status().isOk()).andReturn();
+		// then
+		then(loadClientJourneyRequestsUseCase).should(times(1)).loadJourneyRequest(eq(command), eq("fr_FR"));
+		String actualResponseBody = mvcResult.getResponse().getContentAsString();
+
+		assertThat(actualResponseBody).isEqualToIgnoringWhitespace(objectMapper.writeValueAsString(expectedResult));
 	}
 }

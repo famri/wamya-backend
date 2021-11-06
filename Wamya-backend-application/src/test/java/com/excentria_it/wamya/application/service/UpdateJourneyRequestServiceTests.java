@@ -66,7 +66,7 @@ public class UpdateJourneyRequestServiceTests {
 	@Test
 	void givenJourneyRequestExistsByIdAndClientEmail_andOffersHaveBeenMade_whenUpdateJourneyRequest_thenThrowJourneyRequestUpdateException() {
 		// given
-		ClientJourneyRequestDtoOutput clientJourneyRequestDto = JourneyRequestTestData.defaultClientJourneyRequestDto();
+		ClientJourneyRequestDtoOutput clientJourneyRequestDto = JourneyRequestTestData.defaultClientJourneyRequestDtoOutput();
 		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class),
 				any(String.class))).willReturn(Optional.of(clientJourneyRequestDto));
 		CreateJourneyRequestCommand command = JourneyRequestTestData.defaultCreateJourneyRequestCommandBuilder()

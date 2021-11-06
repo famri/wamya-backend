@@ -6,6 +6,7 @@ import com.excentria_it.wamya.common.PeriodCriterion;
 import com.excentria_it.wamya.common.SortCriterion;
 import com.excentria_it.wamya.common.annotation.Period;
 import com.excentria_it.wamya.common.annotation.Sort;
+import com.excentria_it.wamya.domain.ClientJourneyRequestDto;
 import com.excentria_it.wamya.domain.ClientJourneyRequests;
 
 import lombok.AllArgsConstructor;
@@ -16,6 +17,8 @@ import lombok.NoArgsConstructor;
 public interface LoadClientJourneyRequestsUseCase {
 
 	ClientJourneyRequests loadJourneyRequests(LoadJourneyRequestsCommand command, String locale);
+
+	ClientJourneyRequestDto loadJourneyRequest(LoadJourneyRequestCommand command, String locale);
 
 	@Data
 	@Builder
@@ -36,4 +39,14 @@ public interface LoadClientJourneyRequestsUseCase {
 		private PeriodCriterion periodCriterion;
 	}
 
+	@Data
+	@Builder
+	@AllArgsConstructor
+	@NoArgsConstructor
+	class LoadJourneyRequestCommand {
+		@NotNull
+		private String clientUsername;
+		@NotNull
+		private Long journeyRequestId;
+	}
 }

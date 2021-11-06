@@ -411,4 +411,5 @@ public class JourneyRequestsPersistenceAdapter implements SearchJourneyRequestsP
 		journeyRequestRepository.updateStatus(journeyRequestId, cancelledStatusJpaEntity);
 
 	}
+
 }

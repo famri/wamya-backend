@@ -64,7 +64,7 @@ public class UpdateJourneyRequestStatusServiceTests {
 	@Test
 	void givenJourneyRequestExistsByIdAndClientEmail_whenCancelJourneyRequest_thenCancelJourneyRequest() {
 		// given
-		ClientJourneyRequestDtoOutput clientJourneyRequestDto = JourneyRequestTestData.defaultClientJourneyRequestDto();
+		ClientJourneyRequestDtoOutput clientJourneyRequestDto = JourneyRequestTestData.defaultClientJourneyRequestDtoOutput();
 		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class),
 				any(String.class))).willReturn(Optional.of(clientJourneyRequestDto));
 
@@ -96,7 +96,7 @@ public class UpdateJourneyRequestStatusServiceTests {
 	@Test
 	void givenJourneyRequestExistsByIdAndClientEmail_andExceptionWhenSendingNotification_whenCancelJourneyRequest_thenCancelJourneyRequest() {
 		// given
-		ClientJourneyRequestDtoOutput clientJourneyRequestDto = JourneyRequestTestData.defaultClientJourneyRequestDto();
+		ClientJourneyRequestDtoOutput clientJourneyRequestDto = JourneyRequestTestData.defaultClientJourneyRequestDtoOutput();
 		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class),
 				any(String.class))).willReturn(Optional.of(clientJourneyRequestDto));
 
