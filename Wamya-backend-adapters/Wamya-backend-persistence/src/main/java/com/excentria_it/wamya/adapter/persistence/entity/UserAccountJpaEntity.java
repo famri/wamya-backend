@@ -7,6 +7,8 @@ import java.util.Map;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -49,6 +51,7 @@ public abstract class UserAccountJpaEntity {
 
 	protected String lastname;
 
+	@Enumerated(EnumType.STRING)
 	protected ValidationState identityValidationState;
 
 	protected String miniBio;
