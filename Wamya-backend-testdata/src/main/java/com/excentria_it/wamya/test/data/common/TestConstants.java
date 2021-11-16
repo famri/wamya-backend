@@ -28,6 +28,7 @@ public class TestConstants {
 	public static final String DEFAULT_LASTNAME = "USER LASTNAME";
 
 	public static final String DEFAULT_EMAIL = "user-email@gmail.com";
+	public static final String DEFAULT_NEW_EMAIL = "user-email2@hotmail.com";
 
 	public static final String DEFAULT_FROM_EMAIL = "wamya-team@wamya.com";
 

@@ -30,6 +30,7 @@ import com.excentria_it.wamya.domain.DocumentType;
 import com.excentria_it.wamya.domain.EntitlementType;
 import com.excentria_it.wamya.domain.Gender;
 import com.excentria_it.wamya.domain.UserAccount;
+import com.excentria_it.wamya.domain.ValidationState;
 
 import lombok.RequiredArgsConstructor;
 
@@ -313,6 +314,20 @@ public class UserAccountPersistenceAdapter
 			throw new UserAccountNotFoundException(String.format("No account was found by ID %d.", userId));
 		}
 
+	}
+
+	@Override
+	public void updateIdentityValidationState(Long userId, ValidationState validationState) {
+
+		Optional<UserAccountJpaEntity> userAccountEntityOptional = userAccountRepository.findById(userId);
+		if (userAccountEntityOptional.isPresent()) {
+			UserAccountJpaEntity userAccountEntity = userAccountEntityOptional.get();
+			userAccountEntity.setIdentityValidationState(validationState);
+			userAccountRepository.save(userAccountEntity);
+
+		} else {
+			throw new UserAccountNotFoundException(String.format("No account was found by ID %d.", userId));
+		}
 	}
 
 }

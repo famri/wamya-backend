@@ -38,6 +38,7 @@ import com.excentria_it.wamya.common.exception.UserAccountNotFoundException;
 import com.excentria_it.wamya.domain.DocumentType;
 import com.excentria_it.wamya.domain.EntitlementType;
 import com.excentria_it.wamya.domain.UserAccount;
+import com.excentria_it.wamya.domain.ValidationState;
 import com.excentria_it.wamya.domain.UserAccount.UserAccountBuilder;
 import com.excentria_it.wamya.test.data.common.DocumentJpaTestData;
 import com.excentria_it.wamya.test.data.common.GenderJpaTestData;
@@ -774,6 +775,20 @@ public class UserAccountPersistenceAdapterTests {
 		then(userAccountRepository).should(times(1)).save(captor.capture());
 
 		assertEquals(false, captor.getValue().getIsValidatedMobileNumber());
+	}
+	
+	@Test
+	void givenExistentUserAccountById_whenUpdateIdentityValidationState_thenUpdateIdentityValidationState() {
+		// given
+		UserAccountJpaEntity userAccount = UserAccountJpaEntityTestData.defaultExistentClientJpaEntity();
+		given(userAccountRepository.findById(any(Long.class))).willReturn(Optional.of(userAccount));
+		// when
+		userAccountPersistenceAdapter.updateIdentityValidationState(1L, ValidationState.PENDING);
+		// then
+		ArgumentCaptor<UserAccountJpaEntity> captor = ArgumentCaptor.forClass(UserAccountJpaEntity.class);
+		then(userAccountRepository).should(times(1)).save(captor.capture());
+
+		assertEquals(ValidationState.PENDING, captor.getValue().getIdentityValidationState());
 	}
 
 }

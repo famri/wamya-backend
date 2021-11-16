@@ -24,7 +24,7 @@ public class UserProfileTestData {
 	}
 
 	public static UpdateEmailSectionCommandBuilder defaultUpdateEmailSectionCommandBuilder() {
-		return UpdateEmailSectionCommand.builder().email(TestConstants.DEFAULT_EMAIL);
+		return UpdateEmailSectionCommand.builder().email(TestConstants.DEFAULT_NEW_EMAIL);
 	}
 
 	public static UpdateMobileSectionCommandBuilder defaultUpdateMobileSectionCommandBuilder() {

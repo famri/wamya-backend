@@ -1,6 +1,7 @@
 package com.excentria_it.wamya.application.port.out;
 
 import com.excentria_it.wamya.domain.DocumentType;
+import com.excentria_it.wamya.domain.ValidationState;
 
 public interface UpdateUserAccountPort {
 
@@ -15,5 +16,7 @@ public interface UpdateUserAccountPort {
 	void updateDeviceRegistrationToken(Long userId, String token);
 
 	void updateIsValidatedMobileNumber(Long userId, boolean isValidated);
+
+	void updateIdentityValidationState(Long userId, ValidationState validationState);
 
 }

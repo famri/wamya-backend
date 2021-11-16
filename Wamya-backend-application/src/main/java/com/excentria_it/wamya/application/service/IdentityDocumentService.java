@@ -20,6 +20,7 @@ import com.excentria_it.wamya.common.exception.DocumentAccessException;
 import com.excentria_it.wamya.common.exception.UnsupportedMimeTypeException;
 import com.excentria_it.wamya.domain.DocumentType;
 import com.excentria_it.wamya.domain.UserAccount;
+import com.excentria_it.wamya.domain.ValidationState;
 
 import lombok.RequiredArgsConstructor;
 
@@ -81,7 +82,10 @@ public class IdentityDocumentService implements UploadIdentityDocumentUseCase {
 		}
 		// update user profile image Document
 		updateUserAccountPort.updateIdentityDocument(userId, location, hash, documentType);
-
+		
+		// change identity validation state to PENDING
+		updateUserAccountPort.updateIdentityValidationState(userId, ValidationState.PENDING);
+		
 		// delete old profile image physical file if not default
 		if (shouldDeleteOldIdentity) {
 

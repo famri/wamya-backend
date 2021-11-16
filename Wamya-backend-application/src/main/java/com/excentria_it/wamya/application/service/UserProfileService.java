@@ -13,6 +13,7 @@ import com.excentria_it.wamya.application.port.out.LoadUserAccountPort;
 import com.excentria_it.wamya.application.port.out.OAuthUserAccountPort;
 import com.excentria_it.wamya.application.port.out.UpdateProfileInfoPort;
 import com.excentria_it.wamya.common.annotation.UseCase;
+import com.excentria_it.wamya.common.exception.UserAccountAlreadyExistsException;
 import com.excentria_it.wamya.domain.ProfileInfoDto;
 import com.excentria_it.wamya.domain.UserAccount;
 
@@ -43,11 +44,18 @@ public class UserProfileService implements LoadProfileInfoUseCase, UpdateAboutSe
 
 	@Override
 	public void updateEmailSection(UpdateEmailSectionCommand command, String username) {
-		updateProfileInfoPort.updateEmailSection(username, command.getEmail());
+
+		Optional<UserAccount> existingUserAccount = loadUserAccountPort.loadUserAccountByUsername(command.getEmail());
+		if (!existingUserAccount.isEmpty()) {
+			throw new UserAccountAlreadyExistsException(
+					String.format("Email address %s already registred.", command.getEmail()));
+		}
 
 		Optional<UserAccount> userAccountOptional = loadUserAccountPort.loadUserAccountByUsername(username);
 
 		oAuthUserAccountPort.updateEmail(userAccountOptional.get().getOauthId(), command.getEmail());
+		updateProfileInfoPort.updateEmailSection(username, command.getEmail());
+
 	}
 
 	@Override

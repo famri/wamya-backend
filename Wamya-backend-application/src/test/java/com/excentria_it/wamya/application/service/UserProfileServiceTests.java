@@ -1,5 +1,7 @@
 package com.excentria_it.wamya.application.service;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.*;
 
@@ -18,6 +20,7 @@ import com.excentria_it.wamya.application.port.out.LoadProfileInfoPort;
 import com.excentria_it.wamya.application.port.out.LoadUserAccountPort;
 import com.excentria_it.wamya.application.port.out.OAuthUserAccountPort;
 import com.excentria_it.wamya.application.port.out.UpdateProfileInfoPort;
+import com.excentria_it.wamya.common.exception.UserAccountAlreadyExistsException;
 import com.excentria_it.wamya.domain.UserAccount;
 import com.excentria_it.wamya.test.data.common.TestConstants;
 import com.excentria_it.wamya.test.data.common.UserAccountTestData;
@@ -64,17 +67,49 @@ public class UserProfileServiceTests {
 		// given
 		UpdateEmailSectionCommand command = UserProfileTestData.defaultUpdateEmailSectionCommandBuilder().build();
 
+		given(loadUserAccountPort.loadUserAccountByUsername(command.getEmail())).willReturn(Optional.empty());
+
 		UserAccount userAccount = UserAccountTestData.defaultClientUserAccountBuilder().build();
+
 		given(loadUserAccountPort.loadUserAccountByUsername(TestConstants.DEFAULT_EMAIL))
 				.willReturn(Optional.of(userAccount));
+
 		// when
 		userProfileService.updateEmailSection(command, TestConstants.DEFAULT_EMAIL);
 
 		// then
+
+		then(loadUserAccountPort).should(times(1)).loadUserAccountByUsername(command.getEmail());
+
+		then(loadUserAccountPort).should(times(1)).loadUserAccountByUsername(TestConstants.DEFAULT_EMAIL);
+
 		then(updateProfileInfoPort).should(times(1)).updateEmailSection(TestConstants.DEFAULT_EMAIL,
 				command.getEmail());
 
 		then(oAuthUserAccountPort).should(times(1)).updateEmail(userAccount.getOauthId(), command.getEmail());
+	}
+
+	@Test
+	void givenExistingNewEmailAccount_whenUpdateEmailSection_thenThrowUserAccountAlreadyExistsException() {
+		// given
+		UpdateEmailSectionCommand command = UserProfileTestData.defaultUpdateEmailSectionCommandBuilder().build();
+
+		UserAccount existentUserAccount = UserAccountTestData.defaultClientUserAccountBuilder()
+				.email(command.getEmail()).build();
+
+		given(loadUserAccountPort.loadUserAccountByUsername(command.getEmail()))
+				.willReturn(Optional.of(existentUserAccount));
+
+		// when // then
+
+		assertThrows(UserAccountAlreadyExistsException.class,
+				() -> userProfileService.updateEmailSection(command, TestConstants.DEFAULT_EMAIL));
+
+		then(loadUserAccountPort).should(times(1)).loadUserAccountByUsername(command.getEmail());
+
+		then(updateProfileInfoPort).should(never()).updateEmailSection(TestConstants.DEFAULT_EMAIL, command.getEmail());
+
+		then(oAuthUserAccountPort).should(never()).updateEmail(any(Long.class), eq(command.getEmail()));
 	}
 
 	@Test

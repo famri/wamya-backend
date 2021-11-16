@@ -30,6 +30,7 @@ import com.excentria_it.wamya.common.exception.DocumentAccessException;
 import com.excentria_it.wamya.common.exception.UnsupportedMimeTypeException;
 import com.excentria_it.wamya.domain.DocumentType;
 import com.excentria_it.wamya.domain.UserAccount;
+import com.excentria_it.wamya.domain.ValidationState;
 import com.excentria_it.wamya.test.data.common.TestConstants;
 import com.excentria_it.wamya.test.data.common.UserAccountTestData;
 
@@ -97,8 +98,8 @@ public class IndentityDocumentServiceJunit4Tests {
 		BufferedInputStream documentInputStream = new BufferedInputStream(new ByteArrayInputStream(initialArray));
 
 		Long currentTime = new Date().getTime();
-		given(saveFilePort.saveFile(documentInputStream, DocumentType.APPLICATION_PDF.getParentFolder(), "Identity.pdf"))
-				.willReturn("/Documents/" + currentTime + "-Identity.pdf");
+		given(saveFilePort.saveFile(documentInputStream, DocumentType.APPLICATION_PDF.getParentFolder(),
+				"Identity.pdf")).willReturn("/Documents/" + currentTime + "-Identity.pdf");
 
 		UserAccount userAccount = UserAccountTestData.defaultUserAccountBuilder().build();
 		given(loadUserAccountPort.loadUserAccountByUsername(TestConstants.DEFAULT_EMAIL))
@@ -107,20 +108,25 @@ public class IndentityDocumentServiceJunit4Tests {
 		given(loadUserAccountPort.hasNoIdentityImage(userAccount.getId())).willReturn(true);
 
 		PowerMockito.mockStatic(MimeTypeDetectionFacade.class);
-		PowerMockito.when(MimeTypeDetectionFacade.detectContentType(any(InputStream.class))).thenReturn("application/pdf");
+		PowerMockito.when(MimeTypeDetectionFacade.detectContentType(any(InputStream.class)))
+				.thenReturn("application/pdf");
 
 		// when
-		identityDocumentService.uploadIdentityDocument(documentInputStream, "Identity.pdf", TestConstants.DEFAULT_EMAIL);
+		identityDocumentService.uploadIdentityDocument(documentInputStream, "Identity.pdf",
+				TestConstants.DEFAULT_EMAIL);
 
 		// then
 		PowerMockito.verifyStatic(MimeTypeDetectionFacade.class, times(1));
 		MimeTypeDetectionFacade.detectContentType(documentInputStream);
 
-		then(saveFilePort).should(times(1)).saveFile(documentInputStream, DocumentType.APPLICATION_PDF.getParentFolder(),
-				"Identity.pdf");
+		then(saveFilePort).should(times(1)).saveFile(documentInputStream,
+				DocumentType.APPLICATION_PDF.getParentFolder(), "Identity.pdf");
+
 		then(updateUserAccountPort).should(times(1)).updateIdentityDocument(userAccount.getId(),
-				"/Documents/" + currentTime + "-Identity.pdf", DigestUtils.sha256Hex("/Documents/" + currentTime + "-Identity.pdf"),
-				DocumentType.APPLICATION_PDF);
+				"/Documents/" + currentTime + "-Identity.pdf",
+				DigestUtils.sha256Hex("/Documents/" + currentTime + "-Identity.pdf"), DocumentType.APPLICATION_PDF);
+		then(updateUserAccountPort).should(times(1)).updateIdentityValidationState(userAccount.getId(),
+				ValidationState.PENDING);
 
 		then(deleteFilePort).should(never()).deleteFile(any(String.class));
 	}
