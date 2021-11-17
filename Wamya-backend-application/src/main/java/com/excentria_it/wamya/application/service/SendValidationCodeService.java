@@ -73,7 +73,7 @@ public class SendValidationCodeService implements SendValidationCodeUseCase {
 
 		if (!userAccount.getIsValidatedEmail()) {
 
-			String validationCode = codeGenerator.generateNumericCode();
+			String validationCode = codeGenerator.generateUUID();
 
 			updateUserAccountPort.updateEmailValidationCode(userAccount.getId(), validationCode);
 

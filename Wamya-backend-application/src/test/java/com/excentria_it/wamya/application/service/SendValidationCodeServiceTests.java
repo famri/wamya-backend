@@ -176,7 +176,7 @@ public class SendValidationCodeServiceTests {
 		UserAccount userAccount = Mockito.mock(UserAccount.class);
 
 		given(userAccount.getIsValidatedEmail()).willReturn(false);
-		givenDefaultGeneratedCode();
+		givenDefaultGeneratedUUID();
 
 		SendEmailValidationLinkCommand command = new SendEmailValidationLinkCommand(TestConstants.DEFAULT_EMAIL);
 
@@ -187,9 +187,9 @@ public class SendValidationCodeServiceTests {
 
 		InOrder inOrder = Mockito.inOrder(codeGenerator,  messagingPort, updateUserAccountPort);
 
-		inOrder.verify(codeGenerator).generateNumericCode();
+		inOrder.verify(codeGenerator).generateUUID();
 		inOrder.verify(updateUserAccountPort).updateEmailValidationCode(userAccount.getId(),
-				TestConstants.DEFAULT_VALIDATION_CODE);
+				TestConstants.DEFAULT_VALIDATION_UUID);
 		inOrder.verify(messagingPort).sendEmailMessage(any(EmailMessage.class));
 	}
 
@@ -198,6 +198,10 @@ public class SendValidationCodeServiceTests {
 		return DEFAULT_VALIDATION_CODE;
 	}
 
+	private String givenDefaultGeneratedUUID() {
+		given(codeGenerator.generateUUID()).willReturn(DEFAULT_VALIDATION_UUID);
+		return DEFAULT_VALIDATION_UUID;
+	}
 	private void givenNonExistentEmail() {
 
 		given(loadUserAccountPort.loadUserAccountByUsername(any(String.class))).willReturn(Optional.empty());
