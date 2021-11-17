@@ -28,7 +28,7 @@ public class EmailServiceImpl implements EmailService {
 
 	private final MimeMessageManager mimeMessageManager;
 
-	private static final String TEMPLATES_BASEDIR = "templates";
+	private static final String TEMPLATES_BASEDIR = "/templates";
 
 	public boolean sendEmailWithHTMTemplate(String from, String to, String subject, EmailTemplate template,
 			String language, Map<String, String> templateParams, Map<String, String> attachements) {

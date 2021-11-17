@@ -1,1 +1,0 @@
-Votre proposition sur la demande de trajet: $departure_place_name$ -> $arrival_place_name$ du $journey_request_datetime$ a été rejetée.

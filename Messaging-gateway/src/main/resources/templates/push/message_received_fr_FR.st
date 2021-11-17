@@ -1,1 +1,0 @@
-$sender_name$ vous a envoyé un message.

@@ -1,1 +1,0 @@
-Le code pour valider votre numéro de téléphone sur www.wamya.com est $validation_code$
