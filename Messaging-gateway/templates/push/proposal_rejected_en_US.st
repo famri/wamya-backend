@@ -1,0 +1,1 @@
+Your offer on journey request: $departure_place_name$ -> $arrival_place_name$ on $journey_request_datetime$ was rejected.
