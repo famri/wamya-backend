@@ -68,6 +68,7 @@ FILE_STORAGE_VOLUME
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.disksize.size = '50GB'
+  
   config.vm.define "dev_env" do |dev|
 		dev.vm.box = "ubuntu/groovy64"
 		dev.vm.boot_timeout = 600
@@ -80,8 +81,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 		dev.vm.provision "shell", inline: $create_database_volumes
 		dev.vm.provision "shell", inline: $create_file_storage_volumes
 #		dev.vm.provision "shell", inline: $docker_compose, run: 'always'
-  
-#		dev.vm.synced_folder ".", "/vagrant", disabled:true
+#			
+#		the following does not work because folders are synchronized entirely 
+#		dev.vm.synced_folder "./fretto-web-app/node_modules/", "/vagrant/fretto-web-app/node_modules", disabled: true
 #		dev.vm.synced_folder "Wamya-backend-configuration", "/vagrant/Wamya-backend-configuration"		
 #		dev.vm.synced_folder "Messaging-gateway", "/vagrant/Messaging-gateway"
 #		dev.vm.synced_folder "Wamya-spring-cloud", "/vagrant/Wamya-spring-cloud"
@@ -121,7 +123,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 		
 # MAILHOG WEB PORT
 		dev.vm.network "forwarded_port", guest: 8025, host: 8025
-		
+
+# MAILHOG WEB PORT
+		dev.vm.network "forwarded_port", guest: 3000, host: 3000		
 
 	end
 end

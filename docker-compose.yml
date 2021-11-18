@@ -274,6 +274,33 @@ services:
       - "mailhog"
     volumes:
       - credentials-storage:/credentials
+      
+
+# THE WEB APP
+  web-app:
+    container_name: web-app
+    build: fretto-web-app
+    mem_limit: 350m
+#    deploy:
+#      resources:
+#        limits:
+#          memory: 350M
+#        reservations:
+#          memory: 50M
+
+    ports:
+      - "3000:3000"
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+#   entrypoint: ["npm", "start"]
+    depends_on:
+      - "kannel"
+      - "rabbitmq"
+      - "mailhog"
+    volumes:
+      - './fretto-web-app:/app'
+      - '/app/node_modules'
+
 volumes:
   database-data:
     driver: local
