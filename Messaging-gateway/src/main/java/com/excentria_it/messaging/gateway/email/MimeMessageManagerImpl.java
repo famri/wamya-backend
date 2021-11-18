@@ -28,7 +28,7 @@ public class MimeMessageManagerImpl implements MimeMessageManager {
 		helper.setTo(to);
 		helper.setSubject(subject);
 		helper.setText(templateBody, true);
-
+		
 		this.addTemplateResources(helper, templateResources);
 		this.addAttachements(helper, attachements);
 

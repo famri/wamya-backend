@@ -1,4 +1,4 @@
-package com.excentria_it.wamya.domain;
+package com.excentria_it.wamya.application.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -24,9 +24,10 @@ import com.excentria_it.wamya.application.port.out.OAuthUserAccountPort;
 import com.excentria_it.wamya.application.port.out.PasswordResetRequestPort;
 import com.excentria_it.wamya.application.props.PasswordResetProperties;
 import com.excentria_it.wamya.application.props.ServerUrlProperties;
-import com.excentria_it.wamya.application.service.PasswordResetService;
 import com.excentria_it.wamya.common.domain.EmailMessage;
 import com.excentria_it.wamya.common.domain.EmailTemplate;
+import com.excentria_it.wamya.domain.UserAccount;
+import com.excentria_it.wamya.domain.Validity;
 import com.excentria_it.wamya.test.data.common.TestConstants;
 import com.excentria_it.wamya.test.data.common.UserAccountTestData;
 
@@ -163,7 +164,5 @@ public class PasswordResetServiceTests {
 		then(oAuthUserAccountPort).should(times(1)).resetPassword(1L, "MyNewPassword");
 		then(passwordResetRequestPort).should(times(1)).deleteRequest(uuid);
 	}
-
-
 
 }

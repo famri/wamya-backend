@@ -120,7 +120,7 @@ public class PasswordResetService implements RequestPasswordResetUseCase, ResetP
 
 			EmailMessage emailMessage = EmailMessage.builder().from(EmailSender.WAMYA_TEAM).to(userEmail)
 					.subject(messageSource.getMessage(EmailSubject.PASSWORD_RESET_REQUEST, null, locale))
-					.template(EmailTemplate.PASSWORD_RESET).params(emailTemplateParams).language(locale.getLanguage())
+					.template(EmailTemplate.PASSWORD_RESET).params(emailTemplateParams).language(locale.toString())
 					.build();
 
 			messagingPort.sendEmailMessage(emailMessage);

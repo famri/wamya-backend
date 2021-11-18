@@ -35,10 +35,10 @@ sms.gateway:
 
 #gmail SMTP server properties
 #spring.mail:
-#  host: smtp.gmail.com
+#  host: smtp-relay.sendinblue.com
 #  port: 587
 #  username: amri.foued@gmail.com
-#  password: nuzvqkqdposcqabc
+#  password: xsmtpsib-36096652e5eab23a380fc9f9db74b3927fbfe91fe91cad9c34c63379650bcd20-92ghckVX7nQPRMtm
 #  properties.mail.smtp:
 #    auth: true
 #    starttls.enable: true

@@ -46,7 +46,7 @@ public class EmailServiceImpl implements EmailService {
 			String templateBody = templateManager.renderTemplate();
 
 			MimeMessageHelper helper = this.createMimeMessageHelper(message);
-
+			
 			mimeMessageManager.prepareMimeMessage(helper, from, to, subject, templateBody,
 					template.getTemplateResources(), attachements);
 
@@ -62,7 +62,7 @@ public class EmailServiceImpl implements EmailService {
 	}
 
 	protected MimeMessageHelper createMimeMessageHelper(MimeMessage message) throws MessagingException {
-		return new MimeMessageHelper(message, true);
+		return new MimeMessageHelper(message, true,"UTF-8");
 	}
 
 }
