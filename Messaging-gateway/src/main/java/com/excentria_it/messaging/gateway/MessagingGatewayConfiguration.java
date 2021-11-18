@@ -52,7 +52,7 @@ public class MessagingGatewayConfiguration {
 		container.setConnectionFactory(connectionFactory);
 		container.setQueueNames(RabbitMqQueue.SMS_QUEUE);
 		container.setExposeListenerChannel(true);
-		container.setAcknowledgeMode(AcknowledgeMode.MANUAL);
+		container.setAcknowledgeMode(AcknowledgeMode.AUTO);
 		container.setDefaultRequeueRejected(false);
 		container.setExclusive(true);
 		container.setConcurrentConsumers(1);
@@ -86,7 +86,7 @@ public class MessagingGatewayConfiguration {
 
 		container.setQueueNames(RabbitMqQueue.EMAIL_QUEUE);
 		container.setExposeListenerChannel(true);
-		container.setAcknowledgeMode(AcknowledgeMode.MANUAL);
+		container.setAcknowledgeMode(AcknowledgeMode.AUTO);
 		container.setDefaultRequeueRejected(false);
 		container.setExclusive(true);
 		container.setConcurrentConsumers(1);
