@@ -57,7 +57,7 @@ public class PasswordResetService implements RequestPasswordResetUseCase, ResetP
 	@Autowired
 	private MessageSource messageSource;
 
-	private static final String PASSWORD_RESET_URL_TEMPLATE = "${protocol}://${host}:${port}/wamya-backend/accounts/password-reset?uuid=${uuid}&exp=${expiry}&lang=${lang}";
+	private static final String PASSWORD_RESET_URL_TEMPLATE = "${protocol}://${host}:${port}/reset-password?uuid=${uuid}&exp=${expiry}&lang=${lang}";
 
 	@Override
 	public void requestPasswordReset(String username, Locale locale) {

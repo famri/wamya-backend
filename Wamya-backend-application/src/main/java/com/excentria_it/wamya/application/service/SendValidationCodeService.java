@@ -53,7 +53,7 @@ public class SendValidationCodeService implements SendValidationCodeUseCase {
 	@Autowired
 	private ServerUrlProperties serverUrlProperties;
 
-	private static final String EMAIL_VALIDATION_URL_TEMPLATE = "${protocol}://${host}:${port}/wamya-backend/validation-codes/email/validate?uuid=${uuid}&lang=${lang}";
+	private static final String EMAIL_VALIDATION_URL_TEMPLATE = "${protocol}://${host}:${port}/validate-email?uuid=${uuid}&lang=${lang}";
 
 	@Override
 	public boolean sendSMSValidationCode(SendSMSValidationCodeCommand command, Locale locale) {
