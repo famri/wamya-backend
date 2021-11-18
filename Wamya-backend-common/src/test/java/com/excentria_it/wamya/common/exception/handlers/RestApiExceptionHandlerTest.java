@@ -340,10 +340,10 @@ public class RestApiExceptionHandlerTest {
 
 		// Then
 		then(responseEntity.getBody() instanceof ApiError);
-		then(((ApiError) responseEntity.getBody()).getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
-		then(((ApiError) responseEntity.getBody()).getErrorCode()).isEqualTo(ErrorCode.OBJECT_NOT_FOUND);
-		then(((ApiError) responseEntity.getBody()).getErrors()).containsExactly(SOME_MESSAGE);
-		then(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+		then(((ApiError) responseEntity.getBody()).getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED);
+		then(((ApiError) responseEntity.getBody()).getErrorCode()).isEqualTo(ErrorCode.AUTHORIZATION);
+		then(((ApiError) responseEntity.getBody()).getErrors()).containsExactly("Bad credentials.");
+		then(responseEntity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
@@ -459,7 +459,7 @@ public class RestApiExceptionHandlerTest {
 		then(responseEntity.getBody() instanceof ApiError);
 		then(((ApiError) responseEntity.getBody()).getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED);
 		then(((ApiError) responseEntity.getBody()).getErrorCode()).isEqualTo(ErrorCode.AUTHORIZATION);
-		then(((ApiError) responseEntity.getBody()).getErrors()).containsExactly(SOME_MESSAGE);
+		then(((ApiError) responseEntity.getBody()).getErrors()).containsExactly("Bad credentials.");
 		then(responseEntity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 

@@ -213,12 +213,12 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 	}
 
 	@ExceptionHandler({ UserAccountNotFoundException.class })
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	@ResponseStatus(HttpStatus.UNAUTHORIZED)
 	public ResponseEntity<ApiError> handleUserAccountNotFoundException(UserAccountNotFoundException exception) {
 		log.warn("Exception at " + exception.getClass() + ": ", exception);
 
-		final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ErrorCode.OBJECT_NOT_FOUND,
-				exception.getMessage());
+		final ApiError apiError = new ApiError(HttpStatus.UNAUTHORIZED, ErrorCode.AUTHORIZATION,
+				"Bad credentials.");
 		return new ResponseEntity<ApiError>(apiError, new HttpHeaders(), apiError.getStatus());
 
 	}
@@ -273,7 +273,7 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 	public ResponseEntity<ApiError> handleAuthorizationException(AuthorizationException exception) {
 
 		log.warn("Exception at " + exception.getClass() + ": ", exception);
-		final String error = exception.getMessage();
+		final String error = "Bad credentials.";
 		final ApiError apiError = new ApiError(HttpStatus.UNAUTHORIZED, ErrorCode.AUTHORIZATION, error);
 		return new ResponseEntity<ApiError>(apiError, new HttpHeaders(), apiError.getStatus());
 
