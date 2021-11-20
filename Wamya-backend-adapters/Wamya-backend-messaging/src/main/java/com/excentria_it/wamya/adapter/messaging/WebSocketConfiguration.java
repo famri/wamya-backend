@@ -17,17 +17,20 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
 
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
-		//TODO update cors config for prod
+		// TODO update cors config for prod
 		registry.addEndpoint("/wamya-ws").setAllowedOrigins("*");
 	}
 
 	@Override
 	public void configureMessageBroker(MessageBrokerRegistry registry) {
 
-		registry.enableStompBrokerRelay("/queue").setRelayHost(rabbitProperties.getHost())
+		registry.enableStompBrokerRelay("/exchange/amq.direct").setRelayHost(rabbitProperties.getHost())
+				.setSystemLogin(rabbitProperties.getUsername()).setSystemPasscode(rabbitProperties.getPassword())
 				.setRelayPort(61613).setClientLogin(rabbitProperties.getUsername())
-				.setClientPasscode(rabbitProperties.getPassword());
+				.setClientPasscode(rabbitProperties.getPassword()).setSystemHeartbeatSendInterval(10000)
+				.setSystemHeartbeatReceiveInterval(10000);
 		registry.setApplicationDestinationPrefixes("/app");
+
 	}
 
 }

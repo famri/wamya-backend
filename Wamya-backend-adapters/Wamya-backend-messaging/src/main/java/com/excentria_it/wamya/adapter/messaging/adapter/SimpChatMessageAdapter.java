@@ -21,14 +21,14 @@ public class SimpChatMessageAdapter implements SendMessagePort, SendMessageNotif
 
 	@Override
 	public void sendMessage(MessageDto messageDto, Long discussionId, String receiverUsername) {
-		simpMessagingTemplate.convertAndSendToUser(receiverUsername, "/queue/messages",
+		simpMessagingTemplate.convertAndSendToUser(receiverUsername, "/exchange/amq.direct/messages",
 				new ChatMessage(messageDto, discussionId));
 
 	}
 
 	@Override
 	public void sendReadNotification(String receiverUsername, Long discussionId, List<Long> messagesIds) {
-		simpMessagingTemplate.convertAndSendToUser(receiverUsername, "/queue/read-messages",
+		simpMessagingTemplate.convertAndSendToUser(receiverUsername, "/exchange/amq.direct/read-messages",
 				new ReadUpdate(discussionId, messagesIds));
 
 	}
