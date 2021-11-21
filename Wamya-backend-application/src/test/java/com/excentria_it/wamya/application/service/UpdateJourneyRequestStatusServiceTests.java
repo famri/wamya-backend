@@ -21,7 +21,7 @@ import com.excentria_it.wamya.application.port.out.CancelJourneyRequestPort;
 import com.excentria_it.wamya.application.port.out.LoadJourneyRequestPort;
 import com.excentria_it.wamya.application.port.out.LoadPlaceNamesPort;
 import com.excentria_it.wamya.application.port.out.LoadProposalsPort;
-import com.excentria_it.wamya.application.port.out.MessagingPort;
+import com.excentria_it.wamya.application.port.out.AsynchronousMessagingPort;
 import com.excentria_it.wamya.application.utils.DateTimeHelper;
 import com.excentria_it.wamya.common.domain.PushMessage;
 import com.excentria_it.wamya.common.exception.JourneyRequestNotFoundException;
@@ -41,7 +41,7 @@ public class UpdateJourneyRequestStatusServiceTests {
 	@Mock
 	private LoadProposalsPort loadProposalsPort;
 	@Mock
-	private MessagingPort messagingPort;
+	private AsynchronousMessagingPort messagingPort;
 	@Mock
 	private LoadPlaceNamesPort loadPlaceNamesPort;
 	@Mock

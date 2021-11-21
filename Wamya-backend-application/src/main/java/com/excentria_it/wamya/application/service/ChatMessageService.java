@@ -1,29 +1,42 @@
 package com.excentria_it.wamya.application.service;
 
 import java.time.ZoneId;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
-import com.excentria_it.wamya.application.port.in.LoadMessagesCommandUseCase;
+import org.apache.commons.text.StrSubstitutor;
+import org.springframework.context.MessageSource;
+
+import com.excentria_it.wamya.application.port.in.CountMessagesUseCase;
+import com.excentria_it.wamya.application.port.in.LoadMessagesUseCase;
 import com.excentria_it.wamya.application.port.in.SendMessageUseCase;
+import com.excentria_it.wamya.application.port.in.UpdateMessageReadStatusUseCase;
 import com.excentria_it.wamya.application.port.out.AddMessageToDiscussionPort;
+import com.excentria_it.wamya.application.port.out.AsynchronousMessagingPort;
 import com.excentria_it.wamya.application.port.out.LoadDiscussionsPort;
 import com.excentria_it.wamya.application.port.out.LoadMessagesPort;
 import com.excentria_it.wamya.application.port.out.LoadUserAccountPort;
-import com.excentria_it.wamya.application.port.out.MessagingPort;
 import com.excentria_it.wamya.application.port.out.SendMessageNotificationPort;
+import com.excentria_it.wamya.application.port.out.SynchronousMessageSendingPort;
 import com.excentria_it.wamya.application.port.out.UpdateMessagePort;
+import com.excentria_it.wamya.application.props.ServerUrlProperties;
 import com.excentria_it.wamya.application.utils.DateTimeHelper;
 import com.excentria_it.wamya.application.utils.DiscussionUtils;
 import com.excentria_it.wamya.common.annotation.UseCase;
+import com.excentria_it.wamya.common.domain.EmailMessage;
+import com.excentria_it.wamya.common.domain.EmailTemplate;
 import com.excentria_it.wamya.common.domain.PushMessage;
 import com.excentria_it.wamya.common.domain.PushTemplate;
 import com.excentria_it.wamya.common.exception.DiscussionNotFoundException;
 import com.excentria_it.wamya.common.exception.OperationDeniedException;
+import com.excentria_it.wamya.domain.EmailSender;
+import com.excentria_it.wamya.domain.EmailSubject;
 import com.excentria_it.wamya.domain.LoadDiscussionsDto.MessageDto;
 import com.excentria_it.wamya.domain.LoadDiscussionsOutput;
 import com.excentria_it.wamya.domain.LoadDiscussionsOutput.MessageOutput;
@@ -42,19 +55,26 @@ import lombok.extern.slf4j.Slf4j;
 @Transactional
 @RequiredArgsConstructor
 @Slf4j
-public class ChatMessageService implements SendMessageUseCase, LoadMessagesCommandUseCase {
+public class ChatMessageService
+		implements SendMessageUseCase, LoadMessagesUseCase, UpdateMessageReadStatusUseCase, CountMessagesUseCase {
 
 	private final LoadDiscussionsPort loadDiscussionsPort;
 	private final LoadUserAccountPort loadUserAccountPort;
 	private final AddMessageToDiscussionPort addMessageToDiscussionPort;
-	private final MessagingPort messagingPort;
+	private final AsynchronousMessagingPort asynchronousMessagingPort;
+	private final SynchronousMessageSendingPort synchronousMessageSendingPort;
 
 	private final LoadMessagesPort loadMessagesPort;
 	private final UpdateMessagePort updateMessagePort;
 	private final DateTimeHelper dateTimeHelper;
 	private final SendMessageNotificationPort sendMessageNotificationPort;
+	private final ServerUrlProperties serverUrlProperties;
 
 	private final ObjectMapper mapper;
+
+	private final MessageSource messageSource;
+
+	private static final String DISCUSSIONS_URL_TEMPLATE = "${protocol}://${host}:${port}/discussions";
 
 	@Override
 	public MessageDto sendMessage(SendMessageCommand command, Long discussionId, String senderUsername) {
@@ -96,6 +116,7 @@ public class ChatMessageService implements SendMessageUseCase, LoadMessagesComma
 		ZoneId receiverZoneId = ZoneId
 				.of(receiverAccountOptional.get().getPreferences().get(UserPreferenceKey.TIMEZONE));
 
+		// Save the message to the database
 		MessageOutput messageOutput = addMessageToDiscussionPort.addMessage(discussionId,
 				senderAccountOptional.get().getOauthId(), command.getContent());
 
@@ -109,26 +130,58 @@ public class ChatMessageService implements SendMessageUseCase, LoadMessagesComma
 				.dateTime(dateTimeHelper.systemToUserLocalDateTime(messageOutput.getDateTime(), senderZoneId))
 				.read(messageOutput.getRead());
 
-		try {
-			String messageNotification = mapper.writeValueAsString(
-					new MessageNotification(toReceiverMessageDtoBuilder.sent(true).build(), discussionId));
+		// send the message through websocket if receiver is connected
+		if (receiverAccountOptional.get().getIsWebSocketConnected() != null
+				&& receiverAccountOptional.get().getIsWebSocketConnected()) {
+			synchronousMessageSendingPort.sendMessage(toReceiverMessageDtoBuilder.sent(true).build(), discussionId,
+					receiverUsername);
+		} else if (receiverAccountOptional.get().getDeviceRegistrationToken() != null) {
 
-			PushMessage pushMessage = PushMessage.builder()
-					.to(receiverAccountOptional.get().getDeviceRegistrationToken())
-					.template(PushTemplate.MESSAGE_RECEIVED)
-					.params(Map.of(PushTemplate.MESSAGE_RECEIVED.getTemplateParams().get(0),
-							senderAccountOptional.get().getFirstname() + " "
-									+ senderAccountOptional.get().getLastname()))
-					.data(Map.of("type", "message", "content", messageNotification))
-					.language(receiverAccountOptional.get().getPreferences().get(UserPreferenceKey.LOCALE)).build();
+			// if receiver was connected at least once through smart phone, send him a push
+			// notification
 
-			messagingPort.sendPushMessage(pushMessage);
+			String receiverLocale = receiverAccountOptional.get().getPreferences().get(UserPreferenceKey.LOCALE);
+			try {
+				String messageNotification = mapper.writeValueAsString(
+						new MessageNotification(toReceiverMessageDtoBuilder.sent(true).build(), discussionId));
 
-			return toSenderMessageDtoBuilder.sent(true).build();
-		} catch (JsonProcessingException e) {
-			log.error("Exception converting object to json", e);
-			return toSenderMessageDtoBuilder.sent(false).build();
+				PushMessage pushMessage = PushMessage.builder()
+						.to(receiverAccountOptional.get().getDeviceRegistrationToken())
+						.template(PushTemplate.MESSAGE_RECEIVED)
+						.params(Map.of(PushTemplate.MESSAGE_RECEIVED.getTemplateParams().get(0),
+								senderAccountOptional.get().getFirstname() + " "
+										+ senderAccountOptional.get().getLastname()))
+						.data(Map.of("type", "message", "content", messageNotification)).language(receiverLocale)
+						.build();
+
+				asynchronousMessagingPort.sendPushMessage(pushMessage);
+
+			} catch (JsonProcessingException e) {
+				log.error("Exception converting object to json", e);
+				return toSenderMessageDtoBuilder.sent(false).build();
+			}
+		} else {
+			String receiverLocale = receiverAccountOptional.get().getPreferences().get(UserPreferenceKey.LOCALE);
+			String[] receiverLanguageAndCountry = receiverLocale.split("_");
+
+			String discussionsLink = patchURL(DISCUSSIONS_URL_TEMPLATE, serverUrlProperties.getProtocol(),
+					serverUrlProperties.getHost(), serverUrlProperties.getPort());
+
+			Map<String, String> emailTemplateParams = Map.of(EmailTemplate.RECEIVED_MESSAGE.getTemplateParams().get(0),
+					senderAccountOptional.get().getFirstname() + " "
+							+ senderAccountOptional.get().getLastname().toUpperCase(),
+					EmailTemplate.RECEIVED_MESSAGE.getTemplateParams().get(1), discussionsLink);
+
+			EmailMessage emailMessage = EmailMessage.builder().from(EmailSender.FRETTO_TEAM).to(receiverUsername)
+					.subject(messageSource.getMessage(EmailSubject.RECEIVED_MESSAGE, null,
+							new Locale(receiverLanguageAndCountry[0], receiverLanguageAndCountry[1])))
+					.template(EmailTemplate.RECEIVED_MESSAGE).params(emailTemplateParams).language(receiverLocale)
+					.build();
+
+			asynchronousMessagingPort.sendEmailMessage(emailMessage);
 		}
+
+		return toSenderMessageDtoBuilder.sent(true).build();
 
 	}
 
@@ -187,4 +240,57 @@ public class ChatMessageService implements SendMessageUseCase, LoadMessagesComma
 						.collect(Collectors.toList()));
 	}
 
+	@Override
+	public void updateMessageReadStatus(Long discussionId, Long messageId, String username,
+			UpdateMessageReadStatusCommand command) {
+
+		Optional<UserAccount> userAccountOptional = loadUserAccountPort.loadUserAccountByUsername(username);
+
+		Boolean isTransporter = userAccountOptional.get().getIsTransporter();
+
+		Optional<LoadDiscussionsOutput> loadDiscussionsOutputOptional = loadDiscussionsPort
+				.loadDiscussionById(discussionId);
+
+		if (loadDiscussionsOutputOptional.isEmpty()) {
+			throw new DiscussionNotFoundException(
+					String.format("Discussion not found by discussionId %d", discussionId));
+		}
+
+		LoadDiscussionsOutput loadDiscussionsOutput = loadDiscussionsOutputOptional.get();
+
+		// check that authenticated user is loading his own discussion messages
+		if ((isTransporter
+				&& !userAccountOptional.get().getOauthId().equals(loadDiscussionsOutput.getTransporter().getId()))
+				|| (!isTransporter
+						&& !userAccountOptional.get().getOauthId().equals(loadDiscussionsOutput.getClient().getId()))) {
+
+			throw new OperationDeniedException(String.format("Cannot update messages of another user discussion."));
+		}
+
+		updateMessagePort.updateRead(List.of(messageId), Boolean.valueOf(command.getIsRead()));
+
+	}
+
+	protected String patchURL(String url, String protocol, String host, String port) {
+
+		Map<String, String> data = new HashMap<>();
+		data.put("protocol", protocol);
+		data.put("host", host);
+		data.put("port", port);
+
+		String discussionsUrl = StrSubstitutor.replace(url, data);
+
+		return discussionsUrl;
+	}
+
+	@Override
+	public Long countMessages(CountMessagesCommand command) {
+
+		Optional<UserAccount> userAccountOptional = loadUserAccountPort
+				.loadUserAccountByUsername(command.getUsername());
+
+		Boolean isTransporter = userAccountOptional.get().getIsTransporter();
+
+		return loadMessagesPort.countMessages(command.getUsername(), Boolean.valueOf(command.getRead()), isTransporter);
+	}
 }

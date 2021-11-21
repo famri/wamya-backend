@@ -22,7 +22,7 @@ import org.springframework.context.MessageSource;
 import com.excentria_it.wamya.application.port.in.SendValidationCodeUseCase.SendEmailValidationLinkCommand;
 import com.excentria_it.wamya.application.port.in.SendValidationCodeUseCase.SendSMSValidationCodeCommand;
 import com.excentria_it.wamya.application.port.out.LoadUserAccountPort;
-import com.excentria_it.wamya.application.port.out.MessagingPort;
+import com.excentria_it.wamya.application.port.out.AsynchronousMessagingPort;
 import com.excentria_it.wamya.application.port.out.UpdateUserAccountPort;
 import com.excentria_it.wamya.application.props.ServerUrlProperties;
 import com.excentria_it.wamya.application.service.helper.CodeGenerator;
@@ -40,7 +40,7 @@ public class SendValidationCodeServiceTests {
 	@Mock
 	private CodeGenerator codeGenerator;
 	@Mock
-	private MessagingPort messagingPort;
+	private AsynchronousMessagingPort messagingPort;
 	@Mock
 	private LoadUserAccountPort loadUserAccountPort;
 	@Mock

@@ -73,13 +73,13 @@ public class ClientRepositoryTests {
 		List<ClientJpaEntity> clients = List.of(
 				new ClientJpaEntity(null, null, null, "Client1", null, ValidationState.VALIDATED,
 						TestConstants.DEFAULT_MINIBIO, null, "client1@gmail.com", null, null, icc, "22111111", null,
-						null, null, null, null, null, null, null),
+						null, null, null, null, null, null, null, null),
 				new ClientJpaEntity(null, null, null, "Client2", null, ValidationState.VALIDATED,
 						TestConstants.DEFAULT_MINIBIO, null, "client2@gmail.com", null, null, icc, "22222222", null,
-						null, null, null, null, null, null, null),
+						null, null, null, null, null, null, null, null),
 				new ClientJpaEntity(null, null, null, "Client3", null, ValidationState.VALIDATED,
 						TestConstants.DEFAULT_MINIBIO, null, "client3@gmail.com", null, null, icc, "22333333", null,
-						null, null, null, null, null, null, null));
+						null, null, null, null, null, null, null, null));
 
 		return clientRepository.saveAll(clients);
 	}

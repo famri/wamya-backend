@@ -3,6 +3,7 @@ package com.excentria_it.wamya.application.service;
 import static com.excentria_it.wamya.test.data.common.DiscussionTestData.*;
 import static com.excentria_it.wamya.test.data.common.MessageTestData.*;
 import static com.excentria_it.wamya.test.data.common.UserAccountTestData.*;
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
@@ -16,24 +17,30 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.MessageSource;
 
-import com.excentria_it.wamya.application.port.in.LoadMessagesCommandUseCase.LoadMessagesCommand;
-import com.excentria_it.wamya.application.port.in.LoadMessagesCommandUseCase.LoadMessagesCommand.LoadMessagesCommandBuilder;
+import com.excentria_it.wamya.application.port.in.LoadMessagesUseCase.LoadMessagesCommand;
+import com.excentria_it.wamya.application.port.in.LoadMessagesUseCase.LoadMessagesCommand.LoadMessagesCommandBuilder;
 import com.excentria_it.wamya.application.port.in.SendMessageUseCase.SendMessageCommand;
 import com.excentria_it.wamya.application.port.in.SendMessageUseCase.SendMessageCommand.SendMessageCommandBuilder;
 import com.excentria_it.wamya.application.port.out.AddMessageToDiscussionPort;
+import com.excentria_it.wamya.application.port.out.AsynchronousMessagingPort;
 import com.excentria_it.wamya.application.port.out.LoadDiscussionsPort;
 import com.excentria_it.wamya.application.port.out.LoadMessagesPort;
 import com.excentria_it.wamya.application.port.out.LoadUserAccountPort;
-import com.excentria_it.wamya.application.port.out.MessagingPort;
 import com.excentria_it.wamya.application.port.out.SendMessageNotificationPort;
+import com.excentria_it.wamya.application.port.out.SynchronousMessageSendingPort;
 import com.excentria_it.wamya.application.port.out.UpdateMessagePort;
+import com.excentria_it.wamya.application.props.ServerUrlProperties;
 import com.excentria_it.wamya.application.utils.DateTimeHelper;
 import com.excentria_it.wamya.application.utils.DiscussionUtils;
+import com.excentria_it.wamya.common.domain.EmailMessage;
+import com.excentria_it.wamya.common.domain.EmailTemplate;
 import com.excentria_it.wamya.common.domain.PushMessage;
 import com.excentria_it.wamya.common.domain.PushTemplate;
 import com.excentria_it.wamya.common.exception.DiscussionNotFoundException;
@@ -58,7 +65,7 @@ public class ChatMessageServiceTests {
 	@Mock
 	private AddMessageToDiscussionPort addMessageToDiscussionPort;
 	@Mock
-	private MessagingPort messagingPort;
+	private AsynchronousMessagingPort messagingPort;
 	@Mock
 	private LoadMessagesPort loadMessagesPort;
 
@@ -66,6 +73,12 @@ public class ChatMessageServiceTests {
 	private UpdateMessagePort updateMessagePort;
 	@Mock
 	private SendMessageNotificationPort sendMessageNotificationPort;
+	@Mock
+	private SynchronousMessageSendingPort sendMessagePort;
+	@Mock
+	private ServerUrlProperties serverUrlProperties;
+	@Mock
+	private MessageSource messageSource;
 
 	@Spy
 	private DateTimeHelper dateTimeHelper;
@@ -73,16 +86,75 @@ public class ChatMessageServiceTests {
 	@Spy
 	private ObjectMapper mapper;
 
+	@Spy
 	@InjectMocks
 	private ChatMessageService chatMessageService;
 
 	@Test
-	void givenClientUsername_WhenSendPushMessage_ThenReturnSentMessage() throws JsonProcessingException {
+	void givenTransporterDeviceTokenExistsAndTransporterIsWebSocketConnected_WhenSendMessageToTransporter_ThenSendWebSocketMessageAndDontSendPushNotificationMessageAndReturnSentMessage()
+			throws JsonProcessingException {
 		// given
 		SendMessageCommandBuilder commandBuilder = defaultSendMessageCommandBuilder();
 		SendMessageCommand command = commandBuilder.build();
 		UserAccount clientUserAccount = defaultClientUserAccountBuilder().build();
-		UserAccount transporterUserAccount = defaultTransporterUserAccountBuilder().build();
+		UserAccount transporterUserAccount = defaultTransporterUserAccountBuilder()
+				.deviceRegistrationToken("SOME_DEVICE_REGISTRATION_TOKEN").isWebSocketConnected(true).build();
+
+		given(loadUserAccountPort.loadUserAccountByUsername(clientUserAccount.getEmail()))
+				.willReturn(Optional.of(clientUserAccount));
+
+		LoadDiscussionsOutput loadDiscussionsOutput = defaultClientLoadDiscussionsOutput();
+		given(loadDiscussionsPort.loadDiscussionById(any(Long.class))).willReturn(Optional.of(loadDiscussionsOutput));
+
+		given(loadUserAccountPort.loadUserAccountByUsername(loadDiscussionsOutput.getTransporter().getEmail()))
+				.willReturn(Optional.of(transporterUserAccount));
+
+		MessageOutput messageOutput = defaultClient1MessageOutput();
+		given(addMessageToDiscussionPort.addMessage(any(Long.class), any(Long.class), any(String.class)))
+				.willReturn(messageOutput);
+
+		ZoneId senderZoneId = ZoneId.of(clientUserAccount.getPreferences().get(UserPreferenceKey.TIMEZONE));
+		ZoneId receiverZoneId = ZoneId.of(transporterUserAccount.getPreferences().get(UserPreferenceKey.TIMEZONE));
+
+		// when
+		MessageDto messageDto = chatMessageService.sendMessage(command, loadDiscussionsOutput.getId(),
+				clientUserAccount.getEmail());
+		// then
+
+		then(loadUserAccountPort).should(times(1)).loadUserAccountByUsername(clientUserAccount.getEmail());
+		then(loadUserAccountPort).should(times(1)).loadUserAccountByUsername(transporterUserAccount.getEmail());
+		then(loadDiscussionsPort).should(times(1)).loadDiscussionById(loadDiscussionsOutput.getId());
+		then(addMessageToDiscussionPort).should(times(1)).addMessage(loadDiscussionsOutput.getId(),
+				clientUserAccount.getOauthId(), command.getContent());
+
+		MessageDto toReceiverMessageDto = new MessageDto(messageOutput.getId(), messageOutput.getAuthorId(),
+				messageOutput.getContent(),
+				dateTimeHelper.systemToUserLocalDateTime(messageOutput.getDateTime(), receiverZoneId),
+				messageOutput.getRead(), true);
+
+		then(messagingPort).should(never()).sendPushMessage(any(PushMessage.class));
+		then(sendMessagePort).should(times(1)).sendMessage(eq(toReceiverMessageDto), eq(loadDiscussionsOutput.getId()),
+				eq(transporterUserAccount.getEmail()));
+
+		assertEquals(messageOutput.getId(), messageDto.getId());
+		assertEquals(messageOutput.getAuthorId(), messageDto.getAuthorId());
+		assertEquals(messageOutput.getContent(), messageDto.getContent());
+		assertEquals(dateTimeHelper.systemToUserLocalDateTime(messageOutput.getDateTime(), senderZoneId),
+				messageDto.getDateTime());
+
+		assertEquals(messageOutput.getRead(), messageDto.getRead());
+		assertEquals(true, messageDto.getSent());
+	}
+
+	@Test
+	void givenTransporterDeviceTokenExistsAndTransporterWebSocketIsNotConnected_WhenSendMessageToTransporter_ThenSendPushNotificationMessageAndDontSendWebSocketMessageAndReturnSentMessage()
+			throws JsonProcessingException {
+		// given
+		SendMessageCommandBuilder commandBuilder = defaultSendMessageCommandBuilder();
+		SendMessageCommand command = commandBuilder.build();
+		UserAccount clientUserAccount = defaultClientUserAccountBuilder().build();
+		UserAccount transporterUserAccount = defaultTransporterUserAccountBuilder()
+				.deviceRegistrationToken("SOME_DEVICE_REGISTRATION_TOKEN").isWebSocketConnected(false).build();
 
 		given(loadUserAccountPort.loadUserAccountByUsername(clientUserAccount.getEmail()))
 				.willReturn(Optional.of(clientUserAccount));
@@ -119,13 +191,14 @@ public class ChatMessageServiceTests {
 		String messageNotification = mapper
 				.writeValueAsString(new MessageNotification(toReceiverMessageDto, loadDiscussionsOutput.getId()));
 
-		PushMessage pushMessage = PushMessage.builder().to(clientUserAccount.getDeviceRegistrationToken())
+		PushMessage pushMessage = PushMessage.builder().to(transporterUserAccount.getDeviceRegistrationToken())
 				.template(PushTemplate.MESSAGE_RECEIVED)
 				.params(Map.of(PushTemplate.MESSAGE_RECEIVED.getTemplateParams().get(0),
 						clientUserAccount.getFirstname() + " " + clientUserAccount.getLastname()))
 				.data(Map.of("type", "message", "content", messageNotification)).language("fr_FR").build();
 
 		then(messagingPort).should(times(1)).sendPushMessage(eq(pushMessage));
+		then(sendMessagePort).should(never()).sendMessage(any(MessageDto.class), any(Long.class), any(String.class));
 
 		assertEquals(messageOutput.getId(), messageDto.getId());
 		assertEquals(messageOutput.getAuthorId(), messageDto.getAuthorId());
@@ -138,12 +211,197 @@ public class ChatMessageServiceTests {
 	}
 
 	@Test
-	void givenTransporterUsername_WhenSendPushMessage_ThenReturnSentMessage() throws JsonProcessingException {
+	void givenTransporterDeviceTokenExistsAndTransporterWebSockedIsNotConnectedAndJsonProcessingException_WhenSendMessageToTransporter_ThenReturnNotSentMessage()
+			throws JsonProcessingException {
+		// given
+		SendMessageCommandBuilder commandBuilder = defaultSendMessageCommandBuilder();
+		SendMessageCommand command = commandBuilder.build();
+		UserAccount clientUserAccount = defaultClientUserAccountBuilder().build();
+		UserAccount transporterUserAccount = defaultTransporterUserAccountBuilder()
+				.deviceRegistrationToken("SOME_DEVICE_TOKEN").isWebSocketConnected(false).build();
+
+		given(loadUserAccountPort.loadUserAccountByUsername(clientUserAccount.getEmail()))
+				.willReturn(Optional.of(clientUserAccount));
+
+		LoadDiscussionsOutput loadDiscussionsOutput = defaultClientLoadDiscussionsOutput();
+		given(loadDiscussionsPort.loadDiscussionById(any(Long.class))).willReturn(Optional.of(loadDiscussionsOutput));
+
+		given(loadUserAccountPort.loadUserAccountByUsername(loadDiscussionsOutput.getTransporter().getEmail()))
+				.willReturn(Optional.of(transporterUserAccount));
+
+		MessageOutput messageOutput = defaultClient1MessageOutput();
+		given(addMessageToDiscussionPort.addMessage(any(Long.class), any(Long.class), any(String.class)))
+				.willReturn(messageOutput);
+
+		ZoneId senderZoneId = ZoneId.of(clientUserAccount.getPreferences().get(UserPreferenceKey.TIMEZONE));
+		// ZoneId receiverZoneId =
+		// ZoneId.of(transporterUserAccount.getPreferences().get(UserPreferenceKey.TIMEZONE));
+
+		doThrow(JsonProcessingException.class).when(mapper).writeValueAsString(any(Object.class));
+
+		// when
+		MessageDto messageDto = chatMessageService.sendMessage(command, loadDiscussionsOutput.getId(),
+				clientUserAccount.getEmail());
+		// then
+
+		then(loadUserAccountPort).should(times(1)).loadUserAccountByUsername(clientUserAccount.getEmail());
+		then(loadUserAccountPort).should(times(1)).loadUserAccountByUsername(transporterUserAccount.getEmail());
+		then(loadDiscussionsPort).should(times(1)).loadDiscussionById(loadDiscussionsOutput.getId());
+		then(addMessageToDiscussionPort).should(times(1)).addMessage(loadDiscussionsOutput.getId(),
+				clientUserAccount.getOauthId(), command.getContent());
+
+		then(messagingPort).should(never()).sendPushMessage(any(PushMessage.class));
+
+		assertEquals(messageOutput.getId(), messageDto.getId());
+		assertEquals(messageOutput.getAuthorId(), messageDto.getAuthorId());
+		assertEquals(messageOutput.getContent(), messageDto.getContent());
+		assertEquals(dateTimeHelper.systemToUserLocalDateTime(messageOutput.getDateTime(), senderZoneId),
+				messageDto.getDateTime());
+
+		assertEquals(messageOutput.getRead(), messageDto.getRead());
+		assertEquals(false, messageDto.getSent());
+	}
+
+	@Test
+	void givenTransporterDeviceTokenNonExistentAndTransporterIsNotWebSocketConnected_WhenSendMessageToTransporter_ThenDontSendWebSocketMessageAndDontSendPushNotificationMessageAndSendEmailMessageAndReturnSentMessage()
+			throws JsonProcessingException {
+		// given
+		SendMessageCommandBuilder commandBuilder = defaultSendMessageCommandBuilder();
+		SendMessageCommand command = commandBuilder.build();
+		UserAccount clientUserAccount = defaultClientUserAccountBuilder().build();
+		UserAccount transporterUserAccount = defaultTransporterUserAccountBuilder().deviceRegistrationToken(null)
+				.isWebSocketConnected(false).build();
+
+		given(loadUserAccountPort.loadUserAccountByUsername(clientUserAccount.getEmail()))
+				.willReturn(Optional.of(clientUserAccount));
+
+		LoadDiscussionsOutput loadDiscussionsOutput = defaultClientLoadDiscussionsOutput();
+		given(loadDiscussionsPort.loadDiscussionById(any(Long.class))).willReturn(Optional.of(loadDiscussionsOutput));
+
+		given(loadUserAccountPort.loadUserAccountByUsername(loadDiscussionsOutput.getTransporter().getEmail()))
+				.willReturn(Optional.of(transporterUserAccount));
+
+		MessageOutput messageOutput = defaultClient1MessageOutput();
+		given(addMessageToDiscussionPort.addMessage(any(Long.class), any(Long.class), any(String.class)))
+				.willReturn(messageOutput);
+
+		ZoneId senderZoneId = ZoneId.of(clientUserAccount.getPreferences().get(UserPreferenceKey.TIMEZONE));
+
+		givenServerUrlProperties();
+		String discussionLink = givenPatchUrl();
+
+		// when
+		MessageDto messageDto = chatMessageService.sendMessage(command, loadDiscussionsOutput.getId(),
+				clientUserAccount.getEmail());
+		// then
+
+		then(loadUserAccountPort).should(times(1)).loadUserAccountByUsername(clientUserAccount.getEmail());
+		then(loadUserAccountPort).should(times(1)).loadUserAccountByUsername(transporterUserAccount.getEmail());
+		then(loadDiscussionsPort).should(times(1)).loadDiscussionById(loadDiscussionsOutput.getId());
+		then(addMessageToDiscussionPort).should(times(1)).addMessage(loadDiscussionsOutput.getId(),
+				clientUserAccount.getOauthId(), command.getContent());
+
+		then(messagingPort).should(never()).sendPushMessage(any(PushMessage.class));
+		then(sendMessagePort).should(never()).sendMessage(any(MessageDto.class), any(Long.class), any(String.class));
+
+		ArgumentCaptor<EmailMessage> emailMessageCaptor = ArgumentCaptor.forClass(EmailMessage.class);
+
+		then(messagingPort).should(times(1)).sendEmailMessage(emailMessageCaptor.capture());
+
+		assertThat(emailMessageCaptor.getValue().getTo()).isEqualTo(transporterUserAccount.getEmail());
+
+		assertThat(emailMessageCaptor.getValue().getTemplate()).isEqualTo(EmailTemplate.RECEIVED_MESSAGE);
+
+		assertThat(not(emailMessageCaptor.getValue().getParams().isEmpty()));
+
+		assertNotNull(emailMessageCaptor.getValue().getParams()
+				.get(EmailTemplate.RECEIVED_MESSAGE.getTemplateParams().get(0)));
+
+		assertThat(emailMessageCaptor.getValue().getParams()
+				.get(EmailTemplate.RECEIVED_MESSAGE.getTemplateParams().get(0))).isEqualTo(
+						clientUserAccount.getFirstname() + " " + clientUserAccount.getLastname().toUpperCase());
+
+		assertNotNull(emailMessageCaptor.getValue().getParams()
+				.get(EmailTemplate.RECEIVED_MESSAGE.getTemplateParams().get(1)));
+
+		assertThat(emailMessageCaptor.getValue().getParams()
+				.get(EmailTemplate.RECEIVED_MESSAGE.getTemplateParams().get(1))).isEqualTo(discussionLink);
+
+		assertEquals(messageOutput.getId(), messageDto.getId());
+		assertEquals(messageOutput.getAuthorId(), messageDto.getAuthorId());
+		assertEquals(messageOutput.getContent(), messageDto.getContent());
+		assertEquals(dateTimeHelper.systemToUserLocalDateTime(messageOutput.getDateTime(), senderZoneId),
+				messageDto.getDateTime());
+
+		assertEquals(messageOutput.getRead(), messageDto.getRead());
+		assertEquals(true, messageDto.getSent());
+	}
+
+	@Test
+	void givenClientDeviceTokenExistsAndClientIsWebSocketConnected_WhenSendMessageToClient_ThenSendWebSocketMessageAndDontSendPushNotificationMessageAndReturnSentMessage()
+			throws JsonProcessingException {
 		// given
 		SendMessageCommandBuilder commandBuilder = defaultSendMessageCommandBuilder();
 		SendMessageCommand command = commandBuilder.build();
 		UserAccount transporterUserAccount = defaultTransporterUserAccountBuilder().build();
-		UserAccount clientUserAccount = defaultClientUserAccountBuilder().build();
+		UserAccount clientUserAccount = defaultClientUserAccountBuilder()
+				.deviceRegistrationToken("SOME_DEVICE_REGISTRATION_TOKEN").isWebSocketConnected(true).build();
+
+		given(loadUserAccountPort.loadUserAccountByUsername(eq(transporterUserAccount.getEmail())))
+				.willReturn(Optional.of(transporterUserAccount));
+
+		LoadDiscussionsOutput loadDiscussionsOutput = defaultClientLoadDiscussionsOutput();
+		given(loadDiscussionsPort.loadDiscussionById(any(Long.class))).willReturn(Optional.of(loadDiscussionsOutput));
+
+		given(loadUserAccountPort.loadUserAccountByUsername(eq(loadDiscussionsOutput.getClient().getEmail())))
+				.willReturn(Optional.of(clientUserAccount));
+
+		MessageOutput messageOutput = defaultTransporter1MessageOutput();
+		given(addMessageToDiscussionPort.addMessage(any(Long.class), any(Long.class), any(String.class)))
+				.willReturn(messageOutput);
+
+		ZoneId senderZoneId = ZoneId.of(transporterUserAccount.getPreferences().get(UserPreferenceKey.TIMEZONE));
+		ZoneId receiverZoneId = ZoneId.of(clientUserAccount.getPreferences().get(UserPreferenceKey.TIMEZONE));
+
+		// when
+		MessageDto messageDto = chatMessageService.sendMessage(command, loadDiscussionsOutput.getId(),
+				transporterUserAccount.getEmail());
+		// then
+
+		then(loadUserAccountPort).should(times(1)).loadUserAccountByUsername(transporterUserAccount.getEmail());
+		then(loadUserAccountPort).should(times(1)).loadUserAccountByUsername(clientUserAccount.getEmail());
+		then(loadDiscussionsPort).should(times(1)).loadDiscussionById(loadDiscussionsOutput.getId());
+		then(addMessageToDiscussionPort).should(times(1)).addMessage(loadDiscussionsOutput.getId(),
+				transporterUserAccount.getOauthId(), command.getContent());
+
+		MessageDto toReceiverMessageDto = new MessageDto(messageOutput.getId(), messageOutput.getAuthorId(),
+				messageOutput.getContent(),
+				dateTimeHelper.systemToUserLocalDateTime(messageOutput.getDateTime(), receiverZoneId),
+				messageOutput.getRead(), true);
+
+		then(messagingPort).should(never()).sendPushMessage(any(PushMessage.class));
+		then(sendMessagePort).should(times(1)).sendMessage(eq(toReceiverMessageDto), eq(loadDiscussionsOutput.getId()),
+				eq(clientUserAccount.getEmail()));
+
+		assertEquals(messageOutput.getId(), messageDto.getId());
+		assertEquals(messageOutput.getAuthorId(), messageDto.getAuthorId());
+		assertEquals(messageOutput.getContent(), messageDto.getContent());
+		assertEquals(dateTimeHelper.systemToUserLocalDateTime(messageOutput.getDateTime(), senderZoneId),
+				messageDto.getDateTime());
+
+		assertEquals(messageOutput.getRead(), messageDto.getRead());
+		assertEquals(true, messageDto.getSent());
+	}
+
+	@Test
+	void givenClientDeviceTokenExistsAndClientWebSocketIsNotConnected_WhenSendMessageToClient_ThenSendPushNotificationMessageAndDontSendWebSocketMessageReturnSentMessage()
+			throws JsonProcessingException {
+		// given
+		SendMessageCommandBuilder commandBuilder = defaultSendMessageCommandBuilder();
+		SendMessageCommand command = commandBuilder.build();
+		UserAccount transporterUserAccount = defaultTransporterUserAccountBuilder().build();
+		UserAccount clientUserAccount = defaultClientUserAccountBuilder()
+				.deviceRegistrationToken("SOME_DEVICE_REGISTRATION_TOKEN").isWebSocketConnected(false).build();
 
 		given(loadUserAccountPort.loadUserAccountByUsername(eq(transporterUserAccount.getEmail())))
 				.willReturn(Optional.of(transporterUserAccount));
@@ -187,6 +445,7 @@ public class ChatMessageServiceTests {
 				.data(Map.of("type", "message", "content", messageNotification)).language("fr_FR").build();
 
 		then(messagingPort).should(times(1)).sendPushMessage(eq(pushMessage));
+		then(sendMessagePort).should(never()).sendMessage(any(MessageDto.class), any(Long.class), any(String.class));
 
 		assertEquals(messageOutput.getId(), messageDto.getId());
 		assertEquals(messageOutput.getAuthorId(), messageDto.getAuthorId());
@@ -199,13 +458,14 @@ public class ChatMessageServiceTests {
 	}
 
 	@Test
-	void givenClientUsernameAndJsonProcessingException_WhenSendPushMessage_ThenReturnNotSentMessage()
+	void givenClientDeviceTokenNonExistentAndClientIsNotWebSocketConnected_WhenSendMessageToClient_ThenDontSendWebSocketMessageAndDontSendPushNotificationMessageAndSendEmailMessageAndReturnSentMessage()
 			throws JsonProcessingException {
 		// given
 		SendMessageCommandBuilder commandBuilder = defaultSendMessageCommandBuilder();
 		SendMessageCommand command = commandBuilder.build();
 		UserAccount clientUserAccount = defaultClientUserAccountBuilder().build();
-		UserAccount transporterUserAccount = defaultTransporterUserAccountBuilder().build();
+		UserAccount transporterUserAccount = defaultTransporterUserAccountBuilder().deviceRegistrationToken(null)
+				.isWebSocketConnected(false).build();
 
 		given(loadUserAccountPort.loadUserAccountByUsername(clientUserAccount.getEmail()))
 				.willReturn(Optional.of(clientUserAccount));
@@ -216,28 +476,52 @@ public class ChatMessageServiceTests {
 		given(loadUserAccountPort.loadUserAccountByUsername(loadDiscussionsOutput.getTransporter().getEmail()))
 				.willReturn(Optional.of(transporterUserAccount));
 
-		MessageOutput messageOutput = defaultClient1MessageOutput();
+		MessageOutput messageOutput = defaultTransporter1MessageOutput();
 		given(addMessageToDiscussionPort.addMessage(any(Long.class), any(Long.class), any(String.class)))
 				.willReturn(messageOutput);
 
-		ZoneId senderZoneId = ZoneId.of(clientUserAccount.getPreferences().get(UserPreferenceKey.TIMEZONE));
-		// ZoneId receiverZoneId =
-		// ZoneId.of(transporterUserAccount.getPreferences().get(UserPreferenceKey.TIMEZONE));
+		ZoneId senderZoneId = ZoneId.of(transporterUserAccount.getPreferences().get(UserPreferenceKey.TIMEZONE));
 
-		doThrow(JsonProcessingException.class).when(mapper).writeValueAsString(any(Object.class));
+		givenServerUrlProperties();
+		String discussionLink = givenPatchUrl();
 
 		// when
 		MessageDto messageDto = chatMessageService.sendMessage(command, loadDiscussionsOutput.getId(),
-				clientUserAccount.getEmail());
+				transporterUserAccount.getEmail());
 		// then
 
 		then(loadUserAccountPort).should(times(1)).loadUserAccountByUsername(clientUserAccount.getEmail());
 		then(loadUserAccountPort).should(times(1)).loadUserAccountByUsername(transporterUserAccount.getEmail());
 		then(loadDiscussionsPort).should(times(1)).loadDiscussionById(loadDiscussionsOutput.getId());
 		then(addMessageToDiscussionPort).should(times(1)).addMessage(loadDiscussionsOutput.getId(),
-				clientUserAccount.getOauthId(), command.getContent());
+				transporterUserAccount.getOauthId(), command.getContent());
 
 		then(messagingPort).should(never()).sendPushMessage(any(PushMessage.class));
+		then(sendMessagePort).should(never()).sendMessage(any(MessageDto.class), any(Long.class), any(String.class));
+
+		ArgumentCaptor<EmailMessage> emailMessageCaptor = ArgumentCaptor.forClass(EmailMessage.class);
+
+		then(messagingPort).should(times(1)).sendEmailMessage(emailMessageCaptor.capture());
+
+		assertThat(emailMessageCaptor.getValue().getTo()).isEqualTo(clientUserAccount.getEmail());
+
+		assertThat(emailMessageCaptor.getValue().getTemplate()).isEqualTo(EmailTemplate.RECEIVED_MESSAGE);
+
+		assertThat(not(emailMessageCaptor.getValue().getParams().isEmpty()));
+
+		assertNotNull(emailMessageCaptor.getValue().getParams()
+				.get(EmailTemplate.RECEIVED_MESSAGE.getTemplateParams().get(0)));
+
+		assertThat(emailMessageCaptor.getValue().getParams()
+				.get(EmailTemplate.RECEIVED_MESSAGE.getTemplateParams().get(0)))
+						.isEqualTo(transporterUserAccount.getFirstname() + " "
+								+ transporterUserAccount.getLastname().toUpperCase());
+
+		assertNotNull(emailMessageCaptor.getValue().getParams()
+				.get(EmailTemplate.RECEIVED_MESSAGE.getTemplateParams().get(1)));
+
+		assertThat(emailMessageCaptor.getValue().getParams()
+				.get(EmailTemplate.RECEIVED_MESSAGE.getTemplateParams().get(1))).isEqualTo(discussionLink);
 
 		assertEquals(messageOutput.getId(), messageDto.getId());
 		assertEquals(messageOutput.getAuthorId(), messageDto.getAuthorId());
@@ -246,7 +530,14 @@ public class ChatMessageServiceTests {
 				messageDto.getDateTime());
 
 		assertEquals(messageOutput.getRead(), messageDto.getRead());
-		assertEquals(false, messageDto.getSent());
+		assertEquals(true, messageDto.getSent());
+	}
+
+	@Test
+	void testPatch() {
+		String generatedLink = chatMessageService.patchURL("${protocol}://${host}:${port}/discussions", "https",
+				"localhost", "8443");
+		assertEquals("https://localhost:8443/discussions", generatedLink);
 	}
 
 	@Test
@@ -453,4 +744,18 @@ public class ChatMessageServiceTests {
 				result.getContent());
 	}
 
+	private String givenPatchUrl() {
+		String result = "SOME_EMAIL_VALIDATION_LINK";
+
+		doReturn(result).when(chatMessageService).patchURL(any(String.class), any(String.class), any(String.class),
+				any(String.class));
+		return result;
+	}
+
+	private void givenServerUrlProperties() {
+		given(serverUrlProperties.getHost()).willReturn("HOST");
+		given(serverUrlProperties.getPort()).willReturn("PORT");
+		given(serverUrlProperties.getProtocol()).willReturn("PROTOCOL");
+
+	}
 }

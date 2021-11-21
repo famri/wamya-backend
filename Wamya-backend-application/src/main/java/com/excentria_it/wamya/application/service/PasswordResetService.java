@@ -17,7 +17,7 @@ import org.springframework.context.NoSuchMessageException;
 import com.excentria_it.wamya.application.port.in.RequestPasswordResetUseCase;
 import com.excentria_it.wamya.application.port.in.ResetPasswordUseCase;
 import com.excentria_it.wamya.application.port.out.LoadUserAccountPort;
-import com.excentria_it.wamya.application.port.out.MessagingPort;
+import com.excentria_it.wamya.application.port.out.AsynchronousMessagingPort;
 import com.excentria_it.wamya.application.port.out.OAuthUserAccountPort;
 import com.excentria_it.wamya.application.port.out.PasswordResetRequestPort;
 import com.excentria_it.wamya.application.props.PasswordResetProperties;
@@ -52,7 +52,7 @@ public class PasswordResetService implements RequestPasswordResetUseCase, ResetP
 	private OAuthUserAccountPort oAuthUserAccountPort;
 
 	@Autowired
-	private MessagingPort messagingPort;
+	private AsynchronousMessagingPort messagingPort;
 
 	@Autowired
 	private MessageSource messageSource;
@@ -118,7 +118,7 @@ public class PasswordResetService implements RequestPasswordResetUseCase, ResetP
 
 		try {
 
-			EmailMessage emailMessage = EmailMessage.builder().from(EmailSender.WAMYA_TEAM).to(userEmail)
+			EmailMessage emailMessage = EmailMessage.builder().from(EmailSender.FRETTO_TEAM).to(userEmail)
 					.subject(messageSource.getMessage(EmailSubject.PASSWORD_RESET_REQUEST, null, locale))
 					.template(EmailTemplate.PASSWORD_RESET).params(emailTemplateParams).language(locale.toString())
 					.build();

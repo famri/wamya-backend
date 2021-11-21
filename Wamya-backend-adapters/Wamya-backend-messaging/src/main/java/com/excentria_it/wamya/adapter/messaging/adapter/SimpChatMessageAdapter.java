@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 
 import com.excentria_it.wamya.application.port.out.SendMessageNotificationPort;
-import com.excentria_it.wamya.application.port.out.SendMessagePort;
+import com.excentria_it.wamya.application.port.out.SynchronousMessageSendingPort;
 import com.excentria_it.wamya.common.annotation.WebSocketAdapter;
 import com.excentria_it.wamya.domain.ChatMessage;
 import com.excentria_it.wamya.domain.ReadUpdate;
@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 
 @WebSocketAdapter
 @RequiredArgsConstructor
-public class SimpChatMessageAdapter implements SendMessagePort, SendMessageNotificationPort {
+public class SimpChatMessageAdapter implements SynchronousMessageSendingPort, SendMessageNotificationPort {
 
 	private final SimpMessageSendingOperations simpMessagingTemplate;
 

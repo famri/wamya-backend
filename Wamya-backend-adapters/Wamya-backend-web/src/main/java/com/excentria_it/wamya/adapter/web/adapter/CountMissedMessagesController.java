@@ -5,18 +5,16 @@ import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.excentria_it.wamya.adapter.web.utils.ValidationHelper;
-import com.excentria_it.wamya.application.port.in.LoadMessagesUseCase;
-import com.excentria_it.wamya.application.port.in.LoadMessagesUseCase.LoadMessagesCommand;
-import com.excentria_it.wamya.common.SortCriterion;
+import com.excentria_it.wamya.application.port.in.CountMessagesUseCase;
+import com.excentria_it.wamya.application.port.in.CountMessagesUseCase.CountMessagesCommand;
 import com.excentria_it.wamya.common.annotation.WebAdapter;
-import com.excentria_it.wamya.domain.LoadMessagesResult;
+import com.excentria_it.wamya.domain.CountMissedMessagesResult;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,29 +22,24 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "/users/me", produces = MediaType.APPLICATION_JSON_VALUE)
-public class LoadDiscussionMessagesController {
-
-	private final LoadMessagesUseCase loadMessagesCommandUseCase;
-
+public class CountMissedMessagesController {
+	
+	private final CountMessagesUseCase counMessagesUseCase;
 	private final ValidationHelper validationHelper;
-
-	@GetMapping(path = "/discussions/{discussionId}/messages")
+	
+	@GetMapping("/messages/count")
 	@ResponseStatus(HttpStatus.OK)
-	public LoadMessagesResult loadDiscussionMessages(@PathVariable(name = "discussionId") Long discussionId,
-			@RequestParam(name = "page", defaultValue = "0") Integer pageNumber,
-			@RequestParam(name = "size", defaultValue = "25") Integer pageSize,
+	public CountMissedMessagesResult countMissedMessages(@RequestParam(name = "read") Boolean read,
 			final @AuthenticationPrincipal JwtAuthenticationToken principal) {
 
-		SortCriterion sortingCriterion = new SortCriterion("date-time", "desc");
-
-		LoadMessagesCommand command = LoadMessagesCommand.builder().username(principal.getName())
-				.discussionId(discussionId).pageNumber(pageNumber).pageSize(pageSize).sortingCriterion(sortingCriterion)
-				.build();
-
+		CountMessagesCommand command = CountMessagesCommand.builder().username(principal.getName())
+				.read(read.toString()).build();
+		
 		validationHelper.validateInput(command);
+		
+		
+		Long count = counMessagesUseCase.countMessages(command);
 
-		return loadMessagesCommandUseCase.loadMessages(command);
-
+		return new CountMissedMessagesResult(count);
 	}
-
 }

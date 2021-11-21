@@ -92,4 +92,17 @@ public class ChatMessagePersistenceAdapter implements AddMessageToDiscussionPort
 			messageRepository.batchUpdateReadMessages(messagesIds, isRead);
 		}
 	}
+
+	@Override
+	public Long countMessages(String username, Boolean read, Boolean isTransporter) {
+		if (isTransporter) {
+			return messageRepository.countTransporterMessages(username, read);
+
+		} else {
+			return messageRepository.countClientMessages(username, read);
+		}
+
+	}
+
+
 }

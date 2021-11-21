@@ -18,7 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import com.excentria_it.wamya.application.port.in.CreateUserAccountUseCase;
 import com.excentria_it.wamya.application.port.out.CreateUserAccountPort;
 import com.excentria_it.wamya.application.port.out.LoadUserAccountPort;
-import com.excentria_it.wamya.application.port.out.MessagingPort;
+import com.excentria_it.wamya.application.port.out.AsynchronousMessagingPort;
 import com.excentria_it.wamya.application.port.out.OAuthUserAccountPort;
 import com.excentria_it.wamya.application.props.ServerUrlProperties;
 import com.excentria_it.wamya.application.service.helper.CodeGenerator;
@@ -51,7 +51,7 @@ public class UserAccountService implements CreateUserAccountUseCase {
 
 	private final OAuthUserAccountPort oAuthUserAccountPort;
 
-	private final MessagingPort messagingPort;
+	private final AsynchronousMessagingPort messagingPort;
 
 	private final CodeGenerator codeGenerator;
 
@@ -129,9 +129,9 @@ public class UserAccountService implements CreateUserAccountUseCase {
 		data.put("port", port);
 		data.put("email", email);
 		data.put("code", validationCode);
-		String validation_url = StrSubstitutor.replace(url, data);
+		String validationUrl = StrSubstitutor.replace(url, data);
 
-		return validation_url;
+		return validationUrl;
 	}
 
 	protected boolean requestSendingEmailValidationLink(String email, String validationCode, Locale locale) {
@@ -143,7 +143,7 @@ public class UserAccountService implements CreateUserAccountUseCase {
 
 		try {
 
-			EmailMessage emailMessage = EmailMessage.builder().from(EmailSender.WAMYA_TEAM).to(email)
+			EmailMessage emailMessage = EmailMessage.builder().from(EmailSender.FRETTO_TEAM).to(email)
 					.subject(messageSource.getMessage(EmailSubject.EMAIL_VALIDATION, null, locale))
 					.template(EmailTemplate.EMAIL_VALIDATION).params(emailTemplateParams).language(locale.getLanguage())
 					.build();

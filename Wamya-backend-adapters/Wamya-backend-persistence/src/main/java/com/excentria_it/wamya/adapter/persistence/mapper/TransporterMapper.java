@@ -35,7 +35,7 @@ public class TransporterMapper {
 				userAccount.getIsValidatedEmail(), icc, userAccount.getMobilePhoneNumber().getMobileNumber(),
 				userAccount.getMobileNumberValidationCode(), userAccount.getIsValidatedMobileNumber(),
 				userAccount.getReceiveNewsletter(), userAccount.getCreationDateTime().toInstant(), profileImage,
-				preferences, identityDocument, null);
+				preferences, identityDocument, userAccount.getDeviceRegistrationToken(), userAccount.getIsWebSocketConnected());
 
 	}
 }

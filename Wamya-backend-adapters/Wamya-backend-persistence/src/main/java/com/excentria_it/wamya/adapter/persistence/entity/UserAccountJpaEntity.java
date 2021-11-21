@@ -86,6 +86,8 @@ public abstract class UserAccountJpaEntity {
 
 	protected String deviceRegistrationToken;
 
+	protected Boolean isWebSocketConnected;
+
 	@OneToMany(mappedBy = "userAccount", cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST,
 			CascadeType.REFRESH }, orphanRemoval = true)
 	@MapKey(name = "userPreferenceId.key")
@@ -97,7 +99,7 @@ public abstract class UserAccountJpaEntity {
 			String mobileNumber, String mobileNumberValidationCode, Boolean isValidatedMobileNumber,
 			Boolean receiveNewsletter, Instant creationDateTime, DocumentJpaEntity profileImage,
 			Map<String, UserPreferenceJpaEntity> preferences, DocumentJpaEntity identityDocument,
-			String deviceRegistrationToken) {
+			String deviceRegistrationToken, Boolean isWebSocketConnected) {
 		super();
 		this.id = id;
 		this.oauthId = oauthId;
@@ -124,6 +126,7 @@ public abstract class UserAccountJpaEntity {
 		}
 
 		this.preferences = preferences;
+		this.isWebSocketConnected = isWebSocketConnected;
 	}
 
 	public String getPreferenceValue(String key) {
@@ -294,6 +297,14 @@ public abstract class UserAccountJpaEntity {
 		this.deviceRegistrationToken = deviceRegistrationToken;
 	}
 
+	public Boolean getIsWebSocketConnected() {
+		return isWebSocketConnected;
+	}
+
+	public void setIsWebSocketConnected(Boolean isConnected) {
+		this.isWebSocketConnected = isConnected;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -327,7 +338,8 @@ public abstract class UserAccountJpaEntity {
 				+ icc + ", mobileNumber=" + mobileNumber + ", mobileNumberValidationCode=" + mobileNumberValidationCode
 				+ ", isValidatedMobileNumber=" + isValidatedMobileNumber + ", receiveNewsletter=" + receiveNewsletter
 				+ ", creationDateTime=" + creationDateTime + ", profileImage=" + profileImage + ", identityDocument="
-				+ identityDocument + ", deviceRegistrationToken=" + deviceRegistrationToken + "]";
+				+ identityDocument + ", deviceRegistrationToken=" + deviceRegistrationToken + ", isWebSocketConnected="
+				+ isWebSocketConnected + "]";
 	}
 
 }

@@ -4,8 +4,8 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.util.List;
 
-import com.excentria_it.wamya.application.port.in.LoadMessagesCommandUseCase.LoadMessagesCommand;
-import com.excentria_it.wamya.application.port.in.LoadMessagesCommandUseCase.LoadMessagesCommand.LoadMessagesCommandBuilder;
+import com.excentria_it.wamya.application.port.in.LoadMessagesUseCase.LoadMessagesCommand;
+import com.excentria_it.wamya.application.port.in.LoadMessagesUseCase.LoadMessagesCommand.LoadMessagesCommandBuilder;
 import com.excentria_it.wamya.application.port.in.SendMessageUseCase.SendMessageCommand;
 import com.excentria_it.wamya.application.port.in.SendMessageUseCase.SendMessageCommand.SendMessageCommandBuilder;
 import com.excentria_it.wamya.common.SortCriterion;

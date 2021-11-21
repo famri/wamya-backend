@@ -57,7 +57,7 @@ public class PasswordResetRequestRepositoryTests {
 	private List<PasswordResetRequestJpaEntity> givenPasswordResetRequests(Instant startInstant) {
 
 		ClientJpaEntity userAccount = new ClientJpaEntity(null, null, null, "Client1", null,ValidationState.VALIDATED, TestConstants.DEFAULT_MINIBIO,  null, "client1@gmail.com",
-				null, null, null, "22111111", null, null, null, null, null, null, null, null);
+				null, null, null, "22111111", null, null, null, null, null, null, null, null,null);
 
 		userAccount = clientRepository.save(userAccount);
 

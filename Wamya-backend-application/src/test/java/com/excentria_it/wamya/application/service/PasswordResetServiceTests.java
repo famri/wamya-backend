@@ -19,7 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.MessageSource;
 
 import com.excentria_it.wamya.application.port.out.LoadUserAccountPort;
-import com.excentria_it.wamya.application.port.out.MessagingPort;
+import com.excentria_it.wamya.application.port.out.AsynchronousMessagingPort;
 import com.excentria_it.wamya.application.port.out.OAuthUserAccountPort;
 import com.excentria_it.wamya.application.port.out.PasswordResetRequestPort;
 import com.excentria_it.wamya.application.props.PasswordResetProperties;
@@ -50,7 +50,7 @@ public class PasswordResetServiceTests {
 	private OAuthUserAccountPort oAuthUserAccountPort;
 
 	@Mock
-	private MessagingPort messagingPort;
+	private AsynchronousMessagingPort messagingPort;
 
 	@Mock
 	private MessageSource messageSource;

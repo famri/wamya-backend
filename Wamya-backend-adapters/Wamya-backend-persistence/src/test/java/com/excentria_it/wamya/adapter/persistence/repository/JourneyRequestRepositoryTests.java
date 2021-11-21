@@ -1323,13 +1323,13 @@ public class JourneyRequestRepositoryTests {
 		List<ClientJpaEntity> clients = List.of(
 				new ClientJpaEntity(null, null, null, "Client1", null, ValidationState.VALIDATED,
 						TestConstants.DEFAULT_MINIBIO, null, "client1@gmail.com", null, null, icc, "22111111", null,
-						null, null, null, profileImages.get(0), null, null, null),
+						null, null, null, profileImages.get(0), null, null, null,null),
 				new ClientJpaEntity(null, null, null, "Client2", null, ValidationState.VALIDATED,
 						TestConstants.DEFAULT_MINIBIO, null, "client2@gmail.com", null, null, icc, "22222222", null,
-						null, null, null, profileImages.get(1), null, null, null),
+						null, null, null, profileImages.get(1), null, null, null,null),
 				new ClientJpaEntity(null, null, null, "Client3", null, ValidationState.VALIDATED,
 						TestConstants.DEFAULT_MINIBIO, null, "client3@gmail.com", null, null, icc, "22333333", null,
-						null, null, null, profileImages.get(2), null, null, null));
+						null, null, null, profileImages.get(2), null, null, null,null));
 
 		return clientRepository.saveAll(clients);
 	}
@@ -1339,17 +1339,17 @@ public class JourneyRequestRepositoryTests {
 
 		TransporterJpaEntity t1 = new TransporterJpaEntity(null, null, null, "Transporter1", null,
 				ValidationState.VALIDATED, TestConstants.DEFAULT_MINIBIO, null, null, null, null, null, null, null,
-				null, null, null, profileImages.get(0), null, null, null);
+				null, null, null, profileImages.get(0), null, null, null,null);
 		vehicules.get(0).forEach(v -> t1.addVehicule(v));
 
 		TransporterJpaEntity t2 = new TransporterJpaEntity(null, null, null, "Transporter2", null,
 				ValidationState.VALIDATED, TestConstants.DEFAULT_MINIBIO, null, null, null, null, null, null, null,
-				null, null, null, profileImages.get(1), null, null, null);
+				null, null, null, profileImages.get(1), null, null, null,null);
 		vehicules.get(1).forEach(v -> t2.addVehicule(v));
 
 		TransporterJpaEntity t3 = new TransporterJpaEntity(null, null, null, "Transporter3", null,
 				ValidationState.VALIDATED, TestConstants.DEFAULT_MINIBIO, null, null, null, null, null, null, null,
-				null, null, null, profileImages.get(2), null, null, null);
+				null, null, null, profileImages.get(2), null, null, null,null);
 		vehicules.get(2).forEach(v -> t1.addVehicule(v));
 
 		List<TransporterJpaEntity> transporters = List.of(t1, t2, t3);

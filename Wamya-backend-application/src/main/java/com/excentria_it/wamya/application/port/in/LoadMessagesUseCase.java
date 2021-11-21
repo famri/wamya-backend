@@ -13,7 +13,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-public interface LoadMessagesCommandUseCase {
+public interface LoadMessagesUseCase {
 
 	LoadMessagesResult loadMessages(LoadMessagesCommand command);
 

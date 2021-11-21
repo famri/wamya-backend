@@ -8,4 +8,6 @@ public interface LoadMessagesPort {
 	LoadMessagesOutputResult loadMessages(Long discussionId, Integer pageNumber, Integer pageSize,
 			SortCriterion sortingCriterion);
 
+	Long countMessages(String username, Boolean read, Boolean isTransporter);
+
 }

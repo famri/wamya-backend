@@ -31,7 +31,7 @@ public class WebSocketEventListener {
 			log.info("Web socket connected: " + "unknown user");
 			return;
 		}
-
+		
 		log.info("Web socket connected: " + principal.getName());
 
 	}

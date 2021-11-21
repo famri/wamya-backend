@@ -52,7 +52,7 @@
 																																	<tr>
 																																		<td style="padding-bottom:10px;padding-left:30px;padding-right:30px;padding-top:30px;text-align:center;width:100%;">
 																																			<h1 style="margin: 0; color: #134753; direction: ltr; font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; font-size: 24px; font-weight: normal; letter-spacing: normal; line-height: 120%; text-align: center; margin-top: 0; margin-bottom: 0;">
-																																				<strong>Bienvenue parmi nous!</strong>
+																																				<strong>Bienvenue chez Fretto !</strong>
 																																			</h1>
 																																		</td>
 																																	</tr>

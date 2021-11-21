@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
-import com.excentria_it.wamya.application.port.out.MessagingPort;
+import com.excentria_it.wamya.application.port.out.AsynchronousMessagingPort;
 import com.excentria_it.wamya.common.annotation.MessagingAdapter;
 import com.excentria_it.wamya.common.domain.EmailMessage;
 import com.excentria_it.wamya.common.domain.PushMessage;
@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @MessagingAdapter
-public class RabbitMqMessagingAdapter implements MessagingPort {
+public class RabbitMqMessagingAdapter implements AsynchronousMessagingPort {
 
 	private final RabbitTemplate rabbitTemplate;
 

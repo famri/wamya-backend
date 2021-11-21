@@ -4,7 +4,7 @@ import com.excentria_it.wamya.common.domain.EmailMessage;
 import com.excentria_it.wamya.common.domain.PushMessage;
 import com.excentria_it.wamya.common.domain.SMSMessage;
 
-public interface MessagingPort {
+public interface AsynchronousMessagingPort {
 	void sendSMSMessage(SMSMessage message);
 
 	void sendEmailMessage(EmailMessage messaage);

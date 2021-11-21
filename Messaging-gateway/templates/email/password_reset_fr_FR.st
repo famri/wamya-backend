@@ -1,6 +1,6 @@
 <html lang="en" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:v="urn:schemas-microsoft-com:vml">
 	<head>
-		<title>Valider votre email</title>
+		<title>Changer votre mot de passe</title>
 		<meta charset="utf-8">
 			<meta content="width=device-width, initial-scale=1.0" name="viewport">
 				<!--[if mso]><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch><o:AllowPNG/></o:OfficeDocumentSettings></xml><![endif]-->

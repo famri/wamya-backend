@@ -28,7 +28,7 @@ import com.excentria_it.wamya.application.port.in.CreateUserAccountUseCase.Creat
 import com.excentria_it.wamya.application.port.in.CreateUserAccountUseCase.CreateUserAccountCommand.CreateUserAccountCommandBuilder;
 import com.excentria_it.wamya.application.port.out.CreateUserAccountPort;
 import com.excentria_it.wamya.application.port.out.LoadUserAccountPort;
-import com.excentria_it.wamya.application.port.out.MessagingPort;
+import com.excentria_it.wamya.application.port.out.AsynchronousMessagingPort;
 import com.excentria_it.wamya.application.port.out.OAuthUserAccountPort;
 import com.excentria_it.wamya.application.props.ServerUrlProperties;
 import com.excentria_it.wamya.application.service.helper.CodeGenerator;
@@ -54,7 +54,7 @@ public class UserAccountServiceTest {
 	private CreateUserAccountPort createUserAccountPort;
 
 	@Mock
-	private MessagingPort messagingPort;
+	private AsynchronousMessagingPort messagingPort;
 
 	@Mock
 	private CodeGenerator codeGenerator;
@@ -116,7 +116,7 @@ public class UserAccountServiceTest {
 		CreateUserAccountCommandBuilder commandBuilder = defaultClientUserAccountCommandBuilder();
 		CreateUserAccountCommand command = commandBuilder.build();
 
-		String emailValidationLink = givenPatchUrl(command.getEmail(), validationCode);
+		String emailValidationLink = givenPatchUrl();
 
 		assertDoesNotThrow(() -> userAccountService.registerUserAccountCreationDemand(command, locale));
 
@@ -192,7 +192,7 @@ public class UserAccountServiceTest {
 		CreateUserAccountCommandBuilder commandBuilder = defaultTransporterUserAccountCommandBuilder();
 		CreateUserAccountCommand command = commandBuilder.build();
 
-		String emailValidationLink = givenPatchUrl(command.getEmail(), validationCode);
+		String emailValidationLink = givenPatchUrl();
 
 		assertDoesNotThrow(() -> userAccountService.registerUserAccountCreationDemand(command, locale));
 
@@ -387,7 +387,7 @@ public class UserAccountServiceTest {
 
 	}
 
-	private String givenPatchUrl(String email, String validationCode) {
+	private String givenPatchUrl() {
 		String result = "SOME_EMAIL_VALIDATION_LINK";
 
 		doReturn(result).when(userAccountService).patchURL(any(String.class), any(String.class), any(String.class),

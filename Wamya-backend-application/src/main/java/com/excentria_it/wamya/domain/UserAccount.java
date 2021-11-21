@@ -54,6 +54,8 @@ public class UserAccount {
 	private Map<String, String> preferences;
 
 	private String deviceRegistrationToken;
+	
+	private Boolean isWebSocketConnected;
 
 	@NoArgsConstructor
 	@AllArgsConstructor

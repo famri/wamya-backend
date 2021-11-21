@@ -207,17 +207,17 @@ public class TransporterRepositoryTests {
 
 		TransporterJpaEntity t1 = new TransporterJpaEntity(null, null, null, "Transporter1", null,
 				ValidationState.VALIDATED, TestConstants.DEFAULT_MINIBIO, null, "transport1@gmail.com", null, null, icc,
-				"22000001", null, null, null, null, null, null, null, null);
+				"22000001", null, null, null, null, null, null, null, null, null);
 		vehicules.get(0).forEach(v -> t1.addVehicule(v));
 
 		TransporterJpaEntity t2 = new TransporterJpaEntity(null, null, null, "Transporter2", null,
 				ValidationState.VALIDATED, TestConstants.DEFAULT_MINIBIO, null, "transport2@gmail.com", null, null, icc,
-				"22000002", null, null, null, null, null, null, null, null);
+				"22000002", null, null, null, null, null, null, null, null, null);
 		vehicules.get(1).forEach(v -> t2.addVehicule(v));
 
 		TransporterJpaEntity t3 = new TransporterJpaEntity(null, null, null, "Transporter3", null,
 				ValidationState.VALIDATED, TestConstants.DEFAULT_MINIBIO, null, "transport3@gmail.com", null, null, icc,
-				"22000003", null, null, null, null, null, null, null, null);
+				"22000003", null, null, null, null, null, null, null, null, null);
 		vehicules.get(2).forEach(v -> t3.addVehicule(v));
 
 		List<TransporterJpaEntity> transporters = List.of(t1, t2, t3);

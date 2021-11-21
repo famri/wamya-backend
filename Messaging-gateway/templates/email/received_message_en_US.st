@@ -1,6 +1,6 @@
 <html lang="en" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:v="urn:schemas-microsoft-com:vml">
 	<head>
-		<title>Reset your password</title>
+		<title>You missed a message !</title>
 		<meta charset="utf-8">
 			<meta content="width=device-width, initial-scale=1.0" name="viewport">
 				<!--[if mso]><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch><o:AllowPNG/></o:OfficeDocumentSettings></xml><![endif]-->
@@ -52,7 +52,7 @@
 																																	<tr>
 																																		<td style="padding-bottom:10px;padding-left:30px;padding-right:30px;padding-top:30px;text-align:center;width:100%;">
 																																			<h1 style="margin: 0; color: #134753; direction: ltr; font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; font-size: 24px; font-weight: normal; letter-spacing: normal; line-height: 120%; text-align: center; margin-top: 0; margin-bottom: 0;">
-																																				<strong>You asked for password reset !</strong>
+																																				<strong>You missed a message from user $sender_name$ !</strong>
 																																			</h1>
 																																		</td>
 																																	</tr>
@@ -63,7 +63,7 @@
 																																	<tr>
 																																		<td style="padding-bottom:10px;padding-left:30px;padding-right:30px;padding-top:30px;text-align:center;width:100%;">
 																																			<h1 style="margin: 0; color: #134753; direction: ltr; font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; font-size: 24px; font-weight: normal; letter-spacing: normal; line-height: 120%; text-align: center; margin-top: 0; margin-bottom: 0;">
-																																				<strong>Change it within a minute!</strong>
+																																				<strong>Sign in to see what he sent to you !</strong>
 																																			</h1>
 																																		</td>
 																																	</tr>
@@ -74,10 +74,10 @@
 																																	<tr>
 																																		<td style="padding-bottom:20px;padding-top:20px;text-align:center;">
 																																			<div align="center">
-																																				<!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="$passwordResetUrl$" style="height:46px;width:195px;v-text-anchor:middle;" arcsize="0%" strokeweight="1.5pt" strokecolor="#64E0FF" fill="false"><w:anchorlock/><v:textbox inset="0px,0px,0px,0px"><center style="color:#64e0ff; font-family:Arial, sans-serif; font-size:16px"><![endif]-->
-																																				<a href="$passwordResetUrl$" style="text-decoration:none;display:inline-block;color:#64e0ff;background-color:transparent;border-radius:0px;width:auto;border-top:2px solid #64E0FF;border-right:2px solid #64E0FF;border-bottom:2px solid #64E0FF;border-left:2px solid #64E0FF;padding-top:5px;padding-bottom:5px;font-family:Cabin, Arial, Helvetica Neue, Helvetica, sans-serif;text-align:center;mso-border-alt:none;word-break:keep-all;" target="_blank">
+																																				<!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="$validation_url$" style="height:46px;width:195px;v-text-anchor:middle;" arcsize="0%" strokeweight="1.5pt" strokecolor="#64E0FF" fill="false"><w:anchorlock/><v:textbox inset="0px,0px,0px,0px"><center style="color:#64e0ff; font-family:Arial, sans-serif; font-size:16px"><![endif]-->
+																																				<a href="$discussions_url$" style="text-decoration:none;display:inline-block;color:#64e0ff;background-color:transparent;border-radius:0px;width:auto;border-top:2px solid #64E0FF;border-right:2px solid #64E0FF;border-bottom:2px solid #64E0FF;border-left:2px solid #64E0FF;padding-top:5px;padding-bottom:5px;font-family:Cabin, Arial, Helvetica Neue, Helvetica, sans-serif;text-align:center;mso-border-alt:none;word-break:keep-all;" target="_blank">
 																																					<span style="padding-left:60px;padding-right:60px;font-size:16px;display:inline-block;letter-spacing:normal;">
-																																						<span style="font-size: 16px; line-height: 2; word-break: break-word; mso-line-height-alt: 32px;">RESET MY PASSWORD</span>
+																																						<span style="font-size: 16px; line-height: 2; word-break: break-word; mso-line-height-alt: 32px;">SIGN IN</span>
 </span>
 																																				</a>
 																																				<!--[if mso]></center></v:textbox></v:roundrect><![endif]-->

@@ -13,7 +13,7 @@ import com.excentria_it.wamya.application.port.out.CancelJourneyRequestPort;
 import com.excentria_it.wamya.application.port.out.LoadJourneyRequestPort;
 import com.excentria_it.wamya.application.port.out.LoadPlaceNamesPort;
 import com.excentria_it.wamya.application.port.out.LoadProposalsPort;
-import com.excentria_it.wamya.application.port.out.MessagingPort;
+import com.excentria_it.wamya.application.port.out.AsynchronousMessagingPort;
 import com.excentria_it.wamya.application.utils.DateTimeFormatters;
 import com.excentria_it.wamya.application.utils.DateTimeHelper;
 import com.excentria_it.wamya.common.annotation.UseCase;
@@ -40,7 +40,7 @@ public class UpdateJourneyRequestStatusService implements UpdateJourneyRequestSt
 
 	private final LoadProposalsPort loadProposalsPort;
 
-	private final MessagingPort messagingPort;
+	private final AsynchronousMessagingPort messagingPort;
 
 	private final LoadPlaceNamesPort loadPlaceNamesPort;
 

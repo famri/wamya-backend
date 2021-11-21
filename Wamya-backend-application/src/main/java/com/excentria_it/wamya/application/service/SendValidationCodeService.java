@@ -14,7 +14,7 @@ import org.springframework.context.NoSuchMessageException;
 
 import com.excentria_it.wamya.application.port.in.SendValidationCodeUseCase;
 import com.excentria_it.wamya.application.port.out.LoadUserAccountPort;
-import com.excentria_it.wamya.application.port.out.MessagingPort;
+import com.excentria_it.wamya.application.port.out.AsynchronousMessagingPort;
 import com.excentria_it.wamya.application.port.out.UpdateUserAccountPort;
 import com.excentria_it.wamya.application.props.ServerUrlProperties;
 import com.excentria_it.wamya.application.service.helper.CodeGenerator;
@@ -40,7 +40,7 @@ public class SendValidationCodeService implements SendValidationCodeUseCase {
 	@Autowired
 	private CodeGenerator codeGenerator;
 	@Autowired
-	private MessagingPort messagingPort;
+	private AsynchronousMessagingPort messagingPort;
 	@Autowired
 	private LoadUserAccountPort loadUserAccountPort;
 
@@ -136,7 +136,7 @@ public class SendValidationCodeService implements SendValidationCodeUseCase {
 
 		try {
 
-			EmailMessage emailMessage = EmailMessage.builder().from(EmailSender.WAMYA_TEAM).to(userEmail)
+			EmailMessage emailMessage = EmailMessage.builder().from(EmailSender.FRETTO_TEAM).to(userEmail)
 					.subject(messageSource.getMessage(EmailSubject.EMAIL_VALIDATION, null, locale))
 					.template(EmailTemplate.EMAIL_VALIDATION).params(emailTemplateParams).language(locale.toString())
 					.build();

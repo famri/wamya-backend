@@ -20,8 +20,8 @@ import org.springframework.test.context.ActiveProfiles;
 
 import com.c4_soft.springaddons.security.oauth2.test.mockmvc.MockMvcSupport;
 import com.excentria_it.wamya.adapter.web.utils.ValidationHelper;
-import com.excentria_it.wamya.application.port.in.LoadMessagesCommandUseCase;
-import com.excentria_it.wamya.application.port.in.LoadMessagesCommandUseCase.LoadMessagesCommand;
+import com.excentria_it.wamya.application.port.in.LoadMessagesUseCase;
+import com.excentria_it.wamya.application.port.in.LoadMessagesUseCase.LoadMessagesCommand;
 import com.excentria_it.wamya.common.SortCriterion;
 import com.excentria_it.wamya.common.exception.handlers.RestApiExceptionHandler;
 import com.excentria_it.wamya.domain.LoadMessagesResult;
@@ -37,7 +37,7 @@ public class LoadDiscussionMessagesControllerTests {
 	private MockMvcSupport api;
 
 	@MockBean
-	private LoadMessagesCommandUseCase loadMessagesCommandUseCase;
+	private LoadMessagesUseCase loadMessagesCommandUseCase;
 
 	@Test
 	void givenValidInput_WhenLoadDiscussionMessages_ThenReturnDiscussionMessages() throws Exception {
