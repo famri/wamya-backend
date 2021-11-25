@@ -13,12 +13,16 @@ import javax.persistence.Table;
 
 import com.excentria_it.wamya.common.annotation.Generated;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 @Generated
 @Entity
 @Table(name = "discussion")
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @SequenceGenerator(name = DiscussionJpaEntity.DISCUSSION_SEQ)
 public class DiscussionJpaEntity {
 	public static final String DISCUSSION_SEQ = "discussion_seq";

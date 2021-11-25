@@ -29,7 +29,7 @@ public class UpdateProfileEmailSectionController {
 	private final UpdateEmailSectionUseCase updateEmailSectionUseCase;
 
 	@PatchMapping(path = "/email")
-	@ResponseStatus(HttpStatus.OK)
+	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void updateEmailSection(@Valid @RequestBody UpdateEmailSectionCommand command,
 			final @AuthenticationPrincipal JwtAuthenticationToken principal) throws IOException {
 

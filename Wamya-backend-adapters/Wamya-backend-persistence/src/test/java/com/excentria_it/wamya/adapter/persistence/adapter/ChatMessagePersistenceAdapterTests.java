@@ -35,6 +35,7 @@ import com.excentria_it.wamya.application.utils.DocumentUrlResolver;
 import com.excentria_it.wamya.common.SortCriterion;
 import com.excentria_it.wamya.domain.LoadDiscussionsOutput.MessageOutput;
 import com.excentria_it.wamya.domain.LoadMessagesOutputResult;
+import com.excentria_it.wamya.test.data.common.TestConstants;
 
 @ExtendWith(MockitoExtension.class)
 public class ChatMessagePersistenceAdapterTests {
@@ -170,5 +171,27 @@ public class ChatMessagePersistenceAdapterTests {
 		chatMessagePersistenceAdapter.updateRead(messagesIds, true);
 		// then
 		then(messageRepository).should(never()).batchUpdateReadMessages(any(List.class), any(Boolean.class));
+	}
+
+	@Test
+	void givenTransporter_whenCountMessages_thenReturnMessagesCount() {
+		// given
+		given(messageRepository.countTransporterMessages(TestConstants.DEFAULT_EMAIL, false)).willReturn(5L);
+		// When
+		Long count = chatMessagePersistenceAdapter.countMessages(TestConstants.DEFAULT_EMAIL, false, true);
+		// then
+		then(messageRepository).should(times(1)).countTransporterMessages(TestConstants.DEFAULT_EMAIL, false);
+		assertEquals(5L, count);
+	}
+
+	@Test
+	void givenClient_whenCountMessages_thenReturnMessagesCount() {
+		// given
+		given(messageRepository.countClientMessages(TestConstants.DEFAULT_EMAIL, false)).willReturn(5L);
+		// When
+		Long count = chatMessagePersistenceAdapter.countMessages(TestConstants.DEFAULT_EMAIL, false, false);
+		// then
+		then(messageRepository).should(times(1)).countClientMessages(TestConstants.DEFAULT_EMAIL, false);
+		assertEquals(5L, count);
 	}
 }

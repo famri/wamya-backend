@@ -6,6 +6,7 @@ import com.excentria_it.wamya.common.annotation.Among;
 import com.excentria_it.wamya.domain.JourneyRequestStatusCode;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -15,6 +16,7 @@ public interface UpdateJourneyRequestStatusUseCase {
 	@Data
 	@NoArgsConstructor
 	@AllArgsConstructor
+	@Builder
 	class UpdateJourneyRequestStatusCommand {
 		@NotEmpty
 		@Among(value = { "canceled" })

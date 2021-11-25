@@ -109,7 +109,7 @@ public class AuthenticationControllerTests {
 
 		mockMvc.perform(post("/login").contentType(MediaType.APPLICATION_JSON_VALUE).content(loginUserCommandJson))
 				.andExpect(status().isUnauthorized())
-				.andExpect(responseBody().containsApiErrors(List.of("SOME ERROR DESCRIPTION")));
+				.andExpect(responseBody().containsApiErrors(List.of("Bad credentials.")));
 
 		then(authenticateUserUseCase).should(times(1)).loginUser(eq(command));
 

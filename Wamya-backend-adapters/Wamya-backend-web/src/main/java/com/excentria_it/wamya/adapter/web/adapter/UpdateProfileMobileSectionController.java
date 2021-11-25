@@ -29,7 +29,7 @@ public class UpdateProfileMobileSectionController {
 	private final UpdateMobileSectionUseCase updateMobileSectionUseCase;
 
 	@PatchMapping(path = "/mobile")
-	@ResponseStatus(HttpStatus.OK)
+	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void updateMobileSection(@Valid @RequestBody UpdateMobileSectionCommand command,
 			final @AuthenticationPrincipal JwtAuthenticationToken principal) throws IOException {
 

@@ -47,7 +47,8 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 								"/accounts/password-reset/**")
 						.permitAll().antMatchers(HttpMethod.GET, "/accounts/password-reset/**").permitAll()
 						.antMatchers(HttpMethod.PATCH, "/accounts/me/device-token/**")
-						.hasAuthority("SCOPE_profile:write").antMatchers("/users/me/discussions/**")
+						.hasAuthority("SCOPE_profile:write")
+						.antMatchers("/users/me/discussions/**", "users/me/messages/count")
 						.hasAnyAuthority("SCOPE_journey:write", "SCOPE_offer:write")
 
 						.antMatchers(HttpMethod.GET, "/profiles/**").hasAuthority("SCOPE_profile:read")
@@ -99,7 +100,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 		return bearerTokenResolver;
 	}
 
-	//@Bean
+	// @Bean
 	CorsConfigurationSource corsConfigurationSource() {
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());

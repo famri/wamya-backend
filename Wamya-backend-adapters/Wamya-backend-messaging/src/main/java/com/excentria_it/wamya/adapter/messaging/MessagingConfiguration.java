@@ -6,10 +6,12 @@ import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 import com.excentria_it.wamya.common.rabbitmq.RabbitMqQueue;
 
 @Configuration
+@EnableAsync
 public class MessagingConfiguration {
 	@Bean
 	public MessageConverter messageConverter() {

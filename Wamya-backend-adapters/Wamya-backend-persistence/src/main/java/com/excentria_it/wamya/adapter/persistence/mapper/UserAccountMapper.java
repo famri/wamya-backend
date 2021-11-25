@@ -97,6 +97,7 @@ public class UserAccountMapper {
 				.photoUrl(documentUrlResolver.resolveUrl(userAccountJpaEntity.getProfileImage().getId(),
 						userAccountJpaEntity.getProfileImage().getHash()))
 				.deviceRegistrationToken(userAccountJpaEntity.getDeviceRegistrationToken()).preferences(preferences)
+				.isWebSocketConnected(userAccountJpaEntity.getIsWebSocketConnected())
 				.build();
 	}
 

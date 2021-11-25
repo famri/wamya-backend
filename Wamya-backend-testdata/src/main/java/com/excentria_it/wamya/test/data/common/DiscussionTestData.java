@@ -33,11 +33,11 @@ public class DiscussionTestData {
 
 	private static final List<MessageOutput> clientDiscussion1Messages = List.of(
 			new MessageOutput(1L, 100L, "Hello!", instant1.plusSeconds(10), false),
-			new MessageOutput(1L, 200L, "Hi! Can I help you?", instant1.plusSeconds(15), false));
+			new MessageOutput(2L, 200L, "Hi! Can I help you?", instant1.plusSeconds(15), false));
 
 	private static final List<MessageOutput> clientDiscussion2Messages = List.of(
-			new MessageOutput(1L, 100L, "Hello!", instant1.plusSeconds(10), false),
-			new MessageOutput(1L, 300L, "Hello Sir! How can I help you?", instant2.plusSeconds(15), false));
+			new MessageOutput(11L, 100L, "Hello!", instant1.plusSeconds(10), false),
+			new MessageOutput(12L, 300L, "Hello Sir! How can I help you?", instant2.plusSeconds(15), false));
 
 	private static final InterlocutorOutput clientDiscussionClientInterlocutor = InterlocutorOutput.builder().id(100L)
 			.email("client1@gmail.com").mobileNumber("+216_96111111").name("Client 1")

@@ -49,7 +49,7 @@ public class UpdateProfileAboutSectionControllerTests {
 		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
 				.authorities("SCOPE_profile:write"))
 				.perform(patch("/profiles/me/about").contentType(MediaType.APPLICATION_JSON_VALUE).content(commandJson))
-				.andExpect(status().isOk()).andReturn();
+				.andExpect(status().isNoContent()).andReturn();
 
 		// then
 

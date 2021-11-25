@@ -26,16 +26,16 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping(path = "/users/me", produces = MediaType.APPLICATION_JSON_VALUE)
 public class UpdateDiscussionMessageController {
 
-	private final UpdateMessageReadStatusUseCase updateDiscussionMessageReadStatusUseCase;
+	private final UpdateMessageReadStatusUseCase updateMessageReadStatusUseCase;
 
 	@PatchMapping(path = "/discussions/{discussionId}/messages/{messageId}")
-	@ResponseStatus(HttpStatus.OK)
+	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void updateDiscussionMessageReadStatus(@PathVariable(name = "discussionId") Long discussionId,
 			@PathVariable(name = "messageId") Long messageId,
 			@Valid @RequestBody UpdateMessageReadStatusCommand command,
 			final @AuthenticationPrincipal JwtAuthenticationToken principal) {
 
-		updateDiscussionMessageReadStatusUseCase.updateMessageReadStatus(discussionId, messageId, principal.getName(),
+		updateMessageReadStatusUseCase.updateMessageReadStatus(discussionId, messageId, principal.getName(),
 				command);
 
 	}

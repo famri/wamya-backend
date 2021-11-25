@@ -41,7 +41,7 @@ public class SimpChatMessageAdapterTests {
 		chatMessageAdapter.sendMessage(messageDto, 1L, TestConstants.DEFAULT_EMAIL);
 		// Then
 		then(simpMessagingTemplate).should(times(1)).convertAndSendToUser(eq(TestConstants.DEFAULT_EMAIL),
-				eq("/queue/messages"), chatMessageCaptor.capture());
+				eq("/exchange/amq.direct/messages"), chatMessageCaptor.capture());
 
 		assertEquals(messageDto, chatMessageCaptor.getValue().getMessageDto());
 		assertEquals(1L, chatMessageCaptor.getValue().getDiscussionId());
@@ -57,7 +57,7 @@ public class SimpChatMessageAdapterTests {
 		chatMessageAdapter.sendReadNotification(TestConstants.DEFAULT_EMAIL, 1L, messageIds);
 		// Then
 		then(simpMessagingTemplate).should(times(1)).convertAndSendToUser(eq(TestConstants.DEFAULT_EMAIL),
-				eq("/queue/read-messages"), readUpdateCaptor.capture());
+				eq("/exchange/amq.direct/read-messages"), readUpdateCaptor.capture());
 
 		assertEquals(1L, readUpdateCaptor.getValue().getDiscussionId());
 		assertEquals(messageIds, readUpdateCaptor.getValue().getMessagesIds());

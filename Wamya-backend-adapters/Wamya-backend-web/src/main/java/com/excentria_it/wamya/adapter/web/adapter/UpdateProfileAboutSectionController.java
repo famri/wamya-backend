@@ -29,7 +29,7 @@ public class UpdateProfileAboutSectionController {
 	private final UpdateAboutSectionUseCase updateAboutSectionUseCase;
 
 	@PatchMapping(path = "/about")
-	@ResponseStatus(HttpStatus.OK)
+	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void updateAboutSection(@Valid @RequestBody UpdateAboutSectionCommand command,
 			final @AuthenticationPrincipal JwtAuthenticationToken principal) throws IOException {
 

@@ -21,7 +21,7 @@ public interface CountMessagesUseCase {
 		@NotEmpty
 		String username;
 
-		@Among(value = { "true" })
+		@Among(value = { "false" })
 		String read;
 	}
 }

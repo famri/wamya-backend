@@ -24,10 +24,12 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.MessageSource;
 
+import com.excentria_it.wamya.application.port.in.CountMessagesUseCase.CountMessagesCommand;
 import com.excentria_it.wamya.application.port.in.LoadMessagesUseCase.LoadMessagesCommand;
 import com.excentria_it.wamya.application.port.in.LoadMessagesUseCase.LoadMessagesCommand.LoadMessagesCommandBuilder;
 import com.excentria_it.wamya.application.port.in.SendMessageUseCase.SendMessageCommand;
 import com.excentria_it.wamya.application.port.in.SendMessageUseCase.SendMessageCommand.SendMessageCommandBuilder;
+import com.excentria_it.wamya.application.port.in.UpdateMessageReadStatusUseCase.UpdateMessageReadStatusCommand;
 import com.excentria_it.wamya.application.port.out.AddMessageToDiscussionPort;
 import com.excentria_it.wamya.application.port.out.AsynchronousMessagingPort;
 import com.excentria_it.wamya.application.port.out.LoadDiscussionsPort;
@@ -53,6 +55,7 @@ import com.excentria_it.wamya.domain.LoadMessagesResult;
 import com.excentria_it.wamya.domain.MessageNotification;
 import com.excentria_it.wamya.domain.UserAccount;
 import com.excentria_it.wamya.domain.UserPreferenceKey;
+import com.excentria_it.wamya.test.data.common.TestConstants;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -742,6 +745,92 @@ public class ChatMessageServiceTests {
 		assertEquals(messagesOutputResult.getContent().stream()
 				.map(m -> DiscussionUtils.mapToMessageDto(dateTimeHelper, m, userZoneId)).collect(Collectors.toList()),
 				result.getContent());
+	}
+
+	@Test
+	void givenNonExistentDiscussion_whenUpdateMessageReadStatus_thenThrowDiscussionNotFoundException() {
+		// given
+		given(loadDiscussionsPort.loadDiscussionById(any(Long.class))).willReturn(Optional.empty());
+		UserAccount userAccount = defaultClientUserAccountBuilder().build();
+		given(loadUserAccountPort.loadUserAccountByUsername(any(String.class))).willReturn(Optional.of(userAccount));
+
+		UpdateMessageReadStatusCommand command = UpdateMessageReadStatusCommand.builder().isRead("true").build();
+		// when // then
+
+		assertThrows(DiscussionNotFoundException.class,
+				() -> chatMessageService.updateMessageReadStatus(1L, 2L, TestConstants.DEFAULT_EMAIL, command));
+
+	}
+
+	@Test
+	void givenTransporterAndNotTransporterDiscussion_whenUpdateMessageReadStatus_thenThrowOperationDeniedException() {
+		// given
+		LoadDiscussionsOutput discussionOutput = defaultTransporterLoadDiscussionsOutput();
+		given(loadDiscussionsPort.loadDiscussionById(any(Long.class))).willReturn(Optional.of(discussionOutput));
+		UserAccount userAccount = defaultTransporterUserAccountBuilder()
+				.oauthId(discussionOutput.getTransporter().getId() + 1).build();
+		given(loadUserAccountPort.loadUserAccountByUsername(any(String.class))).willReturn(Optional.of(userAccount));
+
+		UpdateMessageReadStatusCommand command = UpdateMessageReadStatusCommand.builder().isRead("true").build();
+		// when // then
+
+		assertThrows(OperationDeniedException.class,
+				() -> chatMessageService.updateMessageReadStatus(1L, 2L, TestConstants.DEFAULT_EMAIL, command));
+
+	}
+
+	@Test
+	void givenClientAndNotClientDiscussion_whenUpdateMessageReadStatus_thenThrowOperationDeniedException() {
+		// given
+		LoadDiscussionsOutput discussionOutput = defaultClientLoadDiscussionsOutput();
+		given(loadDiscussionsPort.loadDiscussionById(any(Long.class))).willReturn(Optional.of(discussionOutput));
+		UserAccount userAccount = defaultClientUserAccountBuilder().oauthId(discussionOutput.getClient().getId() + 1)
+				.build();
+		given(loadUserAccountPort.loadUserAccountByUsername(any(String.class))).willReturn(Optional.of(userAccount));
+
+		UpdateMessageReadStatusCommand command = UpdateMessageReadStatusCommand.builder().isRead("true").build();
+		// when // then
+
+		assertThrows(OperationDeniedException.class,
+				() -> chatMessageService.updateMessageReadStatus(1L, 2L, TestConstants.DEFAULT_EMAIL, command));
+
+	}
+
+	@Test
+	void givenClientAndClientDiscussion_whenUpdateMessageReadStatus_thenUpdateMessageReadToTrue() {
+		// given
+		LoadDiscussionsOutput discussionOutput = defaultClientLoadDiscussionsOutput();
+		given(loadDiscussionsPort.loadDiscussionById(any(Long.class))).willReturn(Optional.of(discussionOutput));
+		UserAccount userAccount = defaultClientUserAccountBuilder().oauthId(discussionOutput.getClient().getId())
+				.build();
+		given(loadUserAccountPort.loadUserAccountByUsername(any(String.class))).willReturn(Optional.of(userAccount));
+
+		UpdateMessageReadStatusCommand command = UpdateMessageReadStatusCommand.builder().isRead("true").build();
+		// when
+
+		chatMessageService.updateMessageReadStatus(discussionOutput.getId(),
+				discussionOutput.getLatestMessage().getId(), TestConstants.DEFAULT_EMAIL, command);
+
+		// then
+
+		then(updateMessagePort).should(times(1)).updateRead(List.of(discussionOutput.getLatestMessage().getId()),
+				Boolean.valueOf(command.getIsRead()));
+
+	}
+
+	@Test
+	void givenCountMessageCommand_whenCountMessages_thenReturnMessagesCount() {
+		// given
+		CountMessagesCommand command = CountMessagesCommand.builder().username(TestConstants.DEFAULT_EMAIL)
+				.read("false").build();
+		given(loadMessagesPort.countMessages(any(String.class), any(Boolean.class), any(Boolean.class)))
+				.willReturn(10L);
+		UserAccount userAccount = defaultClientUserAccountBuilder().build();
+		given(loadUserAccountPort.loadUserAccountByUsername(any(String.class))).willReturn(Optional.of(userAccount));
+		// When
+		Long count = chatMessageService.countMessages(command);
+		// then
+		assertEquals(10L, count);
 	}
 
 	private String givenPatchUrl() {

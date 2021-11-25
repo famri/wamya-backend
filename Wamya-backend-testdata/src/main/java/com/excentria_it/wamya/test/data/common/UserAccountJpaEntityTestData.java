@@ -13,7 +13,7 @@ import com.excentria_it.wamya.domain.ValidationState;
 
 public class UserAccountJpaEntityTestData {
 
-	private static UserAccount userAccount = UserAccountTestData.defaultUserAccountBuilder().build();;
+	private static UserAccount userAccount = UserAccountTestData.defaultUserAccountBuilder().build();
 
 	public static final TransporterJpaEntity defaultExistentTransporterJpaEntity() {
 		Map<String, UserPreferenceJpaEntity> preferences = new HashMap<>();

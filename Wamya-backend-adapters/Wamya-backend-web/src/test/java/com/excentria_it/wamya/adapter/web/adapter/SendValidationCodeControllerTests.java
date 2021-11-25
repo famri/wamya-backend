@@ -176,8 +176,8 @@ public class SendValidationCodeControllerTests {
 				.authorities("SCOPE_profile:write"))
 				.perform(
 						post("/validation-codes/sms/send").contentType(MediaType.APPLICATION_JSON).content(commandJson))
-				.andExpect(status().isBadRequest())
-				.andExpect(responseBody().containsApiErrors(List.of("Some error message.")));
+				.andExpect(status().isUnauthorized())
+				.andExpect(responseBody().containsApiErrors(List.of("Bad credentials.")));
 
 	}
 

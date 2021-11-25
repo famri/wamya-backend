@@ -16,45 +16,38 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.test.context.ActiveProfiles;
 
 import com.c4_soft.springaddons.security.oauth2.test.mockmvc.MockMvcSupport;
-import com.excentria_it.wamya.application.port.in.UpdateMobileSectionUseCase;
-import com.excentria_it.wamya.application.port.in.UpdateMobileSectionUseCase.UpdateMobileSectionCommand;
+import com.excentria_it.wamya.application.port.in.UpdateMessageReadStatusUseCase;
+import com.excentria_it.wamya.application.port.in.UpdateMessageReadStatusUseCase.UpdateMessageReadStatusCommand;
 import com.excentria_it.wamya.common.exception.handlers.RestApiExceptionHandler;
 import com.excentria_it.wamya.test.data.common.TestConstants;
-import com.excentria_it.wamya.test.data.common.UserProfileTestData;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @ActiveProfiles(profiles = { "web-local" })
-@Import(value = { UpdateProfileMobileSectionController.class, RestApiExceptionHandler.class, MockMvcSupport.class })
-@WebMvcTest(controllers = UpdateProfileMobileSectionController.class)
-public class UpdateProfileMobileSectionControllerTests {
+@Import(value = { UpdateDiscussionMessageController.class, RestApiExceptionHandler.class, MockMvcSupport.class })
+@WebMvcTest(controllers = UpdateDiscussionMessageController.class)
+public class UpdateDiscussionMessageControllerTests {
 	@Autowired
 	private MockMvcSupport api;
 
 	@MockBean
-	private UpdateMobileSectionUseCase updateMobileSectionUseCase;
+	private UpdateMessageReadStatusUseCase updateMessageReadStatusUseCase;
 
 	@Autowired
 	private ObjectMapper objectMapper;
 
 	@Test
-	void testUpdateMobileSection() throws Exception {
-
-		// given
-		UpdateMobileSectionCommand command = UserProfileTestData.defaultUpdateMobileSectionCommandBuilder().build();
+	void testUpdateDiscussionMessageReadStatus() throws Exception {
+		UpdateMessageReadStatusCommand command = UpdateMessageReadStatusCommand.builder().isRead("true").build();
 
 		String commandJson = objectMapper.writeValueAsString(command);
 
-		// when
-
 		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
-				.authorities("SCOPE_profile:write"))
-				.perform(
-						patch("/profiles/me/mobile").contentType(MediaType.APPLICATION_JSON_VALUE).content(commandJson))
+				.authorities("SCOPE_journey:write"))
+				.perform(patch("/users/me/discussions/{discussionId}/messages/{messageId}", 1L, 2L)
+						.contentType(MediaType.APPLICATION_JSON_VALUE).content(commandJson))
 				.andExpect(status().isNoContent()).andReturn();
 
-		// then
-
-		then(updateMobileSectionUseCase).should(times(1)).updateMobileSection(command, TestConstants.DEFAULT_EMAIL);
-
+		then(updateMessageReadStatusUseCase).should(times(1)).updateMessageReadStatus(1L, 2L,
+				TestConstants.DEFAULT_EMAIL, command);
 	}
 }
