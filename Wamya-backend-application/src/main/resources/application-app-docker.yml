@@ -10,7 +10,7 @@ app:
     purge-cron-expression: 0 */5 * * * *
   rating:
     record:
-      creation-cron-expression: 0 0 */1 * * *
+      creation-cron-expression: 0 */5 * * * *
       limit: 20
     request:
       sending-cron-expression: 0 0 */1 * * *
