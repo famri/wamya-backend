@@ -69,4 +69,6 @@ public class SendTransporterRatingServiceTests {
 				() -> sendTransporterRatingService.saveTransporterRating(command, "fr_FR"));
 
 	}
+	
+	
 }

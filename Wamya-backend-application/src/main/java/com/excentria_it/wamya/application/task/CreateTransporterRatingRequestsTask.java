@@ -8,11 +8,13 @@ import org.springframework.scheduling.annotation.Scheduled;
 
 import com.excentria_it.wamya.application.port.out.CreateTransporterRatingRequestPort;
 import com.excentria_it.wamya.application.port.out.LoadJourneyRequestPort;
+import com.excentria_it.wamya.application.port.out.UpdateJourneyRequestPort;
 import com.excentria_it.wamya.application.props.CreateTransporterRatingRequestProperties;
 import com.excentria_it.wamya.application.service.helper.HashGenerator;
 import com.excentria_it.wamya.common.HashAlgorithm;
 import com.excentria_it.wamya.common.annotation.UseCase;
 import com.excentria_it.wamya.domain.JourneyRequestStatusCode;
+import com.excentria_it.wamya.domain.TransporterRatingRequestStatus;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,7 +24,8 @@ import lombok.RequiredArgsConstructor;
 public class CreateTransporterRatingRequestsTask {
 
 	private final LoadJourneyRequestPort loadJourneyRequestPort;
-	private final CreateTransporterRatingRequestPort createTransporterRatingDetailsPort;
+	private final UpdateJourneyRequestPort updateJourneyRequestPort;
+	private final CreateTransporterRatingRequestPort createTransporterRatingRequestPort;
 	private final HashGenerator hashGenerator;
 
 	private final CreateTransporterRatingRequestProperties transporterRatingRequestProperties;
@@ -34,8 +37,9 @@ public class CreateTransporterRatingRequestsTask {
 				JourneyRequestStatusCode.FULFILLED, transporterRatingRequestProperties.getLimit());
 
 		if (!fulfilledJourneysIds.isEmpty()) {
-			createTransporterRatingDetailsPort.createTransporterRatingRequests(fulfilledJourneysIds,
+			createTransporterRatingRequestPort.createTransporterRatingRequests(fulfilledJourneysIds,
 					hashGenerator.generateHashes(fulfilledJourneysIds, HashAlgorithm.SHA3_256));
+			updateJourneyRequestPort.updateJourneyStatus(fulfilledJourneysIds, JourneyRequestStatusCode.ARCHIVED);
 		}
 
 	}

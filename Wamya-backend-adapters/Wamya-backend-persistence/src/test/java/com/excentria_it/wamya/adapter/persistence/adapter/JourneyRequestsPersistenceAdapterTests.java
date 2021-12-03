@@ -839,14 +839,17 @@ public class JourneyRequestsPersistenceAdapterTests {
 		assertEquals(Set.of(defaultExistentJourneyRequestJpaEntity().getId()), result);
 	}
 
-	private Page<JourneyRequestSearchDto> givenNullJourneyRequestsPageByDeparturePlace_RegionIdAndArrivalPlace_RegionIdInAndEngineType_IdInAndDateBetween() {
-
-		given(journeyRequestRepository
-				.findByDeparturePlace_DepartmentIdAndArrivalPlace_DepartmentIdInAndEngineType_IdInAndDateBetween(
-						any(Long.class), any(Set.class), any(Set.class), any(Instant.class), any(Instant.class),
-						any(String.class), any(Pageable.class))).willReturn(null);
-
-		return null;
+	@Test
+	void testUpdateJourneyStatus() {
+		// given
+		JourneyRequestStatusJpaEntity journeyRequestStatusJpaEntity = defaultJourneyRequestStatusJpaEntityBuilder()
+				.code(JourneyRequestStatusCode.ARCHIVED).build();
+		given(journeyRequestStatusRepository.findByCode(JourneyRequestStatusCode.ARCHIVED))
+				.willReturn(journeyRequestStatusJpaEntity);
+		// when
+		journeyRequestsPersistenceAdapter.updateJourneyStatus(Set.of(1L, 2L), JourneyRequestStatusCode.ARCHIVED);
+		// then
+		then(journeyRequestRepository).should(times(1)).updateInBatch(Set.of(1L, 2L), journeyRequestStatusJpaEntity);
 	}
 
 	private Page<JourneyRequestSearchOutput> givenNotNullJourneyRequestsPageByDeparturePlace_RegionIdAndArrivalPlace_RegionIdInAndEngineType_IdInAndDateBetween() {

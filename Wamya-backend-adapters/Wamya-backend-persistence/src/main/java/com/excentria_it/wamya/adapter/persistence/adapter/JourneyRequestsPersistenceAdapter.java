@@ -421,4 +421,11 @@ public class JourneyRequestsPersistenceAdapter implements SearchJourneyRequestsP
 		return jrJpaEntities.getContent().stream().map(jr -> jr.getId()).collect(Collectors.toSet());
 	}
 
+	@Override
+	public void updateJourneyStatus(Set<Long> fulfilledJourneysIds, JourneyRequestStatusCode status) {
+		JourneyRequestStatusJpaEntity StatusJpaEntity = journeyRequestStatusRepository
+				.findByCode(status);
+		journeyRequestRepository.updateInBatch(fulfilledJourneysIds, StatusJpaEntity);
+	}
+
 }

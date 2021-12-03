@@ -43,7 +43,7 @@ public class SendTransporterRatingRequestTask {
 	private final DateTimeHelper dateTimeHelper;
 	private final MessageSource messageSource;
 	private final SendTransporterRatingRequestProperties sendTransporterRatingRequestProperties;
-	private static final String RATING_URL_TEMPLATE = "${protocol}://${host}:${port}/rating-details?h=${hash}&uid=${uid}";
+	private static final String RATING_URL_TEMPLATE = "${protocol}://${host}:${port}/rating?h=${hash}&uid=${uid}";
 
 	private static final DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT,
 			FormatStyle.SHORT);

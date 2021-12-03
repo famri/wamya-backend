@@ -16,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.excentria_it.wamya.application.port.out.CreateTransporterRatingRequestPort;
 import com.excentria_it.wamya.application.port.out.LoadJourneyRequestPort;
+import com.excentria_it.wamya.application.port.out.UpdateJourneyRequestPort;
 import com.excentria_it.wamya.application.props.CreateTransporterRatingRequestProperties;
 import com.excentria_it.wamya.application.service.helper.HashGenerator;
 import com.excentria_it.wamya.application.task.CreateTransporterRatingRequestsTask;
@@ -32,6 +33,8 @@ public class CreateTransporterRatingRequestsTaskTests {
 	private CreateTransporterRatingRequestProperties createTransporterRatingRequestProperties;
 	@Mock
 	private HashGenerator hashGenerator;
+	@Mock
+	private UpdateJourneyRequestPort updateJourneyRequestPort;
 
 	@InjectMocks
 	private CreateTransporterRatingRequestsTask createTransporterRatingRequestsTask;
@@ -54,6 +57,8 @@ public class CreateTransporterRatingRequestsTaskTests {
 		// then
 		then(createTransporterRatingRequestPort).should(times(1)).createTransporterRatingRequests(
 				Set.of(1L, 2L, 3L, 4L, 5L), List.of("HASH1", "HASH2", "HASH3", "HASH4", "HASH5"));
+		then(updateJourneyRequestPort).should(times(1)).updateJourneyStatus(Set.of(1L, 2L, 3L, 4L, 5L),
+				JourneyRequestStatusCode.ARCHIVED);
 	}
 
 	@Test

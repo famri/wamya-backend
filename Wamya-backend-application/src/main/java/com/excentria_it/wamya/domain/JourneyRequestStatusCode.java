@@ -4,5 +4,5 @@ import com.excentria_it.wamya.common.annotation.Generated;
 
 @Generated
 public enum JourneyRequestStatusCode {
-	OPENED, CANCELED, EXPIRED, FULFILLED;
+	OPENED, CANCELED, EXPIRED, FULFILLED, ARCHIVED;
 }

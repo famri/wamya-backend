@@ -51,4 +51,8 @@ public interface JourneyRequestRepository extends JpaRepository<JourneyRequestJp
 
 	@Query(value = "SELECT jr FROM JourneyRequestJpaEntity jr WHERE jr.id IN ?1")
 	Set<JourneyRequestJpaEntity> findByIds(Set<Long> fulfilledJourneysIds);
+
+	@Modifying
+	@Query(value = "UPDATE JourneyRequestJpaEntity j SET j.status = ?2 WHERE j.id IN ?1")
+	void updateInBatch(Set<Long> fulfilledJourneysIds, JourneyRequestStatusJpaEntity statusJpaEntity);
 }
