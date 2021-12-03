@@ -23,6 +23,7 @@ import com.excentria_it.wamya.application.port.out.LoadTransporterRatingRequestR
 import com.excentria_it.wamya.application.port.out.UpdateTransporterRatingRequestRecordPort;
 import com.excentria_it.wamya.application.props.SendTransporterRatingRequestProperties;
 import com.excentria_it.wamya.application.props.ServerUrlProperties;
+import com.excentria_it.wamya.application.task.SendTransporterRatingRequestTask;
 import com.excentria_it.wamya.application.utils.DateTimeHelper;
 import com.excentria_it.wamya.common.domain.EmailMessage;
 import com.excentria_it.wamya.common.domain.EmailTemplate;

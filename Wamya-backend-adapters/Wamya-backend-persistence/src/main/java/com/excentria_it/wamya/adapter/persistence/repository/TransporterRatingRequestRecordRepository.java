@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import com.excentria_it.wamya.adapter.persistence.entity.TransporterRatingRequestRecordJpaEntity;
-import com.excentria_it.wamya.adapter.persistence.entity.TransporterRatingRequestRecordJpaEntity.TransporterRatingRequestRecordStatus;
+import com.excentria_it.wamya.adapter.persistence.entity.TransporterRatingRequestRecordJpaEntity.TransporterRatingRequestStatus;
 
 public interface TransporterRatingRequestRecordRepository
 		extends JpaRepository<TransporterRatingRequestRecordJpaEntity, Long> {
@@ -16,7 +16,7 @@ public interface TransporterRatingRequestRecordRepository
 	Optional<TransporterRatingRequestRecordJpaEntity> findByHashAndClient_Id(String hash, Long clientId);
 
 	Set<TransporterRatingRequestRecordJpaEntity> findByStatusAndRevivesLessThan(
-			TransporterRatingRequestRecordStatus saved, Integer maxRevives);
+			TransporterRatingRequestStatus saved, Integer maxRevives);
 
 	@Modifying
 	@Query(value = "UPDATE TransporterRatingRequestRecordJpaEntity t SET t.revivals = t.revivals + 1 WHERE j.id IN ?1")

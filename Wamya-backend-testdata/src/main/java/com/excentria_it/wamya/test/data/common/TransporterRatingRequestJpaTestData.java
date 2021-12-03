@@ -4,7 +4,7 @@ import com.excentria_it.wamya.adapter.persistence.entity.ClientJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.JourneyRequestJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.TransporterJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.TransporterRatingRequestRecordJpaEntity;
-import com.excentria_it.wamya.adapter.persistence.entity.TransporterRatingRequestRecordJpaEntity.TransporterRatingRequestRecordStatus;
+import com.excentria_it.wamya.adapter.persistence.entity.TransporterRatingRequestRecordJpaEntity.TransporterRatingRequestStatus;
 
 public class TransporterRatingRequestJpaTestData {
 	public static TransporterRatingRequestRecordJpaEntity defaultTransporterRatingRequestRecordJpaEntity() {
@@ -14,7 +14,7 @@ public class TransporterRatingRequestJpaTestData {
 		TransporterJpaEntity transporter = UserAccountJpaEntityTestData.defaultExistentTransporterJpaEntity();
 
 		return new TransporterRatingRequestRecordJpaEntity(1L, journeyRequest, transporter, client, "SOME_HASH", 0,
-				TransporterRatingRequestRecordStatus.SAVED);
+				TransporterRatingRequestStatus.SAVED);
 
 	}
 }

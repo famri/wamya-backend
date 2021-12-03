@@ -9,7 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.excentria_it.wamya.application.port.out.PasswordResetRequestPort;
-import com.excentria_it.wamya.application.service.PurgeResetPasswordRequestsTask;
+import com.excentria_it.wamya.application.task.PurgeResetPasswordRequestsTask;
 
 @ExtendWith(MockitoExtension.class)
 public class PurgeResetPasswordRequestsTaskTests {

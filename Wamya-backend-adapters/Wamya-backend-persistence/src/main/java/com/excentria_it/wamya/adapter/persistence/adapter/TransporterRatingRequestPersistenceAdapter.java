@@ -10,7 +10,7 @@ import com.excentria_it.wamya.adapter.persistence.entity.JourneyProposalStatusJp
 import com.excentria_it.wamya.adapter.persistence.entity.JourneyRequestJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.TransporterJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.TransporterRatingRequestRecordJpaEntity;
-import com.excentria_it.wamya.adapter.persistence.entity.TransporterRatingRequestRecordJpaEntity.TransporterRatingRequestRecordStatus;
+import com.excentria_it.wamya.adapter.persistence.entity.TransporterRatingRequestRecordJpaEntity.TransporterRatingRequestStatus;
 import com.excentria_it.wamya.adapter.persistence.mapper.TransporterRatingRequestRecordMapper;
 import com.excentria_it.wamya.adapter.persistence.repository.JourneyRequestRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.TransporterRatingRequestRecordRepository;
@@ -61,7 +61,7 @@ public class TransporterRatingRequestPersistenceAdapter implements LoadTransport
 					.getTransporter();
 
 			TransporterRatingRequestRecordJpaEntity trdje = new TransporterRatingRequestRecordJpaEntity(jr, transporter,
-					client, hashList.get(index), 0, TransporterRatingRequestRecordStatus.SAVED);
+					client, hashList.get(index), 0, TransporterRatingRequestStatus.SAVED);
 
 			transporterRatingDetailsRepository.save(trdje);
 
@@ -72,7 +72,7 @@ public class TransporterRatingRequestPersistenceAdapter implements LoadTransport
 	public Set<TransporterRatingRequestRecordOutput> loadUnfulfilledRecords(Integer maxRevives) {
 
 		Set<TransporterRatingRequestRecordJpaEntity> records = transporterRatingDetailsRepository
-				.findByStatusAndRevivesLessThan(TransporterRatingRequestRecordStatus.SAVED, maxRevives);
+				.findByStatusAndRevivesLessThan(TransporterRatingRequestStatus.SAVED, maxRevives);
 
 		return records.stream().map(r -> transporterRatingDetailsMapper.mapToDomainEntity(r,
 				r.getClient().getPreferenceValue(UserPreferenceKey.LOCALE))).collect(Collectors.toSet());

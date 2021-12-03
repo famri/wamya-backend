@@ -42,11 +42,11 @@ public class TransporterRatingRequestRecordJpaEntity {
 	private Integer revivals;
 
 	@Enumerated(EnumType.STRING)
-	private TransporterRatingRequestRecordStatus status;
+	private TransporterRatingRequestStatus status;
 
 	public TransporterRatingRequestRecordJpaEntity(Long id, JourneyRequestJpaEntity jourenyRequest,
 			TransporterJpaEntity transporter, ClientJpaEntity client, String hash, Integer revivals,
-			TransporterRatingRequestRecordStatus status) {
+			TransporterRatingRequestStatus status) {
 		super();
 		this.id = id;
 		this.jourenyRequest = jourenyRequest;
@@ -59,7 +59,7 @@ public class TransporterRatingRequestRecordJpaEntity {
 
 	public TransporterRatingRequestRecordJpaEntity(JourneyRequestJpaEntity jourenyRequest,
 			TransporterJpaEntity transporter, ClientJpaEntity client, String hash, Integer revivals,
-			TransporterRatingRequestRecordStatus status) {
+			TransporterRatingRequestStatus status) {
 		super();
 
 		this.jourenyRequest = jourenyRequest;
@@ -118,22 +118,22 @@ public class TransporterRatingRequestRecordJpaEntity {
 		this.revivals = revivals;
 	}
 
-	public TransporterRatingRequestRecordStatus getStatus() {
+	public TransporterRatingRequestStatus getStatus() {
 		return status;
 	}
 
-	public void setStatus(TransporterRatingRequestRecordStatus status) {
+	public void setStatus(TransporterRatingRequestStatus status) {
 		this.status = status;
 	}
 
 	@Override
 	public String toString() {
-		return "TransporterRatingRequestRecordJpaEntity [id=" + id + ", jourenyRequest=" + jourenyRequest
+		return "TransporterRatingRequestJpaEntity [id=" + id + ", jourenyRequest=" + jourenyRequest
 				+ ", transporter=" + transporter + ", client=" + client + ", hash=" + hash + ", revivals=" + revivals
 				+ ", status=" + status + "]";
 	}
 
-	public enum TransporterRatingRequestRecordStatus {
+	public enum TransporterRatingRequestStatus {
 		SAVED, FULFILLED;
 	}
 }

@@ -18,6 +18,7 @@ import com.excentria_it.wamya.application.port.out.CreateTransporterRatingReques
 import com.excentria_it.wamya.application.port.out.LoadJourneyRequestPort;
 import com.excentria_it.wamya.application.props.CreateTransporterRatingRequestProperties;
 import com.excentria_it.wamya.application.service.helper.HashGenerator;
+import com.excentria_it.wamya.application.task.CreateTransporterRatingRequestsTask;
 import com.excentria_it.wamya.common.HashAlgorithm;
 import com.excentria_it.wamya.domain.JourneyRequestStatusCode;
 

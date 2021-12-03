@@ -1,4 +1,4 @@
-package com.excentria_it.wamya.application.service;
+package com.excentria_it.wamya.application.task;
 
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
