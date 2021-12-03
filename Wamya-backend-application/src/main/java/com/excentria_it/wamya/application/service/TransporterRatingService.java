@@ -5,7 +5,7 @@ import java.util.Optional;
 
 import javax.transaction.Transactional;
 
-import com.excentria_it.wamya.application.port.in.LoadTransporterRatingDetailsUseCase;
+import com.excentria_it.wamya.application.port.in.LoadTransporterRatingRequestUseCase;
 import com.excentria_it.wamya.application.port.out.LoadTransporterRatingRequestRecordPort;
 import com.excentria_it.wamya.application.utils.DateTimeHelper;
 import com.excentria_it.wamya.common.annotation.UseCase;
@@ -21,14 +21,14 @@ import lombok.RequiredArgsConstructor;
 @UseCase
 @Transactional
 @RequiredArgsConstructor
-public class TransporterRatingService implements LoadTransporterRatingDetailsUseCase {
+public class TransporterRatingService implements LoadTransporterRatingRequestUseCase {
 
 	private final LoadTransporterRatingRequestRecordPort loadTransporterRatingDetailsPort;
 
 	private final DateTimeHelper dateTimeHelper;
 
 	@Override
-	public TransporterRatingRequestRecordDto loadTransporterRatingDetails(LoadTransporterRatingRequestCommand command,
+	public TransporterRatingRequestRecordDto loadTransporterRatingRequest(LoadTransporterRatingRequestCommand command,
 			String locale) {
 
 		Optional<TransporterRatingRequestRecordOutput> trdOptional = loadTransporterRatingDetailsPort

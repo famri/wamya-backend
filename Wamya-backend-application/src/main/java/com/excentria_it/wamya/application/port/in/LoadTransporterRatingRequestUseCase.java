@@ -10,9 +10,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-public interface LoadTransporterRatingDetailsUseCase {
+public interface LoadTransporterRatingRequestUseCase {
 
-	TransporterRatingRequestRecordDto loadTransporterRatingDetails(LoadTransporterRatingRequestCommand command,
+	TransporterRatingRequestRecordDto loadTransporterRatingRequest(LoadTransporterRatingRequestCommand command,
 			String locale);
 
 	@Data

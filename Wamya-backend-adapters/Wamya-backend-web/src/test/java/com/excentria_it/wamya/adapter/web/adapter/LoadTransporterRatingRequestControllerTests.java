@@ -20,8 +20,8 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import com.c4_soft.springaddons.security.oauth2.test.mockmvc.MockMvcSupport;
 import com.excentria_it.wamya.adapter.web.utils.ValidationHelper;
-import com.excentria_it.wamya.application.port.in.LoadTransporterRatingDetailsUseCase;
-import com.excentria_it.wamya.application.port.in.LoadTransporterRatingDetailsUseCase.LoadTransporterRatingRequestCommand;
+import com.excentria_it.wamya.application.port.in.LoadTransporterRatingRequestUseCase;
+import com.excentria_it.wamya.application.port.in.LoadTransporterRatingRequestUseCase.LoadTransporterRatingRequestCommand;
 import com.excentria_it.wamya.common.exception.handlers.RestApiExceptionHandler;
 import com.excentria_it.wamya.domain.TransporterRatingRequestRecordDto;
 import com.excentria_it.wamya.test.data.common.TransporterRatingRequestTestData;
@@ -37,7 +37,7 @@ public class LoadTransporterRatingRequestControllerTests {
 	private MockMvc mockMvc;
 
 	@MockBean
-	private LoadTransporterRatingDetailsUseCase loadTransporterRatingDetailsUseCase;
+	private LoadTransporterRatingRequestUseCase loadTransporterRatingDetailsUseCase;
 
 	@Autowired
 	private ObjectMapper objectMapper;
@@ -53,7 +53,7 @@ public class LoadTransporterRatingRequestControllerTests {
 		TransporterRatingRequestRecordDto trdDto = TransporterRatingRequestTestData.defaultTransporterRatingRequestRecordDto();
 
 		given(loadTransporterRatingDetailsUseCase
-				.loadTransporterRatingDetails(any(LoadTransporterRatingRequestCommand.class), any(String.class)))
+				.loadTransporterRatingRequest(any(LoadTransporterRatingRequestCommand.class), any(String.class)))
 						.willReturn(trdDto);
 
 		ArgumentCaptor<LoadTransporterRatingRequestCommand> commandCaptor = ArgumentCaptor
@@ -69,7 +69,7 @@ public class LoadTransporterRatingRequestControllerTests {
 				TransporterRatingRequestRecordDto.class);
 		// then
 
-		then(loadTransporterRatingDetailsUseCase).should(times(1)).loadTransporterRatingDetails(commandCaptor.capture(),
+		then(loadTransporterRatingDetailsUseCase).should(times(1)).loadTransporterRatingRequest(commandCaptor.capture(),
 				eq("en_US"));
 
 		assertThat(commandCaptor.getValue().getHash()).isEqualTo("SOME_HASH");

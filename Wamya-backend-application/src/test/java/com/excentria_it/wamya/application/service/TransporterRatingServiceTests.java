@@ -15,7 +15,7 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.excentria_it.wamya.application.port.in.LoadTransporterRatingDetailsUseCase.LoadTransporterRatingRequestCommand;
+import com.excentria_it.wamya.application.port.in.LoadTransporterRatingRequestUseCase.LoadTransporterRatingRequestCommand;
 import com.excentria_it.wamya.application.port.out.LoadTransporterRatingRequestRecordPort;
 import com.excentria_it.wamya.application.utils.DateTimeHelper;
 import com.excentria_it.wamya.common.exception.TransporterRatingDetailsNotFoundException;
@@ -48,7 +48,7 @@ public class TransporterRatingServiceTests {
 		// then
 
 		assertThrows(TransporterRatingDetailsNotFoundException.class,
-				() -> transporterRatingService.loadTransporterRatingDetails(command, "fr_FR"));
+				() -> transporterRatingService.loadTransporterRatingRequest(command, "fr_FR"));
 	}
 
 	@Test
@@ -66,7 +66,7 @@ public class TransporterRatingServiceTests {
 		doReturn(ZoneId.of("Africa/Tunis")).when(dateTimeHelper).findUserZoneId(command.getUserId());
 
 		// when
-		TransporterRatingRequestRecordDto result = transporterRatingService.loadTransporterRatingDetails(command, "fr_FR");
+		TransporterRatingRequestRecordDto result = transporterRatingService.loadTransporterRatingRequest(command, "fr_FR");
 		// then
 
 		assertEquals(trdo.getJourneyRequest().getDeparturePlace().getName(),
