@@ -10,7 +10,6 @@ import com.excentria_it.wamya.adapter.persistence.entity.JourneyProposalStatusJp
 import com.excentria_it.wamya.adapter.persistence.entity.JourneyRequestJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.TransporterJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.TransporterRatingRequestRecordJpaEntity;
-import com.excentria_it.wamya.adapter.persistence.entity.TransporterRatingRequestRecordJpaEntity.TransporterRatingRequestStatus;
 import com.excentria_it.wamya.adapter.persistence.mapper.TransporterRatingRequestRecordMapper;
 import com.excentria_it.wamya.adapter.persistence.repository.JourneyRequestRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.TransporterRatingRequestRecordRepository;
@@ -20,6 +19,7 @@ import com.excentria_it.wamya.application.port.out.UpdateTransporterRatingReques
 import com.excentria_it.wamya.common.annotation.PersistenceAdapter;
 import com.excentria_it.wamya.common.utils.ConsumerUtils;
 import com.excentria_it.wamya.domain.TransporterRatingRequestRecordOutput;
+import com.excentria_it.wamya.domain.TransporterRatingRequestStatus;
 import com.excentria_it.wamya.domain.UserPreferenceKey;
 
 import lombok.RequiredArgsConstructor;
@@ -29,14 +29,14 @@ import lombok.RequiredArgsConstructor;
 public class TransporterRatingRequestPersistenceAdapter implements LoadTransporterRatingRequestRecordPort,
 		CreateTransporterRatingRequestPort, UpdateTransporterRatingRequestRecordPort {
 
-	private final TransporterRatingRequestRecordRepository transporterRatingDetailsRepository;
+	private final TransporterRatingRequestRecordRepository transporterRatingRequestRecordRepository;
 	private final TransporterRatingRequestRecordMapper transporterRatingDetailsMapper;
 	private final JourneyRequestRepository journeyRequestRepository;
 
 	@Override
 	public Optional<TransporterRatingRequestRecordOutput> loadRecord(String hash, Long userId, String locale) {
 
-		Optional<TransporterRatingRequestRecordJpaEntity> trdJpaEntityOptional = transporterRatingDetailsRepository
+		Optional<TransporterRatingRequestRecordJpaEntity> trdJpaEntityOptional = transporterRatingRequestRecordRepository
 				.findByHashAndClient_Id(hash, userId);
 
 		if (trdJpaEntityOptional.isEmpty()) {
@@ -63,7 +63,7 @@ public class TransporterRatingRequestPersistenceAdapter implements LoadTransport
 			TransporterRatingRequestRecordJpaEntity trdje = new TransporterRatingRequestRecordJpaEntity(jr, transporter,
 					client, hashList.get(index), 0, TransporterRatingRequestStatus.SAVED);
 
-			transporterRatingDetailsRepository.save(trdje);
+			transporterRatingRequestRecordRepository.save(trdje);
 
 		}));
 	}
@@ -71,8 +71,8 @@ public class TransporterRatingRequestPersistenceAdapter implements LoadTransport
 	@Override
 	public Set<TransporterRatingRequestRecordOutput> loadUnfulfilledRecords(Integer maxRevives) {
 
-		Set<TransporterRatingRequestRecordJpaEntity> records = transporterRatingDetailsRepository
-				.findByStatusAndRevivesLessThan(TransporterRatingRequestStatus.SAVED, maxRevives);
+		Set<TransporterRatingRequestRecordJpaEntity> records = transporterRatingRequestRecordRepository
+				.findByStatusAndRevivalsLessThan(TransporterRatingRequestStatus.SAVED, maxRevives);
 
 		return records.stream().map(r -> transporterRatingDetailsMapper.mapToDomainEntity(r,
 				r.getClient().getPreferenceValue(UserPreferenceKey.LOCALE))).collect(Collectors.toSet());
@@ -81,7 +81,14 @@ public class TransporterRatingRequestPersistenceAdapter implements LoadTransport
 
 	@Override
 	public void incrementRevivals(Set<Long> ids) {
-		transporterRatingDetailsRepository.incrementRevivals(ids);
+		transporterRatingRequestRecordRepository.incrementRevivals(ids);
+	}
+
+	@Override
+	public void updateRequestStatus(Long ratingRequestId, TransporterRatingRequestStatus status) {
+
+		transporterRatingRequestRecordRepository.updateStatus(ratingRequestId, status);
+
 	}
 
 }

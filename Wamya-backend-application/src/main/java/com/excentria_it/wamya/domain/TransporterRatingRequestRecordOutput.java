@@ -41,6 +41,7 @@ public class TransporterRatingRequestRecordOutput {
 	@Data
 	@Builder
 	public static class TransporterDto {
+		private Long id;
 
 		private String firstname;
 

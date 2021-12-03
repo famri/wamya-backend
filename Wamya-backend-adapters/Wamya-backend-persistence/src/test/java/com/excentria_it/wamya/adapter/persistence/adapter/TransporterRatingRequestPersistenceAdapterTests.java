@@ -19,11 +19,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.excentria_it.wamya.adapter.persistence.entity.JourneyProposalStatusJpaEntity.JourneyProposalStatusCode;
 import com.excentria_it.wamya.adapter.persistence.entity.JourneyRequestJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.TransporterRatingRequestRecordJpaEntity;
-import com.excentria_it.wamya.adapter.persistence.entity.TransporterRatingRequestRecordJpaEntity.TransporterRatingRequestStatus;
 import com.excentria_it.wamya.adapter.persistence.mapper.TransporterRatingRequestRecordMapper;
 import com.excentria_it.wamya.adapter.persistence.repository.JourneyRequestRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.TransporterRatingRequestRecordRepository;
 import com.excentria_it.wamya.domain.TransporterRatingRequestRecordOutput;
+import com.excentria_it.wamya.domain.TransporterRatingRequestStatus;
 import com.excentria_it.wamya.domain.UserPreferenceKey;
 import com.excentria_it.wamya.test.data.common.JourneyRequestJpaTestData;
 import com.excentria_it.wamya.test.data.common.TransporterRatingRequestJpaTestData;
@@ -33,7 +33,7 @@ import com.excentria_it.wamya.test.data.common.TransporterRatingRequestTestData;
 public class TransporterRatingRequestPersistenceAdapterTests {
 
 	@Mock
-	private TransporterRatingRequestRecordRepository transporterRatingDetailsRepository;
+	private TransporterRatingRequestRecordRepository transporterRatingRequestRecordRepository;
 	@Mock
 	private TransporterRatingRequestRecordMapper transporterRatingDetailsMapper;
 	@Mock
@@ -45,7 +45,7 @@ public class TransporterRatingRequestPersistenceAdapterTests {
 	@Test
 	void givenEmptyTransporterRatingDetailsJpaEntity_WhenLoadTransporterRatingDetails_ThenReturnOptionalEmpty() {
 		// given
-		given(transporterRatingDetailsRepository.findByHashAndClient_Id(any(String.class), any(Long.class)))
+		given(transporterRatingRequestRecordRepository.findByHashAndClient_Id(any(String.class), any(Long.class)))
 				.willReturn(Optional.empty());
 		// when
 		Optional<TransporterRatingRequestRecordOutput> TransporterRatingDetailsOutputOptional = transporterRatingRequestPersistenceAdapter
@@ -64,7 +64,7 @@ public class TransporterRatingRequestPersistenceAdapterTests {
 		TransporterRatingRequestRecordJpaEntity trdje = TransporterRatingRequestJpaTestData
 				.defaultTransporterRatingRequestRecordJpaEntity();
 
-		given(transporterRatingDetailsRepository.findByHashAndClient_Id(any(String.class), any(Long.class)))
+		given(transporterRatingRequestRecordRepository.findByHashAndClient_Id(any(String.class), any(Long.class)))
 				.willReturn(Optional.of(trdje));
 
 		given(transporterRatingDetailsMapper.mapToDomainEntity(trdje, "fr_FR")).willReturn(trdo);
@@ -79,7 +79,8 @@ public class TransporterRatingRequestPersistenceAdapterTests {
 	@Test
 	void testCreateTransporterRatingRequests() {
 		// given
-		JourneyRequestJpaEntity journeyRequest = JourneyRequestJpaTestData.defaultExistentJourneyRequestJpaEntityWithAcceptedProposal();
+		JourneyRequestJpaEntity journeyRequest = JourneyRequestJpaTestData
+				.defaultExistentJourneyRequestJpaEntityWithAcceptedProposal();
 		given(journeyRequestRepository.findByIds(any(Set.class))).willReturn(Set.of(journeyRequest));
 
 		// when
@@ -89,7 +90,7 @@ public class TransporterRatingRequestPersistenceAdapterTests {
 		ArgumentCaptor<TransporterRatingRequestRecordJpaEntity> captor = ArgumentCaptor
 				.forClass(TransporterRatingRequestRecordJpaEntity.class);
 
-		then(transporterRatingDetailsRepository).should(times(1)).save(captor.capture());
+		then(transporterRatingRequestRecordRepository).should(times(1)).save(captor.capture());
 
 		assertEquals(journeyRequest, captor.getValue().getJourenyRequest());
 		assertEquals(journeyRequest.getClient(), captor.getValue().getClient());
@@ -109,8 +110,8 @@ public class TransporterRatingRequestPersistenceAdapterTests {
 
 		TransporterRatingRequestRecordJpaEntity t = TransporterRatingRequestJpaTestData
 				.defaultTransporterRatingRequestRecordJpaEntity();
-		given(transporterRatingDetailsRepository
-				.findByStatusAndRevivesLessThan(any(TransporterRatingRequestStatus.class), any(Integer.class)))
+		given(transporterRatingRequestRecordRepository
+				.findByStatusAndRevivalsLessThan(any(TransporterRatingRequestStatus.class), any(Integer.class)))
 						.willReturn(Set.of(t));
 
 		TransporterRatingRequestRecordOutput o = TransporterRatingRequestTestData
@@ -134,8 +135,19 @@ public class TransporterRatingRequestPersistenceAdapterTests {
 		// when
 		transporterRatingRequestPersistenceAdapter.incrementRevivals(Set.of(1L, 2L, 3L));
 		// then
-		then(transporterRatingDetailsRepository).should(times(1)).incrementRevivals(Set.of(1L, 2L, 3L));
+		then(transporterRatingRequestRecordRepository).should(times(1)).incrementRevivals(Set.of(1L, 2L, 3L));
 
+	}
+
+	@Test
+	void testUpdateStatus() {
+		// given
+
+		// when
+		transporterRatingRequestPersistenceAdapter.updateRequestStatus(1L, TransporterRatingRequestStatus.FULFILLED);
+		// then
+		then(transporterRatingRequestRecordRepository).should(times(1)).updateStatus(1L,
+				TransporterRatingRequestStatus.FULFILLED);
 	}
 
 }

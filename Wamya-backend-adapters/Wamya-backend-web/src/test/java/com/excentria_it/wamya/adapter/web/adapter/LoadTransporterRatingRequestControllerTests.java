@@ -18,7 +18,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import com.c4_soft.springaddons.security.oauth2.test.mockmvc.MockMvcSupport;
 import com.excentria_it.wamya.adapter.web.utils.ValidationHelper;
 import com.excentria_it.wamya.application.port.in.LoadTransporterRatingRequestUseCase;
 import com.excentria_it.wamya.application.port.in.LoadTransporterRatingRequestUseCase.LoadTransporterRatingRequestCommand;
@@ -28,8 +27,7 @@ import com.excentria_it.wamya.test.data.common.TransporterRatingRequestTestData;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @ActiveProfiles(profiles = { "web-local" })
-@Import(value = { LoadTransporterRatingRequestController.class, RestApiExceptionHandler.class, MockMvcSupport.class,
-		ValidationHelper.class })
+@Import(value = { LoadTransporterRatingRequestController.class, RestApiExceptionHandler.class, ValidationHelper.class })
 @WebMvcTest(controllers = LoadTransporterRatingRequestController.class)
 public class LoadTransporterRatingRequestControllerTests {
 
@@ -50,7 +48,8 @@ public class LoadTransporterRatingRequestControllerTests {
 		LoadTransporterRatingRequestCommand command = LoadTransporterRatingRequestCommand.builder().hash("SOME_HASH")
 				.userId(1L).build();
 
-		TransporterRatingRequestRecordDto trdDto = TransporterRatingRequestTestData.defaultTransporterRatingRequestRecordDto();
+		TransporterRatingRequestRecordDto trdDto = TransporterRatingRequestTestData
+				.defaultTransporterRatingRequestRecordDto();
 
 		given(loadTransporterRatingDetailsUseCase
 				.loadTransporterRatingRequest(any(LoadTransporterRatingRequestCommand.class), any(String.class)))
@@ -65,8 +64,8 @@ public class LoadTransporterRatingRequestControllerTests {
 						.param("uid", command.getUserId().toString()).param("lang", "en_US"))
 				.andExpect(status().isOk()).andReturn();
 
-		TransporterRatingRequestRecordDto response = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
-				TransporterRatingRequestRecordDto.class);
+		TransporterRatingRequestRecordDto response = objectMapper
+				.readValue(mvcResult.getResponse().getContentAsString(), TransporterRatingRequestRecordDto.class);
 		// then
 
 		then(loadTransporterRatingDetailsUseCase).should(times(1)).loadTransporterRatingRequest(commandCaptor.capture(),

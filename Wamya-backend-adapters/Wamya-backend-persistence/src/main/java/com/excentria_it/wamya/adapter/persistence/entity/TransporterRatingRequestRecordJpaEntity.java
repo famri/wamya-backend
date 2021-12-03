@@ -12,6 +12,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import com.excentria_it.wamya.common.annotation.Generated;
+import com.excentria_it.wamya.domain.TransporterRatingRequestStatus;
 
 import lombok.NoArgsConstructor;
 
@@ -19,6 +20,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "transporter_rating_details")
 @NoArgsConstructor
+
 @SequenceGenerator(name = TransporterRatingRequestRecordJpaEntity.RATING_DETAILS_SEQ, initialValue = 1, allocationSize = 5)
 public class TransporterRatingRequestRecordJpaEntity {
 
@@ -128,12 +130,9 @@ public class TransporterRatingRequestRecordJpaEntity {
 
 	@Override
 	public String toString() {
-		return "TransporterRatingRequestJpaEntity [id=" + id + ", jourenyRequest=" + jourenyRequest
-				+ ", transporter=" + transporter + ", client=" + client + ", hash=" + hash + ", revivals=" + revivals
-				+ ", status=" + status + "]";
+		return "TransporterRatingRequestJpaEntity [id=" + id + ", jourenyRequest=" + jourenyRequest + ", transporter="
+				+ transporter + ", client=" + client + ", hash=" + hash + ", revivals=" + revivals + ", status="
+				+ status + "]";
 	}
 
-	public enum TransporterRatingRequestStatus {
-		SAVED, FULFILLED;
-	}
 }

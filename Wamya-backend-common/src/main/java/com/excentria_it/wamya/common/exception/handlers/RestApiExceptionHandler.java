@@ -43,7 +43,7 @@ import com.excentria_it.wamya.common.exception.JourneyRequestNotFoundException;
 import com.excentria_it.wamya.common.exception.JourneyRequestUpdateException;
 import com.excentria_it.wamya.common.exception.LinkExpiredException;
 import com.excentria_it.wamya.common.exception.OperationDeniedException;
-import com.excentria_it.wamya.common.exception.TransporterRatingDetailsNotFoundException;
+import com.excentria_it.wamya.common.exception.TransporterRatingRequestNotFoundException;
 import com.excentria_it.wamya.common.exception.UnsupportedInternationalCallingCodeException;
 import com.excentria_it.wamya.common.exception.UnsupportedMimeTypeException;
 import com.excentria_it.wamya.common.exception.UserAccountAlreadyExistsException;
@@ -447,9 +447,9 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 		return new ResponseEntity<ApiError>(apiError, new HttpHeaders(), apiError.getStatus());
 	}
 	
-	@ExceptionHandler({ TransporterRatingDetailsNotFoundException.class })
+	@ExceptionHandler({ TransporterRatingRequestNotFoundException.class })
 	@ResponseStatus(HttpStatus.NOT_FOUND)
-	public ResponseEntity<ApiError> handleTransporterRatingDetailsNotFoundException(TransporterRatingDetailsNotFoundException exception) {
+	public ResponseEntity<ApiError> handleTransporterRatingDetailsNotFoundException(TransporterRatingRequestNotFoundException exception) {
 
 		log.error("Exception at " + exception.getClass() + ": ", exception);
 		final String error = exception.getMessage();

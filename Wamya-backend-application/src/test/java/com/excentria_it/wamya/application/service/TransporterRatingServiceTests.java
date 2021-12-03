@@ -18,7 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.excentria_it.wamya.application.port.in.LoadTransporterRatingRequestUseCase.LoadTransporterRatingRequestCommand;
 import com.excentria_it.wamya.application.port.out.LoadTransporterRatingRequestRecordPort;
 import com.excentria_it.wamya.application.utils.DateTimeHelper;
-import com.excentria_it.wamya.common.exception.TransporterRatingDetailsNotFoundException;
+import com.excentria_it.wamya.common.exception.TransporterRatingRequestNotFoundException;
 import com.excentria_it.wamya.domain.TransporterRatingRequestRecordDto;
 import com.excentria_it.wamya.domain.TransporterRatingRequestRecordOutput;
 import com.excentria_it.wamya.test.data.common.TransporterRatingRequestTestData;
@@ -47,7 +47,7 @@ public class TransporterRatingServiceTests {
 
 		// then
 
-		assertThrows(TransporterRatingDetailsNotFoundException.class,
+		assertThrows(TransporterRatingRequestNotFoundException.class,
 				() -> transporterRatingService.loadTransporterRatingRequest(command, "fr_FR"));
 	}
 

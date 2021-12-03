@@ -29,7 +29,7 @@ public class TransporterRatingRequestTestData {
 				new TransporterRatingRequestRecordOutput.PlaceDto("Tunis"), Instant.now());
 
 		TransporterRatingRequestRecordOutput.TransporterDto trDto = new TransporterRatingRequestRecordOutput.TransporterDto(
-				"Transporter1", "http://some/photo/url", 4.5);
+				1L, "Transporter1", "http://some/photo/url", 4.5);
 
 		TransporterRatingRequestRecordOutput.ClientDto cDto = new TransporterRatingRequestRecordOutput.ClientDto(1L,
 				"Client1", "client1@gmail.com", "fr_FR", "Africa/Tunis");

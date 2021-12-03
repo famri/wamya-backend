@@ -4,12 +4,13 @@ import com.excentria_it.wamya.adapter.persistence.entity.ClientJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.JourneyRequestJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.TransporterJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.TransporterRatingRequestRecordJpaEntity;
-import com.excentria_it.wamya.adapter.persistence.entity.TransporterRatingRequestRecordJpaEntity.TransporterRatingRequestStatus;
+import com.excentria_it.wamya.domain.TransporterRatingRequestStatus;
 
 public class TransporterRatingRequestJpaTestData {
 	public static TransporterRatingRequestRecordJpaEntity defaultTransporterRatingRequestRecordJpaEntity() {
 
-		JourneyRequestJpaEntity journeyRequest = JourneyRequestJpaTestData.defaultExistentJourneyRequestJpaEntityWithAcceptedProposal();
+		JourneyRequestJpaEntity journeyRequest = JourneyRequestJpaTestData
+				.defaultExistentJourneyRequestJpaEntityWithAcceptedProposal();
 		ClientJpaEntity client = UserAccountJpaEntityTestData.defaultExistentClientJpaEntity();
 		TransporterJpaEntity transporter = UserAccountJpaEntityTestData.defaultExistentTransporterJpaEntity();
 

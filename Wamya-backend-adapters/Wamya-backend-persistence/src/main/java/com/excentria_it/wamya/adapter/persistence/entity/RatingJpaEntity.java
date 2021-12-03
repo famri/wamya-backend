@@ -30,34 +30,40 @@ public class RatingJpaEntity {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = RATING_SEQ)
 	private Long id;
 
-	@ManyToOne
-	@JoinColumn(name = "rating_type_id")
-	private RatingTypeJpaEntity type;
+	private Integer value;
 
-	private Double value;
+	private String comment;
 
 	@ManyToOne
 	@JoinColumn(name = "author_id")
 	private UserAccountJpaEntity user;
 
-	public RatingTypeJpaEntity getType() {
-		return type;
+	public Long getId() {
+		return id;
 	}
 
-	public void setType(RatingTypeJpaEntity type) {
-		this.type = type;
-	}
-
-	public Double getValue() {
+	public Integer getValue() {
 		return value;
 	}
 
-	public void setValue(Double value) {
+	public void setValue(Integer value) {
 		this.value = value;
 	}
 
-	public Long getId() {
-		return id;
+	public String getComment() {
+		return comment;
+	}
+
+	public void setComment(String comment) {
+		this.comment = comment;
+	}
+
+	public UserAccountJpaEntity getUser() {
+		return user;
+	}
+
+	public void setUser(UserAccountJpaEntity user) {
+		this.user = user;
 	}
 
 	@Override
@@ -86,7 +92,7 @@ public class RatingJpaEntity {
 
 	@Override
 	public String toString() {
-		return "RatingJpaEntity [id=" + id + ", type=" + type + ", value=" + value + "]";
+		return "RatingJpaEntity [id=" + id + ", value=" + value + ", comment=" + comment + ", user=" + user + "]";
 	}
 
 }

@@ -9,10 +9,12 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.security.crypto.codec.Hex;
+import org.springframework.stereotype.Component;
 
 import com.excentria_it.wamya.application.service.helper.HashGenerator;
 import com.excentria_it.wamya.common.HashAlgorithm;
 
+@Component
 public class HashGeneratorImpl implements HashGenerator {
 
 	private static final String SALT = "HASH-GENERATOR";

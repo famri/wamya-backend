@@ -56,7 +56,7 @@ import com.excentria_it.wamya.common.exception.LinkExpiredException;
 import com.excentria_it.wamya.common.exception.MyBindException;
 import com.excentria_it.wamya.common.exception.OperationDeniedException;
 import com.excentria_it.wamya.common.exception.SomeObject;
-import com.excentria_it.wamya.common.exception.TransporterRatingDetailsNotFoundException;
+import com.excentria_it.wamya.common.exception.TransporterRatingRequestNotFoundException;
 import com.excentria_it.wamya.common.exception.UnsupportedInternationalCallingCodeException;
 import com.excentria_it.wamya.common.exception.UnsupportedMimeTypeException;
 import com.excentria_it.wamya.common.exception.UserAccountAlreadyExistsException;
@@ -697,7 +697,7 @@ public class RestApiExceptionHandlerTest {
 	@Test
 	void whenHandleTransporterRatingDetailsNotFoundException_thenStatusIsNotFound() {
 		// given
-		TransporterRatingDetailsNotFoundException exception = givenTransporterRatingDetailsNotFoundException();
+		TransporterRatingRequestNotFoundException exception = givenTransporterRatingDetailsNotFoundException();
 
 		// When
 		ResponseEntity<ApiError> responseEntity = restApiExceptionHandler
@@ -912,9 +912,9 @@ public class RestApiExceptionHandlerTest {
 		return exception;
 	}
 
-	private TransporterRatingDetailsNotFoundException givenTransporterRatingDetailsNotFoundException() {
-		TransporterRatingDetailsNotFoundException exception = Mockito
-				.mock(TransporterRatingDetailsNotFoundException.class);
+	private TransporterRatingRequestNotFoundException givenTransporterRatingDetailsNotFoundException() {
+		TransporterRatingRequestNotFoundException exception = Mockito
+				.mock(TransporterRatingRequestNotFoundException.class);
 
 		given(exception.getMessage()).willReturn(SOME_MESSAGE);
 

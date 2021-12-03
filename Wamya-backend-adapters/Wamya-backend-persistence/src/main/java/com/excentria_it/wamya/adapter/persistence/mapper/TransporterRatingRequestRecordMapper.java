@@ -34,7 +34,8 @@ public class TransporterRatingRequestRecordMapper {
 				.arrivalPlace(new PlaceDto(jrJpaEntity.getArrivalPlace().getName(locale)))
 				.dateTime(jrJpaEntity.getDateTime()).build();
 
-		TransporterDto transporterDto = new TransporterDto(trdJpaEntity.getTransporter().getFirstname(),
+		TransporterDto transporterDto = new TransporterDto(trdJpaEntity.getTransporter().getId(),
+				trdJpaEntity.getTransporter().getFirstname(),
 				documentUrlResolver.resolveUrl(trdJpaEntity.getTransporter().getProfileImage().getId(),
 						trdJpaEntity.getTransporter().getProfileImage().getHash()),
 				trdJpaEntity.getTransporter().getGlobalRating());

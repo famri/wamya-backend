@@ -8,17 +8,21 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import com.excentria_it.wamya.adapter.persistence.entity.TransporterRatingRequestRecordJpaEntity;
-import com.excentria_it.wamya.adapter.persistence.entity.TransporterRatingRequestRecordJpaEntity.TransporterRatingRequestStatus;
+import com.excentria_it.wamya.domain.TransporterRatingRequestStatus;
 
 public interface TransporterRatingRequestRecordRepository
 		extends JpaRepository<TransporterRatingRequestRecordJpaEntity, Long> {
 
 	Optional<TransporterRatingRequestRecordJpaEntity> findByHashAndClient_Id(String hash, Long clientId);
 
-	Set<TransporterRatingRequestRecordJpaEntity> findByStatusAndRevivesLessThan(
-			TransporterRatingRequestStatus saved, Integer maxRevives);
+	Set<TransporterRatingRequestRecordJpaEntity> findByStatusAndRevivalsLessThan(TransporterRatingRequestStatus saved,
+			Integer maxRevives);
 
 	@Modifying
-	@Query(value = "UPDATE TransporterRatingRequestRecordJpaEntity t SET t.revivals = t.revivals + 1 WHERE j.id IN ?1")
+	@Query(value = "UPDATE TransporterRatingRequestRecordJpaEntity t SET t.revivals = t.revivals + 1 WHERE t.id IN ?1")
 	void incrementRevivals(Set<Long> ids);
+
+	@Modifying
+	@Query(value = "UPDATE TransporterRatingRequestRecordJpaEntity t SET t.status = ?2   WHERE t.id = ?1")
+	void updateStatus(Long ratingRequestId, TransporterRatingRequestStatus status);
 }

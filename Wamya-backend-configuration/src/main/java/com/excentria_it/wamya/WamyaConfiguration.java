@@ -24,7 +24,9 @@ import com.excentria_it.wamya.adapter.persistence.PersistenceConfiguration;
 import com.excentria_it.wamya.adapter.web.WebConfiguration;
 import com.excentria_it.wamya.adapter.web.WebSecurityConfiguration;
 import com.excentria_it.wamya.application.props.CodeGeneratorProperties;
+import com.excentria_it.wamya.application.props.CreateTransporterRatingRequestProperties;
 import com.excentria_it.wamya.application.props.PasswordResetProperties;
+import com.excentria_it.wamya.application.props.SendTransporterRatingRequestProperties;
 import com.excentria_it.wamya.application.props.ServerUrlProperties;
 
 @Configuration
@@ -32,7 +34,8 @@ import com.excentria_it.wamya.application.props.ServerUrlProperties;
 		FileStorageConfiguration.class, PersistenceConfiguration.class, WebConfiguration.class,
 		WebSecurityConfiguration.class, WebSocketSecurityConfiguration.class })
 @EnableConfigurationProperties(value = { CodeGeneratorProperties.class, ServerUrlProperties.class,
-		PasswordResetProperties.class })
+		PasswordResetProperties.class, SendTransporterRatingRequestProperties.class,
+		CreateTransporterRatingRequestProperties.class })
 public class WamyaConfiguration {
 
 	private static final String DEFAULT_ENCODING_ALGORITHM = "bcrypt";

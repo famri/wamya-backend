@@ -205,7 +205,7 @@ public class ExceptionsTests {
 	void testTransporterRatingDetailsNotFoundException() {
 
 		String message = "SOME MESSAGE";
-		TransporterRatingDetailsNotFoundException exception = new TransporterRatingDetailsNotFoundException(message);
+		TransporterRatingRequestNotFoundException exception = new TransporterRatingRequestNotFoundException(message);
 		assertEquals(exception.getMessage(), message);
 	}
 }

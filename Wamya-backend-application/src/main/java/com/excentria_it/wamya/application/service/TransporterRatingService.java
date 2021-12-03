@@ -9,7 +9,7 @@ import com.excentria_it.wamya.application.port.in.LoadTransporterRatingRequestUs
 import com.excentria_it.wamya.application.port.out.LoadTransporterRatingRequestRecordPort;
 import com.excentria_it.wamya.application.utils.DateTimeHelper;
 import com.excentria_it.wamya.common.annotation.UseCase;
-import com.excentria_it.wamya.common.exception.TransporterRatingDetailsNotFoundException;
+import com.excentria_it.wamya.common.exception.TransporterRatingRequestNotFoundException;
 import com.excentria_it.wamya.domain.TransporterRatingRequestRecordDto;
 import com.excentria_it.wamya.domain.TransporterRatingRequestRecordDto.JourneyRequestDto;
 import com.excentria_it.wamya.domain.TransporterRatingRequestRecordDto.PlaceDto;
@@ -35,7 +35,7 @@ public class TransporterRatingService implements LoadTransporterRatingRequestUse
 				.loadRecord(command.getHash(), command.getUserId(), locale);
 
 		if (trdOptional.isEmpty()) {
-			throw new TransporterRatingDetailsNotFoundException("Transporter rating details not found.");
+			throw new TransporterRatingRequestNotFoundException("Transporter rating details not found.");
 		}
 		
 		TransporterRatingRequestRecordOutput trdo = trdOptional.get();
