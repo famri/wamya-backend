@@ -56,6 +56,7 @@ import com.excentria_it.wamya.common.exception.LinkExpiredException;
 import com.excentria_it.wamya.common.exception.MyBindException;
 import com.excentria_it.wamya.common.exception.OperationDeniedException;
 import com.excentria_it.wamya.common.exception.SomeObject;
+import com.excentria_it.wamya.common.exception.TransporterRatingDetailsNotFoundException;
 import com.excentria_it.wamya.common.exception.UnsupportedInternationalCallingCodeException;
 import com.excentria_it.wamya.common.exception.UnsupportedMimeTypeException;
 import com.excentria_it.wamya.common.exception.UserAccountAlreadyExistsException;
@@ -694,6 +695,23 @@ public class RestApiExceptionHandlerTest {
 	}
 
 	@Test
+	void whenHandleTransporterRatingDetailsNotFoundException_thenStatusIsNotFound() {
+		// given
+		TransporterRatingDetailsNotFoundException exception = givenTransporterRatingDetailsNotFoundException();
+
+		// When
+		ResponseEntity<ApiError> responseEntity = restApiExceptionHandler
+				.handleTransporterRatingDetailsNotFoundException(exception);
+
+		// Then
+		then(responseEntity.getBody() instanceof ApiError);
+		then(((ApiError) responseEntity.getBody()).getStatus()).isEqualTo(HttpStatus.NOT_FOUND);
+		then(((ApiError) responseEntity.getBody()).getErrorCode()).isEqualTo(ErrorCode.NOT_FOUND);
+		then(((ApiError) responseEntity.getBody()).getErrors()).containsExactly(SOME_MESSAGE);
+		then(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+	}
+
+	@Test
 	void whenHandleJourneyRequestUpdateException_thenStatusIsBadRequest() {
 		// given
 		JourneyRequestUpdateException exception = givenJourneyRequestUpdateException();
@@ -890,6 +908,15 @@ public class RestApiExceptionHandlerTest {
 		given(exception.getMethod()).willReturn(HttpMethod.DELETE.toString());
 		given(exception.getSupportedHttpMethods())
 				.willReturn(new HashSet<HttpMethod>(java.util.Arrays.asList(HttpMethod.GET, HttpMethod.POST)));
+
+		return exception;
+	}
+
+	private TransporterRatingDetailsNotFoundException givenTransporterRatingDetailsNotFoundException() {
+		TransporterRatingDetailsNotFoundException exception = Mockito
+				.mock(TransporterRatingDetailsNotFoundException.class);
+
+		given(exception.getMessage()).willReturn(SOME_MESSAGE);
 
 		return exception;
 	}

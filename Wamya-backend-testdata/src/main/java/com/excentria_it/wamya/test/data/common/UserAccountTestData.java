@@ -18,6 +18,7 @@ public class UserAccountTestData {
 	public static UserAccountBuilder defaultUserAccountBuilder() {
 		Map<String, String> preferences = new HashMap<>();
 		preferences.put("timezone", "Africa/Tunis");
+		preferences.put("locale", "fr_FR");
 		return UserAccount.builder().id(1L).isTransporter(false).genderId(1L).firstname(DEFAULT_FIRSTNAME).oauthId(100L)
 				.lastname(DEFAULT_LASTNAME).dateOfBirth(DEFAULT_DATE_OF_BIRTH).email(DEFAULT_EMAIL)
 				.emailValidationCode(DEFAULT_VALIDATION_CODE).isValidatedEmail(true)

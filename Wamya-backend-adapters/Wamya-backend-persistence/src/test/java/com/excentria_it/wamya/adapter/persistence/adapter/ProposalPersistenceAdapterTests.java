@@ -285,7 +285,7 @@ public class ProposalPersistenceAdapterTests {
 		given(journeyRequestRepository.findById(any(Long.class))).willReturn(Optional.of(journeyRequestJpaEntity));
 
 		// when
-		boolean result = proposalPersistenceAdapter.acceptProposal(1L, 1L);
+		boolean result = proposalPersistenceAdapter.acceptProposal(1L, 10L);
 
 		// then
 		assertFalse(result);
@@ -334,10 +334,11 @@ public class ProposalPersistenceAdapterTests {
 
 		// given
 		JourneyRequestJpaEntity journeyRequestJpaEntity = defaultExistentJourneyRequestJpaEntity();
+
 		given(journeyRequestRepository.findById(any(Long.class))).willReturn(Optional.of(journeyRequestJpaEntity));
 
 		// when
-		boolean result = proposalPersistenceAdapter.rejectProposal(1L, 1L);
+		boolean result = proposalPersistenceAdapter.rejectProposal(1L, 2L);
 
 		// then
 		assertFalse(result);

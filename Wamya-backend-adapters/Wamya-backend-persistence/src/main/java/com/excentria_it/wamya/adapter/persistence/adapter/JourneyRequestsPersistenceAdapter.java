@@ -4,6 +4,8 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -410,6 +412,13 @@ public class JourneyRequestsPersistenceAdapter implements SearchJourneyRequestsP
 
 		journeyRequestRepository.updateStatus(journeyRequestId, cancelledStatusJpaEntity);
 
+	}
+
+	@Override
+	public Set<Long> loadJourneyRequestIdsByStatusCodeAndLimit(JourneyRequestStatusCode statusCode, Integer limit) {
+		Page<JourneyRequestJpaEntity> jrJpaEntities = journeyRequestRepository.findByStatus_Code(statusCode,
+				PageRequest.of(0, limit));
+		return jrJpaEntities.getContent().stream().map(jr -> jr.getId()).collect(Collectors.toSet());
 	}
 
 }

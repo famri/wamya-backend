@@ -1,5 +1,6 @@
 package com.excentria_it.wamya.domain;
 
+import com.excentria_it.wamya.common.annotation.Generated;
 import com.excentria_it.wamya.domain.LoadDiscussionsDto.MessageDto;
 
 import lombok.AllArgsConstructor;
@@ -9,6 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Generated
 public class ChatMessage {
 
 	private WebSocketMessageType type = WebSocketMessageType.CHAT_MESSAGE;

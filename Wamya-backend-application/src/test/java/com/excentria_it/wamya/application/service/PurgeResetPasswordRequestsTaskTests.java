@@ -1,4 +1,4 @@
-package com.excentria_it.wamya.domain;
+package com.excentria_it.wamya.application.service;
 
 import static org.mockito.BDDMockito.*;
 

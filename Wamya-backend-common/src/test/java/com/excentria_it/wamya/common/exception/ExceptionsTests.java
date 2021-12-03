@@ -200,4 +200,12 @@ public class ExceptionsTests {
 		JourneyRequestUpdateException exception = new JourneyRequestUpdateException(message);
 		assertEquals(exception.getMessage(), message);
 	}
+
+	@Test
+	void testTransporterRatingDetailsNotFoundException() {
+
+		String message = "SOME MESSAGE";
+		TransporterRatingDetailsNotFoundException exception = new TransporterRatingDetailsNotFoundException(message);
+		assertEquals(exception.getMessage(), message);
+	}
 }

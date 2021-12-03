@@ -8,9 +8,13 @@ import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import com.excentria_it.wamya.adapter.persistence.entity.DepartmentJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.EngineTypeJpaEntity;
+import com.excentria_it.wamya.adapter.persistence.entity.JourneyProposalJpaEntity;
+import com.excentria_it.wamya.adapter.persistence.entity.JourneyProposalStatusJpaEntity;
+import com.excentria_it.wamya.adapter.persistence.entity.JourneyProposalStatusJpaEntity.JourneyProposalStatusCode;
 import com.excentria_it.wamya.adapter.persistence.entity.JourneyRequestJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.JourneyRequestStatusJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.JourneyRequestStatusJpaEntity.JourneyRequestStatusJpaEntityBuilder;
@@ -96,11 +100,38 @@ public class JourneyRequestJpaTestData {
 		localizations.put("en_US", ljrsEN);
 		JourneyRequestStatusJpaEntity status = new JourneyRequestStatusJpaEntity(1L, JourneyRequestStatusCode.OPENED,
 				"Opened", localizations);
+
+	
+
 		return JourneyRequestJpaEntity.builder().id(1L).departurePlace(defaultDeparturePlaceJpaEntity())
 				.arrivalPlace(defaultArrivalPlaceJpaEntity()).engineType(defaultEngineTypeJpaEntity())
 				.dateTime(startDate.toInstant()).distance(150500).workers(2).proposals(new HashSet<>())
 				.description("Need transporter URGENT!").client(defaultExistentClientJpaEntity()).status(status)
 				.build();
+	}
+
+	public static JourneyRequestJpaEntity defaultExistentJourneyRequestJpaEntityWithAcceptedProposal() {
+		Map<String, LocalizedJourneyRequestStatusJpaEntity> localizations = new HashMap<>();
+		LocalizedJourneyRequestStatusJpaEntity ljrsFR = new LocalizedJourneyRequestStatusJpaEntity(
+				new LocalizedId(1L, "fr_FR"), null, "créée");
+		LocalizedJourneyRequestStatusJpaEntity ljrsEN = new LocalizedJourneyRequestStatusJpaEntity(
+				new LocalizedId(1L, "en_US"), null, "opened");
+		localizations.put("fr_FR", ljrsFR);
+		localizations.put("en_US", ljrsEN);
+		JourneyRequestStatusJpaEntity status = new JourneyRequestStatusJpaEntity(1L, JourneyRequestStatusCode.OPENED,
+				"Opened", localizations);
+
+		JourneyProposalStatusJpaEntity statusAccepted = JourneyProposalJpaEntityTestData
+				.defaultJourneyProposalStatusJpaEntity();
+		statusAccepted.setCode(JourneyProposalStatusCode.ACCEPTED);
+		JourneyProposalJpaEntity jp = JourneyProposalJpaEntityTestData.defaultJourneyProposalJpaEntityBuilder()
+				.status(statusAccepted).build();
+
+		return JourneyRequestJpaEntity.builder().id(1L).departurePlace(defaultDeparturePlaceJpaEntity())
+				.arrivalPlace(defaultArrivalPlaceJpaEntity()).engineType(defaultEngineTypeJpaEntity())
+				.dateTime(startDate.toInstant()).distance(150500).workers(2).proposals(new HashSet<>())
+				.description("Need transporter URGENT!").client(defaultExistentClientJpaEntity()).status(status)
+				.proposals(Set.of(jp)).build();
 	}
 
 	public static JourneyRequestStatusJpaEntityBuilder defaultJourneyRequestStatusJpaEntityBuilder() {

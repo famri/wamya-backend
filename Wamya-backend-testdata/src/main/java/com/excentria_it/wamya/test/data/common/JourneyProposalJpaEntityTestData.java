@@ -22,7 +22,7 @@ public class JourneyProposalJpaEntityTestData {
 	}
 
 	public static JourneyProposalJpaEntity defaultJourneyProposalJpaEntity() {
-		return JourneyProposalJpaEntity.builder().id(1L).price(250.0)
+		return JourneyProposalJpaEntity.builder().id(10L).price(250.0)
 				.creationDateTime(LocalDateTime.now(ZoneOffset.UTC)).status(defaultJourneyProposalStatusJpaEntity())
 				.transporter(UserAccountJpaEntityTestData.defaultExistentTransporterJpaEntity())
 				.vehicule(VehiculeJpaEntityTestData.defaultVehiculeJpaEntity()).build();

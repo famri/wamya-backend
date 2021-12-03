@@ -34,8 +34,9 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 		http.csrf().disable().cors().disable().httpBasic().disable().formLogin().disable().sessionManagement()
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests(authz -> authz
 						.antMatchers("/actuator/**", "/content/**").permitAll()
-						.antMatchers(HttpMethod.POST, "/login/**", "/accounts/**").permitAll()
-						.antMatchers(HttpMethod.GET, "/countries/**", "/locales/**", "/genders/**", "/documents/**")
+						.antMatchers(HttpMethod.POST, "/login/**", "/accounts/**", "/rating-details/**").permitAll()
+						.antMatchers(HttpMethod.GET, "/countries/**", "/locales/**", "/genders/**", "/documents/**",
+								"/rating-details/**")
 						.permitAll().antMatchers(HttpMethod.GET, "/places/**").permitAll()
 						.antMatchers(HttpMethod.GET, "/departments/**").permitAll()
 						.antMatchers(HttpMethod.GET, "/engine-types/**").permitAll()

@@ -825,6 +825,20 @@ public class JourneyRequestsPersistenceAdapterTests {
 		then(journeyRequestRepository).should(times(1)).updateStatus(1L, status);
 	}
 
+	@Test
+	void testLoadJourneyRequestIdsByStatusCodeAndLimit() {
+
+		// given
+		givenJourneyRequestsPage();
+
+		// When
+		Set<Long> result = journeyRequestsPersistenceAdapter
+				.loadJourneyRequestIdsByStatusCodeAndLimit(JourneyRequestStatusCode.FULFILLED, 10);
+		// then
+		assertEquals(1, result.size());
+		assertEquals(Set.of(defaultExistentJourneyRequestJpaEntity().getId()), result);
+	}
+
 	private Page<JourneyRequestSearchDto> givenNullJourneyRequestsPageByDeparturePlace_RegionIdAndArrivalPlace_RegionIdInAndEngineType_IdInAndDateBetween() {
 
 		given(journeyRequestRepository
@@ -842,6 +856,17 @@ public class JourneyRequestsPersistenceAdapterTests {
 				.findByDeparturePlace_DepartmentIdAndArrivalPlace_DepartmentIdInAndEngineType_IdInAndDateBetween(
 						any(Long.class), any(Set.class), any(Set.class), any(Instant.class), any(Instant.class),
 						any(String.class), any(Pageable.class))).willReturn(result);
+
+		return result;
+
+	}
+
+	private Page<JourneyRequestJpaEntity> givenJourneyRequestsPage() {
+		Page<JourneyRequestJpaEntity> result = createPageFromJourneyRequestJpaEntityList(
+				List.of(defaultExistentJourneyRequestJpaEntity()));
+
+		given(journeyRequestRepository.findByStatus_Code(any(JourneyRequestStatusCode.class), any(Pageable.class)))
+				.willReturn(result);
 
 		return result;
 
@@ -963,6 +988,108 @@ public class JourneyRequestsPersistenceAdapterTests {
 
 			@Override
 			public <U> Page<U> map(Function<? super JourneyRequestSearchOutput, ? extends U> converter) {
+
+				return null;
+			}
+		};
+	}
+
+	private Page<JourneyRequestJpaEntity> createPageFromJourneyRequestJpaEntityList(
+			List<JourneyRequestJpaEntity> journeyRequestJpaEntityList) {
+		return new Page<JourneyRequestJpaEntity>() {
+
+			@Override
+			public int getNumber() {
+
+				return 0;
+			}
+
+			@Override
+			public int getSize() {
+
+				return 1;
+			}
+
+			@Override
+			public int getNumberOfElements() {
+
+				return 1;
+			}
+
+			@Override
+			public List<JourneyRequestJpaEntity> getContent() {
+
+				return journeyRequestJpaEntityList;
+			}
+
+			@Override
+			public boolean hasContent() {
+
+				return true;
+			}
+
+			@Override
+			public Sort getSort() {
+
+				return null;
+			}
+
+			@Override
+			public boolean isFirst() {
+
+				return true;
+			}
+
+			@Override
+			public boolean isLast() {
+
+				return true;
+			}
+
+			@Override
+			public boolean hasNext() {
+
+				return false;
+			}
+
+			@Override
+			public boolean hasPrevious() {
+
+				return false;
+			}
+
+			@Override
+			public Pageable nextPageable() {
+
+				return null;
+			}
+
+			@Override
+			public Pageable previousPageable() {
+
+				return null;
+			}
+
+			@Override
+			public Iterator<JourneyRequestJpaEntity> iterator() {
+
+				return journeyRequestJpaEntityList.iterator();
+			}
+
+			@Override
+			public int getTotalPages() {
+
+				return 1;
+			}
+
+			@Override
+			public long getTotalElements() {
+
+				return 1;
+			}
+
+			@Override
+			public <U> Page<U> map(Function<? super JourneyRequestJpaEntity, ? extends U> converter) {
 
 				return null;
 			}

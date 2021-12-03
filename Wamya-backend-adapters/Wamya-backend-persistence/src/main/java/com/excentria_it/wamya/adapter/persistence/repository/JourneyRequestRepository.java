@@ -14,6 +14,7 @@ import com.excentria_it.wamya.adapter.persistence.entity.JourneyRequestJpaEntity
 import com.excentria_it.wamya.adapter.persistence.entity.JourneyRequestStatusJpaEntity;
 import com.excentria_it.wamya.domain.ClientJourneyRequestDtoOutput;
 import com.excentria_it.wamya.domain.JourneyRequestSearchOutput;
+import com.excentria_it.wamya.domain.JourneyRequestStatusCode;
 
 public interface JourneyRequestRepository extends JpaRepository<JourneyRequestJpaEntity, Long> {
 
@@ -32,9 +33,8 @@ public interface JourneyRequestRepository extends JpaRepository<JourneyRequestJp
 			Instant higherDateEdge, String email, String locale, Pageable pageable);
 
 	@Query(value = "SELECT jr.id AS id, dp.placeId.id AS departurePlaceId, dp.placeId.type AS departurePlaceType, dp.latitude AS departurePlaceLatitude, dp.longitude AS departurePlaceLongitude, dpd.id AS departurePlaceDepartmentId, VALUE(ldp).name AS departurePlaceName, ap.placeId.id AS arrivalPlaceId, ap.placeId.type AS arrivalPlaceType, ap.latitude AS arrivalPlaceLatitude, ap.longitude AS arrivalPlaceLongitude, apd.id AS arrivalPlaceDepartmentId, VALUE(lap).name AS arrivalPlaceName, et.id AS engineTypeId, VALUE(l).name AS engineTypeName, et.code AS engineTypeCode, jr.distance AS distance, jr.dateTime AS dateTime, jr.creationDateTime AS creationDateTime, jr.workers AS workers, jr.description AS description, COUNT(p) AS proposalsCount FROM JourneyRequestJpaEntity jr JOIN jr.engineType et JOIN et.localizations l JOIN jr.client c JOIN c.icc ic JOIN jr.departurePlace dp JOIN dp.department dpd JOIN dp.localizations ldp JOIN jr.arrivalPlace ap JOIN ap.department apd JOIN ap.localizations lap LEFT JOIN jr.proposals p WHERE jr.id = ?1 AND c.email = ?2 AND KEY(l) = ?3 AND KEY(ldp) = ?3 AND KEY(lap) = ?3 GROUP BY jr.id, dp.placeId.id, dp.placeId.type, dp.latitude, dp.longitude, dpd.id, VALUE(ldp).name, ap.placeId.id, ap.placeId.type, ap.latitude, ap.longitude, apd.id, VALUE(lap).name, et.id, VALUE(l).name, et.code, jr.distance, jr.dateTime, jr.creationDateTime, jr.workers, jr.description", countQuery = "SELECT COUNT(DISTINCT jr.id) FROM JourneyRequestJpaEntity jr JOIN jr.client c JOIN c.icc ic WHERE jr.id = ?1 AND c.email = ?2 AND ?3 = ?3")
-	Optional<ClientJourneyRequestDtoOutput> findByIdAndClient_Email(Long journeyRequestId, String clientEmail, String locale);
-
-
+	Optional<ClientJourneyRequestDtoOutput> findByIdAndClient_Email(Long journeyRequestId, String clientEmail,
+			String locale);
 
 	@Query(value = "SELECT CASE WHEN COUNT(j) > 0 THEN true ELSE false END FROM JourneyRequestJpaEntity j JOIN j.client c WHERE j.id = ?1 AND j.dateTime > CURRENT_TIMESTAMP AND c.email = ?2")
 	boolean existsAndNotExpiredByIdAndClient_Email(Long journeyRequestId, String clientUsername);
@@ -46,4 +46,9 @@ public interface JourneyRequestRepository extends JpaRepository<JourneyRequestJp
 	@Modifying
 	@Query(value = "UPDATE JourneyRequestJpaEntity j SET j.status = ?2 WHERE j.id = ?1")
 	void updateStatus(Long journeyRequestId, JourneyRequestStatusJpaEntity cancelledStatusJpaEntity);
+
+	Page<JourneyRequestJpaEntity> findByStatus_Code(JourneyRequestStatusCode statusCode, Pageable pageable);
+
+	@Query(value = "SELECT jr FROM JourneyRequestJpaEntity jr WHERE jr.id IN ?1")
+	Set<JourneyRequestJpaEntity> findByIds(Set<Long> fulfilledJourneysIds);
 }
