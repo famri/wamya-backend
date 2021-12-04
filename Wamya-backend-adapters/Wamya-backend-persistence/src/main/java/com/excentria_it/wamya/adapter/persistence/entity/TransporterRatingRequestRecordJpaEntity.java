@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 
 @Generated
 @Entity
-@Table(name = "transporter_rating_details")
+@Table(name = "transporter_rating_request")
 @NoArgsConstructor
 
 @SequenceGenerator(name = TransporterRatingRequestRecordJpaEntity.RATING_DETAILS_SEQ, initialValue = 1, allocationSize = 5)
