@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 
 import com.excentria_it.wamya.domain.TransporterRatingRequestRecordDto;
+import com.excentria_it.wamya.domain.TransporterRatingRequestRecordDto.ClientDto;
 import com.excentria_it.wamya.domain.TransporterRatingRequestRecordDto.JourneyRequestDto;
 import com.excentria_it.wamya.domain.TransporterRatingRequestRecordDto.PlaceDto;
 import com.excentria_it.wamya.domain.TransporterRatingRequestRecordDto.TransporterDto;
@@ -18,8 +19,8 @@ public class TransporterRatingRequestTestData {
 				Instant.now().atZone(ZoneId.of("Africa/Tunis")).toLocalDateTime());
 
 		TransporterDto trDto = new TransporterDto("Transporter1", "http://some/photo/url", 4.5);
-
-		return new TransporterRatingRequestRecordDto(jrDto, trDto);
+		ClientDto cDto = new ClientDto(1L, "Client1");
+		return new TransporterRatingRequestRecordDto(jrDto, trDto, cDto, "SOME_HASH");
 
 	}
 

@@ -37,7 +37,7 @@ public class TransporterRatingRequestPersistenceAdapter implements LoadTransport
 	public Optional<TransporterRatingRequestRecordOutput> loadRecord(String hash, Long userId, String locale) {
 
 		Optional<TransporterRatingRequestRecordJpaEntity> trdJpaEntityOptional = transporterRatingRequestRecordRepository
-				.findByHashAndClient_Id(hash, userId);
+				.findByHashAndStatusAndClient_Id(hash,TransporterRatingRequestStatus.SAVED, userId);
 
 		if (trdJpaEntityOptional.isEmpty()) {
 

@@ -45,8 +45,8 @@ public class TransporterRatingRequestPersistenceAdapterTests {
 	@Test
 	void givenEmptyTransporterRatingDetailsJpaEntity_WhenLoadTransporterRatingDetails_ThenReturnOptionalEmpty() {
 		// given
-		given(transporterRatingRequestRecordRepository.findByHashAndClient_Id(any(String.class), any(Long.class)))
-				.willReturn(Optional.empty());
+		given(transporterRatingRequestRecordRepository.findByHashAndStatusAndClient_Id(any(String.class),
+				any(TransporterRatingRequestStatus.class), any(Long.class))).willReturn(Optional.empty());
 		// when
 		Optional<TransporterRatingRequestRecordOutput> TransporterRatingDetailsOutputOptional = transporterRatingRequestPersistenceAdapter
 				.loadRecord("SOME_HASH", 1L, "fr_FR");
@@ -64,8 +64,8 @@ public class TransporterRatingRequestPersistenceAdapterTests {
 		TransporterRatingRequestRecordJpaEntity trdje = TransporterRatingRequestJpaTestData
 				.defaultTransporterRatingRequestRecordJpaEntity();
 
-		given(transporterRatingRequestRecordRepository.findByHashAndClient_Id(any(String.class), any(Long.class)))
-				.willReturn(Optional.of(trdje));
+		given(transporterRatingRequestRecordRepository.findByHashAndStatusAndClient_Id(any(String.class),
+				any(TransporterRatingRequestStatus.class), any(Long.class))).willReturn(Optional.of(trdje));
 
 		given(transporterRatingDetailsMapper.mapToDomainEntity(trdje, "fr_FR")).willReturn(trdo);
 

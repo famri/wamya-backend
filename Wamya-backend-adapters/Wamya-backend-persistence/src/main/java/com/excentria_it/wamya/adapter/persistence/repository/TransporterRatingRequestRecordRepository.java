@@ -13,7 +13,7 @@ import com.excentria_it.wamya.domain.TransporterRatingRequestStatus;
 public interface TransporterRatingRequestRecordRepository
 		extends JpaRepository<TransporterRatingRequestRecordJpaEntity, Long> {
 
-	Optional<TransporterRatingRequestRecordJpaEntity> findByHashAndClient_Id(String hash, Long clientId);
+	Optional<TransporterRatingRequestRecordJpaEntity> findByHashAndStatusAndClient_Id(String hash, TransporterRatingRequestStatus status, Long clientId);
 
 	Set<TransporterRatingRequestRecordJpaEntity> findByStatusAndRevivalsLessThan(TransporterRatingRequestStatus saved,
 			Integer maxRevives);
