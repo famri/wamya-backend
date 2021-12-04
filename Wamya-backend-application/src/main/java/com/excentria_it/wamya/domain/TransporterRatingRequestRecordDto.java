@@ -17,6 +17,10 @@ public class TransporterRatingRequestRecordDto {
 
 	private TransporterDto transporter;
 
+	private ClientDto client;
+	
+	private String hash;
+	
 	@AllArgsConstructor
 	@NoArgsConstructor
 	@Data
@@ -42,6 +46,18 @@ public class TransporterRatingRequestRecordDto {
 		private String photoUrl;
 
 		private Double globalRating;
+	}
+
+	@AllArgsConstructor
+	@NoArgsConstructor
+	@Data
+	@Builder
+	public static class ClientDto {
+
+		private Long id;
+		
+		private String firstname;
+	
 	}
 
 	@AllArgsConstructor

@@ -11,6 +11,7 @@ import com.excentria_it.wamya.application.utils.DateTimeHelper;
 import com.excentria_it.wamya.common.annotation.UseCase;
 import com.excentria_it.wamya.common.exception.TransporterRatingRequestNotFoundException;
 import com.excentria_it.wamya.domain.TransporterRatingRequestRecordDto;
+import com.excentria_it.wamya.domain.TransporterRatingRequestRecordDto.ClientDto;
 import com.excentria_it.wamya.domain.TransporterRatingRequestRecordDto.JourneyRequestDto;
 import com.excentria_it.wamya.domain.TransporterRatingRequestRecordDto.PlaceDto;
 import com.excentria_it.wamya.domain.TransporterRatingRequestRecordDto.TransporterDto;
@@ -37,9 +38,9 @@ public class TransporterRatingService implements LoadTransporterRatingRequestUse
 		if (trdOptional.isEmpty()) {
 			throw new TransporterRatingRequestNotFoundException("Transporter rating details not found.");
 		}
-		
+
 		TransporterRatingRequestRecordOutput trdo = trdOptional.get();
-		
+
 		ZoneId userZoneId = dateTimeHelper.findUserZoneId(command.getUserId());
 
 		PlaceDto departurePlaceDto = new PlaceDto(trdo.getJourneyRequest().getDeparturePlace().getName());
@@ -51,7 +52,9 @@ public class TransporterRatingService implements LoadTransporterRatingRequestUse
 		TransporterDto transporterDto = new TransporterDto(trdo.getTransporter().getFirstname(),
 				trdo.getTransporter().getPhotoUrl(), trdo.getTransporter().getGlobalRating());
 
-		return new TransporterRatingRequestRecordDto(jrDto, transporterDto);
+		ClientDto clientDto = new ClientDto(trdo.getClient().getId(), trdo.getClient().getFirstname());
+
+		return new TransporterRatingRequestRecordDto(jrDto, transporterDto, clientDto, trdo.getHash());
 	}
 
 }
