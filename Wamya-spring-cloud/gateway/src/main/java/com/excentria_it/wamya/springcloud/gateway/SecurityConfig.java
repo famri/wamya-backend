@@ -25,7 +25,7 @@ public class SecurityConfig {
 						"/oauth/**", "/wamya-backend/countries/**", "/wamya-backend/locales/**",
 						"/wamya-backend/genders/**", "/wamya-backend/content/**", "/wamya-backend/documents/**",
 						"/wamya-backend/places/**", "/wamya-backend/departments/**", "/wamya-backend/engine-types/**",
-						"/rating-details/**", "/ratings/**")
+						"/wamya-backend/rating-details/**", "/wamya-backend/ratings/**")
 				.permitAll().anyExchange().authenticated().and().oauth2ResourceServer()
 				.bearerTokenConverter(authenticationConverter()).jwt();
 
