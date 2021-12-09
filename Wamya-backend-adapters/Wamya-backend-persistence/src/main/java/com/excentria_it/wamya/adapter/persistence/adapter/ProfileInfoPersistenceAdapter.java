@@ -72,13 +72,6 @@ public class ProfileInfoPersistenceAdapter implements LoadProfileInfoPort, Updat
 
 		}
 
-		if (username.contains("_")) {
-			String[] mobileNumber = username.split("_");
-			return userAccountRepository.findByMobilePhoneNumber(mobileNumber[0], mobileNumber[1])
-					.orElseThrow(() -> new UserAccountNotFoundException(
-							String.format("User not found by mobile number: %s", username)));
-		}
-
 		throw new UserAccountNotFoundException("Username should be an email or a mobile number.");
 
 	}

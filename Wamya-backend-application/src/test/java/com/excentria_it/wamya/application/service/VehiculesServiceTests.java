@@ -12,21 +12,26 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.excentria_it.wamya.application.port.in.AddVehiculeUseCase.AddVehiculeCommand;
+import com.excentria_it.wamya.application.port.in.LoadVehiculesUseCase.LoadVehiculesCommand;
 import com.excentria_it.wamya.application.port.out.AddVehiculePort;
 import com.excentria_it.wamya.application.port.out.LoadConstructorPort;
 import com.excentria_it.wamya.application.port.out.LoadEngineTypePort;
+import com.excentria_it.wamya.application.port.out.LoadTransporterVehiculesPort;
 import com.excentria_it.wamya.common.exception.ConstructorModelNotFoundException;
 import com.excentria_it.wamya.common.exception.ConstructorNotFoundException;
 import com.excentria_it.wamya.common.exception.EngineTypeNotFoundException;
 import com.excentria_it.wamya.domain.AddVehiculeDto;
 import com.excentria_it.wamya.domain.ConstructorDto;
 import com.excentria_it.wamya.domain.EngineTypeDto;
+import com.excentria_it.wamya.domain.LoadTransporterVehiculesCriteria;
+import com.excentria_it.wamya.domain.TransporterVehicules;
 import com.excentria_it.wamya.test.data.common.TestConstants;
 
 @ExtendWith(MockitoExtension.class)
@@ -41,9 +46,44 @@ public class VehiculesServiceTests {
 	@Mock
 	private LoadEngineTypePort loadEngineTypePort;
 
+	@Mock
+	private LoadTransporterVehiculesPort loadTransporterVehiculesPort;
+
 	@Spy
 	@InjectMocks
 	private VehiculeService vehiculeService;
+
+	@Test
+	void testLoadTransporterVehicules() {
+		// given
+		LoadVehiculesCommand command = defaultLoadVehiculesCommandBuilder().build();
+		given(loadTransporterVehiculesPort.loadTransporterVehicules(any(LoadTransporterVehiculesCriteria.class),
+				any(String.class)
+
+		)).willReturn(defaultTransporterVehicules());
+
+		// When
+		TransporterVehicules result = vehiculeService.loadTransporterVehicules(command, "en_US");
+
+		// Then
+		ArgumentCaptor<LoadTransporterVehiculesCriteria> captor = ArgumentCaptor
+				.forClass(LoadTransporterVehiculesCriteria.class);
+
+		then(loadTransporterVehiculesPort).should(times(1)).loadTransporterVehicules(captor.capture(), eq("en_US"));
+
+		assertEquals(command.getTransporterUsername(), captor.getValue().getTransporterUsername());
+		assertEquals(command.getPageNumber(), captor.getValue().getPageNumber());
+
+		assertEquals(command.getPageSize(), captor.getValue().getPageSize());
+
+		assertEquals(command.getSortingCriterion().getField(), captor.getValue().getSortingCriterion().getField());
+
+		assertEquals(command.getSortingCriterion().getDirection(),
+				captor.getValue().getSortingCriterion().getDirection());
+
+		assertEquals(defaultTransporterVehicules(), result);
+
+	}
 
 	@Test
 	void givenInexistentEngineTypeId_WhenAddVehicule_ThenThrowEngineTypeNotFoundException() {

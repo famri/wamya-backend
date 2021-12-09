@@ -280,13 +280,6 @@ public class JourneyRequestsPersistenceAdapter implements SearchJourneyRequestsP
 	}
 
 	@Override
-	public boolean isExistentAndNotExpiredJourneyRequestByIdAndClientMobileNumberAndIcc(Long journeyRequestId,
-			String icc, String mobileNumber) {
-		return journeyRequestRepository
-				.existsAndNotExpiredByIdAndClient_Icc_ValueAndClient_MobileNumber(journeyRequestId, icc, mobileNumber);
-	}
-
-	@Override
 	public void updateJourneyRequest(JourneyRequestInputOutput journeyRequest) {
 
 		JourneyRequestJpaEntity journeyRequestJpaEntity = journeyRequestRepository.findById(journeyRequest.getId())
@@ -423,8 +416,7 @@ public class JourneyRequestsPersistenceAdapter implements SearchJourneyRequestsP
 
 	@Override
 	public void updateJourneyStatus(Set<Long> fulfilledJourneysIds, JourneyRequestStatusCode status) {
-		JourneyRequestStatusJpaEntity StatusJpaEntity = journeyRequestStatusRepository
-				.findByCode(status);
+		JourneyRequestStatusJpaEntity StatusJpaEntity = journeyRequestStatusRepository.findByCode(status);
 		journeyRequestRepository.updateInBatch(fulfilledJourneysIds, StatusJpaEntity);
 	}
 

@@ -1,12 +1,10 @@
 package com.excentria_it.wamya.application.port.out;
 
-import java.util.Set;
-
-import com.excentria_it.wamya.domain.JourneyProposalDto.VehiculeDto;
+import com.excentria_it.wamya.domain.LoadTransporterVehiculesCriteria;
+import com.excentria_it.wamya.domain.TransporterVehicules;
 
 public interface LoadTransporterVehiculesPort {
 
-	Set<VehiculeDto> loadTransporterVehicules(String transporterEmail);
+	TransporterVehicules loadTransporterVehicules(LoadTransporterVehiculesCriteria criteria, String locale);
 
-	Set<VehiculeDto> loadTransporterVehicules(String transporterIcc, String transporterMobileNumber);
 }

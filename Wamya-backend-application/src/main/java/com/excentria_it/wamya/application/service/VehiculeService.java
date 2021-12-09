@@ -7,9 +7,11 @@ import javax.transaction.Transactional;
 import org.apache.commons.lang3.StringUtils;
 
 import com.excentria_it.wamya.application.port.in.AddVehiculeUseCase;
+import com.excentria_it.wamya.application.port.in.LoadVehiculesUseCase;
 import com.excentria_it.wamya.application.port.out.AddVehiculePort;
 import com.excentria_it.wamya.application.port.out.LoadConstructorPort;
 import com.excentria_it.wamya.application.port.out.LoadEngineTypePort;
+import com.excentria_it.wamya.application.port.out.LoadTransporterVehiculesPort;
 import com.excentria_it.wamya.common.annotation.UseCase;
 import com.excentria_it.wamya.common.exception.ConstructorModelNotFoundException;
 import com.excentria_it.wamya.common.exception.ConstructorNotFoundException;
@@ -17,19 +19,33 @@ import com.excentria_it.wamya.common.exception.EngineTypeNotFoundException;
 import com.excentria_it.wamya.domain.AddVehiculeDto;
 import com.excentria_it.wamya.domain.ConstructorDto;
 import com.excentria_it.wamya.domain.EngineTypeDto;
+import com.excentria_it.wamya.domain.LoadTransporterVehiculesCriteria;
+import com.excentria_it.wamya.domain.TransporterVehicules;
 
 import lombok.RequiredArgsConstructor;
 
 @UseCase
 @Transactional
 @RequiredArgsConstructor
-public class VehiculeService implements AddVehiculeUseCase {
+public class VehiculeService implements AddVehiculeUseCase, LoadVehiculesUseCase {
 
 	private final AddVehiculePort addVehiculePort;
 
 	private final LoadConstructorPort loadConstructorPort;
 
 	private final LoadEngineTypePort loadEngineTypePort;
+
+	private final LoadTransporterVehiculesPort loadTransporterVehiculesPort;
+
+	@Override
+	public TransporterVehicules loadTransporterVehicules(LoadVehiculesCommand command, String locale) {
+		LoadTransporterVehiculesCriteria criteria = LoadTransporterVehiculesCriteria.builder()
+				.transporterUsername(command.getTransporterUsername()).pageNumber(command.getPageNumber())
+				.pageSize(command.getPageSize()).sortingCriterion(command.getSortingCriterion()).build();
+
+		return loadTransporterVehiculesPort.loadTransporterVehicules(criteria, locale);
+
+	}
 
 	@Override
 	public AddVehiculeDto addVehicule(AddVehiculeCommand command, String transporterUsername, String locale) {

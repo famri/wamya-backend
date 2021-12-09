@@ -157,51 +157,6 @@ public class TransporterRepositoryTests {
 		assertTrue(transporterJpaEntityOptional.isEmpty());
 	}
 
-	@Test
-	void testFindTransporterWithVehiculesByMobilePhoneNumber() {
-
-		List<List<ConstructorJpaEntity>> constructors = givenConstructors();
-		List<List<ModelJpaEntity>> models = givenModels(constructors);
-		List<List<DocumentJpaEntity>> images = givenImages();
-		List<List<EngineTypeJpaEntity>> engineTypes = givenEngineTypes(images);
-		List<List<VehiculeJpaEntity>> vehicules = givenVehicules(engineTypes, models);
-		InternationalCallingCodeJpaEntity icc = givenIcc("+216");
-		// given
-		givenTransporters(vehicules, icc);
-
-		// when
-		Optional<TransporterJpaEntity> transporterJpaEntityOptional = transporterRepository
-				.findTransporterWithVehiculesByMobilePhoneNumber("+216", "22000001");
-		TransporterJpaEntity transporterJpaEntity = transporterJpaEntityOptional.get();
-		// then
-
-		assertEquals("22000001", transporterJpaEntity.getMobileNumber());
-		assertEquals("+216", transporterJpaEntity.getIcc().getValue());
-
-		assertTrue(vehicules.get(0).containsAll(transporterJpaEntity.getVehicules())
-				&& vehicules.get(0).size() == transporterJpaEntity.getVehicules().size());
-	}
-
-	@Test
-	void givenInexistentTransporter_WhenFindTransporterWithVehiculesByMobilePhoneNumber_ThenReturnEmpty() {
-
-		List<List<ConstructorJpaEntity>> constructors = givenConstructors();
-		List<List<ModelJpaEntity>> models = givenModels(constructors);
-		List<List<DocumentJpaEntity>> images = givenImages();
-		List<List<EngineTypeJpaEntity>> engineTypes = givenEngineTypes(images);
-		List<List<VehiculeJpaEntity>> vehicules = givenVehicules(engineTypes, models);
-		InternationalCallingCodeJpaEntity icc = givenIcc("+216");
-		// given
-		givenTransporters(vehicules, icc);
-
-		// when
-		Optional<TransporterJpaEntity> transporterJpaEntityOptional = transporterRepository
-				.findTransporterWithVehiculesByMobilePhoneNumber("+216", "22000004");
-
-		// then
-		assertTrue(transporterJpaEntityOptional.isEmpty());
-	}
-
 	private List<TransporterJpaEntity> givenTransporters(List<List<VehiculeJpaEntity>> vehicules,
 			InternationalCallingCodeJpaEntity icc) {
 

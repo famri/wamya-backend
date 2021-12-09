@@ -26,7 +26,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "/users", produces = MediaType.APPLICATION_JSON_VALUE)
-public class VehiculesController {
+public class AddVehiculeController {
 
 	private final AddVehiculeUseCase addVehiculeUseCase;
 

@@ -47,18 +47,13 @@ public class VehiculePersistenceAdapter implements AddVehiculePort, LoadVehicule
 	public AddVehiculeDto addVehicule(String transporterUsername, Long constructorId, Long modelId, Long engineTypeId,
 			LocalDate circulationDate, String registration, String locale) {
 
-		Optional<TransporterJpaEntity> transporterJpaEntityOptional = null;
+		Optional<TransporterJpaEntity> transporterJpaEntityOptional = Optional.empty();
 		if (transporterUsername.contains("@")) {
 			transporterJpaEntityOptional = transporterRepository
 					.findTransporterWithVehiculesByEmail(transporterUsername);
 
-		} else {
-
-			String[] mobileNumber = transporterUsername.split("_");
-			transporterJpaEntityOptional = transporterRepository
-					.findTransporterWithVehiculesByMobilePhoneNumber(mobileNumber[0], mobileNumber[1]);
 		}
-
+		
 		if (transporterJpaEntityOptional.isEmpty()) {
 			return null;
 		}
@@ -95,17 +90,12 @@ public class VehiculePersistenceAdapter implements AddVehiculePort, LoadVehicule
 	public AddVehiculeDto addVehicule(String transporterUsername, String constructorName, String modelName,
 			Long engineTypeId, LocalDate circulationDate, String registration, String locale) {
 
-		Optional<TransporterJpaEntity> transporterJpaEntityOptional = null;
+		Optional<TransporterJpaEntity> transporterJpaEntityOptional = Optional.empty();
 		if (transporterUsername.contains("@")) {
 			transporterJpaEntityOptional = transporterRepository
 					.findTransporterWithVehiculesByEmail(transporterUsername);
 
-		} else {
-
-			String[] mobileNumber = transporterUsername.split("_");
-			transporterJpaEntityOptional = transporterRepository
-					.findTransporterWithVehiculesByMobilePhoneNumber(mobileNumber[0], mobileNumber[1]);
-		}
+		} 
 
 		if (transporterJpaEntityOptional.isEmpty()) {
 			return null;

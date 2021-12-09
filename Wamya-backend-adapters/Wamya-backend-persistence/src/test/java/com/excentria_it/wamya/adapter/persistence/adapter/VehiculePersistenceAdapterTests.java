@@ -182,44 +182,7 @@ public class VehiculePersistenceAdapterTests {
 
 	}
 
-	@Test
-	void givenTransporterMobileNumberAndVehiculeConstructorNameAndModelName_WhenAddVehicule_ThenSucceed() {
 
-		// given
-		TransporterJpaEntity transporterJpaEntity = defaultNewTransporterJpaEntity();
-
-		given(transporterRepository.findTransporterWithVehiculesByMobilePhoneNumber(any(String.class),
-				any(String.class))).willReturn(Optional.of(transporterJpaEntity));
-
-		EngineTypeJpaEntity engineTypeJpaEntity = defaultEngineTypeJpaEntity();
-		given(engineTypeRepository.findById(any(Long.class))).willReturn(Optional.of(engineTypeJpaEntity));
-
-		given(transporterRepository.save(any(TransporterJpaEntity.class))).willReturn(transporterJpaEntity);
-
-		// when
-		AddVehiculeDto addVehiculeDto = vehiculePersistenceAdapter.addVehicule(
-				TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME, "Constructor1", "Model1", 1L, LocalDate.of(2020, 01, 01),
-				"0001 TUN 220", "en_US");
-
-		// then
-
-		then(transporterRepository).should(times(1)).save(transporterJpaEntity);
-
-		Optional<VehiculeJpaEntity> vehiculeJpaEntityOptional = transporterJpaEntity.getVehicules().stream()
-				.filter(v -> v.getTemporaryModel().getConstructorName().equals("Constructor1")
-						&& v.getTemporaryModel().getModelName().equals("Model1")
-						&& v.getCirculationDate().equals(LocalDate.of(2020, 01, 01))
-						&& v.getRegistration().equals("0001 TUN 220"))
-				.findFirst();
-
-		assertThat(vehiculeJpaEntityOptional).isNotEmpty();
-
-		assertEquals("Constructor1", addVehiculeDto.getConstructorName());
-		assertEquals("Model1", addVehiculeDto.getModelName());
-		assertEquals(LocalDate.of(2020, 01, 01), addVehiculeDto.getCirculationDate());
-		assertEquals("0001 TUN 220", addVehiculeDto.getRegistration());
-
-	}
 
 	@Test
 	void givenTransporterEmailAndVehiculeConstructorIdAndModelId_WhenAddVehicule_ThenSucceed() {
@@ -263,48 +226,6 @@ public class VehiculePersistenceAdapterTests {
 
 	}
 
-	@Test
-	void givenTransporterMobileNumberAndVehiculeConstructorIdAndModelId_WhenAddVehicule_ThenSucceed() {
-
-		// given
-		TransporterJpaEntity transporterJpaEntity = defaultNewTransporterJpaEntity();
-
-		given(transporterRepository.findTransporterWithVehiculesByMobilePhoneNumber(any(String.class),
-				any(String.class))).willReturn(Optional.of(transporterJpaEntity));
-
-		EngineTypeJpaEntity engineTypeJpaEntity = defaultEngineTypeJpaEntity();
-		given(engineTypeRepository.findById(any(Long.class))).willReturn(Optional.of(engineTypeJpaEntity));
-
-		given(transporterRepository.save(any(TransporterJpaEntity.class))).willReturn(transporterJpaEntity);
-
-		ModelJpaEntity modelJpaEntity = defaultModelJpaEntityBuilder().build();
-		ConstructorJpaEntity constructorJpaEntity = defaultConstructorJpaEntity();
-		modelJpaEntity.setConstructor(constructorJpaEntity);
-
-		given(modelRepository.findById(any(Long.class))).willReturn(Optional.of(modelJpaEntity));
-		// when
-		AddVehiculeDto addVehiculeDto = vehiculePersistenceAdapter.addVehicule(
-				TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME, 1L, 1L, 1L, LocalDate.of(2020, 01, 01), "0001 TUN 220",
-				"en_US");
-
-		// then
-
-		then(transporterRepository).should(times(1)).save(transporterJpaEntity);
-
-		Optional<VehiculeJpaEntity> vehiculeJpaEntityOptional = transporterJpaEntity.getVehicules().stream()
-				.filter(v -> v.getModel().getConstructor().getId().equals(1L) && v.getModel().getId().equals(1L)
-						&& v.getCirculationDate().equals(LocalDate.of(2020, 01, 01))
-						&& v.getRegistration().equals("0001 TUN 220"))
-				.findFirst();
-
-		assertThat(vehiculeJpaEntityOptional).isNotEmpty();
-
-		assertEquals(constructorJpaEntity.getName(), addVehiculeDto.getConstructorName());
-		assertEquals(modelJpaEntity.getName(), addVehiculeDto.getModelName());
-		assertEquals(LocalDate.of(2020, 01, 01), addVehiculeDto.getCirculationDate());
-		assertEquals("0001 TUN 220", addVehiculeDto.getRegistration());
-
-	}
 
 	@Test
 	void givenVehiculeHasImage_whenLoadImageLocation_thenReturnVehiculeImageLocation() {

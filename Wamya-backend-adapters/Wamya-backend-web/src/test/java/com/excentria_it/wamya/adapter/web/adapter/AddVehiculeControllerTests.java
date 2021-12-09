@@ -26,9 +26,9 @@ import com.excentria_it.wamya.test.data.common.TestConstants;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @ActiveProfiles(profiles = { "web-local" })
-@Import(value = { VehiculesController.class, RestApiExceptionHandler.class, MockMvcSupport.class })
-@WebMvcTest(controllers = VehiculesController.class)
-public class VehiculesControllerTests {
+@Import(value = { AddVehiculeController.class, RestApiExceptionHandler.class, MockMvcSupport.class })
+@WebMvcTest(controllers = AddVehiculeController.class)
+public class AddVehiculeControllerTests {
 	@Autowired
 	private MockMvcSupport api;
 

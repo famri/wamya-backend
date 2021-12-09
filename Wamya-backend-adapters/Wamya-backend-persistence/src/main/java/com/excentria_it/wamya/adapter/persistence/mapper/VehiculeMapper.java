@@ -2,9 +2,9 @@ package com.excentria_it.wamya.adapter.persistence.mapper;
 
 import org.springframework.stereotype.Component;
 
-import com.excentria_it.wamya.adapter.persistence.entity.VehiculeJpaEntity;
 import com.excentria_it.wamya.application.utils.DocumentUrlResolver;
-import com.excentria_it.wamya.domain.JourneyProposalDto.VehiculeDto;
+import com.excentria_it.wamya.domain.TransporterVehiculeDto;
+import com.excentria_it.wamya.domain.TransporterVehiculeOutput;
 
 import lombok.RequiredArgsConstructor;
 
@@ -14,23 +14,29 @@ public class VehiculeMapper {
 
 	private final DocumentUrlResolver documentUrlResolver;
 
-	public VehiculeDto mapToDomainEntity(VehiculeJpaEntity vehiculeJpaEntity) {
+	public TransporterVehiculeDto mapToDomainEntity(TransporterVehiculeOutput transporterVehiculeOutput) {
 
-		String vehiculeImageUrl = (vehiculeJpaEntity.getImage() != null)
-				? documentUrlResolver.resolveUrl(vehiculeJpaEntity.getImage().getId(),
-						vehiculeJpaEntity.getImage().getHash())
-				: documentUrlResolver.resolveUrl(vehiculeJpaEntity.getType().getImage().getId(),
-						vehiculeJpaEntity.getType().getImage().getHash());
+		String vehiculeImageUrl = (transporterVehiculeOutput.getImage().getId() != null
+				&& transporterVehiculeOutput.getImage().getHash() != null)
+						? documentUrlResolver.resolveUrl(transporterVehiculeOutput.getImage().getId(),
+								transporterVehiculeOutput.getImage().getHash())
+						: documentUrlResolver.resolveUrl(transporterVehiculeOutput.getEngineType().getImageId(),
+								transporterVehiculeOutput.getEngineType().getImageHash());
 
-		if (vehiculeJpaEntity.getTemporaryModel() != null) {
-			return new VehiculeDto(vehiculeJpaEntity.getId(),
-					vehiculeJpaEntity.getTemporaryModel().getConstructorName(),
-					vehiculeJpaEntity.getTemporaryModel().getModelName(), vehiculeImageUrl);
+		return TransporterVehiculeDto.builder().id(transporterVehiculeOutput.getId())
+				.regsitrationNumber(transporterVehiculeOutput.getRegistrationNumber())
+				.circulationDate(transporterVehiculeOutput.getCirculationDate())
+				.constructorName(transporterVehiculeOutput.getConstructor().getTemporaryName() != null
+						? transporterVehiculeOutput.getConstructor().getTemporaryName()
+						: transporterVehiculeOutput.getConstructor().getName())
+				.modelName(transporterVehiculeOutput.getModel().getTemporaryName() != null
+						? transporterVehiculeOutput.getModel().getTemporaryName()
+						: transporterVehiculeOutput.getModel().getName())
+				.engineTypeId(transporterVehiculeOutput.getEngineType().getId())
+				.engineTypeName(transporterVehiculeOutput.getEngineType().getName()).photoUrl(vehiculeImageUrl)
 
-		}
-
-		return new VehiculeDto(vehiculeJpaEntity.getId(), vehiculeJpaEntity.getModel().getConstructor().getName(),
-				vehiculeJpaEntity.getModel().getName(), vehiculeImageUrl);
+				.build();
 
 	}
+
 }

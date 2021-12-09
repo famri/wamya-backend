@@ -16,6 +16,5 @@ public interface LoadJourneyRequestPort {
 
 	boolean isExistentAndNotExpiredJourneyRequestByIdAndClientEmail(Long journeyRequestId, String clientUsername);
 
-	boolean isExistentAndNotExpiredJourneyRequestByIdAndClientMobileNumberAndIcc(Long journeyRequestId, String string,
-			String string2);
+	
 }

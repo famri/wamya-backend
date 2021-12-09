@@ -518,20 +518,6 @@ public class JourneyRequestsPersistenceAdapterTests {
 	}
 
 	@Test
-	void testTrueIsExistentJourneyRequestByIdAndClientMobileNumberAndIcc() {
-		// given
-		given(journeyRequestRepository.existsAndNotExpiredByIdAndClient_Icc_ValueAndClient_MobileNumber(any(Long.class),
-				any(String.class), any(String.class))).willReturn(true);
-		// when
-		String[] mobileNumber = TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME.split("_");
-		boolean result = journeyRequestsPersistenceAdapter
-				.isExistentAndNotExpiredJourneyRequestByIdAndClientMobileNumberAndIcc(1L, mobileNumber[0],
-						mobileNumber[1]);
-		// then
-		assertTrue(result);
-	}
-
-	@Test
 	void testFalseIsExistentJourneyRequestByIdAndClientEmail() {
 		// given
 		given(journeyRequestRepository.existsAndNotExpiredByIdAndClient_Email(any(Long.class), any(String.class)))
@@ -539,20 +525,6 @@ public class JourneyRequestsPersistenceAdapterTests {
 		// when
 		boolean result = journeyRequestsPersistenceAdapter.isExistentAndNotExpiredJourneyRequestByIdAndClientEmail(1L,
 				TestConstants.DEFAULT_EMAIL);
-		// then
-		assertFalse(result);
-	}
-
-	@Test
-	void testFalseIsExistentJourneyRequestByIdAndClientMobileNumberAndIcc() {
-		// given
-		given(journeyRequestRepository.existsAndNotExpiredByIdAndClient_Icc_ValueAndClient_MobileNumber(any(Long.class),
-				any(String.class), any(String.class))).willReturn(false);
-		// when
-		String[] mobileNumber = TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME.split("_");
-		boolean result = journeyRequestsPersistenceAdapter
-				.isExistentAndNotExpiredJourneyRequestByIdAndClientMobileNumberAndIcc(1L, mobileNumber[0],
-						mobileNumber[1]);
 		// then
 		assertFalse(result);
 	}

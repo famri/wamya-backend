@@ -3,19 +3,16 @@ package com.excentria_it.wamya.application.service;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Optional;
-import java.util.Set;
 
 import javax.transaction.Transactional;
-
-import org.apache.commons.collections4.CollectionUtils;
 
 import com.excentria_it.wamya.application.port.in.LoadProposalsUseCase;
 import com.excentria_it.wamya.application.port.in.MakeProposalUseCase;
 import com.excentria_it.wamya.application.port.in.UpdateProposalUseCase;
 import com.excentria_it.wamya.application.port.out.AcceptProposalPort;
+import com.excentria_it.wamya.application.port.out.CheckUserVehiculePort;
 import com.excentria_it.wamya.application.port.out.LoadJourneyRequestPort;
 import com.excentria_it.wamya.application.port.out.LoadProposalsPort;
-import com.excentria_it.wamya.application.port.out.LoadTransporterVehiculesPort;
 import com.excentria_it.wamya.application.port.out.MakeProposalPort;
 import com.excentria_it.wamya.application.port.out.RejectProposalPort;
 import com.excentria_it.wamya.common.annotation.UseCase;
@@ -25,7 +22,6 @@ import com.excentria_it.wamya.common.exception.JourneyProposalNotFoundException;
 import com.excentria_it.wamya.common.exception.JourneyRequestExpiredException;
 import com.excentria_it.wamya.common.exception.JourneyRequestNotFoundException;
 import com.excentria_it.wamya.domain.ClientJourneyRequestDtoOutput;
-import com.excentria_it.wamya.domain.JourneyProposalDto.VehiculeDto;
 import com.excentria_it.wamya.domain.JourneyRequestInputOutput;
 import com.excentria_it.wamya.domain.JourneyRequestProposals;
 import com.excentria_it.wamya.domain.LoadJourneyProposalsCriteria;
@@ -40,7 +36,7 @@ public class JourneyProposalService implements MakeProposalUseCase, LoadProposal
 
 	private final MakeProposalPort makeProposalPort;
 
-	private final LoadTransporterVehiculesPort loadTransporterPort;
+	private final CheckUserVehiculePort checkUserVehiculePort;
 
 	private final LoadJourneyRequestPort loadJourneyRequestPort;
 
@@ -78,21 +74,12 @@ public class JourneyProposalService implements MakeProposalUseCase, LoadProposal
 	}
 
 	private void checkTransporterHasVehicule(String transporterUsername, Long vehiculeId) {
-		Set<VehiculeDto> vehicules = null;
-		if (transporterUsername.contains("@")) {
-			vehicules = loadTransporterPort.loadTransporterVehicules(transporterUsername);
-		} else {
 
-			String[] mobileNumber = transporterUsername.split("_");
-
-			vehicules = loadTransporterPort.loadTransporterVehicules(mobileNumber[0], mobileNumber[1]);
+		if (!checkUserVehiculePort.isUserVehicule(transporterUsername, vehiculeId)) {
+			throw new InvalidTransporterVehiculeException(
+					String.format("Invalid vehiculeId for transporter: %d", vehiculeId));
 		}
 
-		if (!CollectionUtils.isEmpty(vehicules) && vehicules.stream().anyMatch(v -> v.getId().equals(vehiculeId))) {
-			return;
-		}
-		throw new InvalidTransporterVehiculeException(
-				String.format("Invalid vehiculeId for transporter: %d", vehiculeId));
 	}
 
 	private void checkExistentJourneyRequest(Long journeyRequestId) {
@@ -115,7 +102,7 @@ public class JourneyProposalService implements MakeProposalUseCase, LoadProposal
 	private void checkClientJourneyRequest(String clientUsername, Long journeyRequestId, String locale) {
 		Optional<ClientJourneyRequestDtoOutput> journeyRequestOptional = null;
 		journeyRequestOptional = loadJourneyRequestPort.loadJourneyRequestByIdAndClientEmail(journeyRequestId,
-				clientUsername,locale);
+				clientUsername, locale);
 
 		if (journeyRequestOptional.isEmpty()) {
 			throw new JourneyRequestNotFoundException(String.format("Journey request not found: %d", journeyRequestId));
@@ -144,13 +131,7 @@ public class JourneyProposalService implements MakeProposalUseCase, LoadProposal
 
 			journeyRequestExists = loadJourneyRequestPort
 					.isExistentAndNotExpiredJourneyRequestByIdAndClientEmail(journeyRequestId, clientUsername);
-		} else {
-
-			String[] mobileNumber = clientUsername.split("_");
-
-			journeyRequestExists = loadJourneyRequestPort
-					.isExistentAndNotExpiredJourneyRequestByIdAndClientMobileNumberAndIcc(journeyRequestId,
-							mobileNumber[1], mobileNumber[0]);
+		
 		}
 
 		if (!journeyRequestExists) {

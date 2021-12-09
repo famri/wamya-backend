@@ -70,17 +70,6 @@ public class ProfileInfoPersistenceAdapterTests {
 	}
 
 	@Test
-	void givenInexistentUserAccountByMobileNumber_whenLoadInfo_thenThrowUserAccountNotFoundExceptiont() {
-		// given
-		given(userAccountRepository.findByMobilePhoneNumber(any(String.class), any(String.class)))
-				.willReturn(Optional.empty());
-
-		assertThrows(UserAccountNotFoundException.class,
-				() -> profileInfoPersistenceAdapter.loadInfo(TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME, "fr_FR"));
-
-	}
-
-	@Test
 	void givenBadUsername_whenLoadInfo_thenThrowUserAccountNotFoundExceptiont() {
 		// given
 
@@ -118,22 +107,6 @@ public class ProfileInfoPersistenceAdapterTests {
 		// when //then
 		assertThrows(UserAccountNotFoundException.class, () -> profileInfoPersistenceAdapter
 				.updateEmailSection(userAccountJpaEntity.getEmail(), "new-email@gmail.com"));
-
-	}
-
-	@Test
-	void givenInexistentUserAccountByMobileNumber_whenUpdateEmailSection_thenThrowUserAccountNotFoundException() {
-
-		UserAccountJpaEntity userAccountJpaEntity = UserAccountJpaEntityTestData.defaultExistentClientJpaEntity();
-		// given
-		given(userAccountRepository.findByMobilePhoneNumber(any(String.class), any(String.class)))
-				.willReturn(Optional.empty());
-
-		// when //then
-		assertThrows(UserAccountNotFoundException.class,
-				() -> profileInfoPersistenceAdapter.updateEmailSection(
-						userAccountJpaEntity.getIcc().getValue() + "_" + userAccountJpaEntity.getMobileNumber(),
-						"new-email@gmail.com"));
 
 	}
 
@@ -193,22 +166,6 @@ public class ProfileInfoPersistenceAdapterTests {
 	}
 
 	@Test
-	void givenInexistentUserAccountByMobileNumber_whenUpdateAboutSection_thenThrowUserAccountNotFoundException() {
-
-		UserAccountJpaEntity userAccountJpaEntity = UserAccountJpaEntityTestData.defaultExistentClientJpaEntity();
-		// given
-		given(userAccountRepository.findByMobilePhoneNumber(any(String.class), any(String.class)))
-				.willReturn(Optional.empty());
-
-		// when //then
-		assertThrows(UserAccountNotFoundException.class,
-				() -> profileInfoPersistenceAdapter.updateAboutSection(
-						userAccountJpaEntity.getIcc().getValue() + "_" + userAccountJpaEntity.getMobileNumber(), 2L,
-						"newFirstname", "newLastname", LocalDate.of(200, 01, 01), "new mini bio"));
-
-	}
-
-	@Test
 	void givenBadUsername_whenUpdateAboutSection_thenThrowUserAccountNotFoundException() {
 
 		// when //then
@@ -256,22 +213,6 @@ public class ProfileInfoPersistenceAdapterTests {
 		// when //then
 		assertThrows(UserAccountNotFoundException.class, () -> profileInfoPersistenceAdapter
 				.updateMobileSection(userAccountJpaEntity.getEmail(), "88888888", 10L));
-
-	}
-
-	@Test
-	void givenInexistentUserAccountByMobileNumber_whenUpdateMobileSection_thenThrowUserAccountNotFoundException() {
-
-		UserAccountJpaEntity userAccountJpaEntity = UserAccountJpaEntityTestData.defaultExistentClientJpaEntity();
-		// given
-		given(userAccountRepository.findByMobilePhoneNumber(any(String.class), any(String.class)))
-				.willReturn(Optional.empty());
-
-		// when //then
-		assertThrows(UserAccountNotFoundException.class,
-				() -> profileInfoPersistenceAdapter.updateMobileSection(
-						userAccountJpaEntity.getIcc().getValue() + "_" + userAccountJpaEntity.getMobileNumber(),
-						"88888888", 10L));
 
 	}
 
