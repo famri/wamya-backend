@@ -17,6 +17,7 @@ import com.excentria_it.wamya.application.port.in.LoadClientJourneyRequestsUseCa
 import com.excentria_it.wamya.application.port.in.LoadClientJourneyRequestsUseCase.LoadJourneyRequestsCommand.LoadJourneyRequestsCommandBuilder;
 import com.excentria_it.wamya.application.port.in.SearchJourneyRequestsUseCase.SearchJourneyRequestsCommand;
 import com.excentria_it.wamya.application.port.in.SearchJourneyRequestsUseCase.SearchJourneyRequestsCommand.SearchJourneyRequestsCommandBuilder;
+import com.excentria_it.wamya.application.utils.DocumentUrlResolver;
 import com.excentria_it.wamya.common.PeriodCriterion;
 import com.excentria_it.wamya.common.PeriodCriterion.PeriodValue;
 import com.excentria_it.wamya.common.SortCriterion;
@@ -45,7 +46,10 @@ public class JourneyRequestTestData {
 
 	private static ZonedDateTime startDate = ZonedDateTime.of(2020, 12, 10, 12, 0, 0, 0, ZoneOffset.UTC);
 	private static ZonedDateTime endDate = startDate.minusDays(1);
-
+	private static DocumentUrlResolver documentUrlResolver = new DocumentUrlResolver();
+	static{
+		documentUrlResolver.setServerBaseUrl("https://domain-name:port/wamya-backend");
+	}
 	private static List<ClientJourneyRequestDtoOutput> clientJourneyRequestDtos = List
 			.of(new ClientJourneyRequestDtoOutput() {
 
@@ -220,7 +224,7 @@ public class JourneyRequestTestData {
 				@Override
 				public ClientDto getClient() {
 
-					return new ClientDto(1L, "ClientName1", "SOME PHOTO URL 1");
+					return new ClientDto(1L, "ClientName1", 1L, "SOME_IMAGE_HASH_1");
 				}
 
 				@Override
@@ -294,7 +298,7 @@ public class JourneyRequestTestData {
 				@Override
 				public ClientDto getClient() {
 
-					return new ClientDto(1L, "ClientName2", "SOME PHOTO URL 2");
+					return new ClientDto(1L, "ClientName2", 2L, "SOME_IMAGE_HASH_2");
 				}
 
 				@Override
@@ -550,8 +554,9 @@ public class JourneyRequestTestData {
 				.engineType(new EngineType(jrso.getEngineType().getId(), jrso.getEngineType().getName()))
 				.distance(jrso.getDistance()).hours(jrso.getHours()).minutes(jrso.getMinutes())
 				.dateTime(jrso.getDateTime().atZone(userZoneId).toLocalDateTime()).workers(jrso.getWorkers())
-				.description(jrso.getDescription()).client(new Client(jrso.getClient().getId(),
-						jrso.getClient().getFirstname(), jrso.getClient().getPhotoUrl()))
+				.description(jrso.getDescription())
+				.client(new Client(jrso.getClient().getId(), jrso.getClient().getFirstname(),documentUrlResolver.resolveUrl(jrso.getClient().getImageId(), jrso.getClient().getImageHash())
+						))
 				.minPrice(jrso.getMinPrice()).build();
 
 	}

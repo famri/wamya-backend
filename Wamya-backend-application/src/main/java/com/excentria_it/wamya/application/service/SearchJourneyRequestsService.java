@@ -9,6 +9,7 @@ import javax.transaction.Transactional;
 import com.excentria_it.wamya.application.port.in.SearchJourneyRequestsUseCase;
 import com.excentria_it.wamya.application.port.out.SearchJourneyRequestsPort;
 import com.excentria_it.wamya.application.utils.DateTimeHelper;
+import com.excentria_it.wamya.application.utils.DocumentUrlResolver;
 import com.excentria_it.wamya.common.annotation.UseCase;
 import com.excentria_it.wamya.domain.JourneyRequestSearchDto;
 import com.excentria_it.wamya.domain.JourneyRequestSearchDto.Client;
@@ -29,6 +30,8 @@ public class SearchJourneyRequestsService implements SearchJourneyRequestsUseCas
 	private final SearchJourneyRequestsPort searchJourneyRequestsPort;
 
 	private final DateTimeHelper dateTimeHelper;
+
+	private final DocumentUrlResolver documentUrlResolver;
 
 	@Override
 	public JourneyRequestsSearchResult searchJourneyRequests(SearchJourneyRequestsCommand command, String username,
@@ -62,12 +65,13 @@ public class SearchJourneyRequestsService implements SearchJourneyRequestsUseCas
 				.arrivalPlace(new Place(jrso.getArrivalPlace().getId(), jrso.getArrivalPlace().getType(),
 						jrso.getArrivalPlace().getName(), jrso.getArrivalPlace().getLatitude(),
 						jrso.getArrivalPlace().getLongitude(), jrso.getArrivalPlace().getDepartmentId()))
-				.engineType(new EngineType(jrso.getEngineType().getId(), jrso.getEngineType().getName()))
+				.engineType(new EngineType(jrso.getEngineType().getId(), jrso.getEngineType().getName(),
+						jrso.getEngineType().getCode()))
 				.distance(jrso.getDistance()).hours(jrso.getHours()).minutes(jrso.getMinutes())
 				.dateTime(dateTimeHelper.systemToUserLocalDateTime(jrso.getDateTime(), userZoneId))
 				.workers(jrso.getWorkers()).description(jrso.getDescription())
 				.client(new Client(jrso.getClient().getId(), jrso.getClient().getFirstname(),
-						jrso.getClient().getPhotoUrl()))
+						documentUrlResolver.resolveUrl(jrso.getClient().getImageId(), jrso.getClient().getImageHash())))
 				.minPrice(jrso.getMinPrice()).build();
 
 	}

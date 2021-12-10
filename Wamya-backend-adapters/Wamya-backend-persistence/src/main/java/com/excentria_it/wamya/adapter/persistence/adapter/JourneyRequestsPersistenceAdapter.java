@@ -118,54 +118,48 @@ public class JourneyRequestsPersistenceAdapter implements SearchJourneyRequestsP
 	public JourneyRequestInputOutput createJourneyRequest(JourneyRequestInputOutput journeyRequest, String username,
 			String locale) {
 
+		// find departure department
 		Optional<DepartmentJpaEntity> departureDepartmentJpaEntity = departmentResolver.resolveDepartment(
 				journeyRequest.getDeparturePlace().getId(), journeyRequest.getDeparturePlace().getType());
 
 		if (departureDepartmentJpaEntity.isEmpty()) {
 			log.error(String.format("Could not find department by place ID: %d and place type: %s",
 					journeyRequest.getDeparturePlace().getId(), journeyRequest.getDeparturePlace().getType().name()));
-			return null;
+			throw new IllegalArgumentException(
+					String.format("Department not found for departure place ID %d and placeType %s",
+							journeyRequest.getDeparturePlace().getId(), journeyRequest.getDeparturePlace().getType()));
 		}
-
+		// find arrival department
 		Optional<DepartmentJpaEntity> arrivalDepartmentJpaEntity = departmentResolver.resolveDepartment(
 				journeyRequest.getArrivalPlace().getId(), journeyRequest.getArrivalPlace().getType());
 
 		if (arrivalDepartmentJpaEntity.isEmpty()) {
 			log.error(String.format("Could not find department by place ID: %d and place type: %s",
 					journeyRequest.getArrivalPlace().getId(), journeyRequest.getArrivalPlace().getType().name()));
-			return null;
+			throw new IllegalArgumentException(
+					String.format("Department not found for arrival place ID %d and placeType %s",
+							journeyRequest.getArrivalPlace().getId(), journeyRequest.getArrivalPlace().getType()));
 		}
-
+		// find engine type
 		Optional<EngineTypeJpaEntity> engineTypeJpaEntity = engineTypeRepository
 				.findById(journeyRequest.getEngineType().getId());
 
 		if (engineTypeJpaEntity.isEmpty()) {
 			log.error(String.format("Could not find engine type by ID: %d", journeyRequest.getEngineType().getId()));
-			return null;
+			throw new IllegalArgumentException(
+					String.format("Engine type not found by ID %d", journeyRequest.getEngineType().getId()));
 		}
-
+		// find client
 		Optional<ClientJpaEntity> clientJpaEntityOptional = clientRepository.findByEmail(username);
 
 		if (clientJpaEntityOptional.isEmpty()) {
-			if (username.contains("_")) {
-				String[] userMobilePhone = username.split("_");
-
-				clientJpaEntityOptional = clientRepository.findByIcc_ValueAndMobileNumber(userMobilePhone[0],
-						userMobilePhone[1]);
-			} else {
-				log.error(String.format("Could not find client by email or mobile number: %s", username));
-				return null;
-			}
-
-		}
-
-		if (clientJpaEntityOptional.isEmpty()) {
 			log.error(String.format("Could not find client by email or mobile number: %s", username));
-			return null;
+			throw new IllegalArgumentException(String.format("User account not found by username %s", username));
 		}
 
 		ClientJpaEntity clientJpaEntity = clientJpaEntityOptional.get();
 
+		// find departure place
 		Optional<PlaceJpaEntity> departurePlaceOptional = placeRepository.findById(
 				new PlaceId(journeyRequest.getDeparturePlace().getId(), journeyRequest.getDeparturePlace().getType()));
 
@@ -188,6 +182,7 @@ public class JourneyRequestsPersistenceAdapter implements SearchJourneyRequestsP
 			departurePlaceJpaEntity = departurePlaceOptional.get();
 		}
 
+		// find arrival place
 		Optional<PlaceJpaEntity> arrivalPlaceOptional = placeRepository.findById(
 				new PlaceId(journeyRequest.getArrivalPlace().getId(), journeyRequest.getArrivalPlace().getType()));
 
@@ -219,8 +214,11 @@ public class JourneyRequestsPersistenceAdapter implements SearchJourneyRequestsP
 				.findByCode(JourneyRequestStatusCode.OPENED);
 
 		journeyRequestJpaEntity.setStatus(journeyRequestStatusJpaEntity);
+
+		// save journey request to the database
 		journeyRequestJpaEntity = journeyRequestRepository.save(journeyRequestJpaEntity);
 
+		// return JourneyRequestInputOutput to caller
 		journeyRequest.setId(journeyRequestJpaEntity.getId());
 		journeyRequest.setStatus(journeyRequestStatusJpaEntity.getValue(locale));
 		journeyRequest.getEngineType().setName(engineTypeJpaEntity.get().getName(locale));

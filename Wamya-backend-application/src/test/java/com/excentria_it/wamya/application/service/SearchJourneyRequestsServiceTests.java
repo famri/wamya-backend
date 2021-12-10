@@ -9,6 +9,7 @@ import static org.mockito.Mockito.*;
 import java.time.ZoneId;
 import java.util.stream.Collectors;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -21,6 +22,7 @@ import com.excentria_it.wamya.application.port.in.SearchJourneyRequestsUseCase.S
 import com.excentria_it.wamya.application.port.in.SearchJourneyRequestsUseCase.SearchJourneyRequestsCommand.SearchJourneyRequestsCommandBuilder;
 import com.excentria_it.wamya.application.port.out.SearchJourneyRequestsPort;
 import com.excentria_it.wamya.application.utils.DateTimeHelper;
+import com.excentria_it.wamya.application.utils.DocumentUrlResolver;
 import com.excentria_it.wamya.domain.JourneyRequestsSearchOutputResult;
 import com.excentria_it.wamya.domain.JourneyRequestsSearchResult;
 import com.excentria_it.wamya.domain.SearchJourneyRequestsInput;
@@ -34,6 +36,14 @@ public class SearchJourneyRequestsServiceTests {
 
 	@Mock
 	private DateTimeHelper dateTimeHelper;
+
+	@Spy
+	private DocumentUrlResolver documentUrlResolver;
+
+	@BeforeEach
+	void initDocumentUrlResolver() {
+		documentUrlResolver.setServerBaseUrl("https://domain-name:port/wamya-backend");
+	}
 
 	@Spy
 	@InjectMocks

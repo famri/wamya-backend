@@ -44,6 +44,8 @@ public class JourneyRequestSearchDto {
 
 		private String name;
 
+		private String code;
+
 	}
 
 	@AllArgsConstructor

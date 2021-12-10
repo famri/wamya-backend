@@ -15,8 +15,6 @@ import com.excentria_it.wamya.application.port.out.LoadUserAccountPort;
 import com.excentria_it.wamya.application.utils.DateTimeHelper;
 import com.excentria_it.wamya.application.utils.PlaceUtils;
 import com.excentria_it.wamya.common.annotation.UseCase;
-import com.excentria_it.wamya.common.exception.UserAccountNotFoundException;
-import com.excentria_it.wamya.common.exception.UserMobileNumberValidationException;
 import com.excentria_it.wamya.domain.CreateJourneyRequestDto;
 import com.excentria_it.wamya.domain.CreateJourneyRequestDto.EngineTypeDto;
 import com.excentria_it.wamya.domain.CreateJourneyRequestDto.PlaceDto;
@@ -26,7 +24,6 @@ import com.excentria_it.wamya.domain.JourneyRequestInputOutput.EngineType;
 import com.excentria_it.wamya.domain.JourneyRequestInputOutput.Place;
 import com.excentria_it.wamya.domain.JourneyTravelInfo;
 import com.excentria_it.wamya.domain.PlaceType;
-import com.excentria_it.wamya.domain.UserAccount;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -51,7 +48,7 @@ public class CreateJourneyRequestService implements CreateJourneyRequestUseCase 
 	public CreateJourneyRequestDto createJourneyRequest(CreateJourneyRequestCommand command, String username,
 			String locale) {
 
-		//checkUserMobileNumberIsVerified(username);
+		// checkUserMobileNumberIsVerified(username);
 
 		PlaceType departurePlaceType = PlaceUtils.placeTypeStringToEnum(command.getDeparturePlaceType());
 		PlaceType arrivalPlaceType = PlaceUtils.placeTypeStringToEnum(command.getArrivalPlaceType());
@@ -60,27 +57,30 @@ public class CreateJourneyRequestService implements CreateJourneyRequestUseCase 
 
 		Optional<GeoCoordinates> departureGeoCoordinatesOptional = loadPlaceGeoCoordinatesPort
 				.loadPlaceGeoCoordinates(command.getDeparturePlaceId(), departurePlaceType);
+
 		if (departureGeoCoordinatesOptional.isPresent()) {
 			departurePlaceLatitude = departureGeoCoordinatesOptional.get().getLatitude();
 			departurePlaceLongitude = departureGeoCoordinatesOptional.get().getLongitude();
 		} else {
 			log.error(String.format("Unable to find geo-coordinates for place id: %d and place type: %s",
 					command.getDeparturePlaceId(), departurePlaceType));
-			departurePlaceLatitude = null;
-			departurePlaceLongitude = null;
+			throw new IllegalArgumentException(
+					String.format("Unknown departure place id %d", command.getDeparturePlaceId()));
 		}
 
 		Optional<GeoCoordinates> arrivalGeoCoordinatesOptional = loadPlaceGeoCoordinatesPort
 				.loadPlaceGeoCoordinates(command.getArrivalPlaceId(), arrivalPlaceType);
+
 		if (arrivalGeoCoordinatesOptional.isPresent()) {
 			arrivalPlaceLatitude = arrivalGeoCoordinatesOptional.get().getLatitude();
 			arrivalPlaceLongitude = arrivalGeoCoordinatesOptional.get().getLongitude();
 		} else {
 			log.error(String.format("Unable to find geo-coordinates for place id: %d and place type: %s",
 					command.getArrivalPlaceId(), arrivalPlaceType));
-			arrivalPlaceLatitude = null;
-			arrivalPlaceLongitude = null;
+			throw new IllegalArgumentException(
+					String.format("Unknown arrival place id %d", command.getArrivalPlaceId()));
 		}
+
 		ZoneId userZoneId = dateTimeHelper.findUserZoneId(username);
 		Instant journeyDateTime = dateTimeHelper.userLocalToSystemDateTime(command.getDateTime(), userZoneId);
 
@@ -110,6 +110,7 @@ public class CreateJourneyRequestService implements CreateJourneyRequestUseCase 
 			journeyRequest.setMinutes(null);
 
 		}
+
 		JourneyRequestInputOutput createdJourneyRequest = createJourneyRequestPort.createJourneyRequest(journeyRequest,
 				username, locale);
 

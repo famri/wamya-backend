@@ -29,6 +29,7 @@ import com.excentria_it.wamya.application.port.out.CreateJourneyRequestPort;
 import com.excentria_it.wamya.application.port.out.LoadPlaceGeoCoordinatesPort;
 import com.excentria_it.wamya.application.port.out.LoadUserAccountPort;
 import com.excentria_it.wamya.application.utils.DateTimeHelper;
+import com.excentria_it.wamya.application.utils.PlaceUtils;
 import com.excentria_it.wamya.common.exception.UserAccountNotFoundException;
 import com.excentria_it.wamya.common.exception.UserMobileNumberValidationException;
 import com.excentria_it.wamya.domain.GeoCoordinates;
@@ -121,6 +122,39 @@ public class CreateJourneyRequestServiceTests {
 	}
 
 	@Test
+	void givenDepartureGeoPlaceCoordinatesNotFound_whenCreateJourneyRequest_thenThrowIllegalArgumentException() {
+		// given
+		given(loadPlaceGeoCoordinatesPort.loadPlaceGeoCoordinates(any(Long.class), any(PlaceType.class)))
+				.willReturn(Optional.empty());
+
+		CreateJourneyRequestCommand command = defaultCreateJourneyRequestCommandBuilder().build();
+		// When
+
+		// then
+		assertThrows(IllegalArgumentException.class,
+				() -> createJourneyRequestsService.createJourneyRequest(command, TestConstants.DEFAULT_EMAIL, "fr_FR"));
+
+	}
+
+	@Test
+	void givenArrivalGeoPlaceCoordinatesNotFound_whenCreateJourneyRequest_thenThrowIllegalArgumentException() {
+		// given
+
+		CreateJourneyRequestCommand command = defaultCreateJourneyRequestCommandBuilder().build();
+		given(loadPlaceGeoCoordinatesPort.loadPlaceGeoCoordinates(command.getDeparturePlaceId(),
+				PlaceUtils.placeTypeStringToEnum(command.getDeparturePlaceType())))
+						.willReturn(Optional.of(new GeoCoordinates(new BigDecimal(36.8015), new BigDecimal(10.1788))));
+		given(loadPlaceGeoCoordinatesPort.loadPlaceGeoCoordinates(command.getArrivalPlaceId(),
+				PlaceUtils.placeTypeStringToEnum(command.getArrivalPlaceType()))).willReturn(Optional.empty());
+		// When
+
+		// then
+		assertThrows(IllegalArgumentException.class,
+				() -> createJourneyRequestsService.createJourneyRequest(command, TestConstants.DEFAULT_EMAIL, "fr_FR"));
+
+	}
+
+	// @Test
 	void givenCreateJourneyRequestCommandAndGeoPlaceDepartureAndArrivalPlaces_WhenCreateJourneyRequest_ThenSucceed() {
 		// given
 		CreateJourneyRequestCommandBuilder commandBuilder = defaultCreateJourneyRequestCommandBuilder();

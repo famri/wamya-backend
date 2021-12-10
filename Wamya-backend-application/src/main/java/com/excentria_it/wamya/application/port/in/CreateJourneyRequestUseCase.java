@@ -7,6 +7,7 @@ import javax.validation.constraints.NotNull;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
+import com.excentria_it.wamya.common.annotation.Among;
 import com.excentria_it.wamya.domain.CreateJourneyRequestDto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
@@ -29,15 +30,14 @@ public interface CreateJourneyRequestUseCase {
 		@NotNull
 		private Long departurePlaceId;
 
-		@NotNull
-		@NotEmpty
+	
+		@Among(value = {"geo-place", "department", "delegation", "locality"})
 		private String departurePlaceType;
 
 		@NotNull
 		private Long arrivalPlaceId;
 
-		@NotNull
-		@NotEmpty
+		@Among(value = { "geo-place", "department", "delegation", "locality"})
 		private String arrivalPlaceType;
 
 		@NotNull
@@ -51,7 +51,7 @@ public interface CreateJourneyRequestUseCase {
 		@NotNull
 		private Integer workers;
 
-		@NotNull
+
 		@NotEmpty
 		private String description;
 

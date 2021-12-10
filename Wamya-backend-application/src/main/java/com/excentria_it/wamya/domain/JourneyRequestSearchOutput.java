@@ -33,7 +33,7 @@ public interface JourneyRequestSearchOutput {
 
 	String getDescription();
 
-	@Value("#{new com.excentria_it.wamya.domain.JourneyRequestSearchOutput.ClientDto(target.clientOauthId, target.clientFirstname, T(com.excentria_it.wamya.application.utils.DocumentUrlResolver).resolveUrl(target.clientProfileImageId, target.clientProfileImageHash))}")
+	@Value("#{new com.excentria_it.wamya.domain.JourneyRequestSearchOutput.ClientDto(target.clientOauthId, target.clientFirstname, target.clientProfileImageId, target.clientProfileImageHash)}")
 	ClientDto getClient();
 
 	Double getMinPrice();
@@ -45,7 +45,7 @@ public interface JourneyRequestSearchOutput {
 		private Long id;
 
 		private String name;
-		
+
 		private String code;
 
 	}
@@ -75,7 +75,9 @@ public interface JourneyRequestSearchOutput {
 
 		private String firstname;
 
-		private String photoUrl;
+		private Long imageId;
+		
+		private String imageHash;
 	}
 
 }

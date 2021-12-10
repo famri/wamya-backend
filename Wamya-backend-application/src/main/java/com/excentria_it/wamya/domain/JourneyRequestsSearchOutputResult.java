@@ -17,4 +17,5 @@ public class JourneyRequestsSearchOutputResult {
 	private boolean hasNext;
 
 	private List<JourneyRequestSearchOutput> content;
+
 }
