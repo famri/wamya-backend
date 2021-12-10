@@ -32,6 +32,8 @@ public class JourneyRequestSearchDto {
 
 	private String description;
 
+	private Status status;
+
 	private Client client;
 
 	private Double minPrice;
@@ -74,6 +76,17 @@ public class JourneyRequestSearchDto {
 		private String firstname;
 
 		private String photoUrl;
+	}
+
+	@AllArgsConstructor
+	@Data
+	public static class Status {
+
+		private Long id;
+
+		private String code;
+
+		private String name;
 	}
 
 }

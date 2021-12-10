@@ -32,6 +32,9 @@ public interface JourneyRequestSearchOutput {
 	Integer getWorkers();
 
 	String getDescription();
+	
+	@Value("#{new com.excentria_it.wamya.domain.JourneyRequestSearchOutput.StatusDto(target.statusId, target.statusCode, target.statusName)}")
+	StatusDto getStatus();
 
 	@Value("#{new com.excentria_it.wamya.domain.JourneyRequestSearchOutput.ClientDto(target.clientOauthId, target.clientFirstname, target.clientProfileImageId, target.clientProfileImageHash)}")
 	ClientDto getClient();
@@ -78,6 +81,17 @@ public interface JourneyRequestSearchOutput {
 		private Long imageId;
 		
 		private String imageHash;
+	}
+	
+	@AllArgsConstructor
+	@Data
+	class StatusDto {
+
+		private Long id;
+
+		private String code;
+
+		private String name;
 	}
 
 }

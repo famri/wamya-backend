@@ -15,6 +15,7 @@ import com.excentria_it.wamya.domain.JourneyRequestSearchDto;
 import com.excentria_it.wamya.domain.JourneyRequestSearchDto.Client;
 import com.excentria_it.wamya.domain.JourneyRequestSearchDto.EngineType;
 import com.excentria_it.wamya.domain.JourneyRequestSearchDto.Place;
+import com.excentria_it.wamya.domain.JourneyRequestSearchDto.Status;
 import com.excentria_it.wamya.domain.JourneyRequestSearchOutput;
 import com.excentria_it.wamya.domain.JourneyRequestsSearchOutputResult;
 import com.excentria_it.wamya.domain.JourneyRequestsSearchResult;
@@ -72,6 +73,7 @@ public class SearchJourneyRequestsService implements SearchJourneyRequestsUseCas
 				.workers(jrso.getWorkers()).description(jrso.getDescription())
 				.client(new Client(jrso.getClient().getId(), jrso.getClient().getFirstname(),
 						documentUrlResolver.resolveUrl(jrso.getClient().getImageId(), jrso.getClient().getImageHash())))
+				.status(new Status(jrso.getStatus().getId(), jrso.getStatus().getCode(), jrso.getStatus().getName()))
 				.minPrice(jrso.getMinPrice()).build();
 
 	}
