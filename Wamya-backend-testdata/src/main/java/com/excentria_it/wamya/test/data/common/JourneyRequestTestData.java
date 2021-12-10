@@ -47,7 +47,7 @@ public class JourneyRequestTestData {
 	private static ZonedDateTime startDate = ZonedDateTime.of(2020, 12, 10, 12, 0, 0, 0, ZoneOffset.UTC);
 	private static ZonedDateTime endDate = startDate.minusDays(1);
 	private static DocumentUrlResolver documentUrlResolver = new DocumentUrlResolver();
-	static{
+	static {
 		documentUrlResolver.setServerBaseUrl("https://domain-name:port/wamya-backend");
 	}
 	private static List<ClientJourneyRequestDtoOutput> clientJourneyRequestDtos = List
@@ -551,12 +551,13 @@ public class JourneyRequestTestData {
 				.arrivalPlace(new Place(jrso.getArrivalPlace().getId(), jrso.getArrivalPlace().getType(),
 						jrso.getArrivalPlace().getName(), jrso.getArrivalPlace().getLatitude(),
 						jrso.getArrivalPlace().getLongitude(), jrso.getArrivalPlace().getDepartmentId()))
-				.engineType(new EngineType(jrso.getEngineType().getId(), jrso.getEngineType().getName()))
+				.engineType(new EngineType(jrso.getEngineType().getId(), jrso.getEngineType().getName(),
+						jrso.getEngineType().getCode()))
 				.distance(jrso.getDistance()).hours(jrso.getHours()).minutes(jrso.getMinutes())
 				.dateTime(jrso.getDateTime().atZone(userZoneId).toLocalDateTime()).workers(jrso.getWorkers())
 				.description(jrso.getDescription())
-				.client(new Client(jrso.getClient().getId(), jrso.getClient().getFirstname(),documentUrlResolver.resolveUrl(jrso.getClient().getImageId(), jrso.getClient().getImageHash())
-						))
+				.client(new Client(jrso.getClient().getId(), jrso.getClient().getFirstname(),
+						documentUrlResolver.resolveUrl(jrso.getClient().getImageId(), jrso.getClient().getImageHash())))
 				.minPrice(jrso.getMinPrice()).build();
 
 	}
