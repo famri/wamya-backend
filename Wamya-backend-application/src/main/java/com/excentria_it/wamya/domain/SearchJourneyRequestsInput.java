@@ -32,5 +32,7 @@ public class SearchJourneyRequestsInput {
 
 	private SortCriterion sortingCriterion;
 
+	private Set<JourneyRequestStatusCode> statusCodes;
+
 	private String locale;
 }

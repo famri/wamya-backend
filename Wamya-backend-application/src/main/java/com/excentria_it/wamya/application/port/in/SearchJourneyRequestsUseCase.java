@@ -8,6 +8,7 @@ import javax.validation.constraints.NotNull;
 
 import com.excentria_it.wamya.common.SortCriterion;
 import com.excentria_it.wamya.common.annotation.Sort;
+import com.excentria_it.wamya.domain.JourneyRequestStatusCode;
 import com.excentria_it.wamya.domain.JourneyRequestsSearchResult;
 
 import lombok.AllArgsConstructor;
@@ -57,6 +58,8 @@ public interface SearchJourneyRequestsUseCase {
 
 		@Sort(fields = { "distance", "date-time" })
 		private SortCriterion sortingCriterion;
+
+		private Set<JourneyRequestStatusCode> statusCodes;
 
 	}
 

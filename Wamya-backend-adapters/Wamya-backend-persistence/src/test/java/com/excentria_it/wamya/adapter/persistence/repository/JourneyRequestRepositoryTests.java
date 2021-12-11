@@ -25,6 +25,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.data.jpa.domain.JpaSort;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -166,15 +167,14 @@ public class JourneyRequestRepositoryTests {
 		// When
 
 		Page<JourneyRequestSearchOutput> journeyRequests = journeyRequestRepository
-				.findByDeparturePlace_DepartmentIdAndArrivalPlace_DepartmentIdsInAndEngineType_IdsInAndDateBetween(
+				.findByDeparturePlace_DepartmentIdAndArrivalPlace_DepartmentIdsInAndEngineType_IdsInAndDateBetweenAndStatus_Codes(
 						departurePlaces.get(0).getDepartment().getId(),
 						Set.of(arrivalPlaces.get(0).getDepartment().getId(),
 								arrivalPlaces.get(1).getDepartment().getId()),
 						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()),
-						searchStartAndEndDates.get(0).toInstant(), searchStartAndEndDates.get(1).toInstant(), "en_US",
-						PageRequest.of(0, 1000,
-								// Sort.by(List.of(new Order(Direction.DESC, "(minPrice)")))
-								JpaSort.unsafe(Direction.DESC, "(minPrice)")));
+						searchStartAndEndDates.get(0).toInstant(), searchStartAndEndDates.get(1).toInstant(),
+						Set.of(JourneyRequestStatusCode.OPENED), "en_US",
+						PageRequest.of(0, 1000, Sort.by(List.of(new Order(Direction.DESC, "id")))));
 
 		// Then
 		assertNotNull(journeyRequests);
@@ -248,11 +248,11 @@ public class JourneyRequestRepositoryTests {
 		// When
 
 		Page<JourneyRequestSearchOutput> journeyRequests = journeyRequestRepository
-				.findByDeparturePlace_DepartmentIdAndEngineType_IdsInAndDateBetween(
+				.findByDeparturePlace_DepartmentIdAndEngineType_IdsInAndDateBetweenAndStatus_Codes(
 						departurePlaces.get(0).getDepartment().getId(),
 						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()),
-						searchStartAndEndDates.get(0).toInstant(), searchStartAndEndDates.get(1).toInstant(), "en_US",
-						PageRequest.of(0, 1000,
+						searchStartAndEndDates.get(0).toInstant(), searchStartAndEndDates.get(1).toInstant(),
+						Set.of(JourneyRequestStatusCode.OPENED), "en_US", PageRequest.of(0, 1000,
 								// Sort.by(List.of(new Order(Direction.DESC, "(minPrice)")))
 								JpaSort.unsafe(Direction.DESC, "(minPrice)")));
 
@@ -329,13 +329,13 @@ public class JourneyRequestRepositoryTests {
 		// When
 
 		Page<JourneyRequestSearchOutput> journeyRequests = journeyRequestRepository
-				.findByDeparturePlace_DepartmentIdAndArrivalPlace_DepartmentIdsInAndEngineType_IdsInAndDateBetween(
+				.findByDeparturePlace_DepartmentIdAndArrivalPlace_DepartmentIdsInAndEngineType_IdsInAndDateBetweenAndStatus_Codes(
 						departurePlaces.get(0).getDepartment().getId(),
 						Set.of(arrivalPlaces.get(0).getDepartment().getId(),
 								arrivalPlaces.get(1).getDepartment().getId()),
 						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()),
-						searchStartAndEndDates.get(0).toInstant(), searchStartAndEndDates.get(1).toInstant(), "en_US",
-						PageRequest.of(1, 1,
+						searchStartAndEndDates.get(0).toInstant(), searchStartAndEndDates.get(1).toInstant(),
+						Set.of(JourneyRequestStatusCode.OPENED), "en_US", PageRequest.of(1, 1,
 								// Sort.by(List.of(new Order(Direction.DESC, "(minPrice)")))
 								JpaSort.unsafe(Direction.ASC, "(minPrice)")));
 
@@ -402,11 +402,11 @@ public class JourneyRequestRepositoryTests {
 		// When
 
 		Page<JourneyRequestSearchOutput> journeyRequests = journeyRequestRepository
-				.findByDeparturePlace_DepartmentIdAndEngineType_IdsInAndDateBetween(
+				.findByDeparturePlace_DepartmentIdAndEngineType_IdsInAndDateBetweenAndStatus_Codes(
 						departurePlaces.get(0).getDepartment().getId(),
 						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()),
-						searchStartAndEndDates.get(0).toInstant(), searchStartAndEndDates.get(1).toInstant(), "en_US",
-						PageRequest.of(1, 1,
+						searchStartAndEndDates.get(0).toInstant(), searchStartAndEndDates.get(1).toInstant(),
+						Set.of(JourneyRequestStatusCode.OPENED), "en_US", PageRequest.of(1, 1,
 								// Sort.by(List.of(new Order(Direction.DESC, "(minPrice)")))
 								JpaSort.unsafe(Direction.ASC, "(minPrice)")));
 
@@ -429,8 +429,6 @@ public class JourneyRequestRepositoryTests {
 				.compareTo(searchStartAndEndDates.get(0).toInstant()) >= 0);
 		assertTrue(journeyRequests.getContent().get(0).getDateTime()
 				.compareTo(searchStartAndEndDates.get(1).toInstant()) <= 0);
-
-	
 
 	}
 
@@ -478,13 +476,13 @@ public class JourneyRequestRepositoryTests {
 		// When
 
 		Page<JourneyRequestSearchOutput> journeyRequests = journeyRequestRepository
-				.findByDeparturePlace_DepartmentIdAndArrivalPlace_DepartmentIdsInAndEngineType_IdsInAndDateBetween(
+				.findByDeparturePlace_DepartmentIdAndArrivalPlace_DepartmentIdsInAndEngineType_IdsInAndDateBetweenAndStatus_Codes(
 						departurePlaces.get(0).getDepartment().getId(),
 						Set.of(arrivalPlaces.get(0).getDepartment().getId(),
 								arrivalPlaces.get(1).getDepartment().getId()),
 						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()),
-						searchStartAndEndDates.get(0).toInstant(), searchStartAndEndDates.get(1).toInstant(), "en_US",
-						PageRequest.of(0, 1000,
+						searchStartAndEndDates.get(0).toInstant(), searchStartAndEndDates.get(1).toInstant(),
+						Set.of(JourneyRequestStatusCode.OPENED), "en_US", PageRequest.of(0, 1000,
 
 								Sort.by(Direction.DESC, "dateTime")));
 
@@ -564,11 +562,11 @@ public class JourneyRequestRepositoryTests {
 		// When
 
 		Page<JourneyRequestSearchOutput> journeyRequests = journeyRequestRepository
-				.findByDeparturePlace_DepartmentIdAndEngineType_IdsInAndDateBetween(
+				.findByDeparturePlace_DepartmentIdAndEngineType_IdsInAndDateBetweenAndStatus_Codes(
 						departurePlaces.get(0).getDepartment().getId(),
 						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()),
-						searchStartAndEndDates.get(0).toInstant(), searchStartAndEndDates.get(1).toInstant(), "en_US",
-						PageRequest.of(0, 1000,
+						searchStartAndEndDates.get(0).toInstant(), searchStartAndEndDates.get(1).toInstant(),
+						Set.of(JourneyRequestStatusCode.OPENED), "en_US", PageRequest.of(0, 1000,
 
 								Sort.by(Direction.DESC, "dateTime")));
 
@@ -647,13 +645,13 @@ public class JourneyRequestRepositoryTests {
 		// When
 
 		Page<JourneyRequestSearchOutput> journeyRequests = journeyRequestRepository
-				.findByDeparturePlace_DepartmentIdAndArrivalPlace_DepartmentIdsInAndEngineType_IdsInAndDateBetween(
+				.findByDeparturePlace_DepartmentIdAndArrivalPlace_DepartmentIdsInAndEngineType_IdsInAndDateBetweenAndStatus_Codes(
 						departurePlaces.get(0).getDepartment().getId(),
 						Set.of(arrivalPlaces.get(0).getDepartment().getId(),
 								arrivalPlaces.get(1).getDepartment().getId()),
 						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()),
-						searchStartAndEndDates.get(0).toInstant(), searchStartAndEndDates.get(1).toInstant(), "en_US",
-						PageRequest.of(0, 1000,
+						searchStartAndEndDates.get(0).toInstant(), searchStartAndEndDates.get(1).toInstant(),
+						Set.of(JourneyRequestStatusCode.OPENED), "en_US", PageRequest.of(0, 1000,
 
 								Sort.by(Direction.DESC, "distance")));
 
@@ -738,11 +736,11 @@ public class JourneyRequestRepositoryTests {
 		// When
 
 		Page<JourneyRequestSearchOutput> journeyRequests = journeyRequestRepository
-				.findByDeparturePlace_DepartmentIdAndEngineType_IdsInAndDateBetween(
+				.findByDeparturePlace_DepartmentIdAndEngineType_IdsInAndDateBetweenAndStatus_Codes(
 						departurePlaces.get(0).getDepartment().getId(),
 						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()),
-						searchStartAndEndDates.get(0).toInstant(), searchStartAndEndDates.get(1).toInstant(), "en_US",
-						PageRequest.of(0, 1000,
+						searchStartAndEndDates.get(0).toInstant(), searchStartAndEndDates.get(1).toInstant(),
+						Set.of(JourneyRequestStatusCode.OPENED), "en_US", PageRequest.of(0, 1000,
 
 								Sort.by(Direction.DESC, "distance")));
 

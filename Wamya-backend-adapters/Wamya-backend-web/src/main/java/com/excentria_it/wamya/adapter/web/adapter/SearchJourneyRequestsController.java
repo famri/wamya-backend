@@ -21,6 +21,7 @@ import com.excentria_it.wamya.common.SortCriterion;
 import com.excentria_it.wamya.common.annotation.WebAdapter;
 import com.excentria_it.wamya.common.utils.LocaleUtils;
 import com.excentria_it.wamya.common.utils.ParameterUtils;
+import com.excentria_it.wamya.domain.JourneyRequestStatusCode;
 import com.excentria_it.wamya.domain.JourneyRequestsSearchResult;
 
 import lombok.RequiredArgsConstructor;
@@ -45,6 +46,7 @@ public class SearchJourneyRequestsController {
 			@RequestParam(name = "page", defaultValue = "0") Integer pageNumber,
 			@RequestParam(name = "size", defaultValue = "25") Integer pageSize,
 			@RequestParam(name = "sort") Optional<String> sort,
+			@RequestParam(name = "statuses") Set<JourneyRequestStatusCode> statusCodes,
 			final @AuthenticationPrincipal JwtAuthenticationToken principal, Locale locale) {
 
 		Locale supportedLocale = LocaleUtils.getSupporedLocale(locale);
@@ -54,7 +56,7 @@ public class SearchJourneyRequestsController {
 		SearchJourneyRequestsCommand command = SearchJourneyRequestsCommand.builder()
 				.departurePlaceDepartmentId(departurePlaceRegionId).arrivalPlaceDepartmentIds(arrivalPlaceRegionIds)
 				.startDateTime(startDateTime).endDateTime(endDateTime).engineTypes(engineTypeIds).pageNumber(pageNumber)
-				.pageSize(pageSize).sortingCriterion(sortingCriterion).build();
+				.pageSize(pageSize).sortingCriterion(sortingCriterion).statusCodes(statusCodes).build();
 
 		validationHelper.validateInput(command);
 

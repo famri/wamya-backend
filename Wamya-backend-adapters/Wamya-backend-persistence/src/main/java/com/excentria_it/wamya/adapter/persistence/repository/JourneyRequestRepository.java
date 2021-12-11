@@ -64,15 +64,16 @@ public interface JourneyRequestRepository extends JpaRepository<JourneyRequestJp
 			+ "WHERE dpd.id = :departureDepartmentId "
 			+ "AND apd.id IN :arrivalDepartmentIds "
 			+ "AND et.id IN :engineTypeIds "
+			+ "AND jrs.code IN :statusCodes "
 			+ "AND jr.dateTime BETWEEN :startDate AND :endDate "
 			+ "AND KEY(let) = :locale "
 			+ "AND KEY(ldp) = :locale  "
 			+ "AND KEY(lap) = :locale  "
 )
 			
-	Page<JourneyRequestSearchOutput> findByDeparturePlace_DepartmentIdAndArrivalPlace_DepartmentIdsInAndEngineType_IdsInAndDateBetween(
+	Page<JourneyRequestSearchOutput> findByDeparturePlace_DepartmentIdAndArrivalPlace_DepartmentIdsInAndEngineType_IdsInAndDateBetweenAndStatus_Codes(
 			@Param("departureDepartmentId") Long departurePlaceDepartmentId, @Param("arrivalDepartmentIds") Set<Long> arrivalPlaceDepartmentId,  @Param("engineTypeIds") Set<Long> engineTypes,
-			@Param("startDate") Instant startDate, @Param("endDate")Instant endDate, @Param("locale")String locale, Pageable pageable);
+			@Param("startDate") Instant startDate, @Param("endDate")Instant endDate, @Param("statusCodes") Set<JourneyRequestStatusCode> statusCodes, @Param("locale")String locale, Pageable pageable);
 
 	@Query(value = "SELECT jr.id AS id, "
 			+ "dp.placeId.id AS departurePlaceId, "
@@ -118,14 +119,15 @@ public interface JourneyRequestRepository extends JpaRepository<JourneyRequestJp
 		
 			+ "WHERE dpd.id = :departureDepartmentId "	
 			+ "AND et.id IN :engineTypeIds "
+			+ "AND jrs.code IN :statusCodes "
 			+ "AND jr.dateTime BETWEEN :startDate AND :endDate "
 			+ "AND KEY(let) = :locale "
 			+ "AND KEY(ldp) = :locale  "
 			+ "AND KEY(lap) = :locale  "
 )
-	Page<JourneyRequestSearchOutput> findByDeparturePlace_DepartmentIdAndEngineType_IdsInAndDateBetween(
+	Page<JourneyRequestSearchOutput> findByDeparturePlace_DepartmentIdAndEngineType_IdsInAndDateBetweenAndStatus_Codes(
 			@Param("departureDepartmentId") Long departurePlaceDepartmentId,  @Param("engineTypeIds") Set<Long> engineTypes,
-			@Param("startDate") Instant startDate, @Param("endDate")Instant endDate, @Param("locale")String locale, Pageable pageable);
+			@Param("startDate") Instant startDate, @Param("endDate")Instant endDate, @Param("statusCodes") Set<JourneyRequestStatusCode> statusCodes, @Param("locale")String locale, Pageable pageable);
 
 	@Query(value = "SELECT jr.id AS id, dp.placeId.id AS departurePlaceId, dp.placeId.type AS departurePlaceType, dp.latitude AS departurePlaceLatitude, dp.longitude AS departurePlaceLongitude, dpd.id AS departurePlaceDepartmentId, VALUE(ldp).name AS departurePlaceName, ap.placeId.id AS arrivalPlaceId, ap.placeId.type AS arrivalPlaceType, ap.latitude AS arrivalPlaceLatitude, ap.longitude AS arrivalPlaceLongitude, apd.id AS arrivalPlaceDepartmentId, VALUE(lap).name AS arrivalPlaceName, et.id AS engineTypeId, VALUE(l).name AS engineTypeName, et.code AS engineTypeCode, jr.distance AS distance, jr.dateTime AS dateTime, jr.creationDateTime AS creationDateTime, jr.workers AS workers, jr.description AS description, COUNT(p) AS proposalsCount FROM JourneyRequestJpaEntity jr JOIN jr.engineType et JOIN et.localizations l JOIN jr.departurePlace dp JOIN dp.department dpd JOIN dp.localizations ldp JOIN jr.arrivalPlace ap JOIN ap.department apd JOIN ap.localizations lap JOIN jr.client c LEFT JOIN jr.proposals p JOIN jr.status st WHERE jr.creationDateTime BETWEEN ?1 AND ?2 AND c.email = ?3 AND KEY(l) = ?4 AND KEY(ldp) = ?4 AND KEY(lap) = ?4 AND st.code != com.excentria_it.wamya.domain.JourneyRequestStatusCode.CANCELED GROUP BY jr.id, dp.placeId.id, dp.placeId.type, dp.latitude, dp.longitude, dpd.id, VALUE(ldp).name, ap.placeId.id, ap.placeId.type, ap.latitude, ap.longitude, apd.id, VALUE(lap).name, et.id, VALUE(l).name, et.code, jr.distance, jr.dateTime, jr.creationDateTime, jr.workers, jr.description", countQuery = "SELECT COUNT(DISTINCT jr.id) FROM JourneyRequestJpaEntity jr JOIN jr.client c JOIN jr.status st WHERE jr.creationDateTime BETWEEN ?1 AND ?2 AND c.email = ?3 AND ?4 = ?4 AND st.code != com.excentria_it.wamya.domain.JourneyRequestStatusCode.CANCELED")
 	Page<ClientJourneyRequestDtoOutput> findByCreationDateTimeBetweenAndClient_Email(Instant lowerDateEdge,
