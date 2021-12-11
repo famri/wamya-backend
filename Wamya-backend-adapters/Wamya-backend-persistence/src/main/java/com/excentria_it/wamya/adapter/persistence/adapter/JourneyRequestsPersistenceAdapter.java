@@ -12,7 +12,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.data.jpa.domain.JpaSort;
 
 import com.excentria_it.wamya.adapter.persistence.entity.ClientJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.DepartmentJpaEntity;
@@ -88,12 +87,12 @@ public class JourneyRequestsPersistenceAdapter implements SearchJourneyRequestsP
 
 		if (isArrivalPlaceRegionAgnostic(command)) {
 			journeyRequestsPage = journeyRequestRepository
-					.findByDeparturePlace_DepartmentIdAndEngineType_IdInAndDateBetween(
+					.findByDeparturePlace_DepartmentIdAndEngineType_IdsInAndDateBetween(
 							command.getDeparturePlaceDepartmentId(), command.getEngineTypes(),
 							command.getStartDateTime(), command.getEndDateTime(), command.getLocale(), pagingSort);
 		} else {
 			journeyRequestsPage = journeyRequestRepository
-					.findByDeparturePlace_DepartmentIdAndArrivalPlace_DepartmentIdInAndEngineType_IdInAndDateBetween(
+					.findByDeparturePlace_DepartmentIdAndArrivalPlace_DepartmentIdsInAndEngineType_IdsInAndDateBetween(
 							command.getDeparturePlaceDepartmentId(), command.getArrivalPlaceDepartmentIds(),
 							command.getEngineTypes(), command.getStartDateTime(), command.getEndDateTime(),
 							command.getLocale(), pagingSort);
@@ -106,10 +105,7 @@ public class JourneyRequestsPersistenceAdapter implements SearchJourneyRequestsP
 	}
 
 	protected Sort convertToSort(SortCriterion sortingCriterion) {
-		if ("min-price".equals(sortingCriterion.getField())) {
-			return (JpaSort.unsafe(Direction.valueOf(sortingCriterion.getDirection().toUpperCase()),
-					ParameterUtils.kebabToCamelCase("(" + sortingCriterion.getField() + ")")));
-		}
+
 		return Sort.by(Direction.valueOf(sortingCriterion.getDirection().toUpperCase()),
 				ParameterUtils.kebabToCamelCase(sortingCriterion.getField()));
 	}

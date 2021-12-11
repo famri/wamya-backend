@@ -740,7 +740,7 @@ public class JourneyRequestsPersistenceAdapterTests {
 		Page<JourneyRequestSearchOutput> result = createPageFromJourneyRequestSearchOutputList(
 				defaultJourneyRequestSearchOutputList());
 		given(journeyRequestRepository
-				.findByDeparturePlace_DepartmentIdAndArrivalPlace_DepartmentIdInAndEngineType_IdInAndDateBetween(
+				.findByDeparturePlace_DepartmentIdAndArrivalPlace_DepartmentIdsInAndEngineType_IdsInAndDateBetween(
 						any(Long.class), any(Set.class), any(Set.class), any(Instant.class), any(Instant.class),
 						any(String.class), any(Pageable.class))).willReturn(result);
 
@@ -761,7 +761,7 @@ public class JourneyRequestsPersistenceAdapterTests {
 
 	private Page<JourneyRequestSearchDto> givenNullJourneyRequestsPageByDeparturePlace_RegionIdAndEngineType_IdInAndDateBetween() {
 
-		given(journeyRequestRepository.findByDeparturePlace_DepartmentIdAndEngineType_IdInAndDateBetween(
+		given(journeyRequestRepository.findByDeparturePlace_DepartmentIdAndEngineType_IdsInAndDateBetween(
 				any(Long.class), any(Set.class), any(Instant.class), any(Instant.class), any(String.class),
 				any(Pageable.class))).willReturn(null);
 
@@ -771,7 +771,7 @@ public class JourneyRequestsPersistenceAdapterTests {
 	private Page<JourneyRequestSearchOutput> givenNotNullJourneyRequestsPageByDeparturePlace_RegionIdAndEngineType_IdInAndDateBetween() {
 		Page<JourneyRequestSearchOutput> result = createPageFromJourneyRequestSearchOutputList(
 				defaultJourneyRequestSearchOutputList());
-		given(journeyRequestRepository.findByDeparturePlace_DepartmentIdAndEngineType_IdInAndDateBetween(
+		given(journeyRequestRepository.findByDeparturePlace_DepartmentIdAndEngineType_IdsInAndDateBetween(
 				any(Long.class), any(Set.class), any(Instant.class), any(Instant.class), any(String.class),
 				any(Pageable.class))).willReturn(result);
 

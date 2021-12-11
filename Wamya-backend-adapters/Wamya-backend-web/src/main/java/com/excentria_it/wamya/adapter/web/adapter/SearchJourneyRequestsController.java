@@ -49,7 +49,7 @@ public class SearchJourneyRequestsController {
 
 		Locale supportedLocale = LocaleUtils.getSupporedLocale(locale);
 
-		SortCriterion sortingCriterion = ParameterUtils.parameterToSortCriterion(sort, "min-price,desc");
+		SortCriterion sortingCriterion = ParameterUtils.parameterToSortCriterion(sort, "date-time,desc");
 
 		SearchJourneyRequestsCommand command = SearchJourneyRequestsCommand.builder()
 				.departurePlaceDepartmentId(departurePlaceRegionId).arrivalPlaceDepartmentIds(arrivalPlaceRegionIds)

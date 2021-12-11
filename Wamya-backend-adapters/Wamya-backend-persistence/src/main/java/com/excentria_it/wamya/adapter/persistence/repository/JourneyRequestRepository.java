@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.excentria_it.wamya.adapter.persistence.entity.JourneyRequestJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.JourneyRequestStatusJpaEntity;
@@ -17,16 +18,114 @@ import com.excentria_it.wamya.domain.JourneyRequestSearchOutput;
 import com.excentria_it.wamya.domain.JourneyRequestStatusCode;
 
 public interface JourneyRequestRepository extends JpaRepository<JourneyRequestJpaEntity, Long> {
+	
+	@Query(value = "SELECT jr.id AS id, "
+			+ "dp.placeId.id AS departurePlaceId, "
+			+ "dp.placeId.type AS departurePlaceType, "
+			+ "dp.latitude AS departurePlaceLatitude, "
+			+ "dp.longitude AS departurePlaceLongitude, "
+			+ "dpd.id AS departurePlaceDepartmentId, "
+			+ "VALUE(ldp).name AS departurePlaceName, "
+			+ "ap.placeId.id AS arrivalPlaceId, "
+			+ "ap.placeId.type AS arrivalPlaceType, "
+			+ "ap.latitude AS arrivalPlaceLatitude, "
+			+ "ap.longitude AS arrivalPlaceLongitude, "
+			+ "apd.id AS arrivalPlaceDepartmentId, "
+			+ "VALUE(lap).name AS arrivalPlaceName, "
+			+ "et.id AS engineTypeId, "
+			+ "VALUE(let).name AS engineTypeName, "
+			+ "et.code AS engineTypeCode, "
+			+ "jr.distance AS distance, "
+			+ "jr.hours AS hours, "
+			+ "jr.minutes AS minutes, "
+			+ "jr.dateTime AS dateTime, "
+			+ "jr.workers AS workers, "
+			+ "jr.description AS description, "
+			+ "ua.oauthId AS clientOauthId, "
+			+ "ua.firstname AS clientFirstname, "
+			+ "pi.id AS clientProfileImageId, "
+			+ "pi.hash AS clientProfileImageHash "
+			
+			+ "FROM JourneyRequestJpaEntity jr "
+			+ "JOIN jr.departurePlace dp "			
+			+ "JOIN dp.department dpd "
+			+ "JOIN dp.localizations ldp "
+			+ "JOIN jr.arrivalPlace ap "
+			+ "JOIN ap.placeId appid "
+			+ "JOIN ap.department apd "
+			+ "JOIN ap.localizations lap "
+			+ "JOIN jr.engineType et "
+			+ "JOIN et.localizations let "
+			+ "JOIN jr.client ua "
+			+ "JOIN ua.profileImage pi "
+			+ "JOIN jr.status jrs "
 
-	@Query(nativeQuery = true, value = "SELECT jr.id AS id, jr.departure_place_id AS departurePlaceId, dp.type AS departurePlaceType, dp.latitude AS departurePlaceLatitude, dp.longitude AS departurePlaceLongitude, dp.department_id AS departurePlaceDepartmentId, ldp.name AS departurePlaceName, jr.arrival_place_id AS arrivalPlaceId, ap.type AS arrivalPlaceType, ap.latitude AS arrivalPlaceLatitude, ap.longitude AS arrivalPlaceLongitude, ap.department_id AS arrivalPlaceDepartmentId, lap.name AS arrivalPlaceName, let.id AS engineTypeId, let.name AS engineTypeName, et.code AS engineTypeCode, jr.distance AS distance, jr.hours AS hours, jr.minutes AS minutes, jr.date_time AS dateTime, jr.workers AS workers, jr.description AS description, jr.status_id AS statusId, jrs.code AS statusCode, ljrs.value AS statusName, ua.oauth_id AS clientOauthId, ua.firstname AS clientFirstname, pi.id AS clientProfileImageId, pi.hash AS clientProfileImageHash, COALESCE(MIN(jp.price),0) AS minPrice FROM journey_request jr INNER JOIN place dp ON jr.departure_place_id = dp.id AND jr.departure_place_type = dp.type INNER JOIN localized_place ldp ON dp.id = ldp.id AND dp.type = ldp.type INNER JOIN place ap ON jr.arrival_place_id = ap.id AND jr.arrival_place_type = ap.type INNER JOIN localized_place lap ON ap.id = lap.id AND ap.type = lap.type INNER JOIN engine_type et ON jr.engine_type_id = et.id INNER JOIN localized_engine_type let ON jr.engine_type_id = let.id INNER JOIN user_account ua ON jr.client_id = ua.id INNER JOIN document pi ON ua.profile_image_id = pi.id INNER JOIN journey_request_status jrs ON jr.status_id = jrs.id INNER JOIN localized_journey_request_status ljrs ON jrs.id = ljrs.id LEFT OUTER JOIN journey_proposal jp ON jr.id = jp.journey_request_id WHERE dp.department_id = ?1 AND ap.department_id IN (?2) AND let.id IN (?3) AND jr.date_time BETWEEN ?4 AND ?5 AND let.locale = ?6 AND ldp.locale = ?6 AND lap.locale = ?6 AND ljrs.locale = ?6 GROUP BY jr.id, jr.departure_place_id, dp.type, dp.latitude, dp.longitude, dp.department_id, ldp.name, jr.arrival_place_id, ap.type, ap.latitude, ap.longitude, ap.department_id, lap.name, let.id, let.name, et.code, jr.distance, jr.hours, jr.minutes, jr.date_time, jr.workers, jr.description, jr.status_id, jrs.code, ljrs.value, ua.oauth_id, ua.firstname, pi.id, pi.hash", countQuery = "SELECT COUNT(DISTINCT jr.id) FROM journey_request jr INNER JOIN place dp ON jr.departure_place_id = dp.id  AND jr.departure_place_type = dp.type INNER JOIN place ap ON jr.arrival_place_id = ap.id AND jr.arrival_place_type = ap.type INNER JOIN engine_type et ON jr.engine_type_id = et.id WHERE dp.department_id = ?1 AND ap.department_id IN (?2) AND et.id IN (?3) AND jr.date_time BETWEEN ?4 AND ?5")
-	Page<JourneyRequestSearchOutput> findByDeparturePlace_DepartmentIdAndArrivalPlace_DepartmentIdInAndEngineType_IdInAndDateBetween(
-			Long departurePlaceDepartmentId, Set<Long> arrivalPlaceDepartmentId, Set<Long> engineTypes,
-			Instant startDate, Instant endDate, String locale, Pageable pageable);
+		
+			+ "WHERE dpd.id = :departureDepartmentId "
+			+ "AND apd.id IN :arrivalDepartmentIds "
+			+ "AND et.id IN :engineTypeIds "
+			+ "AND jr.dateTime BETWEEN :startDate AND :endDate "
+			+ "AND KEY(let) = :locale "
+			+ "AND KEY(ldp) = :locale  "
+			+ "AND KEY(lap) = :locale  "
+)
+			
+	Page<JourneyRequestSearchOutput> findByDeparturePlace_DepartmentIdAndArrivalPlace_DepartmentIdsInAndEngineType_IdsInAndDateBetween(
+			@Param("departureDepartmentId") Long departurePlaceDepartmentId, @Param("arrivalDepartmentIds") Set<Long> arrivalPlaceDepartmentId,  @Param("engineTypeIds") Set<Long> engineTypes,
+			@Param("startDate") Instant startDate, @Param("endDate")Instant endDate, @Param("locale")String locale, Pageable pageable);
 
-	@Query(nativeQuery = true, value = "SELECT jr.id AS id, jr.departure_place_id AS departurePlaceId, dp.type AS departurePlaceType, dp.latitude AS departurePlaceLatitude, dp.longitude AS departurePlaceLongitude, dp.department_id AS departurePlaceDepartmentId, ldp.name AS departurePlaceName, jr.arrival_place_id AS arrivalPlaceId, ap.type AS arrivalPlaceType, ap.latitude AS arrivalPlaceLatitude, ap.longitude AS arrivalPlaceLongitude, ap.department_id AS arrivalPlaceDepartmentId, lap.name AS arrivalPlaceName, let.id AS engineTypeId, let.name AS engineTypeName, et.code AS engineTypeCode, jr.distance AS distance, jr.hours AS hours, jr.minutes AS minutes, jr.date_time AS dateTime, jr.workers AS workers, jr.description AS description, jr.status_id AS statusId, jrs.code AS statusCode, ljrs.value AS statusName, ua.oauth_id AS clientOauthId, ua.firstname AS clientFirstname, pi.id AS clientProfileImageId, pi.hash AS clientProfileImageHash, COALESCE(MIN(jp.price),0) AS minPrice FROM journey_request jr INNER JOIN place dp ON jr.departure_place_id = dp.id AND jr.departure_place_type = dp.type INNER JOIN localized_place ldp ON dp.id = ldp.id AND dp.type = ldp.type INNER JOIN place ap ON jr.arrival_place_id = ap.id AND jr.arrival_place_type = ap.type INNER JOIN localized_place lap ON ap.id = lap.id AND ap.type = lap.type INNER JOIN engine_type et ON jr.engine_type_id = et.id INNER JOIN localized_engine_type let ON jr.engine_type_id = let.id INNER JOIN user_account ua ON jr.client_id = ua.id INNER JOIN document pi ON ua.profile_image_id = pi.id INNER JOIN journey_request_status jrs ON jr.status_id = jrs.id INNER JOIN localized_journey_request_status ljrs ON jrs.id = ljrs.id LEFT OUTER JOIN journey_proposal jp ON jr.id = jp.journey_request_id WHERE dp.department_id = ?1 AND let.id IN (?2) AND jr.date_time BETWEEN ?3 AND ?4 AND let.locale = ?5 AND ldp.locale = ?5 AND lap.locale = ?5 AND ljrs.locale = ?5 GROUP BY jr.id, jr.departure_place_id, dp.type, dp.latitude, dp.longitude, dp.department_id, ldp.name, jr.arrival_place_id, ap.type, ap.latitude, ap.longitude, ap.department_id, lap.name, let.id, let.name, et.code, jr.distance, jr.hours, jr.minutes, jr.date_time, jr.workers, jr.description, jr.status_id, jrs.code, ljrs.value, ua.oauth_id, ua.firstname, pi.id, pi.hash", countQuery = "SELECT COUNT(DISTINCT jr.id) FROM journey_request jr INNER JOIN place dp ON jr.departure_place_id = dp.id AND jr.departure_place_type = dp.type INNER JOIN place ap ON jr.arrival_place_id = ap.id AND jr.arrival_place_type = ap.type INNER JOIN engine_type et ON jr.engine_type_id = et.id WHERE dp.department_id = ?1 AND et.id IN (?2) AND jr.date_time BETWEEN ?3 AND ?4")
-	Page<JourneyRequestSearchOutput> findByDeparturePlace_DepartmentIdAndEngineType_IdInAndDateBetween(
-			Long departurePlaceDepartmentId, Set<Long> engineTypes, Instant startDate, Instant endDate, String locale,
-			Pageable pageable);
+	@Query(value = "SELECT jr.id AS id, "
+			+ "dp.placeId.id AS departurePlaceId, "
+			+ "dp.placeId.type AS departurePlaceType, "
+			+ "dp.latitude AS departurePlaceLatitude, "
+			+ "dp.longitude AS departurePlaceLongitude, "
+			+ "dpd.id AS departurePlaceDepartmentId, "
+			+ "VALUE(ldp).name AS departurePlaceName, "
+			+ "ap.placeId.id AS arrivalPlaceId, "
+			+ "ap.placeId.type AS arrivalPlaceType, "
+			+ "ap.latitude AS arrivalPlaceLatitude, "
+			+ "ap.longitude AS arrivalPlaceLongitude, "
+			+ "apd.id AS arrivalPlaceDepartmentId, "
+			+ "VALUE(lap).name AS arrivalPlaceName, "
+			+ "et.id AS engineTypeId, "
+			+ "VALUE(let).name AS engineTypeName, "
+			+ "et.code AS engineTypeCode, "
+			+ "jr.distance AS distance, "
+			+ "jr.hours AS hours, "
+			+ "jr.minutes AS minutes, "
+			+ "jr.dateTime AS dateTime, "
+			+ "jr.workers AS workers, "
+			+ "jr.description AS description, "
+			+ "ua.oauthId AS clientOauthId, "
+			+ "ua.firstname AS clientFirstname, "
+			+ "pi.id AS clientProfileImageId, "
+			+ "pi.hash AS clientProfileImageHash "
+			
+			+ "FROM JourneyRequestJpaEntity jr "
+			+ "JOIN jr.departurePlace dp "
+			+ "JOIN dp.department dpd "
+			+ "JOIN dp.localizations ldp "
+			+ "JOIN jr.arrivalPlace ap "
+			+ "JOIN ap.placeId appid "
+			+ "JOIN ap.department apd "
+			+ "JOIN ap.localizations lap "
+			+ "JOIN jr.engineType et "
+			+ "JOIN et.localizations let "
+			+ "JOIN jr.client ua "
+			+ "JOIN ua.profileImage pi "
+			+ "JOIN jr.status jrs "
+
+		
+			+ "WHERE dpd.id = :departureDepartmentId "	
+			+ "AND et.id IN :engineTypeIds "
+			+ "AND jr.dateTime BETWEEN :startDate AND :endDate "
+			+ "AND KEY(let) = :locale "
+			+ "AND KEY(ldp) = :locale  "
+			+ "AND KEY(lap) = :locale  "
+)
+	Page<JourneyRequestSearchOutput> findByDeparturePlace_DepartmentIdAndEngineType_IdsInAndDateBetween(
+			@Param("departureDepartmentId") Long departurePlaceDepartmentId,  @Param("engineTypeIds") Set<Long> engineTypes,
+			@Param("startDate") Instant startDate, @Param("endDate")Instant endDate, @Param("locale")String locale, Pageable pageable);
 
 	@Query(value = "SELECT jr.id AS id, dp.placeId.id AS departurePlaceId, dp.placeId.type AS departurePlaceType, dp.latitude AS departurePlaceLatitude, dp.longitude AS departurePlaceLongitude, dpd.id AS departurePlaceDepartmentId, VALUE(ldp).name AS departurePlaceName, ap.placeId.id AS arrivalPlaceId, ap.placeId.type AS arrivalPlaceType, ap.latitude AS arrivalPlaceLatitude, ap.longitude AS arrivalPlaceLongitude, apd.id AS arrivalPlaceDepartmentId, VALUE(lap).name AS arrivalPlaceName, et.id AS engineTypeId, VALUE(l).name AS engineTypeName, et.code AS engineTypeCode, jr.distance AS distance, jr.dateTime AS dateTime, jr.creationDateTime AS creationDateTime, jr.workers AS workers, jr.description AS description, COUNT(p) AS proposalsCount FROM JourneyRequestJpaEntity jr JOIN jr.engineType et JOIN et.localizations l JOIN jr.departurePlace dp JOIN dp.department dpd JOIN dp.localizations ldp JOIN jr.arrivalPlace ap JOIN ap.department apd JOIN ap.localizations lap JOIN jr.client c LEFT JOIN jr.proposals p JOIN jr.status st WHERE jr.creationDateTime BETWEEN ?1 AND ?2 AND c.email = ?3 AND KEY(l) = ?4 AND KEY(ldp) = ?4 AND KEY(lap) = ?4 AND st.code != com.excentria_it.wamya.domain.JourneyRequestStatusCode.CANCELED GROUP BY jr.id, dp.placeId.id, dp.placeId.type, dp.latitude, dp.longitude, dpd.id, VALUE(ldp).name, ap.placeId.id, ap.placeId.type, ap.latitude, ap.longitude, apd.id, VALUE(lap).name, et.id, VALUE(l).name, et.code, jr.distance, jr.dateTime, jr.creationDateTime, jr.workers, jr.description", countQuery = "SELECT COUNT(DISTINCT jr.id) FROM JourneyRequestJpaEntity jr JOIN jr.client c JOIN jr.status st WHERE jr.creationDateTime BETWEEN ?1 AND ?2 AND c.email = ?3 AND ?4 = ?4 AND st.code != com.excentria_it.wamya.domain.JourneyRequestStatusCode.CANCELED")
 	Page<ClientJourneyRequestDtoOutput> findByCreationDateTimeBetweenAndClient_Email(Instant lowerDateEdge,

@@ -55,7 +55,7 @@ public interface SearchJourneyRequestsUseCase {
 		@NotNull
 		private Integer pageSize;
 
-		@Sort(fields = { "min-price", "distance", "date-time" })
+		@Sort(fields = { "distance", "date-time" })
 		private SortCriterion sortingCriterion;
 
 	}

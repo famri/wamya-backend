@@ -227,11 +227,7 @@ public class JourneyRequestTestData {
 					return new ClientDto(1L, "ClientName1", 1L, "SOME_IMAGE_HASH_1");
 				}
 
-				@Override
-				public Double getMinPrice() {
-
-					return 250D;
-				}
+	
 
 				@Override
 				public Integer getHours() {
@@ -301,11 +297,7 @@ public class JourneyRequestTestData {
 					return new ClientDto(1L, "ClientName2", 2L, "SOME_IMAGE_HASH_2");
 				}
 
-				@Override
-				public Double getMinPrice() {
 
-					return 220D;
-				}
 
 				@Override
 				public Integer getHours() {
@@ -558,7 +550,7 @@ public class JourneyRequestTestData {
 				.description(jrso.getDescription())
 				.client(new Client(jrso.getClient().getId(), jrso.getClient().getFirstname(),
 						documentUrlResolver.resolveUrl(jrso.getClient().getImageId(), jrso.getClient().getImageHash())))
-				.minPrice(jrso.getMinPrice()).build();
+				.build();
 
 	}
 
