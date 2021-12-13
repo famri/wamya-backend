@@ -40,8 +40,8 @@ public class VehiculeService implements AddVehiculeUseCase, LoadVehiculesUseCase
 	@Override
 	public TransporterVehicules loadTransporterVehicules(LoadVehiculesCommand command, String locale) {
 		LoadTransporterVehiculesCriteria criteria = LoadTransporterVehiculesCriteria.builder()
-				.transporterUsername(command.getTransporterUsername()).pageNumber(command.getPageNumber())
-				.pageSize(command.getPageSize()).sortingCriterion(command.getSortingCriterion()).build();
+				.transporterUsername(command.getTransporterUsername())
+				.sortingCriterion(command.getSortingCriterion()).build();
 
 		return loadTransporterVehiculesPort.loadTransporterVehicules(criteria, locale);
 

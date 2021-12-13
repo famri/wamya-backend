@@ -87,15 +87,16 @@ public class JourneyRequestsPersistenceAdapter implements SearchJourneyRequestsP
 
 		if (isArrivalPlaceRegionAgnostic(command)) {
 			journeyRequestsPage = journeyRequestRepository
-					.findByDeparturePlace_DepartmentIdAndEngineType_IdsInAndDateBetweenAndStatus_Codes(
+					.findByDeparturePlace_DepartmentIdAndEngineType_IdsInAndDateBetweenAndStatus_CodesAndUsernameNoProposal(
 							command.getDeparturePlaceDepartmentId(), command.getEngineTypes(),
-							command.getStartDateTime(), command.getEndDateTime(), command.getStatusCodes(), command.getLocale(), pagingSort);
+							command.getStartDateTime(), command.getEndDateTime(), command.getStatusCodes(),
+							command.getUsername(), command.getLocale(), pagingSort);
 		} else {
 			journeyRequestsPage = journeyRequestRepository
-					.findByDeparturePlace_DepartmentIdAndArrivalPlace_DepartmentIdsInAndEngineType_IdsInAndDateBetweenAndStatus_Codes(
+					.findByDeparturePlace_DepartmentIdAndArrivalPlace_DepartmentIdsInAndEngineType_IdsInAndDateBetweenAndStatus_CodesAndUsernameNoProposal(
 							command.getDeparturePlaceDepartmentId(), command.getArrivalPlaceDepartmentIds(),
 							command.getEngineTypes(), command.getStartDateTime(), command.getEndDateTime(),
-							command.getStatusCodes(), command.getLocale(), pagingSort);
+							command.getStatusCodes(), command.getUsername(), command.getLocale(), pagingSort);
 		}
 
 		return new JourneyRequestsSearchOutputResult(journeyRequestsPage.getTotalPages(),

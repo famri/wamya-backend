@@ -62,9 +62,7 @@ public class LoadTransporterVehiculesControllerTests {
 		MvcResult mvcResult = api
 				.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
 						.authorities("SCOPE_vehicule:read"))
-				.perform(get("/users/me/vehicules").param("page", command.getPageNumber().toString())
-						.param("size", command.getPageSize().toString()).param("sort", "id,asc"))
-				.andExpect(status().isOk()).andReturn();
+				.perform(get("/users/me/vehicules").param("sort", "id,asc")).andExpect(status().isOk()).andReturn();
 
 		TransporterVehicules response = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
 				TransporterVehicules.class);
@@ -73,8 +71,7 @@ public class LoadTransporterVehiculesControllerTests {
 		then(loadVehiculesUseCase).should(times(1)).loadTransporterVehicules(commandCaptor.capture(), eq("en_US"));
 
 		assertThat(commandCaptor.getValue().getTransporterUsername()).isEqualTo(command.getTransporterUsername());
-		assertThat(commandCaptor.getValue().getPageNumber()).isEqualTo(command.getPageNumber());
-		assertThat(commandCaptor.getValue().getPageSize()).isEqualTo(command.getPageSize());
+
 		assertThat(commandCaptor.getValue().getSortingCriterion().getField())
 				.isEqualTo(command.getSortingCriterion().getField());
 		assertThat(commandCaptor.getValue().getSortingCriterion().getDirection())

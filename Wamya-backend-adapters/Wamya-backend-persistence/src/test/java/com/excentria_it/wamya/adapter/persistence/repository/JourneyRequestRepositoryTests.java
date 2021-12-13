@@ -167,13 +167,13 @@ public class JourneyRequestRepositoryTests {
 		// When
 
 		Page<JourneyRequestSearchOutput> journeyRequests = journeyRequestRepository
-				.findByDeparturePlace_DepartmentIdAndArrivalPlace_DepartmentIdsInAndEngineType_IdsInAndDateBetweenAndStatus_Codes(
+				.findByDeparturePlace_DepartmentIdAndArrivalPlace_DepartmentIdsInAndEngineType_IdsInAndDateBetweenAndStatus_CodesAndUsernameNoProposal(
 						departurePlaces.get(0).getDepartment().getId(),
 						Set.of(arrivalPlaces.get(0).getDepartment().getId(),
 								arrivalPlaces.get(1).getDepartment().getId()),
 						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()),
 						searchStartAndEndDates.get(0).toInstant(), searchStartAndEndDates.get(1).toInstant(),
-						Set.of(JourneyRequestStatusCode.OPENED), "en_US",
+						Set.of(JourneyRequestStatusCode.OPENED), TestConstants.DEFAULT_EMAIL, "en_US",
 						PageRequest.of(0, 1000, Sort.by(List.of(new Order(Direction.DESC, "id")))));
 
 		// Then
@@ -248,11 +248,12 @@ public class JourneyRequestRepositoryTests {
 		// When
 
 		Page<JourneyRequestSearchOutput> journeyRequests = journeyRequestRepository
-				.findByDeparturePlace_DepartmentIdAndEngineType_IdsInAndDateBetweenAndStatus_Codes(
+				.findByDeparturePlace_DepartmentIdAndEngineType_IdsInAndDateBetweenAndStatus_CodesAndUsernameNoProposal(
 						departurePlaces.get(0).getDepartment().getId(),
 						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()),
 						searchStartAndEndDates.get(0).toInstant(), searchStartAndEndDates.get(1).toInstant(),
-						Set.of(JourneyRequestStatusCode.OPENED), "en_US", PageRequest.of(0, 1000,
+						Set.of(JourneyRequestStatusCode.OPENED), TestConstants.DEFAULT_EMAIL, "en_US",
+						PageRequest.of(0, 1000,
 								// Sort.by(List.of(new Order(Direction.DESC, "(minPrice)")))
 								JpaSort.unsafe(Direction.DESC, "(minPrice)")));
 
@@ -329,13 +330,14 @@ public class JourneyRequestRepositoryTests {
 		// When
 
 		Page<JourneyRequestSearchOutput> journeyRequests = journeyRequestRepository
-				.findByDeparturePlace_DepartmentIdAndArrivalPlace_DepartmentIdsInAndEngineType_IdsInAndDateBetweenAndStatus_Codes(
+				.findByDeparturePlace_DepartmentIdAndArrivalPlace_DepartmentIdsInAndEngineType_IdsInAndDateBetweenAndStatus_CodesAndUsernameNoProposal(
 						departurePlaces.get(0).getDepartment().getId(),
 						Set.of(arrivalPlaces.get(0).getDepartment().getId(),
 								arrivalPlaces.get(1).getDepartment().getId()),
 						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()),
 						searchStartAndEndDates.get(0).toInstant(), searchStartAndEndDates.get(1).toInstant(),
-						Set.of(JourneyRequestStatusCode.OPENED), "en_US", PageRequest.of(1, 1,
+						Set.of(JourneyRequestStatusCode.OPENED), TestConstants.DEFAULT_EMAIL, "en_US",
+						PageRequest.of(1, 1,
 								// Sort.by(List.of(new Order(Direction.DESC, "(minPrice)")))
 								JpaSort.unsafe(Direction.ASC, "(minPrice)")));
 
@@ -402,11 +404,12 @@ public class JourneyRequestRepositoryTests {
 		// When
 
 		Page<JourneyRequestSearchOutput> journeyRequests = journeyRequestRepository
-				.findByDeparturePlace_DepartmentIdAndEngineType_IdsInAndDateBetweenAndStatus_Codes(
+				.findByDeparturePlace_DepartmentIdAndEngineType_IdsInAndDateBetweenAndStatus_CodesAndUsernameNoProposal(
 						departurePlaces.get(0).getDepartment().getId(),
 						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()),
 						searchStartAndEndDates.get(0).toInstant(), searchStartAndEndDates.get(1).toInstant(),
-						Set.of(JourneyRequestStatusCode.OPENED), "en_US", PageRequest.of(1, 1,
+						Set.of(JourneyRequestStatusCode.OPENED), TestConstants.DEFAULT_EMAIL, "en_US",
+						PageRequest.of(1, 1,
 								// Sort.by(List.of(new Order(Direction.DESC, "(minPrice)")))
 								JpaSort.unsafe(Direction.ASC, "(minPrice)")));
 
@@ -476,13 +479,14 @@ public class JourneyRequestRepositoryTests {
 		// When
 
 		Page<JourneyRequestSearchOutput> journeyRequests = journeyRequestRepository
-				.findByDeparturePlace_DepartmentIdAndArrivalPlace_DepartmentIdsInAndEngineType_IdsInAndDateBetweenAndStatus_Codes(
+				.findByDeparturePlace_DepartmentIdAndArrivalPlace_DepartmentIdsInAndEngineType_IdsInAndDateBetweenAndStatus_CodesAndUsernameNoProposal(
 						departurePlaces.get(0).getDepartment().getId(),
 						Set.of(arrivalPlaces.get(0).getDepartment().getId(),
 								arrivalPlaces.get(1).getDepartment().getId()),
 						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()),
 						searchStartAndEndDates.get(0).toInstant(), searchStartAndEndDates.get(1).toInstant(),
-						Set.of(JourneyRequestStatusCode.OPENED), "en_US", PageRequest.of(0, 1000,
+						Set.of(JourneyRequestStatusCode.OPENED), TestConstants.DEFAULT_EMAIL, "en_US",
+						PageRequest.of(0, 1000,
 
 								Sort.by(Direction.DESC, "dateTime")));
 
@@ -562,11 +566,12 @@ public class JourneyRequestRepositoryTests {
 		// When
 
 		Page<JourneyRequestSearchOutput> journeyRequests = journeyRequestRepository
-				.findByDeparturePlace_DepartmentIdAndEngineType_IdsInAndDateBetweenAndStatus_Codes(
+				.findByDeparturePlace_DepartmentIdAndEngineType_IdsInAndDateBetweenAndStatus_CodesAndUsernameNoProposal(
 						departurePlaces.get(0).getDepartment().getId(),
 						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()),
 						searchStartAndEndDates.get(0).toInstant(), searchStartAndEndDates.get(1).toInstant(),
-						Set.of(JourneyRequestStatusCode.OPENED), "en_US", PageRequest.of(0, 1000,
+						Set.of(JourneyRequestStatusCode.OPENED), TestConstants.DEFAULT_EMAIL, "en_US",
+						PageRequest.of(0, 1000,
 
 								Sort.by(Direction.DESC, "dateTime")));
 
@@ -645,13 +650,14 @@ public class JourneyRequestRepositoryTests {
 		// When
 
 		Page<JourneyRequestSearchOutput> journeyRequests = journeyRequestRepository
-				.findByDeparturePlace_DepartmentIdAndArrivalPlace_DepartmentIdsInAndEngineType_IdsInAndDateBetweenAndStatus_Codes(
+				.findByDeparturePlace_DepartmentIdAndArrivalPlace_DepartmentIdsInAndEngineType_IdsInAndDateBetweenAndStatus_CodesAndUsernameNoProposal(
 						departurePlaces.get(0).getDepartment().getId(),
 						Set.of(arrivalPlaces.get(0).getDepartment().getId(),
 								arrivalPlaces.get(1).getDepartment().getId()),
 						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()),
 						searchStartAndEndDates.get(0).toInstant(), searchStartAndEndDates.get(1).toInstant(),
-						Set.of(JourneyRequestStatusCode.OPENED), "en_US", PageRequest.of(0, 1000,
+						Set.of(JourneyRequestStatusCode.OPENED), TestConstants.DEFAULT_EMAIL, "en_US",
+						PageRequest.of(0, 1000,
 
 								Sort.by(Direction.DESC, "distance")));
 
@@ -736,11 +742,12 @@ public class JourneyRequestRepositoryTests {
 		// When
 
 		Page<JourneyRequestSearchOutput> journeyRequests = journeyRequestRepository
-				.findByDeparturePlace_DepartmentIdAndEngineType_IdsInAndDateBetweenAndStatus_Codes(
+				.findByDeparturePlace_DepartmentIdAndEngineType_IdsInAndDateBetweenAndStatus_CodesAndUsernameNoProposal(
 						departurePlaces.get(0).getDepartment().getId(),
 						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()),
 						searchStartAndEndDates.get(0).toInstant(), searchStartAndEndDates.get(1).toInstant(),
-						Set.of(JourneyRequestStatusCode.OPENED), "en_US", PageRequest.of(0, 1000,
+						Set.of(JourneyRequestStatusCode.OPENED), TestConstants.DEFAULT_EMAIL, "en_US",
+						PageRequest.of(0, 1000,
 
 								Sort.by(Direction.DESC, "distance")));
 

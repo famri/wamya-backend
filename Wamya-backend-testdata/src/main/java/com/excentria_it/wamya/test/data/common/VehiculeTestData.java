@@ -10,8 +10,6 @@ import com.excentria_it.wamya.application.port.in.LoadVehiculesUseCase.LoadVehic
 import com.excentria_it.wamya.common.SortCriterion;
 import com.excentria_it.wamya.domain.AddVehiculeDto;
 import com.excentria_it.wamya.domain.AddVehiculeDto.AddVehiculeDtoBuilder;
-import com.excentria_it.wamya.domain.LoadTransporterVehiculesCriteria;
-import com.excentria_it.wamya.domain.LoadTransporterVehiculesCriteria.LoadTransporterVehiculesCriteriaBuilder;
 import com.excentria_it.wamya.domain.TransporterVehiculeDto;
 import com.excentria_it.wamya.domain.TransporterVehicules;
 
@@ -27,13 +25,12 @@ public class VehiculeTestData {
 					.engineTypeName("Utility vehicule").engineTypeId(1L).photoUrl("https://some/photo/url/2").build());
 
 	public static LoadVehiculesCommandBuilder defaultLoadVehiculesCommandBuilder() {
-		return LoadVehiculesCommand.builder().transporterUsername(TestConstants.DEFAULT_EMAIL).pageNumber(1)
-				.pageSize(25).sortingCriterion(new SortCriterion("id", "asc"));
+		return LoadVehiculesCommand.builder().transporterUsername(TestConstants.DEFAULT_EMAIL)
+				.sortingCriterion(new SortCriterion("id", "asc"));
 	}
 
 	public static TransporterVehicules defaultTransporterVehicules() {
-		return TransporterVehicules.builder().totalPages(1).totalElements(2).pageNumber(1).pageSize(25).hasNext(false)
-				.content(defaultTransporterVehiculeDtos).build();
+		return TransporterVehicules.builder().content(defaultTransporterVehiculeDtos).build();
 	}
 
 	public static AddVehiculeCommandBuilder defaultAddVehiculeCommandBuilder() {
@@ -46,7 +43,5 @@ public class VehiculeTestData {
 				.circulationDate(LocalDate.of(2020, 01, 01)).registration("0001 TUN 2020")
 				.photoUrl("https://path/to/vehicule/photo");
 	}
-
-
 
 }

@@ -45,7 +45,7 @@ public class SearchJourneyRequestsService implements SearchJourneyRequestsUseCas
 		SearchJourneyRequestsInput searchCriteria = new SearchJourneyRequestsInput(
 				command.getDeparturePlaceDepartmentId(), command.getArrivalPlaceDepartmentIds(), startInstant,
 				endInstant, command.getEngineTypes(), command.getPageNumber(), command.getPageSize(),
-				command.getSortingCriterion(), command.getStatusCodes(), locale);
+				command.getSortingCriterion(), command.getStatusCodes(), username, locale);
 
 		JourneyRequestsSearchOutputResult searchOutput = searchJourneyRequestsPort
 				.searchJourneyRequests(searchCriteria);

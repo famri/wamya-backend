@@ -740,10 +740,9 @@ public class JourneyRequestsPersistenceAdapterTests {
 		Page<JourneyRequestSearchOutput> result = createPageFromJourneyRequestSearchOutputList(
 				defaultJourneyRequestSearchOutputList());
 		given(journeyRequestRepository
-				.findByDeparturePlace_DepartmentIdAndArrivalPlace_DepartmentIdsInAndEngineType_IdsInAndDateBetweenAndStatus_Codes(
+				.findByDeparturePlace_DepartmentIdAndArrivalPlace_DepartmentIdsInAndEngineType_IdsInAndDateBetweenAndStatus_CodesAndUsernameNoProposal(
 						any(Long.class), any(Set.class), any(Set.class), any(Instant.class), any(Instant.class),
-						any(Set.class), any(String.class), any(Pageable.class)))
-								.willReturn(result);
+						any(Set.class), any(String.class), any(String.class), any(Pageable.class))).willReturn(result);
 
 		return result;
 
@@ -762,9 +761,10 @@ public class JourneyRequestsPersistenceAdapterTests {
 
 	private Page<JourneyRequestSearchDto> givenNullJourneyRequestsPageByDeparturePlace_RegionIdAndEngineType_IdInAndDateBetween() {
 
-		given(journeyRequestRepository.findByDeparturePlace_DepartmentIdAndEngineType_IdsInAndDateBetweenAndStatus_Codes(
-				any(Long.class), any(Set.class), any(Instant.class), any(Instant.class),any(Set.class), any(String.class),
-				any(Pageable.class))).willReturn(null);
+		given(journeyRequestRepository
+				.findByDeparturePlace_DepartmentIdAndEngineType_IdsInAndDateBetweenAndStatus_CodesAndUsernameNoProposal(
+						any(Long.class), any(Set.class), any(Instant.class), any(Instant.class), any(Set.class),
+						any(String.class), any(String.class), any(Pageable.class))).willReturn(null);
 
 		return null;
 	}
@@ -772,9 +772,10 @@ public class JourneyRequestsPersistenceAdapterTests {
 	private Page<JourneyRequestSearchOutput> givenNotNullJourneyRequestsPageByDeparturePlace_RegionIdAndEngineType_IdInAndDateBetween() {
 		Page<JourneyRequestSearchOutput> result = createPageFromJourneyRequestSearchOutputList(
 				defaultJourneyRequestSearchOutputList());
-		given(journeyRequestRepository.findByDeparturePlace_DepartmentIdAndEngineType_IdsInAndDateBetweenAndStatus_Codes(
-				any(Long.class), any(Set.class), any(Instant.class), any(Instant.class),any(Set.class), any(String.class),
-				any(Pageable.class))).willReturn(result);
+		given(journeyRequestRepository
+				.findByDeparturePlace_DepartmentIdAndEngineType_IdsInAndDateBetweenAndStatus_CodesAndUsernameNoProposal(
+						any(Long.class), any(Set.class), any(Instant.class), any(Instant.class), any(Set.class),
+						any(String.class), any(String.class), any(Pageable.class))).willReturn(result);
 
 		return result;
 

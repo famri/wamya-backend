@@ -72,9 +72,9 @@ public class VehiculesServiceTests {
 		then(loadTransporterVehiculesPort).should(times(1)).loadTransporterVehicules(captor.capture(), eq("en_US"));
 
 		assertEquals(command.getTransporterUsername(), captor.getValue().getTransporterUsername());
-		assertEquals(command.getPageNumber(), captor.getValue().getPageNumber());
+	
 
-		assertEquals(command.getPageSize(), captor.getValue().getPageSize());
+	
 
 		assertEquals(command.getSortingCriterion().getField(), captor.getValue().getSortingCriterion().getField());
 

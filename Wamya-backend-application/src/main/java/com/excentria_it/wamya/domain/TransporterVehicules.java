@@ -13,15 +13,5 @@ import lombok.NoArgsConstructor;
 @Builder
 public class TransporterVehicules {
 
-	private int totalPages;
-
-	private long totalElements;
-
-	private int pageNumber;
-
-	private int pageSize;
-
-	private boolean hasNext;
-
 	private List<TransporterVehiculeDto> content;
 }

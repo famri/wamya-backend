@@ -15,10 +15,6 @@ public class LoadTransporterVehiculesCriteria {
 
 	private String transporterUsername;
 
-	private Integer pageNumber;
-
-	private Integer pageSize;
-
 	private SortCriterion sortingCriterion;
 
 }

@@ -22,10 +22,7 @@ public interface LoadVehiculesUseCase {
 	class LoadVehiculesCommand {
 		@NotNull
 		private String transporterUsername;
-		@NotNull
-		private Integer pageNumber;
-		@NotNull
-		private Integer pageSize;
+	
 
 		@Sort(fields = { "creation-date-time", "date-time" })
 		private SortCriterion sortingCriterion;

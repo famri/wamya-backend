@@ -1,16 +1,8 @@
 package com.excentria_it.wamya.test.data.common;
 
 import java.time.LocalDate;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Function;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 
 import com.excentria_it.wamya.adapter.persistence.entity.ConstructorJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.EngineTypeJpaEntity;
@@ -20,8 +12,8 @@ import com.excentria_it.wamya.adapter.persistence.entity.VehiculeJpaEntity.Vehic
 import com.excentria_it.wamya.common.SortCriterion;
 import com.excentria_it.wamya.domain.EngineTypeCode;
 import com.excentria_it.wamya.domain.LoadTransporterVehiculesCriteria;
-import com.excentria_it.wamya.domain.TransporterVehiculeOutput;
 import com.excentria_it.wamya.domain.LoadTransporterVehiculesCriteria.LoadTransporterVehiculesCriteriaBuilder;
+import com.excentria_it.wamya.domain.TransporterVehiculeOutput;
 
 public class VehiculeJpaEntityTestData {
 
@@ -101,11 +93,7 @@ public class VehiculeJpaEntityTestData {
 		}
 
 	};
-	
-	public static LoadTransporterVehiculesCriteriaBuilder defaultLoadTransporterVehiculesCriteriaBuilder() {
-		return LoadTransporterVehiculesCriteria.builder().transporterUsername(TestConstants.DEFAULT_EMAIL).pageNumber(1)
-				.pageSize(10).sortingCriterion(new SortCriterion("id", "asc"));
-	}
+
 	private static TransporterVehiculeOutput transporterVehiculeOutputWithTemporaryConstructorAndModelAndNoImage = new TransporterVehiculeOutput() {
 
 		@Override
@@ -151,6 +139,14 @@ public class VehiculeJpaEntityTestData {
 		}
 
 	};
+	
+	private static List<TransporterVehiculeOutput> defaultTransporterVehiculeOutputList = List
+			.of(defaultTransporterVehiculeOutput, transporterVehiculeOutputWithTemporaryConstructorAndModelAndNoImage);
+
+	public static LoadTransporterVehiculesCriteriaBuilder defaultLoadTransporterVehiculesCriteriaBuilder() {
+		return LoadTransporterVehiculesCriteria.builder().transporterUsername(TestConstants.DEFAULT_EMAIL)
+				.sortingCriterion(new SortCriterion("id", "asc"));
+	}
 
 	public static TransporterVehiculeOutput defaultTransporterVehiculeOutput() {
 		return defaultTransporterVehiculeOutput;
@@ -172,215 +168,4 @@ public class VehiculeJpaEntityTestData {
 		return defaultTransporterVehiculeOutputList;
 	}
 
-	private static List<TransporterVehiculeOutput> defaultTransporterVehiculeOutputList = List.of(
-			defaultTransporterVehiculeOutput(), transporterVehiculeOutputWithTemporaryConstructorAndModelAndNoImage());
-
-	private static Page<TransporterVehiculeOutput> defaultTransporterVehiculeOutputPage = new Page<TransporterVehiculeOutput>() {
-
-		@Override
-		public int getNumber() {
-
-			return 1;
-		}
-
-		@Override
-		public int getSize() {
-
-			return 25;
-		}
-
-		@Override
-		public int getNumberOfElements() {
-
-			return 2;
-		}
-
-		@Override
-		public List<TransporterVehiculeOutput> getContent() {
-
-			return defaultTransporterVehiculeOutputList();
-		}
-
-		@Override
-		public boolean hasContent() {
-
-			return true;
-		}
-
-		@Override
-		public Sort getSort() {
-
-			return Sort.by(Direction.ASC, "id");
-		}
-
-		@Override
-		public boolean isFirst() {
-
-			return true;
-		}
-
-		@Override
-		public boolean isLast() {
-
-			return true;
-		}
-
-		@Override
-		public boolean hasNext() {
-
-			return false;
-		}
-
-		@Override
-		public boolean hasPrevious() {
-
-			return false;
-		}
-
-		@Override
-		public Pageable nextPageable() {
-
-			return null;
-		}
-
-		@Override
-		public Pageable previousPageable() {
-
-			return null;
-		}
-
-		@Override
-		public Iterator<TransporterVehiculeOutput> iterator() {
-
-			return defaultTransporterVehiculeOutputList().iterator();
-		}
-
-		@Override
-		public int getTotalPages() {
-
-			return 1;
-		}
-
-		@Override
-		public long getTotalElements() {
-
-			return 2;
-		}
-
-		@Override
-		public <U> Page<U> map(Function<? super TransporterVehiculeOutput, ? extends U> converter) {
-
-			return null;
-		}
-
-	};
-
-	public static Page<TransporterVehiculeOutput> emptyTransporterVehiculeOutputPage() {
-		return emptyTransporterVehiculeOutputPage;
-	}
-
-	private static Page<TransporterVehiculeOutput> emptyTransporterVehiculeOutputPage = new Page<TransporterVehiculeOutput>() {
-
-		@Override
-		public int getNumber() {
-
-			return 1;
-		}
-
-		@Override
-		public int getSize() {
-
-			return 25;
-		}
-
-		@Override
-		public int getNumberOfElements() {
-
-			return 0;
-		}
-
-		@Override
-		public List<TransporterVehiculeOutput> getContent() {
-
-			return Collections.emptyList();
-		}
-
-		@Override
-		public boolean hasContent() {
-
-			return false;
-		}
-
-		@Override
-		public Sort getSort() {
-
-			return Sort.by(Direction.ASC, "id");
-		}
-
-		@Override
-		public boolean isFirst() {
-
-			return true;
-		}
-
-		@Override
-		public boolean isLast() {
-
-			return true;
-		}
-
-		@Override
-		public boolean hasNext() {
-
-			return false;
-		}
-
-		@Override
-		public boolean hasPrevious() {
-
-			return false;
-		}
-
-		@Override
-		public Pageable nextPageable() {
-
-			return null;
-		}
-
-		@Override
-		public Pageable previousPageable() {
-
-			return null;
-		}
-
-		@Override
-		public Iterator<TransporterVehiculeOutput> iterator() {
-
-			return Collections.<TransporterVehiculeOutput>emptyList().iterator();
-		}
-
-		@Override
-		public int getTotalPages() {
-
-			return 1;
-		}
-
-		@Override
-		public long getTotalElements() {
-
-			return 0;
-		}
-
-		@Override
-		public <U> Page<U> map(Function<? super TransporterVehiculeOutput, ? extends U> converter) {
-
-			return null;
-		}
-
-	};
-
-	public static Page<TransporterVehiculeOutput> defaultTransporterVehiculeOutputPage() {
-
-		return defaultTransporterVehiculeOutputPage;
-	}
 }

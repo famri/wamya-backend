@@ -34,8 +34,7 @@ public class LoadTransporterVehiculesController {
 	@GetMapping(path = "/me/vehicules")
 	@ResponseStatus(HttpStatus.OK)
 	public TransporterVehicules loadTransporterVehicules(
-			@RequestParam(name = "page", defaultValue = "0") Integer pageNumber,
-			@RequestParam(name = "size", defaultValue = "25") Integer pageSize,
+
 			@RequestParam(name = "sort") Optional<String> sort,
 			final @AuthenticationPrincipal JwtAuthenticationToken principal, Locale locale) {
 
@@ -44,7 +43,7 @@ public class LoadTransporterVehiculesController {
 		Locale supportedLocale = LocaleUtils.getSupporedLocale(locale);
 
 		LoadVehiculesCommand command = LoadVehiculesCommand.builder().transporterUsername(principal.getName())
-				.pageNumber(pageNumber).pageSize(pageSize).sortingCriterion(sortingCriterion).build();
+				.sortingCriterion(sortingCriterion).build();
 
 		return loadVehiculesUseCase.loadTransporterVehicules(command, supportedLocale.toString());
 
