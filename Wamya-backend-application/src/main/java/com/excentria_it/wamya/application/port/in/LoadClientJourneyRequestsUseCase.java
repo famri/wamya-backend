@@ -35,7 +35,7 @@ public interface LoadClientJourneyRequestsUseCase {
 		@Sort(fields = { "creation-date-time", "date-time" })
 		private SortCriterion sortingCriterion;
 
-		@Period(value = { "y1", "m6", "m3", "m1", "w1" })
+		@Period(value = { "w1", "m1", "lm1", "lm3" })
 		private PeriodCriterion periodCriterion;
 	}
 

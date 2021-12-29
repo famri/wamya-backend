@@ -1,15 +1,19 @@
 package com.excentria_it.wamya.adapter.persistence.repository;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.excentria_it.wamya.adapter.persistence.entity.JourneyProposalJpaEntity;
-import com.excentria_it.wamya.adapter.persistence.entity.JourneyProposalStatusJpaEntity.JourneyProposalStatusCode;
+import com.excentria_it.wamya.domain.JourneyProposalStatusCode;
 import com.excentria_it.wamya.domain.TransporterNotificationInfo;
 
 public interface JourneyProposalRepository extends JpaRepository<JourneyProposalJpaEntity, Long> {
@@ -27,4 +31,11 @@ public interface JourneyProposalRepository extends JpaRepository<JourneyProposal
 
 	@Query(value = "SELECT new com.excentria_it.wamya.domain.TransporterNotificationInfo(t.deviceRegistrationToken, VALUE(pr1).value, VALUE(pr2).value) FROM JourneyProposalJpaEntity p JOIN p.transporter t JOIN t.preferences pr1 JOIN t.preferences pr2 WHERE p.journeyRequest.id = ?1 AND KEY(pr1) = 'timezone' AND KEY(pr2) = 'locale'")
 	Set<TransporterNotificationInfo> loadTransportersNotificationInfo(Long journeyRequestId);
+
+	@Query(value = "SELECT p FROM JourneyProposalJpaEntity p JOIN p.transporter t JOIN p.journeyRequest jr JOIN p.status s JOIN s.localizations sl WHERE t.email = :email AND jr.dateTime >= :startDate AND jr.dateTime <= :endDate AND s.code IN :statusCodes AND KEY(sl) = :locale")
+	Page<JourneyProposalJpaEntity> findByTransporter_EmailAndJourneyDateTimeBetweenAndProposal_Status_Code(
+			@Param(value = "startDate") Instant startDate, @Param(value = "endDate") Instant endDate,
+			@Param(value = "email") String transporterUsername,
+			@Param(value = "statusCodes") Set<JourneyProposalStatusCode> statusCodes,
+			@Param(value = "locale") String locale, Pageable pagingSort);
 }

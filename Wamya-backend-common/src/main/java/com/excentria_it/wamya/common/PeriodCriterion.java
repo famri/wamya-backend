@@ -16,32 +16,42 @@ public class PeriodCriterion {
 	private ZonedDateTime higherEdge;
 
 	public enum PeriodValue {
-		Y1, M6, M3, M1, W1;
+		LM3, LM1, W1, M1;
 
-		public ZonedDateTime calculateLowerEdge(ZonedDateTime higherEdge) {
+		public ZonedDateTime[] calculateLowerAndHigherEdges(ZonedDateTime today) {
 
-			ZonedDateTime lowerEdge = null;
+			ZonedDateTime[] lowerAndHigherEdges = new ZonedDateTime[2];
+
 			switch (this) {
-			case Y1:
-				lowerEdge = higherEdge.minusYears(1);
+
+			case LM3:
+				lowerAndHigherEdges[0] = today.minusMonths(3);
+				lowerAndHigherEdges[1] = today;
+
 				break;
-			case M6:
-				lowerEdge = higherEdge.minusMonths(6);
-				break;
-			case M3:
-				lowerEdge = higherEdge.minusMonths(3);
-				break;
-			case M1:
-				lowerEdge = higherEdge.minusMonths(1);
+			case LM1:
+
+				lowerAndHigherEdges[0] = today.minusMonths(1);
+				lowerAndHigherEdges[1] = today;
+
 				break;
 
 			case W1:
-				lowerEdge = higherEdge.minusWeeks(1);
+
+				lowerAndHigherEdges[0] = today;
+				lowerAndHigherEdges[1] = today.plusWeeks(1);
+
 				break;
+			case M1:
+				lowerAndHigherEdges[0] = today;
+				lowerAndHigherEdges[1] = today.plusMonths(1);
+				break;
+
 			default:
 				break;
 			}
-			return lowerEdge;
+
+			return lowerAndHigherEdges;
 		}
 	}
 }

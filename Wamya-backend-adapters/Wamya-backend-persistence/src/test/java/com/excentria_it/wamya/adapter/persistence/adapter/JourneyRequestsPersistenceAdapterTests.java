@@ -444,13 +444,11 @@ public class JourneyRequestsPersistenceAdapterTests {
 	@Test
 	void testConvertToSort() {
 
-		Sort sort1 = journeyRequestsPersistenceAdapter.convertToSort(new SortCriterion("min-price", "desc"));
+	
 		Sort sort2 = journeyRequestsPersistenceAdapter.convertToSort(new SortCriterion("date-time", "asc"));
 		Sort sort3 = journeyRequestsPersistenceAdapter.convertToSort(new SortCriterion("distance", "asc"));
 
-		assertEquals(sort1.get().toArray().length, 1);
-		assertTrue(sort1.getOrderFor("(minPrice)") != null
-				&& sort1.getOrderFor("(minPrice)").getDirection().isDescending());
+
 
 		assertEquals(sort2.get().toArray().length, 1);
 		assertTrue(sort2.getOrderFor("dateTime") != null && sort2.getOrderFor("dateTime").getDirection().isAscending());

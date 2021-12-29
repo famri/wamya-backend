@@ -76,7 +76,8 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 						.antMatchers(HttpMethod.GET, "/users/me/vehicules/**").hasAuthority("SCOPE_vehicule:read")
 						.antMatchers(HttpMethod.GET, "/users/me/journey-requests/**")
 						.hasAuthority("SCOPE_journey:write")
-
+						.antMatchers(HttpMethod.GET, "/users/me/proposals/**")
+						.hasAuthority("SCOPE_offer:write")
 						.antMatchers(HttpMethod.POST, "/validation-codes/sms/send/**")
 						.hasAuthority("SCOPE_profile:write")
 						.antMatchers(HttpMethod.POST, "/validation-codes/sms/validate/**")

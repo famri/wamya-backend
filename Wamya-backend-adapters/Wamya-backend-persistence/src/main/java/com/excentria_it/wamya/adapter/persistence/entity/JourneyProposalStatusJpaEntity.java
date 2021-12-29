@@ -16,6 +16,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import com.excentria_it.wamya.common.annotation.Generated;
+import com.excentria_it.wamya.domain.JourneyProposalStatusCode;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -76,10 +77,6 @@ public class JourneyProposalStatusJpaEntity {
 
 	public Map<String, LocalizedJourneyProposalStatusJpaEntity> getLocalizations() {
 		return localizations;
-	}
-
-	public enum JourneyProposalStatusCode {
-		SUBMITTED, CANCELED, REJECTED, ACCEPTED;
 	}
 
 }

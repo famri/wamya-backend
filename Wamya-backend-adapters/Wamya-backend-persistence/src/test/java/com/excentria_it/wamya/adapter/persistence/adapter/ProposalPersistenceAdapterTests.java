@@ -11,9 +11,14 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.*;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
@@ -21,11 +26,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import com.excentria_it.wamya.adapter.persistence.entity.JourneyProposalJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.JourneyProposalStatusJpaEntity;
-import com.excentria_it.wamya.adapter.persistence.entity.JourneyProposalStatusJpaEntity.JourneyProposalStatusCode;
 import com.excentria_it.wamya.adapter.persistence.entity.JourneyRequestJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.TransporterJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.VehiculeJpaEntity;
@@ -35,10 +41,16 @@ import com.excentria_it.wamya.adapter.persistence.repository.JourneyProposalStat
 import com.excentria_it.wamya.adapter.persistence.repository.JourneyRequestRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.TransporterRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.VehiculeRepository;
+import com.excentria_it.wamya.common.PeriodCriterion;
+import com.excentria_it.wamya.common.PeriodCriterion.PeriodValue;
+import com.excentria_it.wamya.common.SortCriterion;
 import com.excentria_it.wamya.common.domain.StatusCode;
 import com.excentria_it.wamya.domain.JourneyProposalDto;
+import com.excentria_it.wamya.domain.JourneyProposalStatusCode;
 import com.excentria_it.wamya.domain.JourneyRequestProposals;
 import com.excentria_it.wamya.domain.LoadJourneyProposalsCriteria;
+import com.excentria_it.wamya.domain.LoadTransporterProposalsCriteria;
+import com.excentria_it.wamya.domain.TransporterProposalsOutput;
 import com.excentria_it.wamya.test.data.common.JourneyProposalJpaEntityTestData;
 import com.excentria_it.wamya.test.data.common.JourneyProposalTestData;
 import com.excentria_it.wamya.test.data.common.TestConstants;
@@ -140,7 +152,7 @@ public class ProposalPersistenceAdapterTests {
 		given(journeyProposalRepository.findByJourneyRequest_Id(any(Long.class), any(Sort.class))).willReturn(list);
 
 		JourneyProposalDto journeyProposalDto = JourneyProposalTestData.defaultJourneyProposalDto();
-		given(journeyProposalMapper.mapToDomainEntity(any(JourneyProposalJpaEntity.class), any(String.class)))
+		given(journeyProposalMapper.mapToJourneyProposalDto(any(JourneyProposalJpaEntity.class), any(String.class)))
 				.willReturn(journeyProposalDto);
 
 		LoadJourneyProposalsCriteria criteria = JourneyProposalTestData.defaultLoadJourneyProposalsCriteriaBuilder()
@@ -168,7 +180,7 @@ public class ProposalPersistenceAdapterTests {
 				any(Sort.class))).willReturn(list);
 
 		JourneyProposalDto journeyProposalDto = JourneyProposalTestData.defaultJourneyProposalDto();
-		given(journeyProposalMapper.mapToDomainEntity(any(JourneyProposalJpaEntity.class), any(String.class)))
+		given(journeyProposalMapper.mapToJourneyProposalDto(any(JourneyProposalJpaEntity.class), any(String.class)))
 				.willReturn(journeyProposalDto);
 
 		LoadJourneyProposalsCriteria criteria = JourneyProposalTestData.defaultLoadJourneyProposalsCriteriaBuilder()
@@ -257,7 +269,7 @@ public class ProposalPersistenceAdapterTests {
 				.willReturn(Optional.of(journeyProposalJpaEntity));
 
 		JourneyProposalDto journeyProposalDto = defaultJourneyProposalDto();
-		given(journeyProposalMapper.mapToDomainEntity(journeyProposalJpaEntity, "en_US"))
+		given(journeyProposalMapper.mapToJourneyProposalDto(journeyProposalJpaEntity, "en_US"))
 				.willReturn(journeyProposalDto);
 		// when
 		Optional<JourneyProposalDto> journeyProposalDtoOptional = proposalPersistenceAdapter
@@ -398,6 +410,43 @@ public class ProposalPersistenceAdapterTests {
 	void testLoadTransporterNotificationInfo() {
 		proposalPersistenceAdapter.loadTransportersNotificationInfo(1L);
 		then(journeyProposalRepository).should(times(1)).loadTransportersNotificationInfo(1L);
+	}
+
+	@Test
+	void testLoadTransporterProposals() {
+		// given
+
+		ZonedDateTime[] edges = PeriodValue.M1
+				.calculateLowerAndHigherEdges(Instant.now().atZone(ZoneId.of("Africa/Tunis")));
+
+		LoadTransporterProposalsCriteria criteria = LoadTransporterProposalsCriteria.builder()
+				.transporterUsername(TestConstants.DEFAULT_EMAIL).pageNumber(0).pageSize(25)
+				.statusCodes(Arrays.stream(JourneyProposalStatusCode.values()).collect(Collectors.toSet()))
+				.sortingCriterion(new SortCriterion("date-time", "desc"))
+				.periodCriterion(new PeriodCriterion("m1", edges[0], edges[1])).build();
+		Page<JourneyProposalJpaEntity> jpPage = defaultJourneyProposalJpaEntityPage();
+
+		given(journeyProposalRepository.findByTransporter_EmailAndJourneyDateTimeBetweenAndProposal_Status_Code(
+				any(Instant.class), any(Instant.class), any(String.class), any(Set.class), any(String.class),
+				any(Pageable.class))).willReturn(jpPage);
+
+		given(journeyProposalMapper.mapToTransporterProposalOutput(jpPage.getContent().get(0), "en_US"))
+				.willReturn(defaultTransporterProposalOutputList().get(0));
+		given(journeyProposalMapper.mapToTransporterProposalOutput(jpPage.getContent().get(1), "en_US"))
+				.willReturn(defaultTransporterProposalOutputList().get(1));
+
+		// When
+		TransporterProposalsOutput tpo = proposalPersistenceAdapter.loadTransporterProposals(criteria, "en_US");
+		// then
+
+		assertEquals(jpPage.getTotalPages(), tpo.getTotalPages());
+		assertEquals(jpPage.getTotalElements(), tpo.getTotalElements());
+		assertEquals(jpPage.getNumber(), tpo.getPageNumber());
+		assertEquals(jpPage.getSize(), tpo.getPageSize());
+		assertEquals(tpo.getContent().size(), 2);
+		assertEquals(tpo.getContent().get(0), defaultTransporterProposalOutputList().get(0));
+		assertEquals(tpo.getContent().get(1), defaultTransporterProposalOutputList().get(1));
+
 	}
 
 }

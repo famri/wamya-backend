@@ -14,7 +14,6 @@ import com.excentria_it.wamya.adapter.persistence.entity.DepartmentJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.EngineTypeJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.JourneyProposalJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.JourneyProposalStatusJpaEntity;
-import com.excentria_it.wamya.adapter.persistence.entity.JourneyProposalStatusJpaEntity.JourneyProposalStatusCode;
 import com.excentria_it.wamya.adapter.persistence.entity.JourneyRequestJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.JourneyRequestStatusJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.JourneyRequestStatusJpaEntity.JourneyRequestStatusJpaEntityBuilder;
@@ -25,6 +24,8 @@ import com.excentria_it.wamya.adapter.persistence.entity.LocalizedPlaceId;
 import com.excentria_it.wamya.adapter.persistence.entity.LocalizedPlaceJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.PlaceId;
 import com.excentria_it.wamya.adapter.persistence.entity.PlaceJpaEntity;
+import com.excentria_it.wamya.domain.EngineTypeCode;
+import com.excentria_it.wamya.domain.JourneyProposalStatusCode;
 import com.excentria_it.wamya.domain.JourneyRequestStatusCode;
 import com.excentria_it.wamya.domain.PlaceType;
 
@@ -47,7 +48,7 @@ public class JourneyRequestJpaTestData {
 		ltfr.setId(1L);
 		en.setLocalizedId(ltfr);
 
-		return EngineTypeJpaEntity.builder().id(1L).localizations(Map.of("en_US", en, "fr_FR", fr)).build();
+		return EngineTypeJpaEntity.builder().id(1L).localizations(Map.of("en_US", en, "fr_FR", fr)).code(EngineTypeCode.UTILITY).build();
 	}
 
 	public static PlaceJpaEntity defaultDeparturePlaceJpaEntity() {
@@ -93,15 +94,13 @@ public class JourneyRequestJpaTestData {
 	public static JourneyRequestJpaEntity defaultExistentJourneyRequestJpaEntity() {
 		Map<String, LocalizedJourneyRequestStatusJpaEntity> localizations = new HashMap<>();
 		LocalizedJourneyRequestStatusJpaEntity ljrsFR = new LocalizedJourneyRequestStatusJpaEntity(
-				new LocalizedId(1L, "fr_FR"), null, "cr��");
+				new LocalizedId(1L, "fr_FR"), null, "créé");
 		LocalizedJourneyRequestStatusJpaEntity ljrsEN = new LocalizedJourneyRequestStatusJpaEntity(
 				new LocalizedId(1L, "en_US"), null, "opened");
 		localizations.put("fr_FR", ljrsFR);
 		localizations.put("en_US", ljrsEN);
 		JourneyRequestStatusJpaEntity status = new JourneyRequestStatusJpaEntity(1L, JourneyRequestStatusCode.OPENED,
 				"Opened", localizations);
-
-	
 
 		return JourneyRequestJpaEntity.builder().id(1L).departurePlace(defaultDeparturePlaceJpaEntity())
 				.arrivalPlace(defaultArrivalPlaceJpaEntity()).engineType(defaultEngineTypeJpaEntity())

@@ -109,7 +109,7 @@ public class LoadClientJourneyRequestsControllerTests {
 				.perform(get("/users/me/journey-requests").param("period", "not_valid_period").param("page", "0")
 						.param("size", "25").param("sort", "not_valid_sort_field,desc"))
 				.andExpect(responseBody().containsApiErrors(List.of(
-						"periodCriterion: Wrong period: 'PeriodCriterion(value=not_valid_period, lowerEdge=null, higherEdge=null)'. Valid period values are: [y1, m6, m3, m1, w1].",
+						"periodCriterion: Wrong period: 'PeriodCriterion(value=not_valid_period, lowerEdge=null, higherEdge=null)'. Valid period values are: [w1, m1, lm1, lm3].",
 						"sortingCriterion: Wrong sort criterion: 'SortCriterion(field=not_valid_sort_field, direction=desc)'. Valid sort fields are:[creation-date-time, date-time]. Valid sort directions are:[asc, desc].")))
 				.andExpect(status().isBadRequest());
 

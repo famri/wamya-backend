@@ -253,9 +253,7 @@ public class JourneyRequestRepositoryTests {
 						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()),
 						searchStartAndEndDates.get(0).toInstant(), searchStartAndEndDates.get(1).toInstant(),
 						Set.of(JourneyRequestStatusCode.OPENED), TestConstants.DEFAULT_EMAIL, "en_US",
-						PageRequest.of(0, 1000,
-								// Sort.by(List.of(new Order(Direction.DESC, "(minPrice)")))
-								JpaSort.unsafe(Direction.DESC, "(minPrice)")));
+						PageRequest.of(0, 1000, Sort.by(List.of(new Order(Direction.DESC, "dateTime")))));
 
 		// Then
 		assertNotNull(journeyRequests);
@@ -338,8 +336,8 @@ public class JourneyRequestRepositoryTests {
 						searchStartAndEndDates.get(0).toInstant(), searchStartAndEndDates.get(1).toInstant(),
 						Set.of(JourneyRequestStatusCode.OPENED), TestConstants.DEFAULT_EMAIL, "en_US",
 						PageRequest.of(1, 1,
-								// Sort.by(List.of(new Order(Direction.DESC, "(minPrice)")))
-								JpaSort.unsafe(Direction.ASC, "(minPrice)")));
+								Sort.by(List.of(new Order(Direction.DESC, "dateTime")))
+								));
 
 		// Then
 		assertNotNull(journeyRequests);
@@ -409,9 +407,7 @@ public class JourneyRequestRepositoryTests {
 						Set.of(engineTypes.get(0).getId(), engineTypes.get(1).getId()),
 						searchStartAndEndDates.get(0).toInstant(), searchStartAndEndDates.get(1).toInstant(),
 						Set.of(JourneyRequestStatusCode.OPENED), TestConstants.DEFAULT_EMAIL, "en_US",
-						PageRequest.of(1, 1,
-								// Sort.by(List.of(new Order(Direction.DESC, "(minPrice)")))
-								JpaSort.unsafe(Direction.ASC, "(minPrice)")));
+						PageRequest.of(1, 1, Sort.by(List.of(new Order(Direction.DESC, "dateTime")))));
 
 		// Then
 		assertNotNull(journeyRequests);

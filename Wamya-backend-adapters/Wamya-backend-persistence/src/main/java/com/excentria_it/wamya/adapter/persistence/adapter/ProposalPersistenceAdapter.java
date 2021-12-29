@@ -6,12 +6,14 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 
 import com.excentria_it.wamya.adapter.persistence.entity.JourneyProposalJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.JourneyProposalStatusJpaEntity;
-import com.excentria_it.wamya.adapter.persistence.entity.JourneyProposalStatusJpaEntity.JourneyProposalStatusCode;
 import com.excentria_it.wamya.adapter.persistence.entity.JourneyRequestJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.TransporterJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.VehiculeJpaEntity;
@@ -23,6 +25,7 @@ import com.excentria_it.wamya.adapter.persistence.repository.TransporterReposito
 import com.excentria_it.wamya.adapter.persistence.repository.VehiculeRepository;
 import com.excentria_it.wamya.application.port.out.AcceptProposalPort;
 import com.excentria_it.wamya.application.port.out.LoadProposalsPort;
+import com.excentria_it.wamya.application.port.out.LoadTransporterProposalsPort;
 import com.excentria_it.wamya.application.port.out.MakeProposalPort;
 import com.excentria_it.wamya.application.port.out.RejectProposalPort;
 import com.excentria_it.wamya.common.SortCriterion;
@@ -30,17 +33,20 @@ import com.excentria_it.wamya.common.annotation.PersistenceAdapter;
 import com.excentria_it.wamya.common.domain.StatusCode;
 import com.excentria_it.wamya.common.utils.ParameterUtils;
 import com.excentria_it.wamya.domain.JourneyProposalDto;
+import com.excentria_it.wamya.domain.JourneyProposalStatusCode;
 import com.excentria_it.wamya.domain.JourneyRequestProposals;
 import com.excentria_it.wamya.domain.LoadJourneyProposalsCriteria;
+import com.excentria_it.wamya.domain.LoadTransporterProposalsCriteria;
 import com.excentria_it.wamya.domain.MakeProposalDto;
 import com.excentria_it.wamya.domain.TransporterNotificationInfo;
+import com.excentria_it.wamya.domain.TransporterProposalsOutput;
 
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @PersistenceAdapter
-public class ProposalPersistenceAdapter
-		implements MakeProposalPort, LoadProposalsPort, AcceptProposalPort, RejectProposalPort {
+public class ProposalPersistenceAdapter implements MakeProposalPort, LoadProposalsPort, AcceptProposalPort,
+		RejectProposalPort, LoadTransporterProposalsPort {
 
 	private final JourneyProposalRepository journeyProposalRepository;
 
@@ -112,7 +118,7 @@ public class ProposalPersistenceAdapter
 		}
 
 		List<JourneyProposalDto> journeyProposalDtoList = list.stream()
-				.map(p -> journeyProposalMapper.mapToDomainEntity(p, locale)).collect(Collectors.toList());
+				.map(p -> journeyProposalMapper.mapToJourneyProposalDto(p, locale)).collect(Collectors.toList());
 
 		return new JourneyRequestProposals(list.size(), journeyProposalDtoList);
 
@@ -128,7 +134,7 @@ public class ProposalPersistenceAdapter
 		if (journeyProposalJpaEntity.isEmpty())
 			return Optional.empty();
 
-		return Optional.of(journeyProposalMapper.mapToDomainEntity(journeyProposalJpaEntity.get(), locale));
+		return Optional.of(journeyProposalMapper.mapToJourneyProposalDto(journeyProposalJpaEntity.get(), locale));
 	}
 
 	@Override
@@ -204,6 +210,29 @@ public class ProposalPersistenceAdapter
 	@Override
 	public Set<TransporterNotificationInfo> loadTransportersNotificationInfo(Long journeyRequestId) {
 		return journeyProposalRepository.loadTransportersNotificationInfo(journeyRequestId);
+
+	}
+
+	@Override
+	public TransporterProposalsOutput loadTransporterProposals(LoadTransporterProposalsCriteria criteria, String locale) {
+		Sort sort = convertToSort(criteria.getSortingCriterion());
+
+		Pageable pagingSort = PageRequest.of(criteria.getPageNumber(), criteria.getPageSize(), sort);
+
+		Page<JourneyProposalJpaEntity> transporterProposalsPage = journeyProposalRepository
+				.findByTransporter_EmailAndJourneyDateTimeBetweenAndProposal_Status_Code(
+						criteria.getPeriodCriterion().getLowerEdge().toInstant(),
+						criteria.getPeriodCriterion().getHigherEdge().toInstant(), criteria.getTransporterUsername(),
+						criteria.getStatusCodes(), locale, pagingSort);
+
+		return TransporterProposalsOutput.builder().totalPages(transporterProposalsPage.getTotalPages())
+				.totalElements(transporterProposalsPage.getTotalElements())
+				.pageNumber(transporterProposalsPage.getNumber()).pageSize(transporterProposalsPage.getSize())
+				.hasNext(transporterProposalsPage.hasNext())
+				.content(transporterProposalsPage.getContent().stream()
+						.map(tp -> journeyProposalMapper.mapToTransporterProposalOutput(tp, locale))
+						.collect(Collectors.toList()))
+				.build();
 
 	}
 }

@@ -59,11 +59,11 @@ public class ParameterUtilsTests {
 	void testParameterToPeriodCriterionWithEmptyPeriod() {
 
 		ZonedDateTime ldt = ZonedDateTime.now(ZoneOffset.UTC);
-		ZonedDateTime expectedLowerEdge = ldt.minusYears(1);
+		ZonedDateTime expectedLowerEdge = ldt.minusMonths(1);
 
-		PeriodCriterion pc = ParameterUtils.parameterToPeriodCriterion(Optional.empty(), "y1");
+		PeriodCriterion pc = ParameterUtils.parameterToPeriodCriterion(Optional.empty(), "lm1");
 
-		assertEquals("Y1", pc.getValue());
+		assertEquals("LM1", pc.getValue());
 
 		assertEquals(ldt.getYear(), pc.getHigherEdge().getYear());
 		assertEquals(ldt.getMonth(), pc.getHigherEdge().getMonth());
@@ -122,59 +122,20 @@ public class ParameterUtilsTests {
 
 	}
 
-	@Test
-	void testParameterToPeriodCriterionWith1Year() {
-		ZonedDateTime ldt = ZonedDateTime.now(ZoneOffset.UTC);
-		ZonedDateTime expectedLowerEdge = ldt.minusYears(1);
 
-		PeriodCriterion pc = ParameterUtils.parameterToPeriodCriterion(Optional.of("y1"), "y1");
 
-		assertEquals("Y1", pc.getValue());
 
-		assertEquals(ldt.getYear(), pc.getHigherEdge().getYear());
-		assertEquals(ldt.getMonth(), pc.getHigherEdge().getMonth());
-		assertEquals(ldt.getDayOfMonth(), pc.getHigherEdge().getDayOfMonth());
-		assertTrue(ldt.isBefore(pc.getHigherEdge()) || ldt.equals(pc.getHigherEdge()));
-
-		assertEquals(expectedLowerEdge.getYear(), pc.getLowerEdge().getYear());
-		assertEquals(expectedLowerEdge.getMonth(), pc.getLowerEdge().getMonth());
-		assertEquals(expectedLowerEdge.getDayOfMonth(), pc.getLowerEdge().getDayOfMonth());
-		assertTrue(expectedLowerEdge.isBefore(pc.getLowerEdge()) || expectedLowerEdge.equals(pc.getLowerEdge()));
-
-	}
 
 	@Test
-	void testParameterToPeriodCriterionWith6Months() {
-		ZonedDateTime ldt = ZonedDateTime.now(ZoneOffset.UTC);
-
-		ZonedDateTime expectedLowerEdge = ldt.minusMonths(6);
-
-		PeriodCriterion pc = ParameterUtils.parameterToPeriodCriterion(Optional.of("m6"), "m6");
-
-		assertEquals("M6", pc.getValue());
-
-		assertEquals(ldt.getYear(), pc.getHigherEdge().getYear());
-		assertEquals(ldt.getMonth(), pc.getHigherEdge().getMonth());
-		assertEquals(ldt.getDayOfMonth(), pc.getHigherEdge().getDayOfMonth());
-		assertTrue(ldt.isBefore(pc.getHigherEdge()) || ldt.equals(pc.getHigherEdge()));
-
-		assertEquals(expectedLowerEdge.getYear(), pc.getLowerEdge().getYear());
-		assertEquals(expectedLowerEdge.getMonth(), pc.getLowerEdge().getMonth());
-		assertEquals(expectedLowerEdge.getDayOfMonth(), pc.getLowerEdge().getDayOfMonth());
-		assertTrue(expectedLowerEdge.isBefore(pc.getLowerEdge()) || expectedLowerEdge.equals(pc.getLowerEdge()));
-
-	}
-
-	@Test
-	void testParameterToPeriodCriterionWith3Months() {
+	void testParameterToPeriodCriterionWithLast3Months() {
 
 		ZonedDateTime ldt = ZonedDateTime.now(ZoneOffset.UTC);
 
 		ZonedDateTime expectedLowerEdge = ldt.minusMonths(3);
 
-		PeriodCriterion pc = ParameterUtils.parameterToPeriodCriterion(Optional.of("m3"), "m3");
+		PeriodCriterion pc = ParameterUtils.parameterToPeriodCriterion(Optional.of("lm3"), "lm3");
 
-		assertEquals("M3", pc.getValue());
+		assertEquals("LM3", pc.getValue());
 
 		assertEquals(ldt.getYear(), pc.getHigherEdge().getYear());
 		assertEquals(ldt.getMonth(), pc.getHigherEdge().getMonth());
@@ -189,14 +150,14 @@ public class ParameterUtilsTests {
 	}
 
 	@Test
-	void testParameterToPeriodCriterionWith1Month() {
+	void testParameterToPeriodCriterionWithLast1Month() {
 		ZonedDateTime ldt = ZonedDateTime.now(ZoneOffset.UTC);
 
 		ZonedDateTime expectedLowerEdge = ldt.minusMonths(1);
 
-		PeriodCriterion pc = ParameterUtils.parameterToPeriodCriterion(Optional.of("m1"), "m1");
+		PeriodCriterion pc = ParameterUtils.parameterToPeriodCriterion(Optional.of("lm1"), "lm1");
 
-		assertEquals("M1", pc.getValue());
+		assertEquals("LM1", pc.getValue());
 
 		assertEquals(ldt.getYear(), pc.getHigherEdge().getYear());
 		assertEquals(ldt.getMonth(), pc.getHigherEdge().getMonth());
@@ -214,24 +175,46 @@ public class ParameterUtilsTests {
 	void testParameterToPeriodCriterionWith1Week() {
 		ZonedDateTime ldt = ZonedDateTime.now(ZoneOffset.UTC);
 
-		ZonedDateTime expectedLowerEdge = ldt.minusWeeks(1);
+		ZonedDateTime expectedHigherEdge = ldt.plusWeeks(1);
 
 		PeriodCriterion pc = ParameterUtils.parameterToPeriodCriterion(Optional.of("w1"), "w1");
 
 		assertEquals("W1", pc.getValue());
 
-		assertEquals(ldt.getYear(), pc.getHigherEdge().getYear());
-		assertEquals(ldt.getMonth(), pc.getHigherEdge().getMonth());
-		assertEquals(ldt.getDayOfMonth(), pc.getHigherEdge().getDayOfMonth());
+		assertEquals(ldt.getYear(), pc.getLowerEdge().getYear());
+		assertEquals(ldt.getMonth(), pc.getLowerEdge().getMonth());
+		assertEquals(ldt.getDayOfMonth(), pc.getLowerEdge().getDayOfMonth());
 		assertTrue(ldt.isBefore(pc.getHigherEdge()) || ldt.equals(pc.getHigherEdge()));
 
-		assertEquals(expectedLowerEdge.getYear(), pc.getLowerEdge().getYear());
-		assertEquals(expectedLowerEdge.getMonth(), pc.getLowerEdge().getMonth());
-		assertEquals(expectedLowerEdge.getDayOfMonth(), pc.getLowerEdge().getDayOfMonth());
-		assertTrue(expectedLowerEdge.isBefore(pc.getLowerEdge()) || expectedLowerEdge.equals(pc.getLowerEdge()));
+		assertEquals(expectedHigherEdge.getYear(), pc.getHigherEdge().getYear());
+		assertEquals(expectedHigherEdge.getMonth(), pc.getHigherEdge().getMonth());
+		assertEquals(expectedHigherEdge.getDayOfMonth(), pc.getHigherEdge().getDayOfMonth());
+		assertTrue(expectedHigherEdge.isAfter(pc.getLowerEdge()) || expectedHigherEdge.equals(pc.getHigherEdge()));
 
 	}
 
+	@Test
+	void testParameterToPeriodCriterionWith1Month() {
+		ZonedDateTime ldt = ZonedDateTime.now(ZoneOffset.UTC);
+
+		ZonedDateTime expectedHigherEdge = ldt.plusMonths(1);
+
+		PeriodCriterion pc = ParameterUtils.parameterToPeriodCriterion(Optional.of("m1"), "m1");
+
+		assertEquals("M1", pc.getValue());
+
+		assertEquals(ldt.getYear(), pc.getLowerEdge().getYear());
+		assertEquals(ldt.getMonth(), pc.getLowerEdge().getMonth());
+		assertEquals(ldt.getDayOfMonth(), pc.getLowerEdge().getDayOfMonth());
+		assertTrue(ldt.isBefore(pc.getHigherEdge()) || ldt.equals(pc.getHigherEdge()));
+
+		assertEquals(expectedHigherEdge.getYear(), pc.getHigherEdge().getYear());
+		assertEquals(expectedHigherEdge.getMonth(), pc.getHigherEdge().getMonth());
+		assertEquals(expectedHigherEdge.getDayOfMonth(), pc.getHigherEdge().getDayOfMonth());
+		assertTrue(expectedHigherEdge.isAfter(pc.getLowerEdge()) || expectedHigherEdge.equals(pc.getHigherEdge()));
+
+	}
+	
 	@Test
 	void testKebabToCamelCase() {
 		String str1 = "-minprice";

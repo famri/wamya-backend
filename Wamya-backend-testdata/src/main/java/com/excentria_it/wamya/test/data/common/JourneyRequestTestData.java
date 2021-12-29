@@ -5,6 +5,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -34,6 +35,7 @@ import com.excentria_it.wamya.domain.JourneyRequestSearchDto.Client;
 import com.excentria_it.wamya.domain.JourneyRequestSearchDto.EngineType;
 import com.excentria_it.wamya.domain.JourneyRequestSearchDto.Place;
 import com.excentria_it.wamya.domain.JourneyRequestSearchOutput;
+import com.excentria_it.wamya.domain.JourneyRequestStatusCode;
 import com.excentria_it.wamya.domain.JourneyRequestsSearchOutputResult;
 import com.excentria_it.wamya.domain.JourneyRequestsSearchResult;
 import com.excentria_it.wamya.domain.LoadClientJourneyRequestsCriteria;
@@ -227,8 +229,6 @@ public class JourneyRequestTestData {
 					return new ClientDto(1L, "ClientName1", 1L, "SOME_IMAGE_HASH_1");
 				}
 
-	
-
 				@Override
 				public Integer getHours() {
 
@@ -297,8 +297,6 @@ public class JourneyRequestTestData {
 					return new ClientDto(1L, "ClientName2", 2L, "SOME_IMAGE_HASH_2");
 				}
 
-
-
 				@Override
 				public Integer getHours() {
 
@@ -325,8 +323,9 @@ public class JourneyRequestTestData {
 		ZonedDateTime endDate = startDate.plusDays(1);
 		return SearchJourneyRequestsCommand.builder().departurePlaceDepartmentId(1L)
 				.arrivalPlaceDepartmentIds(Set.of(2L, 3L)).startDateTime(startDate.toLocalDateTime())
+				.statusCodes(Arrays.stream(JourneyRequestStatusCode.values()).collect(Collectors.toSet()))
 				.endDateTime(endDate.toLocalDateTime()).engineTypes(Set.of(1L, 2L)).pageNumber(0).pageSize(2)
-				.sortingCriterion(new SortCriterion("min-price", "desc"));
+				.sortingCriterion(new SortCriterion("date-time", "desc"));
 
 	}
 
@@ -336,7 +335,8 @@ public class JourneyRequestTestData {
 		return SearchJourneyRequestsInput.builder().departurePlaceDepartmentId(1L)
 				.arrivalPlaceDepartmentIds(Set.of(2L, 3L)).startDateTime(startDate.toInstant())
 				.endDateTime(endDate.toInstant()).engineTypes(Set.of(1L, 2L)).pageNumber(0).pageSize(2)
-				.sortingCriterion(new SortCriterion("min-price", "desc")).locale("en_US");
+				.username(TestConstants.DEFAULT_EMAIL).statusCodes(Set.of(JourneyRequestStatusCode.OPENED))
+				.sortingCriterion(new SortCriterion("date-time", "desc")).locale("en_US");
 
 	}
 
@@ -348,16 +348,18 @@ public class JourneyRequestTestData {
 				.arrivalPlaceDepartmentIds(Set.of(SearchJourneyRequestsCommand.ANY_ARRIVAL_DEPARTMENT))
 				.startDateTime(startDate.toLocalDateTime()).endDateTime(endDate.toLocalDateTime())
 				.engineTypes(Set.of(1L, 2L)).pageNumber(0).pageSize(2)
-				.sortingCriterion(new SortCriterion("min-price", "desc"));
+				.sortingCriterion(new SortCriterion("date-time", "desc"));
 
 	}
 
 	public static CreateJourneyRequestCommandBuilder defaultCreateJourneyRequestCommandBuilder() {
 
-		return CreateJourneyRequestCommand.builder().departurePlaceId(1L).departurePlaceType(PlaceType.LOCALITY.name())
+		return CreateJourneyRequestCommand.builder().departurePlaceId(1L)
+				.departurePlaceType(PlaceType.LOCALITY.name().toLowerCase())
 
-				.arrivalPlaceId(2L).arrivalPlaceType(PlaceType.LOCALITY.name()).dateTime(startDate.toLocalDateTime())
-				.engineTypeId(1L).workers(2).description("Need a transporter URGENT!!!");
+				.arrivalPlaceId(2L).arrivalPlaceType(PlaceType.LOCALITY.name().toLowerCase())
+				.dateTime(startDate.toLocalDateTime()).engineTypeId(1L).workers(2)
+				.description("Need a transporter URGENT!!!");
 
 	}
 
@@ -395,9 +397,10 @@ public class JourneyRequestTestData {
 
 	public static LoadClientJourneyRequestsCriteriaBuilder defaultLoadClientJourneyRequestsCriteriaBuilder() {
 		ZonedDateTime now = ZonedDateTime.now(ZoneOffset.UTC);
+		ZonedDateTime[] edges = PeriodValue.LM1.calculateLowerAndHigherEdges(now);
 		return LoadClientJourneyRequestsCriteria.builder().clientUsername(TestConstants.DEFAULT_EMAIL).locale("en_US")
 				.pageNumber(0).pageSize(25).sortingCriterion(new SortCriterion("creation-date-time", "desc"))
-				.periodCriterion(new PeriodCriterion("m1", PeriodValue.M1.calculateLowerEdge(now), now));
+				.periodCriterion(new PeriodCriterion("lm1", edges[0], edges[1]));
 
 	}
 
@@ -413,9 +416,11 @@ public class JourneyRequestTestData {
 	public static LoadJourneyRequestsCommandBuilder defaultLoadJourneyRequestsCommandBuilder() {
 
 		ZonedDateTime ldt = ZonedDateTime.now(ZoneOffset.UTC);
+		ZonedDateTime[] edges = PeriodValue.M1.calculateLowerAndHigherEdges(ldt);
+
 		return LoadJourneyRequestsCommand.builder().clientUsername(TestConstants.DEFAULT_EMAIL).pageNumber(0)
 				.pageSize(25).sortingCriterion(new SortCriterion("creation-date-time", "desc"))
-				.periodCriterion(new PeriodCriterion("Y1", ldt.minusYears(1), ldt));
+				.periodCriterion(new PeriodCriterion("M1", edges[0], edges[1]));
 	}
 
 	public static LoadJourneyRequestCommandBuilder defaultLoadJourneyRequestCommandBuilder() {

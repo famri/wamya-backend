@@ -47,7 +47,7 @@ public class ParameterUtils {
 		String periodStr = period.orElse(defaultPeriod);
 
 		PeriodValue pv = null;
-		ZonedDateTime higherEdge = ZonedDateTime.now(ZoneOffset.UTC);
+		ZonedDateTime now = ZonedDateTime.now(ZoneOffset.UTC);
 
 		try {
 
@@ -57,9 +57,9 @@ public class ParameterUtils {
 			return new PeriodCriterion(periodStr, null, null);
 		}
 
-		ZonedDateTime lowerEdge = pv.calculateLowerEdge(higherEdge);
+		ZonedDateTime[] lowerAndHigherEdges = pv.calculateLowerAndHigherEdges(now);
 
-		return new PeriodCriterion(pv.name(), lowerEdge, higherEdge);
+		return new PeriodCriterion(pv.name(), lowerAndHigherEdges[0], lowerAndHigherEdges[1]);
 
 	}
 

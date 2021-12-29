@@ -34,7 +34,7 @@ public class JourneyRequestSearchDto {
 
 	private Client client;
 
-	private Double minPrice;
+	
 
 	@AllArgsConstructor
 	@Data

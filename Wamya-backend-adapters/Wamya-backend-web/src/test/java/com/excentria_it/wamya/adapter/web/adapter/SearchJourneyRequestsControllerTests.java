@@ -76,6 +76,7 @@ public class SearchJourneyRequestsControllerTests {
 						.param("engine",
 								command.getEngineTypes().stream().map(e -> e.toString()).collect(Collectors.toSet())
 										.toArray(new String[command.getEngineTypes().size()]))
+						.param("statuses", command.getStatusCodes().stream().map(s -> s.name()).toArray(String[]::new))
 						.param("page", command.getPageNumber().toString())
 						.param("size", command.getPageSize().toString()).param("sort",
 								command.getSortingCriterion().getField() + ","
@@ -148,11 +149,13 @@ public class SearchJourneyRequestsControllerTests {
 
 						).param("fromDate", command.getStartDateTime().format(DATE_TIME_FORMATTER))
 						.param("toDate", command.getEndDateTime().format(DATE_TIME_FORMATTER))
+						.param("statuses", command.getStatusCodes().stream().map(s -> s.name()).toArray(String[]::new))
 						.param("engine",
 								command.getEngineTypes().stream().map(e -> e.toString()).collect(Collectors.toSet())
 										.toArray(new String[command.getEngineTypes().size()]))
 						.param("page", command.getPageNumber().toString())
 						.param("size", command.getPageSize().toString()))
+				
 
 				.andExpect(status().isOk())
 
@@ -187,6 +190,7 @@ public class SearchJourneyRequestsControllerTests {
 						.param("engine",
 								command.getEngineTypes().stream().map(e -> e.toString()).collect(Collectors.toSet())
 										.toArray(new String[command.getEngineTypes().size()]))
+						.param("statuses", command.getStatusCodes().stream().map(s -> s.name()).toArray(String[]::new))
 						.param("page", command.getPageNumber().toString())
 						.param("size", command.getPageSize().toString())
 						.param("sort", command.getSortingCriterion().getField()))
@@ -223,6 +227,7 @@ public class SearchJourneyRequestsControllerTests {
 						.param("engine",
 								command.getEngineTypes().stream().map(e -> e.toString()).collect(Collectors.toSet())
 										.toArray(new String[command.getEngineTypes().size()]))
+						.param("statuses", command.getStatusCodes().stream().map(s -> s.name()).toArray(String[]::new))
 						.param("page", command.getPageNumber().toString())
 						.param("size", command.getPageSize().toString()).param("sort",
 								command.getSortingCriterion().getField() + ","
@@ -230,7 +235,7 @@ public class SearchJourneyRequestsControllerTests {
 
 				.andExpect(status().isBadRequest())
 				.andExpect(responseBody().containsApiErrors(List.of(
-						"sortingCriterion: Wrong sort criterion: 'SortCriterion(field=dummy-field, direction=up)'. Valid sort fields are:[min-price, distance, date-time]. Valid sort directions are:[asc, desc].")))
+						"sortingCriterion: Wrong sort criterion: 'SortCriterion(field=dummy-field, direction=up)'. Valid sort fields are:[distance, date-time]. Valid sort directions are:[asc, desc].")))
 
 				.andReturn();
 

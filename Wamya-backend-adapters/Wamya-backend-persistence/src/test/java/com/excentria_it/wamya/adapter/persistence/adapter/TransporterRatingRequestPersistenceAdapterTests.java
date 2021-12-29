@@ -16,12 +16,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.excentria_it.wamya.adapter.persistence.entity.JourneyProposalStatusJpaEntity.JourneyProposalStatusCode;
 import com.excentria_it.wamya.adapter.persistence.entity.JourneyRequestJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.TransporterRatingRequestRecordJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.mapper.TransporterRatingRequestRecordMapper;
 import com.excentria_it.wamya.adapter.persistence.repository.JourneyRequestRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.TransporterRatingRequestRecordRepository;
+import com.excentria_it.wamya.domain.JourneyProposalStatusCode;
 import com.excentria_it.wamya.domain.TransporterRatingRequestRecordOutput;
 import com.excentria_it.wamya.domain.TransporterRatingRequestStatus;
 import com.excentria_it.wamya.domain.UserPreferenceKey;

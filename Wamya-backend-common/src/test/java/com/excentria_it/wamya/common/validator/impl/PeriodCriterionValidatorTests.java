@@ -50,7 +50,7 @@ public class PeriodCriterionValidatorTests {
 			@Override
 			public String[] value() {
 
-				return new String[] { "y1", "m6", "m3" };
+				return new String[] { "w1", "m1", "lm1", "lm3" };
 			}
 
 		});
@@ -58,18 +58,20 @@ public class PeriodCriterionValidatorTests {
 
 	@Test
 	void givenValidPeriodCriterion_WhenIsValid_ThenReturnTrue() {
-		ZonedDateTime ldt = ZonedDateTime.now(ZoneOffset.UTC);
-		boolean validationResult = validator
-				.isValid(new PeriodCriterion("Y1", PeriodCriterion.PeriodValue.Y1.calculateLowerEdge(ldt), ldt), null);
+		ZonedDateTime today = ZonedDateTime.now(ZoneOffset.UTC);
+		ZonedDateTime[] edges = PeriodCriterion.PeriodValue.M1.calculateLowerAndHigherEdges(today);
+
+		boolean validationResult = validator.isValid(new PeriodCriterion("M1", edges[0], edges[1]), null);
 
 		assertTrue(validationResult);
 	}
 
 	@Test
 	void givenInvalidPeriodCriterion_WhenIsValid_ThenReturnTrue() {
-		ZonedDateTime ldt = ZonedDateTime.now(ZoneOffset.UTC);
-		boolean validationResult = validator.isValid(new PeriodCriterion("not_valid_period_value",
-				PeriodCriterion.PeriodValue.Y1.calculateLowerEdge(ldt), ldt), null);
+		ZonedDateTime today = ZonedDateTime.now(ZoneOffset.UTC);
+		ZonedDateTime[] edges = PeriodCriterion.PeriodValue.M1.calculateLowerAndHigherEdges(today);
+		boolean validationResult = validator.isValid(new PeriodCriterion("not_valid_period_value", edges[0], edges[1]),
+				null);
 
 		assertFalse(validationResult);
 	}
