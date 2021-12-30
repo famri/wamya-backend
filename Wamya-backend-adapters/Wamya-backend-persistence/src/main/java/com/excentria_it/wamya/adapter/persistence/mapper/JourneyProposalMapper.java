@@ -69,18 +69,14 @@ public class JourneyProposalMapper {
 
 		VehiculeJpaEntity v = jp.getVehicule();
 
-		Long vehiculeImageId = v.getImage() != null ? v.getImage().getId()
-				: v.getType().getImage().getId();
+		Long vehiculeImageId = v.getImage() != null ? v.getImage().getId() : v.getType().getImage().getId();
 
-		String vehiculeImageHash = v.getImage() != null ? v.getImage().getHash()
-				: v.getType().getImage().getHash();
+		String vehiculeImageHash = v.getImage() != null ? v.getImage().getHash() : v.getType().getImage().getHash();
 
-		TransporterProposalOutput.TransporterVehiculeOutput vehicule = TransporterVehiculeOutput.builder()
-				.id(v.getId()).regsitrationNumber(v.getRegistration())
-				.circulationDate(v.getCirculationDate())
-				.constructorName(v.getModel().getConstructor().getName())
-				.modelName(v.getModel().getName()).engineTypeId(v.getType().getId())
-				.engineTypeName(v.getType().getName(locale)).imageId(vehiculeImageId)
+		TransporterProposalOutput.TransporterVehiculeOutput vehicule = TransporterVehiculeOutput.builder().id(v.getId())
+				.registrationNumber(v.getRegistration()).circulationDate(v.getCirculationDate())
+				.constructorName(v.getModel().getConstructor().getName()).modelName(v.getModel().getName())
+				.engineTypeId(v.getType().getId()).engineTypeName(v.getType().getName(locale)).imageId(vehiculeImageId)
 				.imageHash(vehiculeImageHash).build();
 
 		JourneyRequestJpaEntity jr = jp.getJourneyRequest();
@@ -103,20 +99,18 @@ public class JourneyProposalMapper {
 
 		TransporterProposalOutput.JourneyRequestOutput.ClientOutput client = ClientOutput.builder()
 				.id(jr.getClient().getId()).firstname(jr.getClient().getFirstname())
-				.imageId(jr.getClient().getProfileImage().getId())
-				.imageHash(jr.getClient().getProfileImage().getHash())
+				.imageId(jr.getClient().getProfileImage().getId()).imageHash(jr.getClient().getProfileImage().getHash())
 				.build();
 
-		 TransporterProposalOutput.JourneyRequestOutput journey = JourneyRequestOutput.builder().id(jr.getId())
+		TransporterProposalOutput.JourneyRequestOutput journey = JourneyRequestOutput.builder().id(jr.getId())
 				.departurePlace(departurePlace).arrivalPlace(arrivalPlace).engineType(engineType)
 				.distance(jr.getDistance()).hours(jr.getHours()).minutes(jr.getMinutes()).dateTime(jr.getDateTime())
 				.workers(jr.getWorkers()).description(jr.getDescription()).client(client).build();
-		
-		 return TransporterProposalOutput.builder()
-				 .id(jp.getId()).price(jp.getPrice()).status(jp.getStatus().getCode()).vehicule(vehicule).journey(journey)
-				 .build();
-		 
-		
+
+		return TransporterProposalOutput.builder().id(jp.getId()).price(jp.getPrice())
+				.status(jp.getStatus().getValue(locale)).statusCode(jp.getStatus().getCode()).vehicule(vehicule)
+				.journey(journey).build();
+
 	}
 
 }

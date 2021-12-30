@@ -19,8 +19,10 @@ public class TransporterProposalOutput {
 
 	private Double price;
 
-	private JourneyProposalStatusCode status;
-	
+	private String status;
+
+	private JourneyProposalStatusCode statusCode;
+
 	private TransporterVehiculeOutput vehicule;
 
 	private JourneyRequestOutput journey;
@@ -33,7 +35,7 @@ public class TransporterProposalOutput {
 
 		private Long id;
 
-		private String regsitrationNumber;
+		private String registrationNumber;
 
 		private LocalDate circulationDate;
 

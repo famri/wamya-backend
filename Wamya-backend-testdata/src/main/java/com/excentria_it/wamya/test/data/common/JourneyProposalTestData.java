@@ -72,7 +72,7 @@ public class JourneyProposalTestData {
 		return LoadTransporterProposalsCommand.builder().transporterUsername(TestConstants.DEFAULT_EMAIL)
 				.statusCodes(Arrays.stream(JourneyProposalStatusCode.values()).collect(Collectors.toSet()))
 
-				.pageNumber(0).pageSize(25).sortingCriterion(new SortCriterion("date-time", "desc"))
+				.pageNumber(0).pageSize(25).sortingCriterion(new SortCriterion("price", "desc"))
 				.periodCriterion(new PeriodCriterion("lm3", edges[0], edges[1]));
 	}
 
@@ -96,9 +96,9 @@ public class JourneyProposalTestData {
 
 	private static final List<TransporterProposalOutput> transporterProposalOutputs = List.of(
 			TransporterProposalOutput
-					.builder().id(1L).price(250.0).status(JourneyProposalStatusCode.ACCEPTED)
+					.builder().id(1L).price(250.0).status("Accepté").statusCode(JourneyProposalStatusCode.ACCEPTED)
 					.vehicule(
-							TransporterVehiculeOutput.builder().id(1L).regsitrationNumber("1 TUN 220")
+							TransporterVehiculeOutput.builder().id(1L).registrationNumber("1 TUN 220")
 									.circulationDate(LocalDate.of(2020, 01, 01)).constructorName("PEUGEOT")
 									.modelName("PARTNER").engineTypeId(1L).engineTypeName("Véhicule Utilitaire")
 									.imageHash("VEHICULE_1_HASH").imageId(1L).build())
@@ -120,8 +120,8 @@ public class JourneyProposalTestData {
 							.build())
 					.build(),
 
-			TransporterProposalOutput.builder().id(2L).price(280.0).status(JourneyProposalStatusCode.SUBMITTED)
-					.vehicule(TransporterVehiculeOutput.builder().id(2L).regsitrationNumber("2 TUN 220")
+			TransporterProposalOutput.builder().id(2L).price(280.0).status("Envoyé").statusCode(JourneyProposalStatusCode.SUBMITTED)
+					.vehicule(TransporterVehiculeOutput.builder().id(2L).registrationNumber("2 TUN 220")
 							.circulationDate(LocalDate.of(2020, 01, 01)).constructorName("CITROEN").modelName("NEMO")
 							.engineTypeId(1L).engineTypeName("Véhicule Utilitaire").imageHash("VEHICULE_2_HASH")
 							.imageId(2L).build())
@@ -144,17 +144,18 @@ public class JourneyProposalTestData {
 					.build());
 
 	private static final List<TransporterProposalDto> transporterProposals = List.of(
-			TransporterProposalDto.builder().id(1L).price(250.0).status(JourneyProposalStatusCode.ACCEPTED)
-					.vehicule(TransporterVehiculeDto.builder().id(1L).regsitrationNumber("1 TUN 220")
+			TransporterProposalDto.builder().id(1L).price(250.0).status("Accepté").statusCode(JourneyProposalStatusCode.ACCEPTED)
+					.vehicule(TransporterVehiculeDto.builder().id(1L).registrationNumber("1 TUN 220")
 							.circulationDate(LocalDate.of(2020, 01, 01)).constructorName("PEUGEOT").modelName("PARTNER")
 							.engineTypeId(1L).engineTypeName("Véhicule Utilitaire")
 							.photoUrl("https://vehicule1/photo/url").build())
-					.journey(JourneyRequestDto.builder().id(1L).departurePlace(JourneyRequestDto.Place
-							.builder().id(1L).type("DEPARTMENT").name("Sfax").latitude(new BigDecimal(38.0))
-							.longitude(new BigDecimal(10.0)).departmentId(1L).build()).arrivalPlace(
-									JourneyRequestDto.Place.builder().id(2L).type("DEPARTMENT").name("Tunis")
-											.latitude(new BigDecimal(37.0)).longitude(new BigDecimal(11.0))
-											.departmentId(2L).build())
+					.journey(JourneyRequestDto.builder().id(1L)
+							.departurePlace(JourneyRequestDto.Place
+									.builder().id(1L).type("DEPARTMENT").name("Sfax").latitude(new BigDecimal(38.0))
+									.longitude(new BigDecimal(10.0)).departmentId(1L).build())
+							.arrivalPlace(JourneyRequestDto.Place.builder().id(2L).type("DEPARTMENT").name("Tunis")
+									.latitude(new BigDecimal(37.0)).longitude(new BigDecimal(11.0)).departmentId(2L)
+									.build())
 							.engineType(JourneyRequestDto.EngineType
 									.builder().id(1L).name("Véhicule Utilitaire").code("UTILITY").build())
 							.distance(270).hours(3).minutes(30)
@@ -169,8 +170,8 @@ public class JourneyProposalTestData {
 							.build())
 					.build(),
 
-			TransporterProposalDto.builder().id(2L).price(250.0).status(JourneyProposalStatusCode.SUBMITTED)
-					.vehicule(TransporterVehiculeDto.builder().id(1L).regsitrationNumber("2 TUN 220")
+			TransporterProposalDto.builder().id(2L).price(250.0).status("Envoyé").statusCode(JourneyProposalStatusCode.SUBMITTED)
+					.vehicule(TransporterVehiculeDto.builder().id(1L).registrationNumber("2 TUN 220")
 							.circulationDate(LocalDate.of(2020, 01, 01)).constructorName("CITROEN").modelName("NEMO")
 							.engineTypeId(1L).engineTypeName("Véhicule Utilitaire")
 							.photoUrl("https://vehicule2/photo/url").build())

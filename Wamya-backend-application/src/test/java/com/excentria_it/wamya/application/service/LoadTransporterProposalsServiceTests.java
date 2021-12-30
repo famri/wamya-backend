@@ -87,10 +87,11 @@ public class LoadTransporterProposalsServiceTests {
 		assertEquals(tpo.getContent().get(0).getId(), result.getContent().get(0).getId());
 		assertEquals(tpo.getContent().get(0).getPrice(), result.getContent().get(0).getPrice());
 		assertEquals(tpo.getContent().get(0).getStatus(), result.getContent().get(0).getStatus());
-		
+		assertEquals(tpo.getContent().get(0).getStatusCode(), result.getContent().get(0).getStatusCode());
+
 		assertEquals(tpo.getContent().get(0).getVehicule().getId(), result.getContent().get(0).getVehicule().getId());
-		assertEquals(tpo.getContent().get(0).getVehicule().getRegsitrationNumber(),
-				result.getContent().get(0).getVehicule().getRegsitrationNumber());
+		assertEquals(tpo.getContent().get(0).getVehicule().getRegistrationNumber(),
+				result.getContent().get(0).getVehicule().getRegistrationNumber());
 		assertEquals(tpo.getContent().get(0).getVehicule().getCirculationDate(),
 				result.getContent().get(0).getVehicule().getCirculationDate());
 		assertEquals(tpo.getContent().get(0).getVehicule().getConstructorName(),
@@ -159,10 +160,12 @@ public class LoadTransporterProposalsServiceTests {
 
 		assertEquals(tpo.getContent().get(1).getId(), result.getContent().get(1).getId());
 		assertEquals(tpo.getContent().get(1).getPrice(), result.getContent().get(1).getPrice());
+		assertEquals(tpo.getContent().get(1).getStatus(), result.getContent().get(1).getStatus());
+		assertEquals(tpo.getContent().get(1).getStatusCode(), result.getContent().get(1).getStatusCode());
 
 		assertEquals(tpo.getContent().get(1).getVehicule().getId(), result.getContent().get(1).getVehicule().getId());
-		assertEquals(tpo.getContent().get(1).getVehicule().getRegsitrationNumber(),
-				result.getContent().get(1).getVehicule().getRegsitrationNumber());
+		assertEquals(tpo.getContent().get(1).getVehicule().getRegistrationNumber(),
+				result.getContent().get(1).getVehicule().getRegistrationNumber());
 		assertEquals(tpo.getContent().get(1).getVehicule().getCirculationDate(),
 				result.getContent().get(1).getVehicule().getCirculationDate());
 		assertEquals(tpo.getContent().get(1).getVehicule().getConstructorName(),

@@ -57,7 +57,7 @@ public class LoadTransporterProposalsService implements LoadTransporterProposals
 			ZoneId transporterZoneId) {
 
 		TransporterProposalDto.TransporterVehiculeDto vehicule = TransporterVehiculeDto.builder()
-				.id(po.getVehicule().getId()).regsitrationNumber(po.getVehicule().getRegsitrationNumber())
+				.id(po.getVehicule().getId()).registrationNumber(po.getVehicule().getRegistrationNumber())
 				.circulationDate(po.getVehicule().getCirculationDate())
 				.constructorName(po.getVehicule().getConstructorName()).modelName(po.getVehicule().getModelName())
 				.engineTypeId(po.getVehicule().getEngineTypeId()).engineTypeName(po.getVehicule().getEngineTypeName())
@@ -93,7 +93,7 @@ public class LoadTransporterProposalsService implements LoadTransporterProposals
 				.build();
 
 		return TransporterProposalDto.builder().id(po.getId()).price(po.getPrice()).status(po.getStatus())
-				.vehicule(vehicule).journey(journey).build();
+				.statusCode(po.getStatusCode()).vehicule(vehicule).journey(journey).build();
 	}
 
 }

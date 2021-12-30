@@ -124,36 +124,36 @@ public class JourneyProposalMapperTests {
 						vehicule.getType().getImage().getHash());
 	}
 
-	
 	@Test
 	void testMapNullToTransporterProposalOutput() {
 
-		TransporterProposalOutput journeyProposalOutput = journeyProposalMapper.mapToTransporterProposalOutput(null, "en_US");
+		TransporterProposalOutput journeyProposalOutput = journeyProposalMapper.mapToTransporterProposalOutput(null,
+				"en_US");
 
 		assertNull(journeyProposalOutput);
 	}
-	
+
 	@Test
 	void testMapToTransporterProposalOutput() {
 		JourneyProposalJpaEntity journeyProposalJpaEntity = defaultJourneyProposalJpaEntityBuilder()
 				.vehicule(VehiculeJpaEntityTestData.defaultVehiculeJpaEntityBuilder()
 						.image(DocumentJpaTestData.nonDefaultVehiculeImageDocumentJpaEntity()).build())
-				.journeyRequest(JourneyRequestJpaTestData.defaultExistentJourneyRequestJpaEntity())
-				.build();
+				.journeyRequest(JourneyRequestJpaTestData.defaultExistentJourneyRequestJpaEntity()).build();
 
 		TransporterProposalOutput journeyProposalOutput = journeyProposalMapper
 				.mapToTransporterProposalOutput(journeyProposalJpaEntity, "en_US");
 
 		assertEquals(journeyProposalJpaEntity.getId(), journeyProposalOutput.getId());
 		assertEquals(journeyProposalJpaEntity.getPrice(), journeyProposalOutput.getPrice());
-		assertEquals(journeyProposalJpaEntity.getStatus().getCode(), journeyProposalOutput.getStatus());
+		assertEquals(journeyProposalJpaEntity.getStatus().getCode(), journeyProposalOutput.getStatusCode());
+		assertEquals(journeyProposalJpaEntity.getStatus().getValue("en_US"), journeyProposalOutput.getStatus());
 
 		assertEquals(journeyProposalJpaEntity.getVehicule().getId(), journeyProposalOutput.getVehicule().getId());
 		assertEquals(journeyProposalJpaEntity.getVehicule().getRegistration(),
-				journeyProposalOutput.getVehicule().getRegsitrationNumber());
+				journeyProposalOutput.getVehicule().getRegistrationNumber());
 		assertEquals(journeyProposalJpaEntity.getVehicule().getCirculationDate(),
 				journeyProposalOutput.getVehicule().getCirculationDate());
-		
+
 		assertEquals(journeyProposalJpaEntity.getVehicule().getModel().getConstructor().getName(),
 				journeyProposalOutput.getVehicule().getConstructorName());
 		assertEquals(journeyProposalJpaEntity.getVehicule().getModel().getName(),
@@ -164,44 +164,67 @@ public class JourneyProposalMapperTests {
 
 		assertEquals(journeyProposalJpaEntity.getVehicule().getType().getName("en_US"),
 				journeyProposalOutput.getVehicule().getEngineTypeName());
-		
+
 		assertEquals(journeyProposalJpaEntity.getVehicule().getImage().getId(),
 				journeyProposalOutput.getVehicule().getImageId());
 		assertEquals(journeyProposalJpaEntity.getVehicule().getImage().getHash(),
 				journeyProposalOutput.getVehicule().getImageHash());
 
 		assertEquals(journeyProposalJpaEntity.getJourneyRequest().getId(), journeyProposalOutput.getJourney().getId());
-		assertEquals(journeyProposalJpaEntity.getJourneyRequest().getDistance(), journeyProposalOutput.getJourney().getDistance());
-		assertEquals(journeyProposalJpaEntity.getJourneyRequest().getHours(), journeyProposalOutput.getJourney().getHours());
-		assertEquals(journeyProposalJpaEntity.getJourneyRequest().getMinutes(), journeyProposalOutput.getJourney().getMinutes());
-		assertEquals(journeyProposalJpaEntity.getJourneyRequest().getDateTime(), journeyProposalOutput.getJourney().getDateTime());
-		assertEquals(journeyProposalJpaEntity.getJourneyRequest().getWorkers(), journeyProposalOutput.getJourney().getWorkers());
-		assertEquals(journeyProposalJpaEntity.getJourneyRequest().getDescription(), journeyProposalOutput.getJourney().getDescription());
-		
-		assertEquals(journeyProposalJpaEntity.getJourneyRequest().getDeparturePlace().getPlaceId().getId(), journeyProposalOutput.getJourney().getDeparturePlace().getId());
-		assertEquals(journeyProposalJpaEntity.getJourneyRequest().getDeparturePlace().getPlaceId().getType().name(), journeyProposalOutput.getJourney().getDeparturePlace().getType());
-		assertEquals(journeyProposalJpaEntity.getJourneyRequest().getDeparturePlace().getName("en_US"), journeyProposalOutput.getJourney().getDeparturePlace().getName());
-		assertEquals(journeyProposalJpaEntity.getJourneyRequest().getDeparturePlace().getDepartment().getId(), journeyProposalOutput.getJourney().getDeparturePlace().getDepartmentId());
-		assertEquals(journeyProposalJpaEntity.getJourneyRequest().getDeparturePlace().getLatitude(), journeyProposalOutput.getJourney().getDeparturePlace().getLatitude());
-		assertEquals(journeyProposalJpaEntity.getJourneyRequest().getDeparturePlace().getLongitude(), journeyProposalOutput.getJourney().getDeparturePlace().getLongitude());
+		assertEquals(journeyProposalJpaEntity.getJourneyRequest().getDistance(),
+				journeyProposalOutput.getJourney().getDistance());
+		assertEquals(journeyProposalJpaEntity.getJourneyRequest().getHours(),
+				journeyProposalOutput.getJourney().getHours());
+		assertEquals(journeyProposalJpaEntity.getJourneyRequest().getMinutes(),
+				journeyProposalOutput.getJourney().getMinutes());
+		assertEquals(journeyProposalJpaEntity.getJourneyRequest().getDateTime(),
+				journeyProposalOutput.getJourney().getDateTime());
+		assertEquals(journeyProposalJpaEntity.getJourneyRequest().getWorkers(),
+				journeyProposalOutput.getJourney().getWorkers());
+		assertEquals(journeyProposalJpaEntity.getJourneyRequest().getDescription(),
+				journeyProposalOutput.getJourney().getDescription());
 
-		
-		assertEquals(journeyProposalJpaEntity.getJourneyRequest().getArrivalPlace().getPlaceId().getId(), journeyProposalOutput.getJourney().getArrivalPlace().getId());
-		assertEquals(journeyProposalJpaEntity.getJourneyRequest().getArrivalPlace().getPlaceId().getType().name(), journeyProposalOutput.getJourney().getArrivalPlace().getType());
-		assertEquals(journeyProposalJpaEntity.getJourneyRequest().getArrivalPlace().getName("en_US"), journeyProposalOutput.getJourney().getArrivalPlace().getName());
-		assertEquals(journeyProposalJpaEntity.getJourneyRequest().getArrivalPlace().getDepartment().getId(), journeyProposalOutput.getJourney().getArrivalPlace().getDepartmentId());
-		assertEquals(journeyProposalJpaEntity.getJourneyRequest().getArrivalPlace().getLatitude(), journeyProposalOutput.getJourney().getArrivalPlace().getLatitude());
-		assertEquals(journeyProposalJpaEntity.getJourneyRequest().getArrivalPlace().getLongitude(), journeyProposalOutput.getJourney().getArrivalPlace().getLongitude());
+		assertEquals(journeyProposalJpaEntity.getJourneyRequest().getDeparturePlace().getPlaceId().getId(),
+				journeyProposalOutput.getJourney().getDeparturePlace().getId());
+		assertEquals(journeyProposalJpaEntity.getJourneyRequest().getDeparturePlace().getPlaceId().getType().name(),
+				journeyProposalOutput.getJourney().getDeparturePlace().getType());
+		assertEquals(journeyProposalJpaEntity.getJourneyRequest().getDeparturePlace().getName("en_US"),
+				journeyProposalOutput.getJourney().getDeparturePlace().getName());
+		assertEquals(journeyProposalJpaEntity.getJourneyRequest().getDeparturePlace().getDepartment().getId(),
+				journeyProposalOutput.getJourney().getDeparturePlace().getDepartmentId());
+		assertEquals(journeyProposalJpaEntity.getJourneyRequest().getDeparturePlace().getLatitude(),
+				journeyProposalOutput.getJourney().getDeparturePlace().getLatitude());
+		assertEquals(journeyProposalJpaEntity.getJourneyRequest().getDeparturePlace().getLongitude(),
+				journeyProposalOutput.getJourney().getDeparturePlace().getLongitude());
 
-		assertEquals(journeyProposalJpaEntity.getJourneyRequest().getEngineType().getId(), journeyProposalOutput.getJourney().getEngineType().getId());
-		assertEquals(journeyProposalJpaEntity.getJourneyRequest().getEngineType().getName("en_US"), journeyProposalOutput.getJourney().getEngineType().getName());
-		assertEquals(journeyProposalJpaEntity.getJourneyRequest().getEngineType().getCode().name(), journeyProposalOutput.getJourney().getEngineType().getCode());
-		
-		assertEquals(journeyProposalJpaEntity.getJourneyRequest().getClient().getId(), journeyProposalOutput.getJourney().getClient().getId());
-		assertEquals(journeyProposalJpaEntity.getJourneyRequest().getClient().getFirstname(), journeyProposalOutput.getJourney().getClient().getFirstname());
-		assertEquals(journeyProposalJpaEntity.getJourneyRequest().getClient().getProfileImage().getId(), journeyProposalOutput.getJourney().getClient().getImageId());
-		assertEquals(journeyProposalJpaEntity.getJourneyRequest().getClient().getProfileImage().getHash(), journeyProposalOutput.getJourney().getClient().getImageHash());
+		assertEquals(journeyProposalJpaEntity.getJourneyRequest().getArrivalPlace().getPlaceId().getId(),
+				journeyProposalOutput.getJourney().getArrivalPlace().getId());
+		assertEquals(journeyProposalJpaEntity.getJourneyRequest().getArrivalPlace().getPlaceId().getType().name(),
+				journeyProposalOutput.getJourney().getArrivalPlace().getType());
+		assertEquals(journeyProposalJpaEntity.getJourneyRequest().getArrivalPlace().getName("en_US"),
+				journeyProposalOutput.getJourney().getArrivalPlace().getName());
+		assertEquals(journeyProposalJpaEntity.getJourneyRequest().getArrivalPlace().getDepartment().getId(),
+				journeyProposalOutput.getJourney().getArrivalPlace().getDepartmentId());
+		assertEquals(journeyProposalJpaEntity.getJourneyRequest().getArrivalPlace().getLatitude(),
+				journeyProposalOutput.getJourney().getArrivalPlace().getLatitude());
+		assertEquals(journeyProposalJpaEntity.getJourneyRequest().getArrivalPlace().getLongitude(),
+				journeyProposalOutput.getJourney().getArrivalPlace().getLongitude());
 
+		assertEquals(journeyProposalJpaEntity.getJourneyRequest().getEngineType().getId(),
+				journeyProposalOutput.getJourney().getEngineType().getId());
+		assertEquals(journeyProposalJpaEntity.getJourneyRequest().getEngineType().getName("en_US"),
+				journeyProposalOutput.getJourney().getEngineType().getName());
+		assertEquals(journeyProposalJpaEntity.getJourneyRequest().getEngineType().getCode().name(),
+				journeyProposalOutput.getJourney().getEngineType().getCode());
+
+		assertEquals(journeyProposalJpaEntity.getJourneyRequest().getClient().getId(),
+				journeyProposalOutput.getJourney().getClient().getId());
+		assertEquals(journeyProposalJpaEntity.getJourneyRequest().getClient().getFirstname(),
+				journeyProposalOutput.getJourney().getClient().getFirstname());
+		assertEquals(journeyProposalJpaEntity.getJourneyRequest().getClient().getProfileImage().getId(),
+				journeyProposalOutput.getJourney().getClient().getImageId());
+		assertEquals(journeyProposalJpaEntity.getJourneyRequest().getClient().getProfileImage().getHash(),
+				journeyProposalOutput.getJourney().getClient().getImageHash());
 
 	}
 }

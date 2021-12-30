@@ -16,7 +16,8 @@ import lombok.NoArgsConstructor;
 public class TransporterProposalDto {
 	private Long id;
 	private Double price;
-	private JourneyProposalStatusCode status;
+	private String status;
+	private JourneyProposalStatusCode statusCode;
 	private JourneyRequestDto journey;
 	private TransporterVehiculeDto vehicule;
 
@@ -101,7 +102,7 @@ public class TransporterProposalDto {
 	public static class TransporterVehiculeDto {
 		private Long id;
 
-		private String regsitrationNumber;
+		private String registrationNumber;
 
 		private LocalDate circulationDate;
 

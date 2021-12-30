@@ -1,6 +1,5 @@
 package com.excentria_it.wamya.adapter.persistence.adapter;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 

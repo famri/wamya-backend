@@ -48,7 +48,7 @@ public class LoadTransporterProposalsController {
 			@RequestParam(name = "statuses") Set<JourneyProposalStatusCode> statusCodes,
 			final @AuthenticationPrincipal JwtAuthenticationToken principal, Locale locale) {
 
-		SortCriterion sortingCriterion = ParameterUtils.parameterToSortCriterion(sort, "date-time,desc");
+		SortCriterion sortingCriterion = ParameterUtils.parameterToSortCriterion(sort, "price,desc");
 		PeriodCriterion periodCriterion = ParameterUtils.parameterToPeriodCriterion(period, "w1");
 
 		LoadTransporterProposalsCommand command = LoadTransporterProposalsCommand.builder()

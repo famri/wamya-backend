@@ -40,7 +40,7 @@ public interface LoadTransporterProposalsUseCase {
 		@NotNull
 		private Integer pageSize;
 
-		@Sort(fields = { "date-time" })
+		@Sort(fields = { "price" })
 		private SortCriterion sortingCriterion;
 
 		@Period(value = { "w1", "m1", "lm1", "lm3" })
