@@ -98,7 +98,7 @@ public class JourneyProposalMapper {
 				.code(jr.getEngineType().getCode().name()).build();
 
 		TransporterProposalOutput.JourneyRequestOutput.ClientOutput client = ClientOutput.builder()
-				.id(jr.getClient().getId()).firstname(jr.getClient().getFirstname())
+				.oauthId(jr.getClient().getOauthId()).firstname(jr.getClient().getFirstname())
 				.imageId(jr.getClient().getProfileImage().getId()).imageHash(jr.getClient().getProfileImage().getHash())
 				.build();
 

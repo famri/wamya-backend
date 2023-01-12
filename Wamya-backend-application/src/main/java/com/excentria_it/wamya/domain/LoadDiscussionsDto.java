@@ -1,52 +1,52 @@
 package com.excentria_it.wamya.domain;
 
-import java.time.LocalDateTime;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Builder
 public class LoadDiscussionsDto {
-	private Long id;
+    private Long id;
 
-	private Boolean active;
+    private Boolean active;
 
-	private LocalDateTime dateTime;
+    private LocalDateTime dateTime;
 
-	private MessageDto latestMessage;
+    private MessageDto latestMessage;
 
-	private InterlocutorDto client;
+    private InterlocutorDto client;
 
-	private InterlocutorDto transporter;
+    private InterlocutorDto transporter;
 
-	@AllArgsConstructor
-	@NoArgsConstructor
-	@Data
-	@Builder
-	public static class MessageDto {
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Data
+    @Builder
+    public static class MessageDto {
 
-		private Long id;
-		private Long authorId;
-		private String content;
-		private LocalDateTime dateTime;
-		private Boolean read;
-		private Boolean sent;
-	}
+        private Long id;
+        private String authorId;
+        private String content;
+        private LocalDateTime dateTime;
+        private Boolean read;
+        private Boolean sent;
+    }
 
-	@AllArgsConstructor
-	@NoArgsConstructor
-	@Data
-	@Builder
-	public static class InterlocutorDto {
-		private Long id;
-		private String name;
-		private String mobileNumber;
-		private String photoUrl;
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Data
+    @Builder
+    public static class InterlocutorDto {
+        private String id;
+        private String name;
+        private String mobileNumber;
+        private String photoUrl;
 
-	}
+    }
 }

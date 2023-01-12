@@ -4,6 +4,6 @@ import com.excentria_it.wamya.domain.LoadDiscussionsOutput;
 
 public interface CreateDiscussionPort {
 
-	LoadDiscussionsOutput createDiscussion(Long clientId, Long transporterId);
+    LoadDiscussionsOutput createDiscussion(String clientId, String transporterId);
 
 }

@@ -1,221 +1,235 @@
 package com.excentria_it.wamya.adapter.b2b.rest.adapter;
 
-import java.io.IOException;
-import java.util.Objects;
-
-import org.springframework.http.MediaType;
+import com.excentria_it.wamya.adapter.b2b.rest.dto.KeyCloakRealmRole;
+import com.excentria_it.wamya.adapter.b2b.rest.props.AuthServerProperties;
+import com.excentria_it.wamya.application.port.out.OAuthUserAccountPort;
+import com.excentria_it.wamya.common.annotation.WebAdapter;
+import com.excentria_it.wamya.common.exception.UserCreationException;
+import com.excentria_it.wamya.domain.OAuthUserAccount;
+import com.excentria_it.wamya.domain.OpenIdAuthResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.*;
 import org.springframework.security.oauth2.client.AuthorizedClientServiceOAuth2AuthorizedClientManager;
 import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.reactive.function.BodyInserters;
-import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
 
-import com.excentria_it.wamya.adapter.b2b.rest.props.AuthServerProperties;
-import com.excentria_it.wamya.application.port.out.OAuthUserAccountPort;
-import com.excentria_it.wamya.common.annotation.WebAdapter;
-import com.excentria_it.wamya.common.exception.ApiError;
-import com.excentria_it.wamya.common.exception.AuthServerError;
-import com.excentria_it.wamya.common.exception.AuthorizationException;
-import com.excentria_it.wamya.common.exception.UserAccountAlreadyExistsException;
-import com.excentria_it.wamya.common.exception.UserAccountNotFoundException;
-import com.excentria_it.wamya.domain.JwtOAuth2AccessToken;
-import com.excentria_it.wamya.domain.OAuthUserAccount;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.net.URI;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @WebAdapter
 @Slf4j
 public class OAuthUserAccountIntegrationAdapter implements OAuthUserAccountPort {
 
-	private static final String USERNAME_FORM_KEY = "username";
-	private static final String PASSWORD_FORM_KEY = "password";
-	private static final String GRANT_TYPE_FORM_KEY = "grant_type";
-	private static final String GRANT_TYPE_FORM_VALUE = "password";
+    private static final String USERNAME_FORM_KEY = "username";
+    private static final String PASSWORD_FORM_KEY = "password";
+    private static final String GRANT_TYPE_FORM_KEY = "grant_type";
+    private static final String GRANT_TYPE_FORM_VALUE = "password";
 
-	private AuthServerProperties authServerProperties;
+    private AuthServerProperties authServerProperties;
 
-	private WebClient.Builder webClientBuilder;
+    private RestTemplate restTemplate;
 
-	private AuthorizedClientServiceOAuth2AuthorizedClientManager authorizedClientServiceAndManager;
+    private AuthorizedClientServiceOAuth2AuthorizedClientManager authorizedClientServiceAndManager;
 
-	private WebClient webClient;
+    private ObjectMapper mapper;
 
-	private ObjectMapper mapper;
+    public OAuthUserAccountIntegrationAdapter(AuthServerProperties authServerProperties, RestTemplate restTemplate,
+                                              ObjectMapper mapper,
+                                              AuthorizedClientServiceOAuth2AuthorizedClientManager authorizedClientServiceAndManager) {
+        this.authServerProperties = authServerProperties;
+        this.restTemplate = restTemplate;
+        this.mapper = mapper;
+        this.authorizedClientServiceAndManager = authorizedClientServiceAndManager;
 
-	public OAuthUserAccountIntegrationAdapter(AuthServerProperties authServerProperties,
-			WebClient.Builder webClientBuilder, ObjectMapper mapper,
-			AuthorizedClientServiceOAuth2AuthorizedClientManager authorizedClientServiceAndManager) {
-		this.authServerProperties = authServerProperties;
-		this.webClientBuilder = webClientBuilder;
-		this.mapper = mapper;
-		this.authorizedClientServiceAndManager = authorizedClientServiceAndManager;
+    }
 
-	}
+    @Override
+    public String createOAuthUserAccount(OAuthUserAccount userAccount) throws UserCreationException {
 
-	@Override
-	public Long createOAuthUserAccount(OAuthUserAccount userAccount) {
+        // get access token for server-to-server api calls
+        final OAuth2AuthorizeRequest authorizeRequest = OAuth2AuthorizeRequest
+                .withClientRegistrationId("on-prem-auth-server-cc").principal("fretto-backend").build();
+        final OAuth2AuthorizedClient authorizedClient = this.authorizedClientServiceAndManager.authorize(authorizeRequest);
 
-		OAuthUserAccount user = getWebClient().post().uri(authServerProperties.getCreateUserUri())
-				.bodyValue(userAccount).retrieve().bodyToMono(OAuthUserAccount.class)
-				.onErrorMap(WebClientResponseException.class, ex -> handleCreateOAuthUserAccountExceptions(ex)).block();
+        if (authorizedClient == null) {
+            throw new UserCreationException("Cannot authorize backend client within authorization server.");
+        }
 
-		return user.getOauthId();
+        final OAuth2AccessToken accessToken = authorizedClient.getAccessToken();
 
-	}
+        String userLocation = null;
+        try {
+            // create the user
+            final URI locationUri = createUser(userAccount, accessToken);
+            userLocation = locationUri.getPath();
+        } catch (RestClientException e) {
+            throw new UserCreationException(String.format("Cannot create user in the authorization server:%s", e.getMessage()));
+        }
 
-	@Override
-	public JwtOAuth2AccessToken fetchJwtTokenForUser(String username, String password) {
+        List<KeyCloakRealmRole> realmRolesForUser = null;
+        try {
+            // get realm role corresponding to userAccount.getRealmRoles()
+            realmRolesForUser = getRealmRoles(userAccount.getRealmRoles(), accessToken);
+        } catch (RestClientException e) {
+            throw new UserCreationException(String.format("Cannot find user roles in the authorization server: %s", e.getMessage()));
+        }
 
-		MultiValueMap<String, String> formParams = new LinkedMultiValueMap<String, String>();
-		formParams.add(USERNAME_FORM_KEY, username);
-		formParams.add(PASSWORD_FORM_KEY, password);
-		formParams.add(GRANT_TYPE_FORM_KEY, GRANT_TYPE_FORM_VALUE);
+        // skip the leading slash
+        final String userOAuthId = userLocation.substring(1);
 
-		JwtOAuth2AccessToken jwtToken = getWebClient().post().uri(authServerProperties.getTokenUri())
-				.headers(headers -> {
-					headers.setBasicAuth(authServerProperties.getClientId(), authServerProperties.getClientSecret());
-					headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-				}).body(BodyInserters.fromFormData(formParams)).retrieve().bodyToMono(JwtOAuth2AccessToken.class)
-				.onErrorMap(WebClientResponseException.class, ex -> handleFetchJwtTokenForUserExceptions(ex)).block();
+        try {
+            // create the user roles
+            createRealmRoleForUser(userOAuthId, realmRolesForUser, accessToken);
+        } catch (RestClientException e) {
+            throw new UserCreationException(String.format("Cannot create user roles in the authorization server: %s", e.getMessage()));
+        }
 
-		return jwtToken;
+        return userOAuthId;
+    }
 
-	}
 
-	@Override
-	public void resetPassword(Long userOauthId, String password) {
-		OAuth2AuthorizeRequest authorizeRequest = OAuth2AuthorizeRequest
-				.withClientRegistrationId("on-prem-auth-server-cc").principal("wamya-mobile-app").build();
-		OAuth2AuthorizedClient authorizedClient = this.authorizedClientServiceAndManager.authorize(authorizeRequest);
-		OAuth2AccessToken accessToken = Objects.requireNonNull(authorizedClient).getAccessToken();
+    private void createRealmRoleForUser(String userLocation, List<KeyCloakRealmRole> roles, OAuth2AccessToken accessToken) {
+        final HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(accessToken.getTokenValue());
 
-		getWebClient().post()
-				.uri(authServerProperties.getResetPasswordUri().replace("{oAuthId}", userOauthId.toString()))
-				.headers(headers -> {
-					headers.setBearerAuth(accessToken.getTokenValue());
-					headers.setContentType(MediaType.APPLICATION_JSON);
-				}).bodyValue(new PasswordBody(password)).retrieve().bodyToMono(Void.class).block();
+        final HttpEntity<KeyCloakRealmRole[]> request = new HttpEntity<>(roles.toArray(new KeyCloakRealmRole[roles.size()]), headers);
+        restTemplate.postForEntity(authServerProperties.getAddRoleToUserUri(), request, Void.class, userLocation);
+    }
 
-	}
+    private List<KeyCloakRealmRole> getRealmRoles(Collection<String> userRoles, OAuth2AccessToken accessToken) {
 
-	@Override
-	public void updateMobileNumber(Long userOauthId, String internationalCallingCode, String mobileNumber) {
-		OAuth2AuthorizeRequest authorizeRequest = OAuth2AuthorizeRequest
-				.withClientRegistrationId("on-prem-auth-server-cc").principal("wamya-mobile-app").build();
-		OAuth2AuthorizedClient authorizedClient = this.authorizedClientServiceAndManager.authorize(authorizeRequest);
-		OAuth2AccessToken accessToken = Objects.requireNonNull(authorizedClient).getAccessToken();
+        final HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(accessToken.getTokenValue());
 
-		getWebClient().patch()
-				.uri(authServerProperties.getUpdateMobileUri().replace("{oAuthId}", userOauthId.toString()))
-				.headers(headers -> {
-					headers.setBearerAuth(accessToken.getTokenValue());
-					headers.setContentType(MediaType.APPLICATION_JSON);
-				}).bodyValue(new UpdateMobileBody(internationalCallingCode, mobileNumber)).retrieve()
-				.bodyToMono(Void.class).block();
+        final HttpEntity<Void> request = new HttpEntity<>(headers);
 
-	}
+        final ResponseEntity<KeyCloakRealmRole[]> response = restTemplate.exchange(authServerProperties.getReadRealmRolesUri(), HttpMethod.GET, request, KeyCloakRealmRole[].class);
 
-	@Override
-	public void updateEmail(Long userOauthId, String email) {
-		OAuth2AuthorizeRequest authorizeRequest = OAuth2AuthorizeRequest
-				.withClientRegistrationId("on-prem-auth-server-cc").principal("wamya-mobile-app").build();
-		OAuth2AuthorizedClient authorizedClient = this.authorizedClientServiceAndManager.authorize(authorizeRequest);
-		OAuth2AccessToken accessToken = Objects.requireNonNull(authorizedClient).getAccessToken();
+        final KeyCloakRealmRole[] keyCloakRealmRoles = response.getBody();
 
-		getWebClient().patch()
-				.uri(authServerProperties.getUpdateEmailUri().replace("{oAuthId}", userOauthId.toString()))
-				.headers(headers -> {
-					headers.setBearerAuth(accessToken.getTokenValue());
-					headers.setContentType(MediaType.APPLICATION_JSON);
-				}).bodyValue(new UpdateEmailBody(email)).retrieve().bodyToMono(Void.class).block();
+        return Arrays.stream(keyCloakRealmRoles).filter(role -> userRoles.contains(role.getName())).collect(Collectors.toList());
+    }
 
-	}
 
-	private WebClient getWebClient() {
-		if (webClient == null) {
-			webClient = webClientBuilder.build();
-		}
-		return webClient;
-	}
+    private URI createUser(OAuthUserAccount userAccount, OAuth2AccessToken accessToken) {
+        final HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(accessToken.getTokenValue());
 
-	private Throwable handleCreateOAuthUserAccountExceptions(Throwable ex) {
+        final HttpEntity<OAuthUserAccount> request = new HttpEntity<>(userAccount, headers);
 
-		WebClientResponseException wcre = (WebClientResponseException) ex;
+        final URI locationUri = restTemplate.postForLocation(authServerProperties.getCreateUserUri(), request);
+        return locationUri;
+    }
 
-		switch (wcre.getStatusCode()) {
+    @Override
+    public OpenIdAuthResponse fetchJwtTokenForUser(String username, String password) {
 
-		case BAD_REQUEST:
-			return new UserAccountAlreadyExistsException(getApiErrorMessage(wcre));
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.setBasicAuth(authServerProperties.getClientId(), authServerProperties.getClientSecret());
 
-		default:
-			log.warn("Got a unexpected HTTP error: {}, will rethrow it", wcre.getStatusCode());
-			log.warn("Error body: {}", wcre.getResponseBodyAsString());
-			return ex;
-		}
-	}
+        MultiValueMap<String, String> formParams = new LinkedMultiValueMap<String, String>();
+        formParams.add(USERNAME_FORM_KEY, username);
+        formParams.add(PASSWORD_FORM_KEY, password);
+        formParams.add(GRANT_TYPE_FORM_KEY, GRANT_TYPE_FORM_VALUE);
 
-	private Throwable handleFetchJwtTokenForUserExceptions(Throwable ex) {
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(formParams, headers);
 
-		WebClientResponseException wcre = (WebClientResponseException) ex;
+        return restTemplate.postForObject(authServerProperties.getTokenUri(), request, OpenIdAuthResponse.class);
+    }
 
-		switch (wcre.getStatusCode()) {
+    @Override
+    public void resetPassword(String userOauthId, String password) {
+        OAuth2AuthorizeRequest authorizeRequest = OAuth2AuthorizeRequest
+                .withClientRegistrationId("on-prem-auth-server-cc").principal("wamya-mobile-app").build();
+        OAuth2AuthorizedClient authorizedClient = this.authorizedClientServiceAndManager.authorize(authorizeRequest);
+        OAuth2AccessToken accessToken = Objects.requireNonNull(authorizedClient).getAccessToken();
 
-		case BAD_REQUEST:
-			return new AuthorizationException(getAuthServerErrorMessage(wcre));
-		case UNAUTHORIZED:
-			return new UserAccountNotFoundException(getAuthServerErrorMessage(wcre));
-		default:
-			log.warn("Got a unexpected HTTP error: {}, will rethrow it", wcre.getStatusCode());
-			log.warn("Error body: {}", wcre.getResponseBodyAsString());
-			return ex;
-		}
-	}
+//		getWebClient().post()
+//				.uri(authServerProperties.getResetPasswordUri().replace("{oAuthId}", userOauthId.toString()))
+//				.headers(headers -> {
+//					headers.setBearerAuth(accessToken.getTokenValue());
+//					headers.setContentType(MediaType.APPLICATION_JSON);
+//				}).bodyValue(new PasswordBody(password)).retrieve().bodyToMono(Void.class).block();
 
-	private String getAuthServerErrorMessage(WebClientResponseException ex) {
-		try {
-			return mapper.readValue(ex.getResponseBodyAsString(), AuthServerError.class).getErrorDescription();
-		} catch (IOException ioex) {
-			return ex.getMessage();
-		}
-	}
+    }
 
-	private String getApiErrorMessage(WebClientResponseException ex) {
-		try {
-			return mapper.readValue(ex.getResponseBodyAsString(), ApiError.class).getErrors().toString();
-		} catch (IOException ioex) {
-			return ex.getMessage();
-		}
-	}
+    private Object getWebClient() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	@Data
-	@NoArgsConstructor
-	@AllArgsConstructor
-	static class PasswordBody {
-		private String password;
-	}
+    @Override
+    public void updateMobileNumber(String userOauthId, String internationalCallingCode, String mobileNumber) {
+        OAuth2AuthorizeRequest authorizeRequest = OAuth2AuthorizeRequest
+                .withClientRegistrationId("on-prem-auth-server-cc").principal("wamya-mobile-app").build();
+        OAuth2AuthorizedClient authorizedClient = this.authorizedClientServiceAndManager.authorize(authorizeRequest);
+        OAuth2AccessToken accessToken = Objects.requireNonNull(authorizedClient).getAccessToken();
 
-	@Data
-	@NoArgsConstructor
-	@AllArgsConstructor
-	static class UpdateMobileBody {
-		private String icc;
-		private String mobileNumber;
-	}
+//		getWebClient().patch()
+//				.uri(authServerProperties.getUpdateMobileUri().replace("{oAuthId}", userOauthId.toString()))
+//				.headers(headers -> {
+//					headers.setBearerAuth(accessToken.getTokenValue());
+//					headers.setContentType(MediaType.APPLICATION_JSON);
+//				}).bodyValue(new UpdateMobileBody(internationalCallingCode, mobileNumber)).retrieve()
+//				.bodyToMono(Void.class).block();
 
-	@Data
-	@NoArgsConstructor
-	@AllArgsConstructor
-	static class UpdateEmailBody {
-		private String email;
+    }
 
-	}
+    @Override
+    public void updateEmail(String userOauthId, String email) {
+        OAuth2AuthorizeRequest authorizeRequest = OAuth2AuthorizeRequest
+                .withClientRegistrationId("on-prem-auth-server-cc").principal("wamya-mobile-app").build();
+        OAuth2AuthorizedClient authorizedClient = this.authorizedClientServiceAndManager.authorize(authorizeRequest);
+        OAuth2AccessToken accessToken = Objects.requireNonNull(authorizedClient).getAccessToken();
+
+//		getWebClient().patch()
+//				.uri(authServerProperties.getUpdateEmailUri().replace("{oAuthId}", userOauthId.toString()))
+//				.headers(headers -> {
+//					headers.setBearerAuth(accessToken.getTokenValue());
+//					headers.setContentType(MediaType.APPLICATION_JSON);
+//				}).bodyValue(new UpdateEmailBody(email)).retrieve().bodyToMono(Void.class).block();
+
+    }
+
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    static class PasswordBody {
+        private String password;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    static class UpdateMobileBody {
+        private String icc;
+        private String mobileNumber;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    static class UpdateEmailBody {
+        private String email;
+
+    }
 
 }

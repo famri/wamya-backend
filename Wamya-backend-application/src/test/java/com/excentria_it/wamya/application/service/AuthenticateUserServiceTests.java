@@ -15,7 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.excentria_it.wamya.application.port.in.AuthenticateUserUseCase.LoginUserCommand;
 import com.excentria_it.wamya.application.port.out.OAuthUserAccountPort;
-import com.excentria_it.wamya.domain.JwtOAuth2AccessToken;
+import com.excentria_it.wamya.domain.OpenIdAuthResponse;
 
 @ExtendWith(MockitoExtension.class)
 public class AuthenticateUserServiceTests {
@@ -35,7 +35,7 @@ public class AuthenticateUserServiceTests {
 		givenOAuthUserAccountPort_FetchJwtTokenForUser_WillReturnToken();
 		// When
 		LoginUserCommand command = defaultLoginUserCommand().build();
-		JwtOAuth2AccessToken token = authenticateUserService.loginUser(command);
+		OpenIdAuthResponse token = authenticateUserService.loginUser(command);
 
 		// Then
 		then(oAuthUserAccountPort).should(times(1)).fetchJwtTokenForUser(command.getUsername(), command.getPassword());
@@ -43,7 +43,7 @@ public class AuthenticateUserServiceTests {
 	}
 
 	private void givenOAuthUserAccountPort_FetchJwtTokenForUser_WillReturnToken() {
-		JwtOAuth2AccessToken token = new JwtOAuth2AccessToken();
+		OpenIdAuthResponse token = new OpenIdAuthResponse();
 		token.setAccessToken(TOKEN);
 		given(oAuthUserAccountPort.fetchJwtTokenForUser(any(String.class), any(String.class))).willReturn(token);
 

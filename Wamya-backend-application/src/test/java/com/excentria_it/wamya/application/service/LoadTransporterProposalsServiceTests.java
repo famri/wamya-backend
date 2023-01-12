@@ -152,7 +152,7 @@ public class LoadTransporterProposalsServiceTests {
 		assertEquals(tpo.getContent().get(0).getJourney().getEngineType().getCode(),
 				result.getContent().get(0).getJourney().getEngineType().getCode());
 
-		assertEquals(tpo.getContent().get(0).getJourney().getClient().getId(),
+		assertEquals(tpo.getContent().get(0).getJourney().getClient().getOauthId(),
 				result.getContent().get(0).getJourney().getClient().getId());
 		assertEquals(tpo.getContent().get(0).getJourney().getClient().getFirstname(),
 				result.getContent().get(0).getJourney().getClient().getFirstname());
@@ -226,7 +226,7 @@ public class LoadTransporterProposalsServiceTests {
 		assertEquals(tpo.getContent().get(1).getJourney().getEngineType().getCode(),
 				result.getContent().get(1).getJourney().getEngineType().getCode());
 
-		assertEquals(tpo.getContent().get(1).getJourney().getClient().getId(),
+		assertEquals(tpo.getContent().get(1).getJourney().getClient().getOauthId(),
 				result.getContent().get(1).getJourney().getClient().getId());
 		assertEquals(tpo.getContent().get(1).getJourney().getClient().getFirstname(),
 				result.getContent().get(1).getJourney().getClient().getFirstname());

@@ -80,7 +80,7 @@ public class LoadTransporterProposalsService implements LoadTransporterProposals
 				po.getJourney().getEngineType().getId(), po.getJourney().getEngineType().getName(),
 				po.getJourney().getEngineType().getCode());
 
-		JourneyRequestDto.Client client = new JourneyRequestDto.Client(po.getJourney().getClient().getId(),
+		JourneyRequestDto.Client client = new JourneyRequestDto.Client(po.getJourney().getClient().getOauthId(),
 				po.getJourney().getClient().getFirstname(), documentUrlResolver.resolveUrl(
 						po.getJourney().getClient().getImageId(), po.getJourney().getClient().getImageHash()));
 

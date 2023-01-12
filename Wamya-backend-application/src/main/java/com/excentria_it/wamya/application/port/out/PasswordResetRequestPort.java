@@ -5,14 +5,14 @@ import java.util.UUID;
 
 public interface PasswordResetRequestPort {
 
-	UUID registerRequest(Long userId, Instant expityTimestamp);
+    UUID registerRequest(Long userId, Instant expityTimestamp);
 
-	boolean requestExists(String uuid, Long expiry);
+    boolean requestExists(String uuid, Long expiry);
 
-	Long getUserAccountOauthId(String uuid);
+    String getUserAccountOauthId(String uuid);
 
-	void purgeExpired();
+    void purgeExpired();
 
-	void deleteRequest(String uuid);
+    void deleteRequest(String uuid);
 
 }

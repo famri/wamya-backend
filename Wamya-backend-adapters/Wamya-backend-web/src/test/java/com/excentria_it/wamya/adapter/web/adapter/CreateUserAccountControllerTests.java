@@ -26,7 +26,7 @@ import com.excentria_it.wamya.application.port.in.CreateUserAccountUseCase.Creat
 import com.excentria_it.wamya.common.exception.UnsupportedInternationalCallingCodeException;
 import com.excentria_it.wamya.common.exception.UserAccountAlreadyExistsException;
 import com.excentria_it.wamya.common.exception.handlers.RestApiExceptionHandler;
-import com.excentria_it.wamya.domain.JwtOAuth2AccessToken;
+import com.excentria_it.wamya.domain.OpenIdAuthResponse;
 import com.excentria_it.wamya.test.data.common.UserAccountTestData;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -51,7 +51,7 @@ public class CreateUserAccountControllerTests {
 
 		CreateUserAccountCommand command = UserAccountTestData.defaultClientUserAccountCommandBuilder().build();
 
-		JwtOAuth2AccessToken oAuth2AccessToken = new JwtOAuth2AccessToken();
+		OpenIdAuthResponse oAuth2AccessToken = new OpenIdAuthResponse();
 		oAuth2AccessToken.setAccessToken(ACCESS_TOKEN);
 		given(createUserAccountUseCase.registerUserAccountCreationDemand(eq(command), any(Locale.class)))
 				.willReturn(oAuth2AccessToken);

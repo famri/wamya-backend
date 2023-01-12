@@ -25,7 +25,6 @@ public class B2bRestConfiguration {
 	public RestTemplate restTemplate(RestTemplateBuilder restTemplateBuilder, ObjectMapper mapper) {
 		RestTemplate restTemplate = restTemplateBuilder.errorHandler(new RestTemplateResponseErrorHandler(mapper))
 				.requestFactory(HttpComponentsClientHttpRequestFactory.class)
-
 				.build();
 
 		return restTemplate;

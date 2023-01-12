@@ -4,6 +4,6 @@ import com.excentria_it.wamya.domain.LoadDiscussionsOutput.MessageOutput;
 
 public interface AddMessageToDiscussionPort {
 
-	MessageOutput addMessage(Long discussionId, Long senderId, String messageContent);
+	MessageOutput addMessage(Long discussionId, String senderId, String messageContent);
 
 }

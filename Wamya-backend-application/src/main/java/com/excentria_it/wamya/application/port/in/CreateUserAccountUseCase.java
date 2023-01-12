@@ -8,7 +8,7 @@ import javax.validation.constraints.Pattern;
 
 import com.excentria_it.wamya.common.exception.UnsupportedInternationalCallingCodeException;
 import com.excentria_it.wamya.common.exception.UserAccountAlreadyExistsException;
-import com.excentria_it.wamya.domain.JwtOAuth2AccessToken;
+import com.excentria_it.wamya.domain.OpenIdAuthResponse;
 import com.excentria_it.wamya.domain.RegexPattern;
 
 import lombok.AllArgsConstructor;
@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 
 public interface CreateUserAccountUseCase {
 
-	JwtOAuth2AccessToken registerUserAccountCreationDemand(CreateUserAccountCommand command, Locale locale)
+	OpenIdAuthResponse registerUserAccountCreationDemand(CreateUserAccountCommand command, Locale locale)
 			throws UserAccountAlreadyExistsException, UnsupportedInternationalCallingCodeException;
 
 	void checkExistingAccount(CreateUserAccountCommand command);

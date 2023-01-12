@@ -3,7 +3,7 @@ package com.excentria_it.wamya.application.port.in;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
-import com.excentria_it.wamya.domain.JwtOAuth2AccessToken;
+import com.excentria_it.wamya.domain.OpenIdAuthResponse;
 import com.excentria_it.wamya.domain.RegexPattern;
 
 import lombok.AllArgsConstructor;
@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 
 public interface AuthenticateUserUseCase {
 
-	JwtOAuth2AccessToken loginUser(LoginUserCommand command);
+	OpenIdAuthResponse loginUser(LoginUserCommand command);
 
 	@Data
 	@NoArgsConstructor

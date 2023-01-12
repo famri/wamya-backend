@@ -17,7 +17,7 @@ public class UserAccount {
 
 	private Long id;
 
-	private Long oauthId;
+	private String oauthId;
 
 	private Boolean isTransporter;
 
@@ -40,8 +40,6 @@ public class UserAccount {
 	private String mobileNumberValidationCode;
 
 	private Boolean isValidatedMobileNumber;
-
-	private String userPassword;
 
 	private Boolean receiveNewsletter;
 

@@ -218,7 +218,7 @@ public class JourneyProposalMapperTests {
 				journeyProposalOutput.getJourney().getEngineType().getCode());
 
 		assertEquals(journeyProposalJpaEntity.getJourneyRequest().getClient().getId(),
-				journeyProposalOutput.getJourney().getClient().getId());
+				journeyProposalOutput.getJourney().getClient().getOauthId());
 		assertEquals(journeyProposalJpaEntity.getJourneyRequest().getClient().getFirstname(),
 				journeyProposalOutput.getJourney().getClient().getFirstname());
 		assertEquals(journeyProposalJpaEntity.getJourneyRequest().getClient().getProfileImage().getId(),

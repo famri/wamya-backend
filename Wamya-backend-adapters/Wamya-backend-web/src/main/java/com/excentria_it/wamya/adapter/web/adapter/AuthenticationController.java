@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.excentria_it.wamya.application.port.in.AuthenticateUserUseCase;
 import com.excentria_it.wamya.application.port.in.AuthenticateUserUseCase.LoginUserCommand;
 import com.excentria_it.wamya.common.annotation.WebAdapter;
-import com.excentria_it.wamya.domain.JwtOAuth2AccessToken;
+import com.excentria_it.wamya.domain.OpenIdAuthResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,9 +24,9 @@ public class AuthenticationController {
 	private final AuthenticateUserUseCase authenticateUserUseCase;
 
 	@PostMapping(path = "/login", consumes = MediaType.APPLICATION_JSON_VALUE)
-	public JwtOAuth2AccessToken loginUser(@Valid @RequestBody LoginUserCommand command) {
+	public OpenIdAuthResponse loginUser(@Valid @RequestBody LoginUserCommand command) {
 
-		JwtOAuth2AccessToken accessToken = authenticateUserUseCase.loginUser(command);
+		OpenIdAuthResponse accessToken = authenticateUserUseCase.loginUser(command);
 
 		return accessToken;
 	}

@@ -14,4 +14,4 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: http://${app.auth-server}:9999/.well-known/jwks.json
+          jwk-set-uri: "http://${app.auth-server}:9595/realms/fretto/protocol/openid-connect/certs"

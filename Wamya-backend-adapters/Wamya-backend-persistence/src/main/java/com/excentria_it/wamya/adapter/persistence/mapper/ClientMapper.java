@@ -17,18 +17,19 @@ import com.excentria_it.wamya.domain.ValidationState;
 @Component
 public class ClientMapper {
 
-	public ClientJpaEntity mapToJpaEntity(UserAccount userAccount, InternationalCallingCodeJpaEntity icc,
-			GenderJpaEntity gender, DocumentJpaEntity profileImage, DocumentJpaEntity identityDocument) {
-		if (userAccount == null || userAccount.getIsTransporter())
-			return null;
+    public ClientJpaEntity mapToJpaEntity(UserAccount userAccount, InternationalCallingCodeJpaEntity icc,
+                                          GenderJpaEntity gender, DocumentJpaEntity profileImage, DocumentJpaEntity identityDocument) {
+        if (userAccount == null || userAccount.getIsTransporter())
+            return null;
 
-		Map<String, UserPreferenceJpaEntity> preferences = new HashMap<>();
+        Map<String, UserPreferenceJpaEntity> preferences = new HashMap<>();
 
-		if (userAccount.getPreferences() != null) {
-			userAccount.getPreferences().forEach((k, v) -> preferences.put(k,
-					new UserPreferenceJpaEntity(new UserPreferenceId(userAccount.getId(), k), v, null)));
-		}
+        if (userAccount.getPreferences() != null) {
+            userAccount.getPreferences().forEach((k, v) -> preferences.put(k,
+                    new UserPreferenceJpaEntity(new UserPreferenceId(userAccount.getId(), k), v, null)));
+        }
 
+/*
 		return new ClientJpaEntity(userAccount.getId(), userAccount.getOauthId(), gender, userAccount.getFirstname(),
 				userAccount.getLastname(), ValidationState.NOT_VALIDATED, "", userAccount.getDateOfBirth(),
 				userAccount.getEmail(), userAccount.getEmailValidationCode(), userAccount.getIsValidatedEmail(), icc,
@@ -36,6 +37,8 @@ public class ClientMapper {
 				userAccount.getIsValidatedMobileNumber(), userAccount.getReceiveNewsletter(),
 				userAccount.getCreationDateTime().toInstant(), profileImage, preferences, identityDocument,
 				userAccount.getDeviceRegistrationToken(), userAccount.getIsWebSocketConnected());
+*/
+        return null;
 
-	}
+    }
 }

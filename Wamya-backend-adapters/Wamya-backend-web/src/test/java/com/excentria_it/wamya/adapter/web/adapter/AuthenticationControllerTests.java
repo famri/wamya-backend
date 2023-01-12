@@ -24,7 +24,7 @@ import com.excentria_it.wamya.application.port.in.AuthenticateUserUseCase;
 import com.excentria_it.wamya.application.port.in.AuthenticateUserUseCase.LoginUserCommand;
 import com.excentria_it.wamya.common.exception.AuthorizationException;
 import com.excentria_it.wamya.common.exception.handlers.RestApiExceptionHandler;
-import com.excentria_it.wamya.domain.JwtOAuth2AccessToken;
+import com.excentria_it.wamya.domain.OpenIdAuthResponse;
 import com.excentria_it.wamya.test.data.common.UserLoginTestData;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -49,7 +49,7 @@ public class AuthenticationControllerTests {
 
 		LoginUserCommand command = UserLoginTestData.defaultLoginUserCommand().build();
 
-		JwtOAuth2AccessToken oAuth2AccessToken = new JwtOAuth2AccessToken();
+		OpenIdAuthResponse oAuth2AccessToken = new OpenIdAuthResponse();
 		oAuth2AccessToken.setAccessToken(ACCESS_TOKEN);
 		given(authenticateUserUseCase.loginUser(eq(command))).willReturn(oAuth2AccessToken);
 

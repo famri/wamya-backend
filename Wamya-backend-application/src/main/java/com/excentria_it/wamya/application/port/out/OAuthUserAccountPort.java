@@ -1,17 +1,16 @@
 package com.excentria_it.wamya.application.port.out;
 
-import com.excentria_it.wamya.domain.JwtOAuth2AccessToken;
 import com.excentria_it.wamya.domain.OAuthUserAccount;
+import com.excentria_it.wamya.domain.OpenIdAuthResponse;
 
 public interface OAuthUserAccountPort {
-	Long createOAuthUserAccount(OAuthUserAccount userAccount);
+    String createOAuthUserAccount(OAuthUserAccount userAccount);
 
-	JwtOAuth2AccessToken fetchJwtTokenForUser(String username, String password);
+    OpenIdAuthResponse fetchJwtTokenForUser(String username, String password);
 
-	void resetPassword(Long userOauthId, String password);
+    void resetPassword(String userOauthId, String password);
 
-	void updateMobileNumber(Long oauthId, String internationalCallingCode, String mobileNumber);
+    void updateMobileNumber(String oauthId, String internationalCallingCode, String mobileNumber);
 
-	public void updateEmail(Long oauthId, String email);
-
+    void updateEmail(String userOauthId, String email);
 }

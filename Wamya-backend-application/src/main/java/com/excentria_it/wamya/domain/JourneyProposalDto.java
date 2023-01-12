@@ -1,7 +1,6 @@
 package com.excentria_it.wamya.domain;
 
 import com.excentria_it.wamya.common.domain.StatusCode;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,55 +12,55 @@ import lombok.NoArgsConstructor;
 @Builder
 public class JourneyProposalDto {
 
-	private Long id;
+    private Long id;
 
-	private Double price;
+    private Double price;
 
-	private StatusDto status;
+    private StatusDto status;
 
-	private TransporterDto transporter;
+    private TransporterDto transporter;
 
-	private VehiculeDto vehicule;
+    private VehiculeDto vehicule;
 
-	@AllArgsConstructor
-	@NoArgsConstructor
-	@Data
-	public static class TransporterDto {
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Data
+    public static class TransporterDto {
 
-		private Long id;
+        private String id;
 
-		private String firstname;
+        private String firstname;
 
-		private String photoUrl;
+        private String photoUrl;
 
-		private Double globalRating;
+        private Double globalRating;
 
-	}
+    }
 
-	@AllArgsConstructor
-	@NoArgsConstructor
-	@Data
-	public static class VehiculeDto {
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Data
+    public static class VehiculeDto {
 
-		private Long id;
+        private Long id;
 
-		private String constructor;
+        private String constructor;
 
-		private String model;
+        private String model;
 
-		private String photoUrl;
+        private String photoUrl;
 
-	}
+    }
 
-	@AllArgsConstructor
-	@NoArgsConstructor
-	@Data
-	public static class StatusDto {
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Data
+    public static class StatusDto {
 
-		private StatusCode code;
+        private StatusCode code;
 
-		private String value;
+        private String value;
 
-	}
+    }
 
 }

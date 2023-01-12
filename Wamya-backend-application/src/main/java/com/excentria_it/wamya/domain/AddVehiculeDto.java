@@ -1,17 +1,15 @@
 package com.excentria_it.wamya.domain;
 
-import java.time.LocalDate;
-
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.format.annotation.DateTimeFormat.ISO;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
+
+import java.time.LocalDate;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,21 +17,21 @@ import lombok.NoArgsConstructor;
 @Builder
 public class AddVehiculeDto {
 
-	
-	private Long id;
-	
-	private String constructorName;
 
-	private String modelName;
+    private Long id;
 
-	private String engineType;
+    private String constructorName;
 
-	@DateTimeFormat(iso = ISO.DATE)
-	@JsonFormat(shape = Shape.STRING, pattern = "yyyy-MM-dd")
-	private LocalDate circulationDate;
+    private String modelName;
 
-	private String registration;
+    private String engineType;
 
-	private String photoUrl;
+    @DateTimeFormat(iso = ISO.DATE)
+    @JsonFormat(shape = Shape.STRING, pattern = "yyyy-MM-dd")
+    private LocalDate circulationDate;
+
+    private String registration;
+
+    private String photoUrl;
 
 }

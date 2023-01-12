@@ -23,14 +23,15 @@ public class OAuthClientConfiguration {
 			@Value("${spring.security.oauth2.client.registration.on-prem-auth-server-cc.scope}") String scope,
 			@Value("${spring.security.oauth2.client.registration.on-prem-auth-server-cc.authorization-grant-type}") String authorizationGrantType) {
 		return ClientRegistration.withRegistrationId("on-prem-auth-server-cc").tokenUri(token_uri).clientId(client_id)
-				.clientSecret(client_secret).scope(scope)
+				.clientSecret(client_secret)
+				//.scope(scope)
 				.authorizationGrantType(new AuthorizationGrantType(authorizationGrantType)).build();
 	}
 
 	// Create the client registration repository
 	@Bean
-	public ClientRegistrationRepository clientRegistrationRepository(ClientRegistration oktaClientRegistration) {
-		return new InMemoryClientRegistrationRepository(oktaClientRegistration);
+	public ClientRegistrationRepository clientRegistrationRepository(ClientRegistration clientRegistration) {
+		return new InMemoryClientRegistrationRepository(clientRegistration);
 	}
 
 	// Create the authorized client service

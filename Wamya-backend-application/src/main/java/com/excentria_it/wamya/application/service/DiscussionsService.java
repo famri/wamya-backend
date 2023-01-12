@@ -1,11 +1,5 @@
 package com.excentria_it.wamya.application.service;
 
-import java.time.ZoneId;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import javax.transaction.Transactional;
-
 import com.excentria_it.wamya.application.port.in.CreateDiscussionUseCase;
 import com.excentria_it.wamya.application.port.in.FindDiscussionUseCase;
 import com.excentria_it.wamya.application.port.in.LoadDiscussionsUseCase;
@@ -18,133 +12,133 @@ import com.excentria_it.wamya.common.annotation.UseCase;
 import com.excentria_it.wamya.common.exception.DiscussionNotFoundException;
 import com.excentria_it.wamya.common.exception.OperationDeniedException;
 import com.excentria_it.wamya.common.exception.UserAccountNotFoundException;
-import com.excentria_it.wamya.domain.LoadDiscussionsDto;
-import com.excentria_it.wamya.domain.LoadDiscussionsOutput;
-import com.excentria_it.wamya.domain.LoadDiscussionsOutputResult;
-import com.excentria_it.wamya.domain.LoadDiscussionsResult;
-import com.excentria_it.wamya.domain.UserAccount;
-
+import com.excentria_it.wamya.domain.*;
 import lombok.RequiredArgsConstructor;
+
+import javax.transaction.Transactional;
+import java.time.ZoneId;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @UseCase
 @Transactional
 @RequiredArgsConstructor
 public class DiscussionsService implements LoadDiscussionsUseCase, FindDiscussionUseCase, CreateDiscussionUseCase {
 
-	private final LoadDiscussionsPort loadDiscussionsPort;
+    private final LoadDiscussionsPort loadDiscussionsPort;
 
-	private final CreateDiscussionPort createDiscussionPort;
+    private final CreateDiscussionPort createDiscussionPort;
 
-	private final LoadUserAccountPort loadUserAccountPort;
+    private final LoadUserAccountPort loadUserAccountPort;
 
-	private final DateTimeHelper dateTimeHelper;
+    private final DateTimeHelper dateTimeHelper;
 
-	@Override
-	public LoadDiscussionsResult loadDiscussions(LoadDiscussionsCommand command) {
-		Optional<UserAccount> userAccountOptional = loadUserAccountPort
-				.loadUserAccountByUsername(command.getUsername());
-		if (userAccountOptional.isEmpty()) {
-			throw new UserAccountNotFoundException(
-					String.format("User account not found by username: %s", command.getUsername()));
-		}
-		UserAccount userAccount = userAccountOptional.get();
+    @Override
+    public LoadDiscussionsResult loadDiscussions(LoadDiscussionsCommand command) {
+        Optional<UserAccount> userAccountOptional = loadUserAccountPort
+                .loadUserAccountByUsername(command.getUsername());
+        if (userAccountOptional.isEmpty()) {
+            throw new UserAccountNotFoundException(
+                    String.format("User account not found by username: %s", command.getUsername()));
+        }
+        UserAccount userAccount = userAccountOptional.get();
 
-		ZoneId userZoneId = dateTimeHelper.findUserZoneId(command.getUsername());
-		LoadDiscussionsOutputResult discussionsOutputResult;
-		if (command.getFilteringCriterion() == null) {
-			discussionsOutputResult = loadDiscussionsPort.loadDiscussions(userAccount.getId(),
-					userAccount.getIsTransporter(), command.getPageNumber(), command.getPageSize(),
-					command.getSortingCriterion());
-		} else {
-			discussionsOutputResult = loadDiscussionsPort.loadDiscussions(userAccount.getId(),
-					userAccount.getIsTransporter(), command.getPageNumber(), command.getPageSize(),
-					command.getFilteringCriterion(), command.getSortingCriterion());
-		}
+        ZoneId userZoneId = dateTimeHelper.findUserZoneId(command.getUsername());
+        LoadDiscussionsOutputResult discussionsOutputResult;
+        if (command.getFilteringCriterion() == null) {
+            discussionsOutputResult = loadDiscussionsPort.loadDiscussions(userAccount.getId(),
+                    userAccount.getIsTransporter(), command.getPageNumber(), command.getPageSize(),
+                    command.getSortingCriterion());
+        } else {
+            discussionsOutputResult = loadDiscussionsPort.loadDiscussions(userAccount.getId(),
+                    userAccount.getIsTransporter(), command.getPageNumber(), command.getPageSize(),
+                    command.getFilteringCriterion(), command.getSortingCriterion());
+        }
 
-		return new LoadDiscussionsResult(discussionsOutputResult.getTotalPages(),
-				discussionsOutputResult.getTotalElements(), discussionsOutputResult.getPageNumber(),
-				discussionsOutputResult.getPageSize(), discussionsOutputResult.isHasNext(),
-				discussionsOutputResult.getContent().stream()
-						.map(d -> DiscussionUtils.mapToLoadDiscussionsDto(dateTimeHelper, d, userZoneId)
+        return new LoadDiscussionsResult(discussionsOutputResult.getTotalPages(),
+                discussionsOutputResult.getTotalElements(), discussionsOutputResult.getPageNumber(),
+                discussionsOutputResult.getPageSize(), discussionsOutputResult.isHasNext(),
+                discussionsOutputResult.getContent().stream()
+                        .map(d -> DiscussionUtils.mapToLoadDiscussionsDto(dateTimeHelper, d, userZoneId)
 
-						).collect(Collectors.toList()));
+                        ).collect(Collectors.toList()));
 
-	}
+    }
 
-	@Override
-	public LoadDiscussionsDto findDiscussionByClientIdAndTransporterId(
-			FindDiscussionByClientIdAndTransporterIdCommand command) {
+    @Override
+    public LoadDiscussionsDto findDiscussionByClientIdAndTransporterId(
+            FindDiscussionByClientIdAndTransporterIdCommand command) {
 
-		Optional<UserAccount> userAccountOptional = loadUserAccountPort
-				.loadUserAccountByUsername(command.getUsername());
+        Optional<UserAccount> userAccountOptional = loadUserAccountPort
+                .loadUserAccountByUsername(command.getUsername());
 
-		if (!userAccountOptional.get().getOauthId().equals(command.getClientId())
-				&& !userAccountOptional.get().getOauthId().equals(command.getTransporterId())) {
-			throw new DiscussionNotFoundException(
-					String.format("Discussion not found by clientOauthId %d and transporterOauthId %d",
-							command.getClientId(), command.getTransporterId()));
-		}
+        if (!userAccountOptional.get().getOauthId().equals(command.getClientId())
+                && !userAccountOptional.get().getOauthId().equals(command.getTransporterId())) {
+            throw new DiscussionNotFoundException(
+                    String.format("Discussion not found by clientOauthId %s and transporterOauthId %s",
+                            command.getClientId(), command.getTransporterId()));
+        }
 
-		Optional<LoadDiscussionsOutput> result = loadDiscussionsPort
-				.loadDiscussionByClientIdAndTransporterId(command.getClientId(), command.getTransporterId());
-		if (result.isEmpty()) {
-			throw new DiscussionNotFoundException(
-					String.format("Discussion not found by clientOauthId %d and transporterOauthId %d",
-							command.getClientId(), command.getTransporterId()));
-		}
-		ZoneId userZoneId = dateTimeHelper.findUserZoneId(command.getUsername());
-		return DiscussionUtils.mapToLoadDiscussionsDto(dateTimeHelper, result.get(), userZoneId);
+        Optional<LoadDiscussionsOutput> result = loadDiscussionsPort
+                .loadDiscussionByClientIdAndTransporterId(command.getClientId(), command.getTransporterId());
+        if (result.isEmpty()) {
+            throw new DiscussionNotFoundException(
+                    String.format("Discussion not found by clientOauthId %s and transporterOauthId %s",
+                            command.getClientId(), command.getTransporterId()));
+        }
+        ZoneId userZoneId = dateTimeHelper.findUserZoneId(command.getUsername());
+        return DiscussionUtils.mapToLoadDiscussionsDto(dateTimeHelper, result.get(), userZoneId);
 
-	}
+    }
 
-	@Override
-	public LoadDiscussionsDto findDiscussionById(FindDiscussionByIdCommand command) {
+    @Override
+    public LoadDiscussionsDto findDiscussionById(FindDiscussionByIdCommand command) {
 
-		Optional<LoadDiscussionsOutput> result = loadDiscussionsPort.loadDiscussionById(command.getDiscussionId());
+        Optional<LoadDiscussionsOutput> result = loadDiscussionsPort.loadDiscussionById(command.getDiscussionId());
 
-		if (result.isEmpty()) {
-			throw new DiscussionNotFoundException(
-					String.format("Discussion not found by discussionId %d", command.getDiscussionId()));
-		}
+        if (result.isEmpty()) {
+            throw new DiscussionNotFoundException(
+                    String.format("Discussion not found by discussionId %d", command.getDiscussionId()));
+        }
 
-		if (!result.get().getClient().getEmail().equals(command.getUsername())
-				&& !result.get().getTransporter().getEmail().equals(command.getUsername())) {
-			throw new DiscussionNotFoundException(
-					String.format("Discussion not found by discussionId %d", command.getDiscussionId()));
-		}
+        if (!result.get().getClient().getEmail().equals(command.getUsername())
+                && !result.get().getTransporter().getEmail().equals(command.getUsername())) {
+            throw new DiscussionNotFoundException(
+                    String.format("Discussion not found by discussionId %d", command.getDiscussionId()));
+        }
 
-		ZoneId userZoneId = dateTimeHelper.findUserZoneId(command.getUsername());
-		return DiscussionUtils.mapToLoadDiscussionsDto(dateTimeHelper, result.get(), userZoneId);
+        ZoneId userZoneId = dateTimeHelper.findUserZoneId(command.getUsername());
+        return DiscussionUtils.mapToLoadDiscussionsDto(dateTimeHelper, result.get(), userZoneId);
 
-	}
+    }
 
-	@Override
-	public LoadDiscussionsDto createDiscussion(CreateDiscussionCommand command, String username) {
+    @Override
+    public LoadDiscussionsDto createDiscussion(CreateDiscussionCommand command, String username) {
 
-		Optional<UserAccount> userAccountOptional = loadUserAccountPort.loadUserAccountByUsername(username);
+        Optional<UserAccount> userAccountOptional = loadUserAccountPort.loadUserAccountByUsername(username);
 
-		boolean isTransporter = userAccountOptional.get().getIsTransporter();
+        boolean isTransporter = userAccountOptional.get().getIsTransporter();
 
-		if ((isTransporter && !userAccountOptional.get().getOauthId().equals(command.getTransporterId()))
-				|| (!isTransporter && !userAccountOptional.get().getOauthId().equals(command.getClientId()))) {
+        if ((isTransporter && !userAccountOptional.get().getOauthId().equals(command.getTransporterId()))
+                || (!isTransporter && !userAccountOptional.get().getOauthId().equals(command.getClientId()))) {
 
-			throw new OperationDeniedException("User cannot create a discussion for another user.");
-		}
+            throw new OperationDeniedException("User cannot create a discussion for another user.");
+        }
 
-		if ((isTransporter && !loadUserAccountPort.existsByOauthId(command.getClientId()))
-				|| (!isTransporter && !loadUserAccountPort.existsByOauthId(command.getTransporterId()))) {
+        if ((isTransporter && !loadUserAccountPort.existsByOauthId(command.getClientId()))
+                || (!isTransporter && !loadUserAccountPort.existsByOauthId(command.getTransporterId()))) {
 
-			throw new OperationDeniedException(String.format("Cannot create a discussion with inexistent user."));
+            throw new OperationDeniedException(String.format("Cannot create a discussion with non-existent user."));
 
-		}
+        }
 
-		LoadDiscussionsOutput loadDiscussionOutput = createDiscussionPort.createDiscussion(command.getClientId(),
-				command.getTransporterId());
+        LoadDiscussionsOutput loadDiscussionOutput = createDiscussionPort.createDiscussion(command.getClientId(),
+                command.getTransporterId());
 
-		ZoneId userZoneId = dateTimeHelper.findUserZoneId(username);
+        ZoneId userZoneId = dateTimeHelper.findUserZoneId(username);
 
-		return DiscussionUtils.mapToLoadDiscussionsDto(dateTimeHelper, loadDiscussionOutput, userZoneId);
+        return DiscussionUtils.mapToLoadDiscussionsDto(dateTimeHelper, loadDiscussionOutput, userZoneId);
 
-	}
+    }
 
 }

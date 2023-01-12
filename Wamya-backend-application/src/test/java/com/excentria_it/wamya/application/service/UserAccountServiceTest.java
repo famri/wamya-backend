@@ -1,34 +1,10 @@
 package com.excentria_it.wamya.application.service;
 
-import static com.excentria_it.wamya.test.data.common.TestConstants.*;
-import static com.excentria_it.wamya.test.data.common.UserAccountTestData.*;
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.BDDMockito.*;
-import static org.mockito.Mockito.*;
-
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.UUID;
-
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.Spy;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.context.MessageSource;
-import org.springframework.security.crypto.password.PasswordEncoder;
-
 import com.excentria_it.wamya.application.port.in.CreateUserAccountUseCase.CreateUserAccountCommand;
 import com.excentria_it.wamya.application.port.in.CreateUserAccountUseCase.CreateUserAccountCommand.CreateUserAccountCommandBuilder;
+import com.excentria_it.wamya.application.port.out.AsynchronousMessagingPort;
 import com.excentria_it.wamya.application.port.out.CreateUserAccountPort;
 import com.excentria_it.wamya.application.port.out.LoadUserAccountPort;
-import com.excentria_it.wamya.application.port.out.AsynchronousMessagingPort;
 import com.excentria_it.wamya.application.port.out.OAuthUserAccountPort;
 import com.excentria_it.wamya.application.props.ServerUrlProperties;
 import com.excentria_it.wamya.application.service.helper.CodeGenerator;
@@ -37,381 +13,387 @@ import com.excentria_it.wamya.common.domain.EmailTemplate;
 import com.excentria_it.wamya.common.domain.SMSMessage;
 import com.excentria_it.wamya.common.domain.SMSTemplate;
 import com.excentria_it.wamya.common.exception.UserAccountAlreadyExistsException;
-import com.excentria_it.wamya.domain.JwtOAuth2AccessToken;
-import com.excentria_it.wamya.domain.OAuthRole;
 import com.excentria_it.wamya.domain.OAuthUserAccount;
+import com.excentria_it.wamya.domain.OpenIdAuthResponse;
 import com.excentria_it.wamya.domain.UserAccount;
 import com.excentria_it.wamya.domain.UserAccount.MobilePhoneNumber;
 import com.excentria_it.wamya.test.data.common.TestConstants;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.*;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.MessageSource;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
+
+import static com.excentria_it.wamya.test.data.common.TestConstants.*;
+import static com.excentria_it.wamya.test.data.common.UserAccountTestData.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.not;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class UserAccountServiceTest {
 
-	@Mock
-	private LoadUserAccountPort loadUserAccountPort;
+    @Mock
+    private LoadUserAccountPort loadUserAccountPort;
 
-	@Mock
-	private CreateUserAccountPort createUserAccountPort;
+    @Mock
+    private CreateUserAccountPort createUserAccountPort;
 
-	@Mock
-	private AsynchronousMessagingPort messagingPort;
+    @Mock
+    private AsynchronousMessagingPort messagingPort;
 
-	@Mock
-	private CodeGenerator codeGenerator;
+    @Mock
+    private CodeGenerator codeGenerator;
 
-	@Mock
-	private PasswordEncoder passwordEncoder;
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
-	@Mock
-	private ServerUrlProperties serverUrlProperties;
+    @Mock
+    private ServerUrlProperties serverUrlProperties;
 
-	@Mock
-	private MessageSource messageSource;
+    @Mock
+    private MessageSource messageSource;
 
-	@Mock
-	private OAuthUserAccountPort oAuthUserAccountPort;
+    @Mock
+    private OAuthUserAccountPort oAuthUserAccountPort;
 
-	@Spy
-	@InjectMocks
-	private UserAccountService userAccountService;
+    @Spy
+    @InjectMocks
+    private UserAccountService userAccountService;
 
-	private Locale locale = new Locale("fr");
+    private Locale locale = new Locale("fr");
 
-	@Test
-	void givenExistentEmailUsername_whenRegisterUserAccountCreationDemand_thenThrowUserAccountAlreadyExistsException() {
+    @Test
+    void givenExistentEmailUsername_whenRegisterUserAccountCreationDemand_thenThrowUserAccountAlreadyExistsException() {
 
-		givenAnExistentEmailUsername();
+        givenAnExistentEmailUsername();
 
-		CreateUserAccountCommandBuilder commandBuilder = defaultClientUserAccountCommandBuilder();
+        CreateUserAccountCommandBuilder commandBuilder = defaultClientUserAccountCommandBuilder();
 
-		assertThrows(UserAccountAlreadyExistsException.class,
-				() -> userAccountService.registerUserAccountCreationDemand(commandBuilder.build(), locale));
+        assertThrows(UserAccountAlreadyExistsException.class,
+                () -> userAccountService.registerUserAccountCreationDemand(commandBuilder.build(), locale));
 
-	}
+    }
 
-	@Test
-	void givenExistentMobileNumberUsername_whenRegisterUserAccountCreationDemand_thenThrowUserAccountAlreadyExistsException() {
-		givenNonExistentEmailUsername();
-		givenAnExistentMobileNumberUsername();
+    @Test
+    void givenExistentMobileNumberUsername_whenRegisterUserAccountCreationDemand_thenThrowUserAccountAlreadyExistsException() {
+        givenNonExistentEmailUsername();
+        givenAnExistentMobileNumberUsername();
 
-		CreateUserAccountCommandBuilder commandBuilder = defaultClientUserAccountCommandBuilder();
+        CreateUserAccountCommandBuilder commandBuilder = defaultClientUserAccountCommandBuilder();
 
-		assertThrows(UserAccountAlreadyExistsException.class,
-				() -> userAccountService.registerUserAccountCreationDemand(commandBuilder.build(), locale));
+        assertThrows(UserAccountAlreadyExistsException.class,
+                () -> userAccountService.registerUserAccountCreationDemand(commandBuilder.build(), locale));
 
-	}
+    }
 
-	@Test
-	void givenNonExistentUsername_whenRegisterCustomerUserAccountCreationDemand_thenSucceed() {
+    @Test
+    void givenNonExistentUsername_whenRegisterCustomerUserAccountCreationDemand_thenSucceed() {
 
-		givenNonExistentEmailUsername();
-		givenNonExistentMobileNumberUsername();
+        givenNonExistentEmailUsername();
+        givenNonExistentMobileNumberUsername();
 
-		givenServerUrlProperties();
+        givenServerUrlProperties();
 
-		String validationCode = givenDefaultGeneratedCode();
-		String uuid = givenDefaultGeneratedUUID();
-		String encodedPassword = givenDefaultEncodedPassword();
+        String validationCode = givenDefaultGeneratedCode();
+        String uuid = givenDefaultGeneratedUUID();
 
-		CreateUserAccountCommandBuilder commandBuilder = defaultClientUserAccountCommandBuilder();
-		CreateUserAccountCommand command = commandBuilder.build();
+        CreateUserAccountCommandBuilder commandBuilder = defaultClientUserAccountCommandBuilder();
+        CreateUserAccountCommand command = commandBuilder.build();
 
-		String emailValidationLink = givenPatchUrl();
+        String emailValidationLink = givenPatchUrl();
 
-		assertDoesNotThrow(() -> userAccountService.registerUserAccountCreationDemand(command, locale));
+        assertDoesNotThrow(() -> userAccountService.registerUserAccountCreationDemand(command, locale));
 
-		ArgumentCaptor<UserAccount> userAccountCaptor = ArgumentCaptor.forClass(UserAccount.class);
+        ArgumentCaptor<UserAccount> userAccountCaptor = ArgumentCaptor.forClass(UserAccount.class);
 
-		then(createUserAccountPort).should(times(1)).createUserAccount(userAccountCaptor.capture());
+        then(createUserAccountPort).should(times(1)).createUserAccount(userAccountCaptor.capture());
 
-		assertThat(userAccountCaptor.getValue().getMobilePhoneNumber().getInternationalCallingCode())
-				.isEqualTo(command.getIcc());
+        assertThat(userAccountCaptor.getValue().getMobilePhoneNumber().getInternationalCallingCode())
+                .isEqualTo(command.getIcc());
 
-		assertThat(userAccountCaptor.getValue().getMobilePhoneNumber().getMobileNumber())
-				.isEqualTo(command.getMobileNumber());
+        assertThat(userAccountCaptor.getValue().getMobilePhoneNumber().getMobileNumber())
+                .isEqualTo(command.getMobileNumber());
 
-		assertThat(userAccountCaptor.getValue().getEmail()).isEqualTo(command.getEmail());
+        assertThat(userAccountCaptor.getValue().getEmail()).isEqualTo(command.getEmail());
 
-		assertThat(userAccountCaptor.getValue().getUserPassword()).isEqualTo(encodedPassword);
+        assertThat(userAccountCaptor.getValue().getEmailValidationCode()).isEqualTo(uuid);
 
-		assertThat(userAccountCaptor.getValue().getEmailValidationCode()).isEqualTo(uuid);
+        assertThat(userAccountCaptor.getValue().getMobileNumberValidationCode()).isEqualTo(validationCode);
 
-		assertThat(userAccountCaptor.getValue().getMobileNumberValidationCode()).isEqualTo(validationCode);
+        then(codeGenerator).should(times(1)).generateNumericCode();
+        then(codeGenerator).should(times(1)).generateUUID();
 
-		then(codeGenerator).should(times(1)).generateNumericCode();
-		then(codeGenerator).should(times(1)).generateUUID();
+        // Testing mobile phone number validation SMS
+        ArgumentCaptor<SMSMessage> smsMessageCaptor = ArgumentCaptor.forClass(SMSMessage.class);
 
-		// Testing mobile phone number validation SMS
-		ArgumentCaptor<SMSMessage> smsMessageCaptor = ArgumentCaptor.forClass(SMSMessage.class);
+        then(messagingPort).should(times(1)).sendSMSMessage(smsMessageCaptor.capture());
 
-		then(messagingPort).should(times(1)).sendSMSMessage(smsMessageCaptor.capture());
+        assertThat(smsMessageCaptor.getValue().getTo())
+                .isEqualTo(userAccountCaptor.getValue().getMobilePhoneNumber().toCallable());
 
-		assertThat(smsMessageCaptor.getValue().getTo())
-				.isEqualTo(userAccountCaptor.getValue().getMobilePhoneNumber().toCallable());
+        assertThat(smsMessageCaptor.getValue().getTemplate()).isEqualTo(SMSTemplate.PHONE_VALIDATION);
 
-		assertThat(smsMessageCaptor.getValue().getTemplate()).isEqualTo(SMSTemplate.PHONE_VALIDATION);
+        assertThat(not(smsMessageCaptor.getValue().getParams().isEmpty()));
 
-		assertThat(not(smsMessageCaptor.getValue().getParams().isEmpty()));
+        assertNotNull(
+                smsMessageCaptor.getValue().getParams().get(SMSTemplate.PHONE_VALIDATION.getTemplateParams().get(0)));
 
-		assertNotNull(
-				smsMessageCaptor.getValue().getParams().get(SMSTemplate.PHONE_VALIDATION.getTemplateParams().get(0)));
+        assertThat(smsMessageCaptor.getValue().getParams().get(SMSTemplate.PHONE_VALIDATION.getTemplateParams().get(0)))
+                .isEqualTo(validationCode);
 
-		assertThat(smsMessageCaptor.getValue().getParams().get(SMSTemplate.PHONE_VALIDATION.getTemplateParams().get(0)))
-				.isEqualTo(validationCode);
+        // Testing email validation
+        ArgumentCaptor<EmailMessage> emailMessageCaptor = ArgumentCaptor.forClass(EmailMessage.class);
 
-		// Testing email validation
-		ArgumentCaptor<EmailMessage> emailMessageCaptor = ArgumentCaptor.forClass(EmailMessage.class);
+        then(messagingPort).should(times(1)).sendEmailMessage(emailMessageCaptor.capture());
 
-		then(messagingPort).should(times(1)).sendEmailMessage(emailMessageCaptor.capture());
+        assertThat(emailMessageCaptor.getValue().getTo()).isEqualTo(userAccountCaptor.getValue().getEmail());
 
-		assertThat(emailMessageCaptor.getValue().getTo()).isEqualTo(userAccountCaptor.getValue().getEmail());
+        assertThat(emailMessageCaptor.getValue().getTemplate()).isEqualTo(EmailTemplate.EMAIL_VALIDATION);
 
-		assertThat(emailMessageCaptor.getValue().getTemplate()).isEqualTo(EmailTemplate.EMAIL_VALIDATION);
+        assertThat(not(emailMessageCaptor.getValue().getParams().isEmpty()));
 
-		assertThat(not(emailMessageCaptor.getValue().getParams().isEmpty()));
+        assertNotNull(emailMessageCaptor.getValue().getParams()
+                .get(EmailTemplate.EMAIL_VALIDATION.getTemplateParams().get(0)));
 
-		assertNotNull(emailMessageCaptor.getValue().getParams()
-				.get(EmailTemplate.EMAIL_VALIDATION.getTemplateParams().get(0)));
+        assertThat(emailMessageCaptor.getValue().getParams()
+                .get(EmailTemplate.EMAIL_VALIDATION.getTemplateParams().get(0))).isEqualTo(emailValidationLink);
+    }
 
-		assertThat(emailMessageCaptor.getValue().getParams()
-				.get(EmailTemplate.EMAIL_VALIDATION.getTemplateParams().get(0))).isEqualTo(emailValidationLink);
-	}
+    @Test
+    void givenNonExistentMobilePhoneNumberAndNonExistentEmail_whenRegisterTransporterUserAccountCreationDemand_thenSucceed() {
 
-	@Test
-	void givenNonExistentMobilePhoneNumberAndNonExistentEmail_whenRegisterTransporterUserAccountCreationDemand_thenSucceed() {
+        givenNonExistentEmailUsername();
+        givenNonExistentMobileNumberUsername();
 
-		givenNonExistentEmailUsername();
-		givenNonExistentMobileNumberUsername();
+        givenServerUrlProperties();
 
-		givenServerUrlProperties();
+        String validationCode = givenDefaultGeneratedCode();
+        String uuid = givenDefaultGeneratedUUID();
 
-		String validationCode = givenDefaultGeneratedCode();
-		String uuid = givenDefaultGeneratedUUID();
-		String encodedPassword = givenDefaultEncodedPassword();
+        CreateUserAccountCommandBuilder commandBuilder = defaultTransporterUserAccountCommandBuilder();
+        CreateUserAccountCommand command = commandBuilder.build();
 
-		CreateUserAccountCommandBuilder commandBuilder = defaultTransporterUserAccountCommandBuilder();
-		CreateUserAccountCommand command = commandBuilder.build();
+        String emailValidationLink = givenPatchUrl();
 
-		String emailValidationLink = givenPatchUrl();
+        assertDoesNotThrow(() -> userAccountService.registerUserAccountCreationDemand(command, locale));
 
-		assertDoesNotThrow(() -> userAccountService.registerUserAccountCreationDemand(command, locale));
+        ArgumentCaptor<UserAccount> userAccountCaptor = ArgumentCaptor.forClass(UserAccount.class);
 
-		ArgumentCaptor<UserAccount> userAccountCaptor = ArgumentCaptor.forClass(UserAccount.class);
+        then(createUserAccountPort).should(times(1)).createUserAccount(userAccountCaptor.capture());
 
-		then(createUserAccountPort).should(times(1)).createUserAccount(userAccountCaptor.capture());
+        assertThat(userAccountCaptor.getValue().getMobilePhoneNumber().getInternationalCallingCode())
+                .isEqualTo(command.getIcc());
 
-		assertThat(userAccountCaptor.getValue().getMobilePhoneNumber().getInternationalCallingCode())
-				.isEqualTo(command.getIcc());
+        assertThat(userAccountCaptor.getValue().getMobilePhoneNumber().getMobileNumber())
+                .isEqualTo(command.getMobileNumber());
 
-		assertThat(userAccountCaptor.getValue().getMobilePhoneNumber().getMobileNumber())
-				.isEqualTo(command.getMobileNumber());
+        assertThat(userAccountCaptor.getValue().getEmail()).isEqualTo(command.getEmail());
 
-		assertThat(userAccountCaptor.getValue().getEmail()).isEqualTo(command.getEmail());
+        assertThat(userAccountCaptor.getValue().getEmailValidationCode()).isEqualTo(uuid);
 
-		assertThat(userAccountCaptor.getValue().getUserPassword()).isEqualTo(encodedPassword);
+        assertThat(userAccountCaptor.getValue().getMobileNumberValidationCode()).isEqualTo(validationCode);
 
-		assertThat(userAccountCaptor.getValue().getEmailValidationCode()).isEqualTo(uuid);
+        assertThat(userAccountCaptor.getValue().getIsTransporter()).isEqualTo(command.getIsTransporter());
 
-		assertThat(userAccountCaptor.getValue().getMobileNumberValidationCode()).isEqualTo(validationCode);
+        then(codeGenerator).should(times(1)).generateNumericCode();
+        then(codeGenerator).should(times(1)).generateUUID();
 
-		assertThat(userAccountCaptor.getValue().getIsTransporter()).isEqualTo(command.getIsTransporter());
+        // Testing mobile phone number validation SMS
+        ArgumentCaptor<SMSMessage> smsMessageCaptor = ArgumentCaptor.forClass(SMSMessage.class);
 
-		then(codeGenerator).should(times(1)).generateNumericCode();
-		then(codeGenerator).should(times(1)).generateUUID();
+        then(messagingPort).should(times(1)).sendSMSMessage(smsMessageCaptor.capture());
 
-		// Testing mobile phone number validation SMS
-		ArgumentCaptor<SMSMessage> smsMessageCaptor = ArgumentCaptor.forClass(SMSMessage.class);
+        assertThat(smsMessageCaptor.getValue().getTo())
+                .isEqualTo(userAccountCaptor.getValue().getMobilePhoneNumber().toCallable());
 
-		then(messagingPort).should(times(1)).sendSMSMessage(smsMessageCaptor.capture());
+        assertThat(smsMessageCaptor.getValue().getTemplate()).isEqualTo(SMSTemplate.PHONE_VALIDATION);
 
-		assertThat(smsMessageCaptor.getValue().getTo())
-				.isEqualTo(userAccountCaptor.getValue().getMobilePhoneNumber().toCallable());
+        assertThat(not(smsMessageCaptor.getValue().getParams().isEmpty()));
 
-		assertThat(smsMessageCaptor.getValue().getTemplate()).isEqualTo(SMSTemplate.PHONE_VALIDATION);
+        assertNotNull(
+                smsMessageCaptor.getValue().getParams().get(SMSTemplate.PHONE_VALIDATION.getTemplateParams().get(0)));
 
-		assertThat(not(smsMessageCaptor.getValue().getParams().isEmpty()));
+        assertThat(smsMessageCaptor.getValue().getParams().get(SMSTemplate.PHONE_VALIDATION.getTemplateParams().get(0)))
+                .isEqualTo(validationCode);
 
-		assertNotNull(
-				smsMessageCaptor.getValue().getParams().get(SMSTemplate.PHONE_VALIDATION.getTemplateParams().get(0)));
+        // Testing email validation
+        ArgumentCaptor<EmailMessage> emailMessageCaptor = ArgumentCaptor.forClass(EmailMessage.class);
 
-		assertThat(smsMessageCaptor.getValue().getParams().get(SMSTemplate.PHONE_VALIDATION.getTemplateParams().get(0)))
-				.isEqualTo(validationCode);
+        then(messagingPort).should(times(1)).sendEmailMessage(emailMessageCaptor.capture());
 
-		// Testing email validation
-		ArgumentCaptor<EmailMessage> emailMessageCaptor = ArgumentCaptor.forClass(EmailMessage.class);
+        assertThat(emailMessageCaptor.getValue().getTo()).isEqualTo(userAccountCaptor.getValue().getEmail());
 
-		then(messagingPort).should(times(1)).sendEmailMessage(emailMessageCaptor.capture());
+        assertThat(emailMessageCaptor.getValue().getTemplate()).isEqualTo(EmailTemplate.EMAIL_VALIDATION);
 
-		assertThat(emailMessageCaptor.getValue().getTo()).isEqualTo(userAccountCaptor.getValue().getEmail());
+        assertThat(not(emailMessageCaptor.getValue().getParams().isEmpty()));
 
-		assertThat(emailMessageCaptor.getValue().getTemplate()).isEqualTo(EmailTemplate.EMAIL_VALIDATION);
+        assertNotNull(emailMessageCaptor.getValue().getParams()
+                .get(EmailTemplate.EMAIL_VALIDATION.getTemplateParams().get(0)));
 
-		assertThat(not(emailMessageCaptor.getValue().getParams().isEmpty()));
+        assertThat(emailMessageCaptor.getValue().getParams()
+                .get(EmailTemplate.EMAIL_VALIDATION.getTemplateParams().get(0))).isEqualTo(emailValidationLink);
 
-		assertNotNull(emailMessageCaptor.getValue().getParams()
-				.get(EmailTemplate.EMAIL_VALIDATION.getTemplateParams().get(0)));
+        ArgumentCaptor<OAuthUserAccount> oAuthUserAccount = ArgumentCaptor.forClass(OAuthUserAccount.class);
 
-		assertThat(emailMessageCaptor.getValue().getParams()
-				.get(EmailTemplate.EMAIL_VALIDATION.getTemplateParams().get(0))).isEqualTo(emailValidationLink);
+        then(oAuthUserAccountPort).should(times(1)).createOAuthUserAccount(oAuthUserAccount.capture());
+        assertEquals(oAuthUserAccount.getValue().getFirstName(), command.getFirstname());
+        assertEquals(oAuthUserAccount.getValue().getLastName(), command.getLastname());
+        assertEquals(oAuthUserAccount.getValue().getEmail(), command.getEmail());
+        assertEquals(oAuthUserAccount.getValue().getAttributes().get("phoneNumber"), command.getIcc() + "_" + command.getMobileNumber());
+        assertEquals(oAuthUserAccount.getValue().getCredentials().get(0).getValue(), command.getUserPassword());
+        assertEquals(oAuthUserAccount.getValue().isEnabled(), true);
 
-		ArgumentCaptor<OAuthUserAccount> oAuthUserAccount = ArgumentCaptor.forClass(OAuthUserAccount.class);
+        assertEquals(oAuthUserAccount.getValue().isEnabled(), true);
+        assertEquals(oAuthUserAccount.getValue().getRealmRoles(),
+                command.getIsTransporter() ? List.of("ROLE_TRANSPORTER") : List.of("ROLE_CLIENT"));
 
-		then(oAuthUserAccountPort).should(times(1)).createOAuthUserAccount(oAuthUserAccount.capture());
-		assertEquals(oAuthUserAccount.getValue().getFirstname(), command.getFirstname());
-		assertEquals(oAuthUserAccount.getValue().getLastname(), command.getLastname());
-		assertEquals(oAuthUserAccount.getValue().getEmail(), command.getEmail());
-		assertEquals(oAuthUserAccount.getValue().getPhoneNumber(), command.getIcc() + "_" + command.getMobileNumber());
-		assertEquals(oAuthUserAccount.getValue().getPassword(), command.getUserPassword());
-		assertEquals(oAuthUserAccount.getValue().isAccountNonExpired(), true);
-		assertEquals(oAuthUserAccount.getValue().isAccountNonLocked(), true);
-		assertEquals(oAuthUserAccount.getValue().isCredentialsNonExpired(), true);
-		assertEquals(oAuthUserAccount.getValue().isEnabled(), true);
-		assertEquals(oAuthUserAccount.getValue().getRoles(),
-				List.of(new OAuthRole(command.getIsTransporter() ? "TRANSPORTER" : "CLIENT")));
+    }
 
-	}
+    @Test
+    void givenSendingSMSValidationCodeFailed_whenRegisterUserAccountCreationDemand_thenReturnAccessToken() {
 
-	@Test
-	void givenSendingSMSValidationCodeFailed_whenRegisterUserAccountCreationDemand_thenReturnAccessToken() {
+        givenNonExistentEmailUsername();
+        givenDefaultGeneratedCode();
+        givenDefaultGeneratedUUID();
+        CreateUserAccountCommand command = defaultClientUserAccountCommandBuilder().build();
+        givenRequestSendingEmailValidationLinkReturns(true);
+        givenRequestSendingSMSValidationCodeReturns(false);
 
-		givenNonExistentEmailUsername();
-		givenDefaultGeneratedCode();
-		givenDefaultGeneratedUUID();
-		CreateUserAccountCommand command = defaultClientUserAccountCommandBuilder().build();
-		givenRequestSendingEmailValidationLinkReturns(true);
-		givenRequestSendingSMSValidationCodeReturns(false);
+        OpenIdAuthResponse oAuth2AccessToken = Mockito.mock(OpenIdAuthResponse.class);
+        given(oAuth2AccessToken.getAccessToken()).willReturn(TestConstants.DEFAULT_ACCESS_TOKEN);
 
-		JwtOAuth2AccessToken oAuth2AccessToken = Mockito.mock(JwtOAuth2AccessToken.class);
-		given(oAuth2AccessToken.getAccessToken()).willReturn(TestConstants.DEFAULT_ACCESS_TOKEN);
+        given(oAuthUserAccountPort.fetchJwtTokenForUser(command.getEmail(), command.getUserPassword()))
+                .willReturn(oAuth2AccessToken);
 
-		given(oAuthUserAccountPort.fetchJwtTokenForUser(command.getEmail(), command.getUserPassword()))
-				.willReturn(oAuth2AccessToken);
+        OpenIdAuthResponse accessToken = userAccountService.registerUserAccountCreationDemand(command, locale);
 
-		JwtOAuth2AccessToken accessToken = userAccountService.registerUserAccountCreationDemand(command, locale);
+        assertEquals(oAuth2AccessToken.getAccessToken(), accessToken.getAccessToken());
 
-		assertEquals(oAuth2AccessToken.getAccessToken(), accessToken.getAccessToken());
+    }
 
-	}
+    @Test
+    void givenSendingEmailValidationLinkFailed_whenRegisterUserAccountCreationDemand_thenReturnCreatedUserAccountId() {
 
-	@Test
-	void givenSendingEmailValidationLinkFailed_whenRegisterUserAccountCreationDemand_thenReturnCreatedUserAccountId() {
+        // givenNonExistingMobilePhoneNumber();
+        givenNonExistentEmailUsername();
+        givenDefaultGeneratedCode();
+        givenDefaultGeneratedUUID();
+        CreateUserAccountCommand command = defaultClientUserAccountCommandBuilder().build();
+        givenRequestSendingEmailValidationLinkReturns(false);
 
-		// givenNonExistingMobilePhoneNumber();
-		givenNonExistentEmailUsername();
-		givenDefaultGeneratedCode();
-		givenDefaultGeneratedUUID();
-		CreateUserAccountCommand command = defaultClientUserAccountCommandBuilder().build();
-		givenRequestSendingEmailValidationLinkReturns(false);
+        OpenIdAuthResponse oAuth2AccessToken = new OpenIdAuthResponse(DEFAULT_ACCESS_TOKEN, 300L, 36000L, "REFRESH_TOEKEN", "Bearer", "ID_TOKEN",
+                "read write");
 
-		JwtOAuth2AccessToken oAuth2AccessToken = new JwtOAuth2AccessToken(DEFAULT_ACCESS_TOKEN, "Bearer", null, 36000L,
-				"read write", UUID.randomUUID().toString());
+        given(oAuthUserAccountPort.fetchJwtTokenForUser(command.getEmail(), command.getUserPassword()))
+                .willReturn(oAuth2AccessToken);
 
-		given(oAuthUserAccountPort.fetchJwtTokenForUser(command.getEmail(), command.getUserPassword()))
-				.willReturn(oAuth2AccessToken);
+        OpenIdAuthResponse accessToken = userAccountService.registerUserAccountCreationDemand(command, locale);
 
-		JwtOAuth2AccessToken accessToken = userAccountService.registerUserAccountCreationDemand(command, locale);
+        assertEquals(oAuth2AccessToken.getAccessToken(), accessToken.getAccessToken());
 
-		assertEquals(oAuth2AccessToken.getAccessToken(), accessToken.getAccessToken());
+    }
 
-	}
+    @Test
+    void givenSendMailMessageThrowsInvalidEmailMessageException_whenRequestSendingEmailValidationLink_thenReturnFalse() {
+        givenSendMailMessageThrowsIllegalArgumentException();
 
-	@Test
-	void givenSendMailMessageThrowsInvalidEmailMessageException_whenRequestSendingEmailValidationLink_thenReturnFalse() {
-		givenSendMailMessageThrowsIllegalArgumentException();
+        CreateUserAccountCommand command = defaultClientUserAccountCommandBuilder().build();
 
-		CreateUserAccountCommand command = defaultClientUserAccountCommandBuilder().build();
+        boolean result = userAccountService.requestSendingEmailValidationLink(command.getEmail(),
+                "SOME VALIDATION CODE", locale);
+        assertEquals(false, result);
+    }
 
-		boolean result = userAccountService.requestSendingEmailValidationLink(command.getEmail(),
-				"SOME VALIDATION CODE", locale);
-		assertEquals(false, result);
-	}
+    @Test
+    void givenSendSMSMessageThrowsInvalidSMSMessageException_whenRequestSendingSMSValidationCode_thenReturnFalse() {
+        givenSendSMSMessageThrowsIllegalArgumentException();
 
-	@Test
-	void givenSendSMSMessageThrowsInvalidSMSMessageException_whenRequestSendingSMSValidationCode_thenReturnFalse() {
-		givenSendSMSMessageThrowsIllegalArgumentException();
+        CreateUserAccountCommand command = defaultClientUserAccountCommandBuilder().build();
 
-		CreateUserAccountCommand command = defaultClientUserAccountCommandBuilder().build();
+        boolean result = userAccountService.requestSendingSMSValidationCode(
+                new MobilePhoneNumber(command.getIcc(), command.getMobileNumber()), "SOME VALIDATION CODE", locale);
+        assertEquals(false, result);
+    }
 
-		boolean result = userAccountService.requestSendingSMSValidationCode(
-				new MobilePhoneNumber(command.getIcc(), command.getMobileNumber()), "SOME VALIDATION CODE", locale);
-		assertEquals(false, result);
-	}
+    private String givenDefaultGeneratedCode() {
+        given(codeGenerator.generateNumericCode()).willReturn(DEFAULT_VALIDATION_CODE);
+        return DEFAULT_VALIDATION_CODE;
+    }
 
-	private String givenDefaultEncodedPassword() {
-		given(passwordEncoder.encode(any(String.class))).willReturn(DEFAULT_ENCODED_PASSWORD);
-		return DEFAULT_ENCODED_PASSWORD;
-	}
+    private String givenDefaultGeneratedUUID() {
+        given(codeGenerator.generateUUID()).willReturn(DEFAULT_VALIDATION_UUID);
+        return DEFAULT_VALIDATION_UUID;
+    }
 
-	private String givenDefaultGeneratedCode() {
-		given(codeGenerator.generateNumericCode()).willReturn(DEFAULT_VALIDATION_CODE);
-		return DEFAULT_VALIDATION_CODE;
-	}
+    private void givenNonExistentEmailUsername() {
 
-	private String givenDefaultGeneratedUUID() {
-		given(codeGenerator.generateUUID()).willReturn(DEFAULT_VALIDATION_UUID);
-		return DEFAULT_VALIDATION_UUID;
-	}
+        given(loadUserAccountPort.loadUserAccountByUsername(eq(TestConstants.DEFAULT_EMAIL)))
+                .willReturn(Optional.empty());
 
-	private void givenNonExistentEmailUsername() {
+    }
 
-		given(loadUserAccountPort.loadUserAccountByUsername(eq(TestConstants.DEFAULT_EMAIL)))
-				.willReturn(Optional.empty());
+    private void givenAnExistentEmailUsername() {
 
-	}
+        given(loadUserAccountPort.loadUserAccountByUsername(eq(TestConstants.DEFAULT_EMAIL)))
+                .willReturn(Optional.of(notYetValidatedEmailUserAccount()));
 
-	private void givenAnExistentEmailUsername() {
+    }
 
-		given(loadUserAccountPort.loadUserAccountByUsername(eq(TestConstants.DEFAULT_EMAIL)))
-				.willReturn(Optional.of(notYetValidatedEmailUserAccount()));
+    private void givenNonExistentMobileNumberUsername() {
 
-	}
+        given(loadUserAccountPort.loadUserAccountByUsername(eq(TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME)))
+                .willReturn(Optional.empty());
 
-	private void givenNonExistentMobileNumberUsername() {
+    }
 
-		given(loadUserAccountPort.loadUserAccountByUsername(eq(TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME)))
-				.willReturn(Optional.empty());
+    private void givenAnExistentMobileNumberUsername() {
 
-	}
+        given(loadUserAccountPort.loadUserAccountByUsername(eq(TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME)))
+                .willReturn(Optional.of(notYetValidatedMobileNumberUserAccount()));
 
-	private void givenAnExistentMobileNumberUsername() {
+    }
 
-		given(loadUserAccountPort.loadUserAccountByUsername(eq(TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME)))
-				.willReturn(Optional.of(notYetValidatedMobileNumberUserAccount()));
+    private void givenServerUrlProperties() {
+        given(serverUrlProperties.getHost()).willReturn("HOST");
+        given(serverUrlProperties.getPort()).willReturn("PORT");
+        given(serverUrlProperties.getProtocol()).willReturn("PROTOCOL");
 
-	}
+    }
 
-	private void givenServerUrlProperties() {
-		given(serverUrlProperties.getHost()).willReturn("HOST");
-		given(serverUrlProperties.getPort()).willReturn("PORT");
-		given(serverUrlProperties.getProtocol()).willReturn("PROTOCOL");
+    private String givenPatchUrl() {
+        String result = "SOME_EMAIL_VALIDATION_LINK";
 
-	}
+        doReturn(result).when(userAccountService).patchURL(any(String.class), any(String.class), any(String.class),
+                any(String.class), any(String.class), any(String.class));
+        return result;
+    }
 
-	private String givenPatchUrl() {
-		String result = "SOME_EMAIL_VALIDATION_LINK";
+    private void givenRequestSendingSMSValidationCodeReturns(boolean result) {
+        doReturn(result).when(userAccountService).requestSendingSMSValidationCode(any(MobilePhoneNumber.class),
+                any(String.class), any(Locale.class));
+    }
 
-		doReturn(result).when(userAccountService).patchURL(any(String.class), any(String.class), any(String.class),
-				any(String.class), any(String.class), any(String.class));
-		return result;
-	}
+    private void givenRequestSendingEmailValidationLinkReturns(boolean result) {
+        doReturn(result).when(userAccountService).requestSendingEmailValidationLink(any(String.class),
+                any(String.class), any(Locale.class));
+    }
 
-	private void givenRequestSendingSMSValidationCodeReturns(boolean result) {
-		doReturn(result).when(userAccountService).requestSendingSMSValidationCode(any(MobilePhoneNumber.class),
-				any(String.class), any(Locale.class));
-	}
+    private void givenSendMailMessageThrowsIllegalArgumentException() {
+        doThrow(IllegalArgumentException.class).when(messagingPort).sendEmailMessage(any(EmailMessage.class));
 
-	private void givenRequestSendingEmailValidationLinkReturns(boolean result) {
-		doReturn(result).when(userAccountService).requestSendingEmailValidationLink(any(String.class),
-				any(String.class), any(Locale.class));
-	}
+    }
 
-	private void givenSendMailMessageThrowsIllegalArgumentException() {
-		doThrow(IllegalArgumentException.class).when(messagingPort).sendEmailMessage(any(EmailMessage.class));
+    private void givenSendSMSMessageThrowsIllegalArgumentException() {
+        doThrow(IllegalArgumentException.class).when(messagingPort).sendSMSMessage(any(SMSMessage.class));
 
-	}
-
-	private void givenSendSMSMessageThrowsIllegalArgumentException() {
-		doThrow(IllegalArgumentException.class).when(messagingPort).sendSMSMessage(any(SMSMessage.class));
-
-	}
+    }
 }

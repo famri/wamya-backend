@@ -16,7 +16,7 @@ import com.excentria_it.wamya.application.port.in.CreateUserAccountUseCase;
 import com.excentria_it.wamya.application.port.in.CreateUserAccountUseCase.CreateUserAccountCommand;
 import com.excentria_it.wamya.common.annotation.WebAdapter;
 import com.excentria_it.wamya.common.utils.LocaleUtils;
-import com.excentria_it.wamya.domain.JwtOAuth2AccessToken;
+import com.excentria_it.wamya.domain.OpenIdAuthResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -30,10 +30,10 @@ public class CreateUserAccountController {
 
 	@PostMapping(path = "/accounts", consumes = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
-	public JwtOAuth2AccessToken createUserAccount(@Valid @RequestBody CreateUserAccountCommand command, Locale locale) {
+	public OpenIdAuthResponse createUserAccount(@Valid @RequestBody CreateUserAccountCommand command, Locale locale) {
 
 		Locale supportedLocale = LocaleUtils.getSupporedLocale(locale);
-		JwtOAuth2AccessToken accessToken = createUserAccountUseCase.registerUserAccountCreationDemand(command,
+		OpenIdAuthResponse accessToken = createUserAccountUseCase.registerUserAccountCreationDemand(command,
 				supportedLocale);
 
 		return accessToken;
