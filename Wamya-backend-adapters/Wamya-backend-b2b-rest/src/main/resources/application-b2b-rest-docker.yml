@@ -21,14 +21,15 @@ app:
     client-credentials-registration-id: client-credentials-on-prem-auth-server
     password-registration-id: password-on-prem-auth-server
     create-user-uri: "http://${app.auth-server}:${app.auth-server-port}/admin/realms/fretto/users"
+    read-user-uri: "http://${app.auth-server}:${app.auth-server-port}/admin/realms/fretto/users/{userId}"
+    update-user-uri: "http://${app.auth-server}:${app.auth-server-port}/admin/realms/fretto/users/{userId}"
+    reset-user-password-uri: "http://${app.auth-server}:${app.auth-server-port}/admin/fretto/users/{userId}/reset-password"
     read-realm-roles-uri: "http://${app.auth-server}:${app.auth-server-port}/admin/realms/fretto/roles"
     add-role-to-user-uri: "http://${app.auth-server}:${app.auth-server-port}/admin/realms/fretto/users/{userId}/role-mappings/realm"
     token-uri: "http://${app.auth-server}:${app.auth-server-port}/realms/fretto/protocol/openid-connect/token"
     client-id: fretto-backend
     client-secret: rGbIlwVtAMOjozwEImlmD94SVfLoZoZI
-    reset-password-uri: "http://${app.auth-server}:9999/oauth/users/{oAuthId}/do-reset-password"
-    update-mobile-uri: "http://${app.auth-server}:9999/oauth/users/{oAuthId}/mobile"
-    update-email-uri: "http://${app.auth-server}:9999/oauth/users/{oAuthId}/email"
+
     
   google-api:
     api-key: AIzaSyD5ZWuXfEdL8BGnQ4lW4cziV1I5uFl6oFQ

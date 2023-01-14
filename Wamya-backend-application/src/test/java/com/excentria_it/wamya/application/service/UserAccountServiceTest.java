@@ -13,9 +13,7 @@ import com.excentria_it.wamya.common.domain.EmailTemplate;
 import com.excentria_it.wamya.common.domain.SMSMessage;
 import com.excentria_it.wamya.common.domain.SMSTemplate;
 import com.excentria_it.wamya.common.exception.UserAccountAlreadyExistsException;
-import com.excentria_it.wamya.domain.OAuthUserAccount;
-import com.excentria_it.wamya.domain.OpenIdAuthResponse;
-import com.excentria_it.wamya.domain.UserAccount;
+import com.excentria_it.wamya.domain.*;
 import com.excentria_it.wamya.domain.UserAccount.MobilePhoneNumber;
 import com.excentria_it.wamya.test.data.common.TestConstants;
 import org.junit.jupiter.api.Test;
@@ -248,13 +246,13 @@ public class UserAccountServiceTest {
         assertEquals(oAuthUserAccount.getValue().getFirstName(), command.getFirstname());
         assertEquals(oAuthUserAccount.getValue().getLastName(), command.getLastname());
         assertEquals(oAuthUserAccount.getValue().getEmail(), command.getEmail());
-        assertEquals(oAuthUserAccount.getValue().getAttributes().get("phoneNumber"), command.getIcc() + "_" + command.getMobileNumber());
+        assertEquals(oAuthUserAccount.getValue().getAttributes().get(OAuthUserAccountAttribute.PHONE_NUMBER), command.getIcc() + "_" + command.getMobileNumber());
         assertEquals(oAuthUserAccount.getValue().getCredentials().get(0).getValue(), command.getUserPassword());
         assertEquals(oAuthUserAccount.getValue().isEnabled(), true);
 
         assertEquals(oAuthUserAccount.getValue().isEnabled(), true);
         assertEquals(oAuthUserAccount.getValue().getRealmRoles(),
-                command.getIsTransporter() ? List.of("ROLE_TRANSPORTER") : List.of("ROLE_CLIENT"));
+                command.getIsTransporter() ? List.of(UserRole.ROLE_TRANSPORTER) : List.of(UserRole.ROLE_CLIENT));
 
     }
 

@@ -25,6 +25,18 @@ public class AuthServerProperties {
 
     @NotEmpty
     @NotNull
+    private String readUserUri;
+
+    @NotEmpty
+    @NotNull
+    private String resetUserPasswordUri;
+
+    @NotEmpty
+    @NotNull
+    private String updateUserUri;
+
+    @NotEmpty
+    @NotNull
     private String readRealmRolesUri;
 
     @NotEmpty
@@ -42,18 +54,6 @@ public class AuthServerProperties {
     @NotEmpty
     @NotNull
     private String clientSecret;
-
-    @NotEmpty
-    @NotNull
-    private String resetPasswordUri;
-
-    @NotEmpty
-    @NotNull
-    private String updateMobileUri;
-
-    @NotEmpty
-    @NotNull
-    private String updateEmailUri;
 
 
 }

@@ -1,6 +1,8 @@
 package com.excentria_it.wamya.adapter.persistence.adapter;
 
+import com.excentria_it.wamya.adapter.persistence.entity.DiscussionJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.entity.MessageJpaEntity;
+import com.excentria_it.wamya.adapter.persistence.entity.UserAccountJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.mapper.DiscussionMapper;
 import com.excentria_it.wamya.adapter.persistence.repository.DiscussionRepository;
 import com.excentria_it.wamya.adapter.persistence.repository.MessageRepository;
@@ -21,7 +23,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 
+import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -35,29 +39,28 @@ public class ChatMessagePersistenceAdapter implements AddMessageToDiscussionPort
 
     @Override
     public MessageOutput addMessage(Long discussionId, String senderOauthId, String messageContent) {
-		/*Optional<UserAccountJpaEntity> userAccountOptional = userAccountRepository.findByOauthId(senderOauthId);
-		if (userAccountOptional.isEmpty())
-			return null;
+        Optional<UserAccountJpaEntity> userAccountOptional = userAccountRepository.findByOauthId(senderOauthId);
+        if (userAccountOptional.isEmpty())
+            return null;
 
-		Optional<DiscussionJpaEntity> discussionJpaEntityOptional = discussionRepository.findById(discussionId);
-		if (discussionJpaEntityOptional.isEmpty())
-			return null;
+        Optional<DiscussionJpaEntity> discussionJpaEntityOptional = discussionRepository.findById(discussionId);
+        if (discussionJpaEntityOptional.isEmpty())
+            return null;
 
-		DiscussionJpaEntity discussionJpaEntity = discussionJpaEntityOptional.get();
+        DiscussionJpaEntity discussionJpaEntity = discussionJpaEntityOptional.get();
 
-		MessageJpaEntity message = new MessageJpaEntity(userAccountOptional.get(), false, messageContent, Instant.now(),
-				discussionJpaEntityOptional.get());
+        MessageJpaEntity message = new MessageJpaEntity(userAccountOptional.get(), false, messageContent, Instant.now(),
+                discussionJpaEntityOptional.get());
 
-		message = messageRepository.save(message);
+        message = messageRepository.save(message);
 
-		discussionJpaEntity.setActive(true);
-		discussionJpaEntity.setLatestMessage(message);
+        discussionJpaEntity.setActive(true);
+        discussionJpaEntity.setLatestMessage(message);
 
-		discussionRepository.save(discussionJpaEntity);
+        discussionRepository.save(discussionJpaEntity);
 
-		return new MessageOutput(message.getId(), userAccountOptional.get().getOauthId(), messageContent,
-				message.getDateTime(), message.getRead());*/
-        return null;
+        return new MessageOutput(message.getId(), userAccountOptional.get().getOauthId(), messageContent,
+                message.getDateTime(), message.getRead());
     }
 
     @Override

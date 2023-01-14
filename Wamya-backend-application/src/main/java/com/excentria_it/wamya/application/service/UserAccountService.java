@@ -65,9 +65,9 @@ public class UserAccountService implements CreateUserAccountUseCase {
                 .emailVerified(false)
                 .credentials(Arrays.asList(OAuthUserAccount.Credentials.builder().type("password").value(command.getUserPassword())
                         .temporary(false).build()))
-                .attributes(Map.of("phoneNumber", command.getIcc() + "_" + command.getMobileNumber()))
+                .attributes(Map.of(OAuthUserAccountAttribute.PHONE_NUMBER, command.getIcc() + "_" + command.getMobileNumber()))
 
-                .realmRoles(List.of(command.getIsTransporter() ? "ROLE_TRANSPORTER" : "ROLE_CLIENT")).build();
+                .realmRoles(List.of(command.getIsTransporter() ? UserRole.ROLE_TRANSPORTER : UserRole.ROLE_CLIENT)).build();
 
         final String oauthId = oAuthUserAccountPort.createOAuthUserAccount(oauthUserAccount);
 

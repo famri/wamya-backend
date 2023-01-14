@@ -58,7 +58,7 @@ public class ChatMessagePersistenceAdapterTests {
 
         // given
         UserAccountJpaEntity userAccountJpaEntity = defaultExistentClientJpaEntity();
-        given(userAccountRepository.findByOauthId(any(Long.class))).willReturn(Optional.of(userAccountJpaEntity));
+        given(userAccountRepository.findByOauthId(any(String.class))).willReturn(Optional.of(userAccountJpaEntity));
 
         DiscussionJpaEntity discussionJpaEntity = defaultDiscussionJpaEntity();
         given(discussionRepository.findById(any(Long.class))).willReturn(Optional.of(discussionJpaEntity));
@@ -106,7 +106,7 @@ public class ChatMessagePersistenceAdapterTests {
 
         // given
         UserAccountJpaEntity userAccountJpaEntity = defaultExistentClientJpaEntity();
-        given(userAccountRepository.findByOauthId(any(Long.class))).willReturn(Optional.of(userAccountJpaEntity));
+        given(userAccountRepository.findByOauthId(any(String.class))).willReturn(Optional.of(userAccountJpaEntity));
 
         given(discussionRepository.findById(any(Long.class))).willReturn(Optional.empty());
 
@@ -121,7 +121,7 @@ public class ChatMessagePersistenceAdapterTests {
     void givenNonExistentUserAccount_WhenAddMessage_ThenReturnNull() {
 
         // given
-        given(userAccountRepository.findByOauthId(any(Long.class))).willReturn(Optional.empty());
+        given(userAccountRepository.findByOauthId(any(String.class))).willReturn(Optional.empty());
 
         // when
         MessageOutput messageOutput = chatMessagePersistenceAdapter.addMessage(1L, OAuthId.CLIENT1_UUID, "some message");

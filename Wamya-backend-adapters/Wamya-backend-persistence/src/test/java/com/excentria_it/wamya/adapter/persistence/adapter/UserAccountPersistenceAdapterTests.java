@@ -207,7 +207,7 @@ public class UserAccountPersistenceAdapterTests {
     }
 
     @Test
-    void givenInexistentUserAccountByIccAndMobileNumber_whenLoadUserAccountByIccAndMobileNumber_thenReturnOptionalEmpty() {
+    void givenNonExistentUserAccountByIccAndMobileNumber_whenLoadUserAccountByIccAndMobileNumber_thenReturnOptionalEmpty() {
 
         // given
 
@@ -219,6 +219,30 @@ public class UserAccountPersistenceAdapterTests {
                 .loadUserAccountByUsername(TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME);
         // then
         assertThat(result.isEmpty()).isTrue();
+
+    }
+
+    @Test
+    void givenExistentUserAccountByFrenchIccAndFrenchMobileNumberWithoutLeadingZero_whenLoadUserAccountByFrenchIccAndMobileNumber_thenReturnTheExistingUserAccount() {
+
+        // given
+        UserAccountJpaEntity userAccountEntity = UserAccountJpaEntityTestData.defaultExistentClientJpaEntity();
+        given(userAccountRepository.findByMobilePhoneNumber(TestConstants.DEFAULT_INTERNATIONAL_CALLING_CODE,
+                TestConstants.DEFAULT_MOBILE_NUMBER)).willReturn(Optional.empty());
+
+        Optional<UserAccountJpaEntity> userAccountEntityOptional = Optional.ofNullable(userAccountEntity);
+
+        given(userAccountRepository.findByMobilePhoneNumber(TestConstants.DEFAULT_INTERNATIONAL_CALLING_CODE,
+                TestConstants.DEFAULT_MOBILE_NUMBER.substring(1))).willReturn(userAccountEntityOptional);
+
+        UserAccount userAccount = UserAccountTestData.defaultUserAccountBuilder().build();
+
+        given(userAccountMapper.mapToDomainEntity(userAccountEntity)).willReturn(userAccount);
+        // when
+        Optional<UserAccount> result = userAccountPersistenceAdapter
+                .loadUserAccountByUsername(TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME);
+        // then
+        assertEquals(result.get(), userAccount);
 
     }
 

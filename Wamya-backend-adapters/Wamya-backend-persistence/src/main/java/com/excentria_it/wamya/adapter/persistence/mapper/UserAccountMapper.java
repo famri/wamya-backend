@@ -5,9 +5,12 @@ import com.excentria_it.wamya.application.utils.DocumentUrlResolver;
 import com.excentria_it.wamya.domain.ProfileInfoDto;
 import com.excentria_it.wamya.domain.ProfileInfoDto.*;
 import com.excentria_it.wamya.domain.UserAccount;
+import com.excentria_it.wamya.domain.ValidationState;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,30 +32,30 @@ public class UserAccountMapper {
 
         if (userAccount.getIsTransporter()) {
 
-/*			return new TransporterJpaEntity(userAccount.getId(), userAccount.getOauthId(), gender,
-					userAccount.getFirstname(), userAccount.getLastname(), ValidationState.NOT_VALIDATED, "",
-					userAccount.getDateOfBirth(), userAccount.getEmail(), userAccount.getEmailValidationCode(),
-					userAccount.getIsValidatedEmail(), icc, userAccount.getMobilePhoneNumber().getMobileNumber(),
-					userAccount.getMobileNumberValidationCode(), userAccount.getIsValidatedMobileNumber(),
-					userAccount.getReceiveNewsletter(),
-					userAccount.getCreationDateTime() != null ? userAccount.getCreationDateTime().toInstant()
-							: Instant.now(),
-					profileImage, preferences, identityDocument, userAccount.getDeviceRegistrationToken(),
-					userAccount.getIsWebSocketConnected());*/
+            return new TransporterJpaEntity(userAccount.getId(), userAccount.getOauthId(), gender,
+                    userAccount.getFirstname(), userAccount.getLastname(), ValidationState.NOT_VALIDATED, "",
+                    userAccount.getDateOfBirth(), userAccount.getEmail(), userAccount.getEmailValidationCode(),
+                    userAccount.getIsValidatedEmail(), icc, userAccount.getMobilePhoneNumber().getMobileNumber(),
+                    userAccount.getMobileNumberValidationCode(), userAccount.getIsValidatedMobileNumber(),
+                    userAccount.getReceiveNewsletter(),
+                    userAccount.getCreationDateTime() != null ? userAccount.getCreationDateTime().toInstant()
+                            : Instant.now(),
+                    profileImage, preferences, identityDocument, userAccount.getDeviceRegistrationToken(),
+                    userAccount.getIsWebSocketConnected());
 
         } else {
-/*			return new ClientJpaEntity(userAccount.getId(), userAccount.getOauthId(), gender,
-					userAccount.getFirstname(), userAccount.getLastname(), ValidationState.NOT_VALIDATED, "",
-					userAccount.getDateOfBirth(), userAccount.getEmail(), userAccount.getEmailValidationCode(),
-					userAccount.getIsValidatedEmail(), icc, userAccount.getMobilePhoneNumber().getMobileNumber(),
-					userAccount.getMobileNumberValidationCode(), userAccount.getIsValidatedMobileNumber(),
-					userAccount.getReceiveNewsletter(),
-					userAccount.getCreationDateTime() != null ? userAccount.getCreationDateTime().toInstant()
-							: Instant.now(),
-					profileImage, preferences, identityDocument, userAccount.getDeviceRegistrationToken(),
-					userAccount.getIsWebSocketConnected());*/
+            return new ClientJpaEntity(userAccount.getId(), userAccount.getOauthId(), gender,
+                    userAccount.getFirstname(), userAccount.getLastname(), ValidationState.NOT_VALIDATED, "",
+                    userAccount.getDateOfBirth(), userAccount.getEmail(), userAccount.getEmailValidationCode(),
+                    userAccount.getIsValidatedEmail(), icc, userAccount.getMobilePhoneNumber().getMobileNumber(),
+                    userAccount.getMobileNumberValidationCode(), userAccount.getIsValidatedMobileNumber(),
+                    userAccount.getReceiveNewsletter(),
+                    userAccount.getCreationDateTime() != null ? userAccount.getCreationDateTime().toInstant()
+                            : Instant.now(),
+                    profileImage, preferences, identityDocument, userAccount.getDeviceRegistrationToken(),
+                    userAccount.getIsWebSocketConnected());
         }
-        return null;
+
 
     }
 
@@ -64,25 +67,24 @@ public class UserAccountMapper {
 
         userAccountJpaEntity.getPreferences().forEach((k, v) -> preferences.put(k, v.getValue()));
 
-//        return UserAccount.builder().id(userAccountJpaEntity.getId()).oauthId(userAccountJpaEntity.getOauthId())
-//                .genderId(userAccountJpaEntity.getGender().getId())
-//                .isTransporter(userAccountJpaEntity instanceof TransporterJpaEntity)
-//                .firstname(userAccountJpaEntity.getFirstname()).lastname(userAccountJpaEntity.getLastname())
-//                .dateOfBirth(userAccountJpaEntity.getDateOfBirth()).email(userAccountJpaEntity.getEmail())
-//                .emailValidationCode(userAccountJpaEntity.getEmailValidationCode())
-//                .isValidatedEmail(userAccountJpaEntity.getIsValidatedEmail())
-//                .mobilePhoneNumber(new MobilePhoneNumber(userAccountJpaEntity.getIcc().getValue(),
-//                        userAccountJpaEntity.getMobileNumber()))
-//                .mobileNumberValidationCode(userAccountJpaEntity.getMobileNumberValidationCode())
-//                .isValidatedMobileNumber(userAccountJpaEntity.getIsValidatedMobileNumber())
-//                .receiveNewsletter(userAccountJpaEntity.getReceiveNewsletter())
-//                .creationDateTime(userAccountJpaEntity.getCreationDateTime().atZone(ZoneOffset.UTC))
-//                .photoUrl(documentUrlResolver.resolveUrl(userAccountJpaEntity.getProfileImage().getId(),
-//                        userAccountJpaEntity.getProfileImage().getHash()))
-//                .deviceRegistrationToken(userAccountJpaEntity.getDeviceRegistrationToken()).preferences(preferences)
-//                .isWebSocketConnected(userAccountJpaEntity.getIsWebSocketConnected())
-//                .build();
-        return null;
+        return UserAccount.builder().id(userAccountJpaEntity.getId()).oauthId(userAccountJpaEntity.getOauthId())
+                .genderId(userAccountJpaEntity.getGender().getId())
+                .isTransporter(userAccountJpaEntity instanceof TransporterJpaEntity)
+                .firstname(userAccountJpaEntity.getFirstname()).lastname(userAccountJpaEntity.getLastname())
+                .dateOfBirth(userAccountJpaEntity.getDateOfBirth()).email(userAccountJpaEntity.getEmail())
+                .emailValidationCode(userAccountJpaEntity.getEmailValidationCode())
+                .isValidatedEmail(userAccountJpaEntity.getIsValidatedEmail())
+                .mobilePhoneNumber(new UserAccount.MobilePhoneNumber(userAccountJpaEntity.getIcc().getValue(),
+                        userAccountJpaEntity.getMobileNumber()))
+                .mobileNumberValidationCode(userAccountJpaEntity.getMobileNumberValidationCode())
+                .isValidatedMobileNumber(userAccountJpaEntity.getIsValidatedMobileNumber())
+                .receiveNewsletter(userAccountJpaEntity.getReceiveNewsletter())
+                .creationDateTime(userAccountJpaEntity.getCreationDateTime().atZone(ZoneOffset.UTC))
+                .photoUrl(documentUrlResolver.resolveUrl(userAccountJpaEntity.getProfileImage().getId(),
+                        userAccountJpaEntity.getProfileImage().getHash()))
+                .deviceRegistrationToken(userAccountJpaEntity.getDeviceRegistrationToken()).preferences(preferences)
+                .isWebSocketConnected(userAccountJpaEntity.getIsWebSocketConnected())
+                .build();
     }
 
     public ProfileInfoDto mapToProfileInfoDto(UserAccountJpaEntity userAccount, String locale) {
