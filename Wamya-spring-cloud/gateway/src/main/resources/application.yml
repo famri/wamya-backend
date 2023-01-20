@@ -12,7 +12,8 @@ app:
   eureka-username: u
   eureka-password: p
   eureka-server: localhost
-  auth-server: localhost
+  auth-server: auth-server
+  auth-server-port: 8080
 
 eureka:
   client:
@@ -31,9 +32,11 @@ ribbon.NFLoadBalancerPingInterval: 5
 spring.cloud.gateway.routes:
 
   - id: oauth-server
-    uri: lb://auth-server:8585
+    uri: "http://${app.auth-server}:${app.auth-server-port}"
     predicates:
-      - Path=/oauth/**
+      - Path=/oauth/userinfo
+    filters:
+      - SetPath=/realms/fretto/protocol/openid-connect/userinfo
 
   - id: websocket_route
     uri: lb:ws://wamya-backend
@@ -69,7 +72,7 @@ spring.cloud.gateway.routes:
 management.endpoint.health.show-details: "ALWAYS"
 management.endpoints.web.exposure.include: "*"
 
-spring.security.oauth2.resourceserver.jwt.jwk-set-uri: lb://${app.auth-server}:9595/realms/fretto/protocol/openid-connect/certs
+spring.security.oauth2.resourceserver.jwt.jwk-set-uri: "http://${app.auth-server}:${app.auth-server-port}/realms/fretto/protocol/openid-connect/certs"
 
 logging:
   level:
@@ -83,7 +86,7 @@ spring.profiles: docker
 app:
   eureka-server: eureka
   auth-server: auth-server
-
+  auth-server-port: 8080
     #spring:
     #  cloud:
     #    gateway:

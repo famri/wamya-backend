@@ -1,29 +1,8 @@
 package com.excentria_it.wamya.adapter.web.adapter;
 
-import static com.c4_soft.springaddons.security.oauth2.test.mockmvc.MockAuthenticationRequestPostProcessor.*;
-import static com.excentria_it.wamya.adapter.web.helper.ResponseBodyMatchers.*;
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.BDDMockito.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MvcResult;
-
 import com.c4_soft.springaddons.security.oauth2.test.mockmvc.MockMvcSupport;
+import com.excentria_it.wamya.adapter.web.WebConfiguration;
+import com.excentria_it.wamya.adapter.web.WebSecurityConfiguration;
 import com.excentria_it.wamya.adapter.web.utils.ValidationHelper;
 import com.excentria_it.wamya.application.port.in.SearchJourneyRequestsUseCase;
 import com.excentria_it.wamya.application.port.in.SearchJourneyRequestsUseCase.SearchJourneyRequestsCommand;
@@ -33,215 +12,252 @@ import com.excentria_it.wamya.domain.JourneyRequestsSearchResult;
 import com.excentria_it.wamya.test.data.common.JourneyRequestTestData;
 import com.excentria_it.wamya.test.data.common.TestConstants;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
-@ActiveProfiles(value = { "web-local" })
-@Import(value = { SearchJourneyRequestsController.class, RestApiExceptionHandler.class, MockMvcSupport.class,
-		ValidationHelper.class })
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static com.excentria_it.wamya.adapter.web.helper.ResponseBodyMatchers.responseBody;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@ActiveProfiles(value = {"web-local"})
+@ExtendWith(SpringExtension.class)
+@WebAppConfiguration
+@ContextConfiguration(classes = {WebSecurityConfiguration.class, WebConfiguration.class})
+@Import(value = {SearchJourneyRequestsController.class, RestApiExceptionHandler.class, MockMvcSupport.class,
+        ValidationHelper.class})
 @WebMvcTest(controllers = SearchJourneyRequestsController.class)
 public class SearchJourneyRequestsControllerTests {
 
-	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter
-			.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter
+            .ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
 
-	@Autowired
-	private MockMvcSupport api;
+    @Autowired
+    private WebApplicationContext context;
+    private static MockMvc mvc;
 
-	@MockBean
-	private SearchJourneyRequestsUseCase searchJourneyRequestsUseCase;
+    @BeforeEach
+    void setup() {
+        mvc = MockMvcBuilders
+                .webAppContextSetup(context)
+                .apply(springSecurity())
+                .build();
+    }
 
-	@Autowired
-	private ObjectMapper objectMapper;
+    @MockBean
+    private SearchJourneyRequestsUseCase searchJourneyRequestsUseCase;
 
-	@Test
-	void givenValidInput_WhenSearch_ThenReturnSearchResult() throws Exception {
+    @Autowired
+    private ObjectMapper objectMapper;
 
-		SearchJourneyRequestsCommand command = JourneyRequestTestData.defaultSearchJourneyRequestsCommandBuilder()
-				.build();
+    @Test
+    void givenValidInput_WhenTransporterSearchesJourneyRequests_ThenReturnSearchResult() throws Exception {
 
-		JourneyRequestsSearchResult expectedResult = JourneyRequestTestData
-				.defaultJourneyRequestsSearchResult(ZoneId.of("Africa/Tunis"));
+        SearchJourneyRequestsCommand command = JourneyRequestTestData.defaultSearchJourneyRequestsCommandBuilder()
+                .build();
 
-		given(searchJourneyRequestsUseCase.searchJourneyRequests(any(SearchJourneyRequestsCommand.class),
-				any(String.class), any(String.class))).willReturn(expectedResult);
+        JourneyRequestsSearchResult expectedResult = JourneyRequestTestData
+                .defaultJourneyRequestsSearchResult(ZoneId.of("Africa/Tunis"));
 
-		MvcResult mvcResult = api
-				.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
-						.authorities("SCOPE_journey:read"))
-				.perform(get("/journey-requests").param("departure", command.getDeparturePlaceDepartmentId().toString())
-						.param("arrival", command.getArrivalPlaceDepartmentIds().stream().map(id -> id.toString())
-								.toArray(String[]::new)
+        given(searchJourneyRequestsUseCase.searchJourneyRequests(any(SearchJourneyRequestsCommand.class),
+                any(String.class), any(String.class))).willReturn(expectedResult);
 
-						).param("fromDate", command.getStartDateTime().format(DATE_TIME_FORMATTER))
-						.param("toDate", command.getEndDateTime().format(DATE_TIME_FORMATTER)).param("lang", "fr_FR")
-						.param("engine",
-								command.getEngineTypes().stream().map(e -> e.toString()).collect(Collectors.toSet())
-										.toArray(new String[command.getEngineTypes().size()]))
-						.param("statuses", command.getStatusCodes().stream().map(s -> s.name()).toArray(String[]::new))
-						.param("page", command.getPageNumber().toString())
-						.param("size", command.getPageSize().toString()).param("sort",
-								command.getSortingCriterion().getField() + ","
-										+ command.getSortingCriterion().getDirection()))
+        MvcResult mvcResult = mvc
+                .perform(get("/journey-requests").with(jwt().jwt(builder -> builder.claim("sub", TestConstants.DEFAULT_EMAIL)).authorities(Arrays.asList(new SimpleGrantedAuthority("ROLE_TRANSPORTER"))))
+                        .param("departure", command.getDeparturePlaceDepartmentId().toString())
+                        .param("arrival", command.getArrivalPlaceDepartmentIds().stream().map(id -> id.toString())
+                                .toArray(String[]::new)
 
-				.andExpect(status().isOk())
+                        ).param("fromDate", command.getStartDateTime().format(DATE_TIME_FORMATTER))
+                        .param("toDate", command.getEndDateTime().format(DATE_TIME_FORMATTER)).param("lang", "fr_FR")
+                        .param("engine",
+                                command.getEngineTypes().stream().map(e -> e.toString()).collect(Collectors.toSet())
+                                        .toArray(new String[command.getEngineTypes().size()]))
+                        .param("statuses", command.getStatusCodes().stream().map(s -> s.name()).toArray(String[]::new))
+                        .param("page", command.getPageNumber().toString())
+                        .param("size", command.getPageSize().toString()).param("sort",
+                                command.getSortingCriterion().getField() + ","
+                                        + command.getSortingCriterion().getDirection()))
 
-				.andReturn();
-		String actualResponseBody = mvcResult.getResponse().getContentAsString();
+                .andExpect(status().isOk())
 
-		assertThat(actualResponseBody).isEqualToIgnoringWhitespace(objectMapper.writeValueAsString(expectedResult));
+                .andReturn();
+        String actualResponseBody = mvcResult.getResponse().getContentAsString();
 
-	}
+        assertThat(actualResponseBody).isEqualToIgnoringWhitespace(objectMapper.writeValueAsString(expectedResult));
 
-	@Test
-	void givenValidInputAndBadAuthority_WhenSearch_ThenReturnForbidden() throws Exception {
+    }
 
-		SearchJourneyRequestsCommand command = JourneyRequestTestData.defaultSearchJourneyRequestsCommandBuilder()
-				.build();
+    @Test
+    void givenValidInputAndBadAuthority_WhenClientSearchesJourneyRequest_ThenReturnForbidden() throws Exception {
 
-		JourneyRequestsSearchResult expectedResult = JourneyRequestTestData
-				.defaultJourneyRequestsSearchResult(ZoneId.of("Africa/Tunis"));
+        SearchJourneyRequestsCommand command = JourneyRequestTestData.defaultSearchJourneyRequestsCommandBuilder()
+                .build();
 
-		given(searchJourneyRequestsUseCase.searchJourneyRequests(any(SearchJourneyRequestsCommand.class),
-				any(String.class), any(String.class))).willReturn(expectedResult);
+        JourneyRequestsSearchResult expectedResult = JourneyRequestTestData
+                .defaultJourneyRequestsSearchResult(ZoneId.of("Africa/Tunis"));
 
-		MvcResult mvcResult = api
-				.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
-						.authorities("SCOPE_journey:write"))
-				.perform(get("/journey-requests").param("departure", command.getDeparturePlaceDepartmentId().toString())
-						.param("arrival", command.getArrivalPlaceDepartmentIds().stream().map(id -> id.toString())
-								.toArray(String[]::new)
+        given(searchJourneyRequestsUseCase.searchJourneyRequests(any(SearchJourneyRequestsCommand.class),
+                any(String.class), any(String.class))).willReturn(expectedResult);
 
-						).param("fromDate", command.getStartDateTime().format(DATE_TIME_FORMATTER))
-						.param("toDate", command.getEndDateTime().format(DATE_TIME_FORMATTER)).param("lang", "en")
-						.param("engine",
-								command.getEngineTypes().stream().map(e -> e.toString()).collect(Collectors.toSet())
-										.toArray(new String[command.getEngineTypes().size()]))
-						.param("page", command.getPageNumber().toString())
-						.param("size", command.getPageSize().toString()).param("sort",
-								command.getSortingCriterion().getField() + ","
-										+ command.getSortingCriterion().getDirection()))
+        mvc.perform(get("/journey-requests").with(jwt().jwt(builder -> builder.claim("sub", TestConstants.DEFAULT_EMAIL)).authorities(Arrays.asList(new SimpleGrantedAuthority("ROLE_CLIENT"))))
+                        .param("departure", command.getDeparturePlaceDepartmentId().toString())
+                        .param("arrival", command.getArrivalPlaceDepartmentIds().stream().map(id -> id.toString())
+                                .toArray(String[]::new)
 
-				.andExpect(status().isForbidden())
+                        ).param("fromDate", command.getStartDateTime().format(DATE_TIME_FORMATTER))
+                        .param("toDate", command.getEndDateTime().format(DATE_TIME_FORMATTER)).param("lang", "en")
+                        .param("engine",
+                                command.getEngineTypes().stream().map(e -> e.toString()).collect(Collectors.toSet())
+                                        .toArray(new String[command.getEngineTypes().size()]))
+                        .param("page", command.getPageNumber().toString())
+                        .param("size", command.getPageSize().toString()).param("sort",
+                                command.getSortingCriterion().getField() + ","
+                                        + command.getSortingCriterion().getDirection()))
 
-				.andReturn();
-		then(searchJourneyRequestsUseCase).should(never())
-				.searchJourneyRequests(any(SearchJourneyRequestsCommand.class), any(String.class), any(String.class));
+                .andExpect(status().isForbidden())
 
-	}
+                .andReturn();
+        then(searchJourneyRequestsUseCase).should(never())
+                .searchJourneyRequests(any(SearchJourneyRequestsCommand.class), any(String.class), any(String.class));
 
-	@Test
-	void givenValidInputWithNoSortCriterion_WhenSearch_ThenReturnSearchResult() throws Exception {
+    }
 
-		SearchJourneyRequestsCommand command = JourneyRequestTestData.defaultSearchJourneyRequestsCommandBuilder()
-				.sortingCriterion(null).build();
+    @Test
+    void givenValidInputWithNoSortCriterion_WhenTransporterSearchesJourneyRequests_ThenReturnSearchResult() throws Exception {
 
-		JourneyRequestsSearchResult expectedResult = JourneyRequestTestData
-				.defaultJourneyRequestsSearchResult(ZoneId.of("Africa/Tunis"));
+        SearchJourneyRequestsCommand command = JourneyRequestTestData.defaultSearchJourneyRequestsCommandBuilder()
+                .sortingCriterion(null).build();
 
-		given(searchJourneyRequestsUseCase.searchJourneyRequests(any(SearchJourneyRequestsCommand.class),
-				any(String.class), any(String.class))).willReturn(expectedResult);
+        JourneyRequestsSearchResult expectedResult = JourneyRequestTestData
+                .defaultJourneyRequestsSearchResult(ZoneId.of("Africa/Tunis"));
 
-		MvcResult mvcResult = api
-				.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
-						.authorities("SCOPE_journey:read"))
-				.perform(get("/journey-requests").param("departure", command.getDeparturePlaceDepartmentId().toString())
-						.param("arrival", command.getArrivalPlaceDepartmentIds().stream().map(id -> id.toString())
-								.toArray(String[]::new)
+        given(searchJourneyRequestsUseCase.searchJourneyRequests(any(SearchJourneyRequestsCommand.class),
+                any(String.class), any(String.class))).willReturn(expectedResult);
 
-						).param("fromDate", command.getStartDateTime().format(DATE_TIME_FORMATTER))
-						.param("toDate", command.getEndDateTime().format(DATE_TIME_FORMATTER))
-						.param("statuses", command.getStatusCodes().stream().map(s -> s.name()).toArray(String[]::new))
-						.param("engine",
-								command.getEngineTypes().stream().map(e -> e.toString()).collect(Collectors.toSet())
-										.toArray(new String[command.getEngineTypes().size()]))
-						.param("page", command.getPageNumber().toString())
-						.param("size", command.getPageSize().toString()))
-				
+        MvcResult mvcResult = mvc
+                .perform(get("/journey-requests").with(jwt().jwt(builder -> builder.claim("sub", TestConstants.DEFAULT_EMAIL)).authorities(Arrays.asList(new SimpleGrantedAuthority("ROLE_TRANSPORTER"))))
+                        .param("departure", command.getDeparturePlaceDepartmentId().toString())
+                        .param("arrival", command.getArrivalPlaceDepartmentIds().stream().map(id -> id.toString())
+                                .toArray(String[]::new)
 
-				.andExpect(status().isOk())
+                        ).param("fromDate", command.getStartDateTime().format(DATE_TIME_FORMATTER))
+                        .param("toDate", command.getEndDateTime().format(DATE_TIME_FORMATTER))
+                        .param("statuses", command.getStatusCodes().stream().map(s -> s.name()).toArray(String[]::new))
+                        .param("engine",
+                                command.getEngineTypes().stream().map(e -> e.toString()).collect(Collectors.toSet())
+                                        .toArray(new String[command.getEngineTypes().size()]))
+                        .param("page", command.getPageNumber().toString())
+                        .param("size", command.getPageSize().toString()))
 
-				.andReturn();
-		String actualResponseBody = mvcResult.getResponse().getContentAsString();
 
-		assertThat(actualResponseBody).isEqualToIgnoringWhitespace(objectMapper.writeValueAsString(expectedResult));
+                .andExpect(status().isOk())
 
-	}
+                .andReturn();
+        String actualResponseBody = mvcResult.getResponse().getContentAsString();
 
-	@Test
-	void givenValidInputWithNoSortCriterionDirection_WhenSearch_ThenReturnSearchResult() throws Exception {
+        assertThat(actualResponseBody).isEqualToIgnoringWhitespace(objectMapper.writeValueAsString(expectedResult));
 
-		SearchJourneyRequestsCommand command = JourneyRequestTestData.defaultSearchJourneyRequestsCommandBuilder()
-				.build();
+    }
 
-		JourneyRequestsSearchResult expectedResult = JourneyRequestTestData
-				.defaultJourneyRequestsSearchResult(ZoneId.of("Africa/Tunis"));
+    @Test
+    void givenValidInputWithNoSortCriterionDirection_WhenTransporterSearchesJourneyRequests_ThenReturnSearchResult() throws Exception {
 
-		given(searchJourneyRequestsUseCase.searchJourneyRequests(any(SearchJourneyRequestsCommand.class),
-				any(String.class), any(String.class))).willReturn(expectedResult);
+        SearchJourneyRequestsCommand command = JourneyRequestTestData.defaultSearchJourneyRequestsCommandBuilder()
+                .build();
 
-		MvcResult mvcResult = api
-				.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
-						.authorities("SCOPE_journey:read"))
-				.perform(get("/journey-requests").param("departure", command.getDeparturePlaceDepartmentId().toString())
-						.param("arrival", command.getArrivalPlaceDepartmentIds().stream().map(id -> id.toString())
-								.toArray(String[]::new)
+        JourneyRequestsSearchResult expectedResult = JourneyRequestTestData
+                .defaultJourneyRequestsSearchResult(ZoneId.of("Africa/Tunis"));
 
-						).param("fromDate", command.getStartDateTime().format(DATE_TIME_FORMATTER))
-						.param("toDate", command.getEndDateTime().format(DATE_TIME_FORMATTER))
-						.param("engine",
-								command.getEngineTypes().stream().map(e -> e.toString()).collect(Collectors.toSet())
-										.toArray(new String[command.getEngineTypes().size()]))
-						.param("statuses", command.getStatusCodes().stream().map(s -> s.name()).toArray(String[]::new))
-						.param("page", command.getPageNumber().toString())
-						.param("size", command.getPageSize().toString())
-						.param("sort", command.getSortingCriterion().getField()))
+        given(searchJourneyRequestsUseCase.searchJourneyRequests(any(SearchJourneyRequestsCommand.class),
+                any(String.class), any(String.class))).willReturn(expectedResult);
 
-				.andExpect(status().isOk())
+        MvcResult mvcResult = mvc
+                .perform(get("/journey-requests").with(jwt().jwt(builder -> builder.claim("sub", TestConstants.DEFAULT_EMAIL)).authorities(Arrays.asList(new SimpleGrantedAuthority("ROLE_TRANSPORTER"))))
+                        .param("departure", command.getDeparturePlaceDepartmentId().toString())
+                        .param("arrival", command.getArrivalPlaceDepartmentIds().stream().map(id -> id.toString())
+                                .toArray(String[]::new)
 
-				.andReturn();
-		String actualResponseBody = mvcResult.getResponse().getContentAsString();
+                        ).param("fromDate", command.getStartDateTime().format(DATE_TIME_FORMATTER))
+                        .param("toDate", command.getEndDateTime().format(DATE_TIME_FORMATTER))
+                        .param("engine",
+                                command.getEngineTypes().stream().map(e -> e.toString()).collect(Collectors.toSet())
+                                        .toArray(new String[command.getEngineTypes().size()]))
+                        .param("statuses", command.getStatusCodes().stream().map(s -> s.name()).toArray(String[]::new))
+                        .param("page", command.getPageNumber().toString())
+                        .param("size", command.getPageSize().toString())
+                        .param("sort", command.getSortingCriterion().getField()))
 
-		assertThat(actualResponseBody).isEqualToIgnoringWhitespace(objectMapper.writeValueAsString(expectedResult));
+                .andExpect(status().isOk())
 
-	}
+                .andReturn();
+        String actualResponseBody = mvcResult.getResponse().getContentAsString();
 
-	@Test
-	void givenInvalidInput_WhenSearch_ThenReturnBadRequest() throws Exception {
+        assertThat(actualResponseBody).isEqualToIgnoringWhitespace(objectMapper.writeValueAsString(expectedResult));
 
-		SearchJourneyRequestsCommand command = JourneyRequestTestData.defaultSearchJourneyRequestsCommandBuilder()
-				.sortingCriterion(new SortCriterion("dummy-field", "up")).build();
+    }
 
-		JourneyRequestsSearchResult expectedResult = JourneyRequestTestData
-				.defaultJourneyRequestsSearchResult(ZoneId.of("Africa/Tunis"));
+    @Test
+    void givenInvalidInput_WhenTransporterSearchesJourneyRequests_ThenReturnBadRequest() throws Exception {
 
-		given(searchJourneyRequestsUseCase.searchJourneyRequests(any(SearchJourneyRequestsCommand.class),
-				any(String.class), any(String.class))).willReturn(expectedResult);
+        SearchJourneyRequestsCommand command = JourneyRequestTestData.defaultSearchJourneyRequestsCommandBuilder()
+                .sortingCriterion(new SortCriterion("dummy-field", "up")).build();
 
-		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
-				.authorities("SCOPE_journey:read"))
-				.perform(get("/journey-requests").param("departure", command.getDeparturePlaceDepartmentId().toString())
-						.param("arrival", command.getArrivalPlaceDepartmentIds().stream().map(id -> id.toString())
-								.toArray(String[]::new)
+        JourneyRequestsSearchResult expectedResult = JourneyRequestTestData
+                .defaultJourneyRequestsSearchResult(ZoneId.of("Africa/Tunis"));
 
-						).param("fromDate", command.getStartDateTime().format(DATE_TIME_FORMATTER))
-						.param("toDate", command.getEndDateTime().format(DATE_TIME_FORMATTER)).param("lang", "en")
-						.param("engine",
-								command.getEngineTypes().stream().map(e -> e.toString()).collect(Collectors.toSet())
-										.toArray(new String[command.getEngineTypes().size()]))
-						.param("statuses", command.getStatusCodes().stream().map(s -> s.name()).toArray(String[]::new))
-						.param("page", command.getPageNumber().toString())
-						.param("size", command.getPageSize().toString()).param("sort",
-								command.getSortingCriterion().getField() + ","
-										+ command.getSortingCriterion().getDirection()))
+        given(searchJourneyRequestsUseCase.searchJourneyRequests(any(SearchJourneyRequestsCommand.class),
+                any(String.class), any(String.class))).willReturn(expectedResult);
 
-				.andExpect(status().isBadRequest())
-				.andExpect(responseBody().containsApiErrors(List.of(
-						"sortingCriterion: Wrong sort criterion: 'SortCriterion(field=dummy-field, direction=up)'. Valid sort fields are:[distance, date-time]. Valid sort directions are:[asc, desc].")))
+        mvc.perform(get("/journey-requests").with(jwt().jwt(builder -> builder.claim("sub", TestConstants.DEFAULT_EMAIL)).authorities(Arrays.asList(new SimpleGrantedAuthority("ROLE_TRANSPORTER"))))
+                        .param("departure", command.getDeparturePlaceDepartmentId().toString())
+                        .param("arrival", command.getArrivalPlaceDepartmentIds().stream().map(id -> id.toString())
+                                .toArray(String[]::new)
 
-				.andReturn();
+                        ).param("fromDate", command.getStartDateTime().format(DATE_TIME_FORMATTER))
+                        .param("toDate", command.getEndDateTime().format(DATE_TIME_FORMATTER)).param("lang", "en")
+                        .param("engine",
+                                command.getEngineTypes().stream().map(e -> e.toString()).collect(Collectors.toSet())
+                                        .toArray(new String[command.getEngineTypes().size()]))
+                        .param("statuses", command.getStatusCodes().stream().map(s -> s.name()).toArray(String[]::new))
+                        .param("page", command.getPageNumber().toString())
+                        .param("size", command.getPageSize().toString()).param("sort",
+                                command.getSortingCriterion().getField() + ","
+                                        + command.getSortingCriterion().getDirection()))
 
-		then(searchJourneyRequestsUseCase).should(never())
-				.searchJourneyRequests(any(SearchJourneyRequestsCommand.class), any(String.class), any(String.class));
+                .andExpect(status().isBadRequest())
+                .andExpect(responseBody().containsApiErrors(List.of(
+                        "sortingCriterion: Wrong sort criterion: 'SortCriterion(field=dummy-field, direction=up)'. Valid sort fields are:[distance, date-time]. Valid sort directions are:[asc, desc].")))
 
-	}
+                .andReturn();
+
+        then(searchJourneyRequestsUseCase).should(never())
+                .searchJourneyRequests(any(SearchJourneyRequestsCommand.class), any(String.class), any(String.class));
+
+    }
 
 }

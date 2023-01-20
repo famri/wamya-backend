@@ -1,24 +1,8 @@
 package com.excentria_it.wamya.adapter.web.adapter;
 
-import static com.c4_soft.springaddons.security.oauth2.test.mockmvc.MockAuthenticationRequestPostProcessor.*;
-import static com.excentria_it.wamya.adapter.web.helper.ResponseBodyMatchers.*;
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.BDDMockito.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
-import org.springframework.test.context.ActiveProfiles;
-
 import com.c4_soft.springaddons.security.oauth2.test.mockmvc.MockMvcSupport;
+import com.excentria_it.wamya.adapter.web.WebConfiguration;
+import com.excentria_it.wamya.adapter.web.WebSecurityConfiguration;
 import com.excentria_it.wamya.adapter.web.utils.ValidationHelper;
 import com.excentria_it.wamya.application.port.in.LoadMessagesUseCase;
 import com.excentria_it.wamya.application.port.in.LoadMessagesUseCase.LoadMessagesCommand;
@@ -26,40 +10,79 @@ import com.excentria_it.wamya.common.SortCriterion;
 import com.excentria_it.wamya.common.exception.handlers.RestApiExceptionHandler;
 import com.excentria_it.wamya.domain.LoadMessagesResult;
 import com.excentria_it.wamya.test.data.common.TestConstants;
-import static com.excentria_it.wamya.test.data.common.MessageTestData.*;
-@ActiveProfiles(profiles = { "web-local" })
-@Import(value = { LoadDiscussionMessagesController.class, RestApiExceptionHandler.class, MockMvcSupport.class,
-		ValidationHelper.class })
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
+
+import java.util.Arrays;
+
+import static com.excentria_it.wamya.adapter.web.helper.ResponseBodyMatchers.responseBody;
+import static com.excentria_it.wamya.test.data.common.MessageTestData.defaultLoadMessagesResult;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@ActiveProfiles(profiles = {"web-local"})
+@ExtendWith(SpringExtension.class)
+@WebAppConfiguration
+@ContextConfiguration(classes = {WebSecurityConfiguration.class, WebConfiguration.class})
+@Import(value = {LoadDiscussionMessagesController.class, RestApiExceptionHandler.class, MockMvcSupport.class,
+        ValidationHelper.class})
 @WebMvcTest(controllers = LoadDiscussionMessagesController.class)
 public class LoadDiscussionMessagesControllerTests {
 
-	@Autowired
-	private MockMvcSupport api;
+    @Autowired
+    private WebApplicationContext context;
+    private static MockMvc mvc;
 
-	@MockBean
-	private LoadMessagesUseCase loadMessagesCommandUseCase;
+    @BeforeEach
+    void setup() {
+        mvc = MockMvcBuilders
+                .webAppContextSetup(context)
+                .apply(springSecurity())
+                .build();
+    }
 
-	@Test
-	void givenValidInput_WhenLoadDiscussionMessages_ThenReturnDiscussionMessages() throws Exception {
+    @MockBean
+    private LoadMessagesUseCase loadMessagesCommandUseCase;
 
-		LoadMessagesResult result = defaultLoadMessagesResult();
-		given(loadMessagesCommandUseCase.loadMessages(any(LoadMessagesCommand.class))).willReturn(result);
+    @Test
+    void givenValidInput_WhenLoadDiscussionMessages_ThenReturnDiscussionMessages() throws Exception {
 
-		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
-				.authorities("SCOPE_journey:write"))
-				.perform(get("/users/me/discussions/{discussionId}/messages",1L)
-						.param("page", "0").param("size", "25"))
-				.andExpect(status().isOk())
-				.andExpect(responseBody().containsObjectAsJson(result, LoadMessagesResult.class));
+        LoadMessagesResult result = defaultLoadMessagesResult();
+        given(loadMessagesCommandUseCase.loadMessages(any(LoadMessagesCommand.class))).willReturn(result);
 
-		ArgumentCaptor<LoadMessagesCommand> captor = ArgumentCaptor.forClass(LoadMessagesCommand.class);
 
-		then(loadMessagesCommandUseCase).should(times(1)).loadMessages(captor.capture());
+        mvc.perform(get("/users/me/discussions/{discussionId}/messages", 1L).with(jwt().jwt(builder -> builder.claim("sub", TestConstants.DEFAULT_EMAIL)).authorities(Arrays.asList(new SimpleGrantedAuthority("ROLE_CLIENT"))))
+                        .param("page", "0").param("size", "25"))
+                .andExpect(status().isOk())
+                .andExpect(responseBody().containsObjectAsJson(result, LoadMessagesResult.class));
 
-		assertThat(captor.getValue().getSortingCriterion()).isEqualTo(new SortCriterion("date-time", "desc"));
-		assertThat(captor.getValue().getUsername()).isEqualTo(TestConstants.DEFAULT_EMAIL);
-		assertThat(captor.getValue().getPageNumber()).isEqualTo(0);
-		assertThat(captor.getValue().getPageSize()).isEqualTo(25);
-	}
+        ArgumentCaptor<LoadMessagesCommand> captor = ArgumentCaptor.forClass(LoadMessagesCommand.class);
+
+        then(loadMessagesCommandUseCase).should(times(1)).loadMessages(captor.capture());
+
+        assertThat(captor.getValue().getSortingCriterion()).isEqualTo(new SortCriterion("date-time", "desc"));
+        assertThat(captor.getValue().getUsername()).isEqualTo(TestConstants.DEFAULT_EMAIL);
+        assertThat(captor.getValue().getPageNumber()).isEqualTo(0);
+        assertThat(captor.getValue().getPageSize()).isEqualTo(25);
+    }
 
 }

@@ -1,28 +1,8 @@
 package com.excentria_it.wamya.adapter.web.adapter;
 
-import static com.c4_soft.springaddons.security.oauth2.test.mockmvc.MockAuthenticationRequestPostProcessor.*;
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.BDDMockito.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-import java.util.Arrays;
-import java.util.stream.Collectors;
-
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MvcResult;
-
 import com.c4_soft.springaddons.security.oauth2.test.mockmvc.MockMvcSupport;
+import com.excentria_it.wamya.adapter.web.WebConfiguration;
+import com.excentria_it.wamya.adapter.web.WebSecurityConfiguration;
 import com.excentria_it.wamya.adapter.web.utils.ValidationHelper;
 import com.excentria_it.wamya.application.port.in.LoadTransporterProposalsUseCase;
 import com.excentria_it.wamya.application.port.in.LoadTransporterProposalsUseCase.LoadTransporterProposalsCommand;
@@ -32,70 +12,109 @@ import com.excentria_it.wamya.domain.TransporterProposals;
 import com.excentria_it.wamya.test.data.common.JourneyProposalTestData;
 import com.excentria_it.wamya.test.data.common.TestConstants;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
-@ActiveProfiles(profiles = { "web-local" })
-@Import(value = { LoadTransporterProposalsController.class, RestApiExceptionHandler.class, MockMvcSupport.class,
-		ValidationHelper.class })
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@ActiveProfiles(profiles = {"web-local"})
+@ExtendWith(SpringExtension.class)
+@WebAppConfiguration
+@ContextConfiguration(classes = {WebSecurityConfiguration.class, WebConfiguration.class})
+@Import(value = {LoadTransporterProposalsController.class, RestApiExceptionHandler.class, MockMvcSupport.class,
+        ValidationHelper.class})
 @WebMvcTest(controllers = LoadTransporterProposalsController.class)
 public class LoadTransporterProposalsControllerTests {
-	@Autowired
-	private MockMvcSupport api;
+    @Autowired
+    private WebApplicationContext context;
+    private static MockMvc mvc;
 
-	@MockBean
-	private LoadTransporterProposalsUseCase loadTransporterProposalsUseCase;
+    @BeforeEach
+    void setup() {
+        mvc = MockMvcBuilders
+                .webAppContextSetup(context)
+                .apply(springSecurity())
+                .build();
+    }
 
-	@Autowired
-	private ObjectMapper objectMapper;
+    @MockBean
+    private LoadTransporterProposalsUseCase loadTransporterProposalsUseCase;
 
-	@Test
-	void givenValidInput_WhenLoadTransporterProposals_ThenReturnTransporterProposals() throws Exception {
+    @Autowired
+    private ObjectMapper objectMapper;
 
-		// given
-		LoadTransporterProposalsCommand command = JourneyProposalTestData
-				.defaultLoadTransporterProposalsCommandBuilder().build();
+    @Test
+    void givenValidInput_WhenLoadTransporterProposals_ThenReturnTransporterProposals() throws Exception {
 
-		TransporterProposals transporterProposals = JourneyProposalTestData.defaultTransporterProposals();
+        // given
+        LoadTransporterProposalsCommand command = JourneyProposalTestData
+                .defaultLoadTransporterProposalsCommandBuilder().build();
 
-		given(loadTransporterProposalsUseCase.loadProposals(any(LoadTransporterProposalsCommand.class),
-				any(String.class))).willReturn(transporterProposals);
+        TransporterProposals transporterProposals = JourneyProposalTestData.defaultTransporterProposals();
 
-		ArgumentCaptor<LoadTransporterProposalsCommand> commandCaptor = ArgumentCaptor
-				.forClass(LoadTransporterProposalsCommand.class);
-		// when
+        given(loadTransporterProposalsUseCase.loadProposals(any(LoadTransporterProposalsCommand.class),
+                any(String.class))).willReturn(transporterProposals);
 
-		MvcResult mvcResult = api
-				.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
-						.authorities("SCOPE_offer:write"))
-				.perform(get("/users/me/proposals").param("lang", "en_US")
-						.param("page", command.getPageNumber().toString())
-						.param("size", command.getPageSize().toString())
-						.param("sort",
-								command.getSortingCriterion().getField().toLowerCase().concat(",")
-										.concat(command.getSortingCriterion().getDirection().toLowerCase()))
-						.param("period", "m1").param("statuses",
-								Arrays.stream(JourneyProposalStatusCode.values()).map(s -> s.toString())
-										.collect(Collectors.toSet()).toArray(String[]::new)))
+        ArgumentCaptor<LoadTransporterProposalsCommand> commandCaptor = ArgumentCaptor
+                .forClass(LoadTransporterProposalsCommand.class);
+        // when
+        MvcResult mvcResult = mvc.perform(get("/users/me/proposals").with(jwt().jwt(builder -> builder.claim("sub", TestConstants.DEFAULT_EMAIL)).authorities(Arrays.asList(new SimpleGrantedAuthority("ROLE_TRANSPORTER"))))
+                        .param("lang", "en_US")
+                        .param("page", command.getPageNumber().toString())
+                        .param("size", command.getPageSize().toString())
+                        .param("sort",
+                                command.getSortingCriterion().getField().toLowerCase().concat(",")
+                                        .concat(command.getSortingCriterion().getDirection().toLowerCase()))
+                        .param("period", "m1").param("statuses",
+                                Arrays.stream(JourneyProposalStatusCode.values()).map(s -> s.toString())
+                                        .collect(Collectors.toSet()).toArray(String[]::new)))
 
-				.andExpect(status().isOk()).andReturn();
+                .andExpect(status().isOk()).andReturn();
 
-		TransporterProposals response = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
-				TransporterProposals.class);
-		// then
+        TransporterProposals response = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
+                TransporterProposals.class);
+        // then
 
-		then(loadTransporterProposalsUseCase).should(times(1)).loadProposals(commandCaptor.capture(), eq("en_US"));
+        then(loadTransporterProposalsUseCase).should(times(1)).loadProposals(commandCaptor.capture(), eq("en_US"));
 
-		assertThat(commandCaptor.getValue().getTransporterUsername()).isEqualTo(command.getTransporterUsername());
-		assertThat(commandCaptor.getValue().getPageNumber()).isEqualTo(command.getPageNumber());
-		assertThat(commandCaptor.getValue().getPageSize()).isEqualTo(command.getPageSize());
-		assertThat(commandCaptor.getValue().getSortingCriterion().getField())
-				.isEqualTo(command.getSortingCriterion().getField());
-		assertThat(commandCaptor.getValue().getSortingCriterion().getDirection())
-				.isEqualTo(command.getSortingCriterion().getDirection());
-		assertThat(commandCaptor.getValue().getStatusCodes()).containsAll(command.getStatusCodes());
-		assertThat(commandCaptor.getValue().getStatusCodes().size()).isEqualTo(command.getStatusCodes().size());
+        assertThat(commandCaptor.getValue().getTransporterUsername()).isEqualTo(command.getTransporterUsername());
+        assertThat(commandCaptor.getValue().getPageNumber()).isEqualTo(command.getPageNumber());
+        assertThat(commandCaptor.getValue().getPageSize()).isEqualTo(command.getPageSize());
+        assertThat(commandCaptor.getValue().getSortingCriterion().getField())
+                .isEqualTo(command.getSortingCriterion().getField());
+        assertThat(commandCaptor.getValue().getSortingCriterion().getDirection())
+                .isEqualTo(command.getSortingCriterion().getDirection());
+        assertThat(commandCaptor.getValue().getStatusCodes()).containsAll(command.getStatusCodes());
+        assertThat(commandCaptor.getValue().getStatusCodes().size()).isEqualTo(command.getStatusCodes().size());
 
-		assertEquals(transporterProposals, response);
+        assertEquals(transporterProposals, response);
 
-	}
+    }
 
 }

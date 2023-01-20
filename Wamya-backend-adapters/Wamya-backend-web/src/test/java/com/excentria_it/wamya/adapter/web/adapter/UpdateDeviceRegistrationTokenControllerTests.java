@@ -1,55 +1,95 @@
 package com.excentria_it.wamya.adapter.web.adapter;
 
-import static com.c4_soft.springaddons.security.oauth2.test.mockmvc.MockAuthenticationRequestPostProcessor.*;
-import static org.mockito.BDDMockito.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
-import org.springframework.http.MediaType;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
-import org.springframework.test.context.ActiveProfiles;
-
 import com.c4_soft.springaddons.security.oauth2.test.mockmvc.MockMvcSupport;
+import com.excentria_it.wamya.adapter.web.WebConfiguration;
+import com.excentria_it.wamya.adapter.web.WebSecurityConfiguration;
 import com.excentria_it.wamya.application.port.in.UpdateDeviceRegistrationTokenUseCase;
 import com.excentria_it.wamya.application.port.in.UpdateDeviceRegistrationTokenUseCase.UpdateDeviceRegistrationTokenCommand;
 import com.excentria_it.wamya.common.exception.handlers.RestApiExceptionHandler;
 import com.excentria_it.wamya.test.data.common.TestConstants;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
-@ActiveProfiles(profiles = { "web-local" })
-@Import(value = { UpdateDeviceRegistrationTokenController.class, RestApiExceptionHandler.class, MockMvcSupport.class })
+import java.util.Arrays;
+
+import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.times;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@ActiveProfiles(profiles = {"web-local"})
+@ExtendWith(SpringExtension.class)
+@WebAppConfiguration
+@ContextConfiguration(classes = {WebSecurityConfiguration.class, WebConfiguration.class})
+@Import(value = {UpdateDeviceRegistrationTokenController.class, RestApiExceptionHandler.class, MockMvcSupport.class})
 @WebMvcTest(controllers = UpdateDeviceRegistrationTokenController.class)
 public class UpdateDeviceRegistrationTokenControllerTests {
 
-	@Autowired
-	private MockMvcSupport api;
 
-	@MockBean
-	private UpdateDeviceRegistrationTokenUseCase updateDeviceRegistrationTokenUseCase;
+    @Autowired
+    private WebApplicationContext context;
+    private static MockMvc mvc;
 
-	@Autowired
-	private ObjectMapper objectMapper;
+    @BeforeEach
+    void setup() {
+        mvc = MockMvcBuilders
+                .webAppContextSetup(context)
+                .apply(springSecurity())
+                .build();
+    }
 
-	@Test
-	void testUpdateDeviceRegistrationToken() throws Exception {
-		UpdateDeviceRegistrationTokenCommand command = new UpdateDeviceRegistrationTokenCommand(
-				"some-device-registration-token");
+    @MockBean
+    private UpdateDeviceRegistrationTokenUseCase updateDeviceRegistrationTokenUseCase;
 
-		String commandJson = objectMapper.writeValueAsString(command);
+    @Autowired
+    private ObjectMapper objectMapper;
 
-		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
-				.authorities("SCOPE_profile:write"))
-				.perform(patch("/accounts/me/device-token").contentType(MediaType.APPLICATION_JSON_VALUE)
-						.content(commandJson))
-				.andExpect(status().isNoContent()).andReturn();
+    @Test
+    void givenTransporterRole_whenUpdateDeviceRegistrationToken_thenSucceed() throws Exception {
+        UpdateDeviceRegistrationTokenCommand command = new UpdateDeviceRegistrationTokenCommand(
+                "some-device-registration-token");
 
-		then(updateDeviceRegistrationTokenUseCase).should(times(1)).updateToken("some-device-registration-token",
-				TestConstants.DEFAULT_EMAIL);
-	}
+        String commandJson = objectMapper.writeValueAsString(command);
+
+        mvc.perform(patch("/accounts/me/device-token").with(jwt().jwt(builder -> builder.claim("sub", TestConstants.DEFAULT_EMAIL)).authorities(Arrays.asList(new SimpleGrantedAuthority("ROLE_TRANSPORTER"))))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(commandJson))
+                .andExpect(status().isNoContent()).andReturn();
+
+        then(updateDeviceRegistrationTokenUseCase).should(times(1)).updateToken("some-device-registration-token",
+                TestConstants.DEFAULT_EMAIL);
+    }
+
+    @Test
+    void givenClientRole_whenUpdateDeviceRegistrationToken_thenSucceed() throws Exception {
+        UpdateDeviceRegistrationTokenCommand command = new UpdateDeviceRegistrationTokenCommand(
+                "some-device-registration-token");
+
+        String commandJson = objectMapper.writeValueAsString(command);
+
+        mvc.perform(patch("/accounts/me/device-token").with(jwt().jwt(builder -> builder.claim("sub", TestConstants.DEFAULT_EMAIL)).authorities(Arrays.asList(new SimpleGrantedAuthority("ROLE_CLIENT"))))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(commandJson))
+                .andExpect(status().isNoContent()).andReturn();
+
+        then(updateDeviceRegistrationTokenUseCase).should(times(1)).updateToken("some-device-registration-token",
+                TestConstants.DEFAULT_EMAIL);
+    }
 }

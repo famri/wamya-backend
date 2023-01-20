@@ -1,17 +1,19 @@
 server:
   port: 8080
-  servlet: 
+  servlet:
     context-path: /wamya-backend
   error:
     include-stacktrace: always
-    
+
 app:
   auth-server: auth-server
-  
+  auth-server-port: 8080
+
 spring:
   mvc.static-path-pattern: /content/**
   security:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: "http://${app.auth-server}:9595/realms/fretto/protocol/openid-connect/certs"
+          jwk-set-uri: http://${app.auth-server}:${app.auth-server-port}/realms/fretto/protocol/openid-connect/certs
+#          issuer-uri: "http://auth-server:8585/realms/fretto"

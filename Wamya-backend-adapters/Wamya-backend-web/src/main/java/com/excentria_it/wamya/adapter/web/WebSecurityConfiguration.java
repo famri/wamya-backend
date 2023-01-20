@@ -1,6 +1,7 @@
 package com.excentria_it.wamya.adapter.web;
 
 import com.excentria_it.wamya.common.annotation.Generated;
+import com.excentria_it.wamya.domain.UserRole;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -9,6 +10,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.oauth2.server.resource.web.BearerTokenResolver;
 import org.springframework.security.oauth2.server.resource.web.DefaultBearerTokenResolver;
 import org.springframework.web.cors.CorsConfiguration;
@@ -39,51 +42,53 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                         .antMatchers(HttpMethod.GET, "/departments/**").permitAll()
                         .antMatchers(HttpMethod.GET, "/engine-types/**").permitAll()
                         .antMatchers(HttpMethod.GET, "/wamya-ws/**")
-                        .hasAnyAuthority("SCOPE_journey:write", "SCOPE_offer:write")
+                        .hasAnyAuthority(UserRole.ROLE_TRANSPORTER.name(), UserRole.ROLE_CLIENT.name())
                         .antMatchers(HttpMethod.POST, "/user-preferences")
-                        .hasAnyAuthority("SCOPE_journey:write", "SCOPE_offer:write")
+                        .hasAnyAuthority(UserRole.ROLE_TRANSPORTER.name(), UserRole.ROLE_CLIENT.name())
                         .antMatchers(HttpMethod.POST, "/accounts/do-request-password-reset/**",
                                 "/accounts/password-reset/**")
                         .permitAll().antMatchers(HttpMethod.GET, "/accounts/password-reset/**").permitAll()
                         .antMatchers(HttpMethod.PATCH, "/accounts/me/device-token/**")
-                        .hasAuthority("SCOPE_profile:write")
+                        .hasAnyAuthority(UserRole.ROLE_TRANSPORTER.name(), UserRole.ROLE_CLIENT.name())
                         .antMatchers("/users/me/discussions/**", "users/me/messages/count")
-                        .hasAnyAuthority("SCOPE_journey:write", "SCOPE_offer:write")
+                        .hasAnyAuthority(UserRole.ROLE_TRANSPORTER.name(), UserRole.ROLE_CLIENT.name())
 
-                        .antMatchers(HttpMethod.GET, "/profiles/**").hasAuthority("SCOPE_profile:read")
-                        .antMatchers(HttpMethod.POST, "/profiles/**").hasAuthority("SCOPE_profile:write")
-                        .antMatchers(HttpMethod.PATCH, "/profiles/**").hasAuthority("SCOPE_profile:write")
-                        .antMatchers(HttpMethod.POST, "/geo-places/**").hasAnyAuthority("SCOPE_journey:write")
-                        .antMatchers(HttpMethod.GET, "/geo-places/**").hasAnyAuthority("SCOPE_journey:write")
+                        .antMatchers(HttpMethod.GET, "/profiles/**").hasAnyAuthority(UserRole.ROLE_TRANSPORTER.name(), UserRole.ROLE_CLIENT.name())
+                        .antMatchers(HttpMethod.POST, "/profiles/**").hasAnyAuthority(UserRole.ROLE_TRANSPORTER.name(), UserRole.ROLE_CLIENT.name())
+                        .antMatchers(HttpMethod.PATCH, "/profiles/**").hasAnyAuthority(UserRole.ROLE_TRANSPORTER.name(), UserRole.ROLE_CLIENT.name())
 
-                        .antMatchers(HttpMethod.PATCH, "/journey-requests/{\\d+}/proposals/{\\d+}/**")
-                        .hasAuthority("SCOPE_offer:read")
-                        .antMatchers(HttpMethod.POST, "/journey-requests/{\\d+}/proposals/**")
-                        .hasAuthority("SCOPE_offer:write")
-                        .antMatchers(HttpMethod.GET, "/journey-requests/{\\d+}/proposals/**")
-                        .hasAuthority("SCOPE_offer:read").antMatchers(HttpMethod.PATCH, "/journey-requests/{\\d+}/**")
-                        .hasAuthority("SCOPE_journey:write").antMatchers(HttpMethod.GET, "/journey-requests/**")
-                        .hasAuthority("SCOPE_journey:read").antMatchers(HttpMethod.POST, "/journey-requests/**")
-                        .hasAuthority("SCOPE_journey:write").antMatchers(HttpMethod.GET, "/travel-info/**")
-                        .hasAuthority("SCOPE_journey:write")
+                        .antMatchers(HttpMethod.POST, "/geo-places/**").hasAuthority(UserRole.ROLE_CLIENT.name())
+                        .antMatchers(HttpMethod.GET, "/geo-places/**").hasAuthority(UserRole.ROLE_CLIENT.name())
+
+                        .antMatchers(HttpMethod.PATCH, "/journey-requests/{\\d+}/proposals/{\\d+}/**").hasAuthority(UserRole.ROLE_CLIENT.name())
+                        .antMatchers(HttpMethod.POST, "/journey-requests/{\\d+}/proposals/**").hasAuthority(UserRole.ROLE_TRANSPORTER.name())
+                        .antMatchers(HttpMethod.GET, "/journey-requests/{\\d+}/proposals/**").hasAuthority(UserRole.ROLE_CLIENT.name())
+                        .antMatchers(HttpMethod.PATCH, "/journey-requests/{\\d+}/**").hasAuthority(UserRole.ROLE_CLIENT.name())
+                        .antMatchers(HttpMethod.GET, "/journey-requests/**").hasAuthority(UserRole.ROLE_TRANSPORTER.name())
+                        .antMatchers(HttpMethod.POST, "/journey-requests/**").hasAuthority(UserRole.ROLE_CLIENT.name())
+
+                        .antMatchers(HttpMethod.GET, "/travel-info/**").hasAuthority(UserRole.ROLE_CLIENT.name())
+
                         .antMatchers(HttpMethod.GET, "/constructors/{\\d+}/models/**", "/constructors**")
-                        .hasAuthority("SCOPE_vehicule:write")
+                        .hasAuthority(UserRole.ROLE_TRANSPORTER.name())
 
-                        .antMatchers(HttpMethod.POST, "/users/me/vehicules/**").hasAuthority("SCOPE_vehicule:write")
-                        .antMatchers(HttpMethod.GET, "/users/me/vehicules/**").hasAuthority("SCOPE_vehicule:read")
+                        .antMatchers(HttpMethod.POST, "/users/me/vehicules/**").hasAuthority(UserRole.ROLE_TRANSPORTER.name())
+                        .antMatchers(HttpMethod.GET, "/users/me/vehicules/**").hasAuthority(UserRole.ROLE_TRANSPORTER.name())
+
                         .antMatchers(HttpMethod.GET, "/users/me/journey-requests/**")
-                        .hasAuthority("SCOPE_journey:write")
+                        .hasAuthority(UserRole.ROLE_CLIENT.name())
                         .antMatchers(HttpMethod.GET, "/users/me/proposals/**")
-                        .hasAuthority("SCOPE_offer:write")
+                        .hasAuthority(UserRole.ROLE_TRANSPORTER.name())
                         .antMatchers(HttpMethod.POST, "/validation-codes/sms/send/**")
-                        .hasAuthority("SCOPE_profile:write")
+                        .hasAnyAuthority(UserRole.ROLE_TRANSPORTER.name(), UserRole.ROLE_CLIENT.name())
                         .antMatchers(HttpMethod.POST, "/validation-codes/sms/validate/**")
-                        .hasAuthority("SCOPE_profile:write")
+                        .hasAnyAuthority(UserRole.ROLE_TRANSPORTER.name(), UserRole.ROLE_CLIENT.name())
                         .antMatchers(HttpMethod.POST, "/validation-codes/email/send/**")
-                        .hasAuthority("SCOPE_profile:write").antMatchers(HttpMethod.POST, "/users/me/identities/**")
-                        .hasAuthority("SCOPE_profile:write").antMatchers(HttpMethod.POST, "/vehicules/{\\d+}/images/**")
-                        .hasAuthority("SCOPE_vehicule:write").anyRequest().authenticated())
-                .oauth2ResourceServer().bearerTokenResolver(bearerTokenResolver()).jwt();
+                        .hasAnyAuthority(UserRole.ROLE_TRANSPORTER.name(), UserRole.ROLE_CLIENT.name()).antMatchers(HttpMethod.POST, "/users/me/identities/**")
+                        .hasAnyAuthority(UserRole.ROLE_TRANSPORTER.name(), UserRole.ROLE_CLIENT.name()).antMatchers(HttpMethod.POST, "/vehicules/{\\d+}/images/**")
+                        .hasAuthority(UserRole.ROLE_TRANSPORTER.name()).anyRequest().authenticated())
+                .oauth2ResourceServer().bearerTokenResolver(bearerTokenResolver()).jwt().jwtAuthenticationConverter(jwtAuthenticationConverter());
+
 
         // @formatter:on
 
@@ -103,6 +108,16 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
         return source;
+    }
+
+    //@Bean
+    public JwtAuthenticationConverter jwtAuthenticationConverter() {
+        JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+        grantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
+        grantedAuthoritiesConverter.setAuthoritiesClaimName("roles");
+        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
+        return jwtAuthenticationConverter;
     }
 
 }

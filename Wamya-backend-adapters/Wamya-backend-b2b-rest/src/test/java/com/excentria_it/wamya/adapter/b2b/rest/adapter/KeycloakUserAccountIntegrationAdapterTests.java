@@ -9,7 +9,6 @@ import com.excentria_it.wamya.domain.OpenIdAuthResponse;
 import com.excentria_it.wamya.domain.UserRole;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.tomcat.util.codec.binary.Base64;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,7 +36,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.*;
 
@@ -86,7 +84,7 @@ public class KeycloakUserAccountIntegrationAdapterTests {
                 oAuthUserAccountAttributes, List.of(UserRole.ROLE_TRANSPORTER), Collections.emptyList());
 
         clientRole = KeyCloakRealmRole.builder().id("client-realm-role-uuid").containerId("container-1").name(UserRole.ROLE_CLIENT.name()).clientRole(false).composite(false).description("Client role").build();
-        transporterRole = KeyCloakRealmRole.builder().id("transporter-realm-role-uuid").containerId("container-1").name(UserRole.ROLE_TRANSPORTER.name()).clientRole(false).composite(false).description("Transporter role").build();
+        transporterRole = KeyCloakRealmRole.builder().id("transporter-realm-role-uuid").containerId("container-1").name(UserRole.ROLE_TRANSPORTER.bareName()).clientRole(false).composite(false).description("Transporter role").build();
 
         realmRoles = new KeyCloakRealmRole[]{clientRole, transporterRole};
     }
@@ -234,23 +232,47 @@ public class KeycloakUserAccountIntegrationAdapterTests {
     }
 
     @Test
-    void testAuthorizeOAuthUser() throws JsonProcessingException, URISyntaxException {
+    void testFetchJwtTokenForUser() throws JsonProcessingException, URISyntaxException {
         final OpenIdAuthResponse oAuth2AccessTokenResponse = new OpenIdAuthResponse(ACCESS_TOKEN_STRING, 300L, 1800L, "REFRESH_TOKEN", "Bearer", "ID_TOKEN", "read write");
 
         final MultiValueMap<String, String> formParams = new LinkedMultiValueMap<>();
-        formParams.add("username", "test");
-        formParams.add("password", "test");
-        formParams.add("grant_type", "password");
+        formParams.add(OAuthConstants.CLIENT_ID_KEY, authServerProperties.getClientId());
+        formParams.add(OAuthConstants.CLIENT_SECRET_KEY, authServerProperties.getClientSecret());
+
+        formParams.add(OAuthConstants.USERNAME_FORM_KEY, "test");
+        formParams.add(OAuthConstants.PASSWORD_FORM_KEY, "test");
+        formParams.add(OAuthConstants.GRANT_TYPE_FORM_KEY, OAuthConstants.GRANT_TYPE_FORM_VALUE);
+        formParams.add(OAuthConstants.SCOPE_KEY, "openid email roles");
 
         mockRestServiceServer.expect(ExpectedCount.once(), requestTo(new URI(authServerProperties.getTokenUri())))
-                .andExpect(method(HttpMethod.POST)).andExpect(content().formData(formParams)).andExpect(header(HttpHeaders.AUTHORIZATION, "Basic " + Base64.encodeBase64String((authServerProperties.getClientId() + ":" + authServerProperties.getClientSecret()).getBytes(StandardCharsets.UTF_8))))
-                .andRespond(withStatus(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
+                .andExpect(method(HttpMethod.POST)).andExpect(content().formData(formParams)).andRespond(withStatus(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
                         .body(objectMapper.writeValueAsString(oAuth2AccessTokenResponse)));
 
         final OpenIdAuthResponse oAuth2AccessToken = oAuthUserAccountIntegrationAdapter.fetchJwtTokenForUser("test",
                 "test");
 
         assertEquals(ACCESS_TOKEN_STRING, oAuth2AccessToken.getAccessToken());
+
+    }
+
+    @Test
+    void givenFetchJWTTokenCallToAuthorizationServerThrowsRestClientException_whenFetchJwtTokenForUser_thenThrowRuntimeException() throws JsonProcessingException, URISyntaxException {
+        // Given
+        final MultiValueMap<String, String> formParams = new LinkedMultiValueMap<>();
+        formParams.add(OAuthConstants.CLIENT_ID_KEY, authServerProperties.getClientId());
+        formParams.add(OAuthConstants.CLIENT_SECRET_KEY, authServerProperties.getClientSecret());
+
+        formParams.add(OAuthConstants.USERNAME_FORM_KEY, "test");
+        formParams.add(OAuthConstants.PASSWORD_FORM_KEY, "test");
+        formParams.add(OAuthConstants.GRANT_TYPE_FORM_KEY, OAuthConstants.GRANT_TYPE_FORM_VALUE);
+        formParams.add(OAuthConstants.SCOPE_KEY, "openid email roles");
+
+        mockRestServiceServer.expect(ExpectedCount.once(), requestTo(new URI(authServerProperties.getTokenUri())))
+                .andExpect(method(HttpMethod.POST)).andExpect(content().formData(formParams)).andRespond(withStatus(HttpStatus.INTERNAL_SERVER_ERROR));
+        // When
+        // Then
+        assertThrows(RuntimeException.class, () -> oAuthUserAccountIntegrationAdapter.fetchJwtTokenForUser("test",
+                "test"));
 
     }
 

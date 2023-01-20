@@ -11,6 +11,8 @@ import com.excentria_it.wamya.domain.OpenIdAuthResponse;
 import com.excentria_it.wamya.domain.UserRole;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
 import org.springframework.security.oauth2.client.AuthorizedClientServiceOAuth2AuthorizedClientManager;
 import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest;
@@ -27,14 +29,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.excentria_it.wamya.adapter.b2b.rest.adapter.OAuthConstants.*;
+
 @WebAdapter
 @Slf4j
 public class KeycloakUserAccountIntegrationAdapter implements OAuthUserAccountPort {
 
-    private static final String USERNAME_FORM_KEY = "username";
-    private static final String PASSWORD_FORM_KEY = "password";
-    private static final String GRANT_TYPE_FORM_KEY = "grant_type";
-    private static final String GRANT_TYPE_FORM_VALUE = "password";
+    private static final Logger LOGGER = LoggerFactory.getLogger(KeycloakUserAccountIntegrationAdapter.class);
+
     private static final String OAUTH2_CLIENT_REGISTRATION_NAME = "on-prem-auth-server-cc";
     private AuthServerProperties authServerProperties;
 
@@ -83,16 +85,20 @@ public class KeycloakUserAccountIntegrationAdapter implements OAuthUserAccountPo
 
     private void createRealmRoleForUser(String userOAuthId, List<KeyCloakRealmRole> roles, OAuth2AccessToken accessToken) {
 
+
         final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(accessToken.getTokenValue());
 
         final HttpEntity<KeyCloakRealmRole[]> request = new HttpEntity<>(roles.toArray(new KeyCloakRealmRole[roles.size()]), headers);
+
         try {
             restTemplate.postForEntity(authServerProperties.getAddRoleToUserUri(), request, Void.class, userOAuthId);
         } catch (RestClientException e) {
+            LOGGER.error("Exception when creating real roles for user.", e);
             throw new UserCreationException(String.format("Cannot create user roles in the authorization server: %s", e.getMessage()));
         }
+
     }
 
     private List<KeyCloakRealmRole> getRealmRoles(Collection<UserRole> userRoles, OAuth2AccessToken accessToken) {
@@ -107,12 +113,13 @@ public class KeycloakUserAccountIntegrationAdapter implements OAuthUserAccountPo
         try {
             response = restTemplate.exchange(authServerProperties.getReadRealmRolesUri(), HttpMethod.GET, request, KeyCloakRealmRole[].class);
         } catch (RestClientException e) {
+            LOGGER.error("Exception when reading real roles.", e);
             throw new UserCreationException(String.format("Cannot find user roles in the authorization server: %s", e.getMessage()));
         }
 
         final KeyCloakRealmRole[] keyCloakRealmRoles = response.getBody();
 
-        final Collection<String> rolesNames = userRoles.stream().map(r -> r.name()).collect(Collectors.toSet());
+        final Collection<String> rolesNames = userRoles.stream().map(r -> r.bareName()).collect(Collectors.toSet());
 
         return Arrays.stream(keyCloakRealmRoles).filter(role -> rolesNames.contains(role.getName())).collect(Collectors.toList());
     }
@@ -127,8 +134,9 @@ public class KeycloakUserAccountIntegrationAdapter implements OAuthUserAccountPo
         try {
             URI locationUri = restTemplate.postForLocation(authServerProperties.getCreateUserUri(), request);
             // skip the leading slash from /${userId} location URI
-            return locationUri.getPath().substring(1);
+            return locationUri.getPath().substring(locationUri.getPath().lastIndexOf("/") + 1);
         } catch (RestClientException e) {
+            LOGGER.error("Exception when creating user.", e);
             throw new UserCreationException(String.format("Cannot create user in the authorization server:%s", e.getMessage()));
         }
     }
@@ -138,16 +146,24 @@ public class KeycloakUserAccountIntegrationAdapter implements OAuthUserAccountPo
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        headers.setBasicAuth(authServerProperties.getClientId(), authServerProperties.getClientSecret());
 
         MultiValueMap<String, String> formParams = new LinkedMultiValueMap<>();
+        formParams.add(CLIENT_ID_KEY, authServerProperties.getClientId());
+        formParams.add(CLIENT_SECRET_KEY, authServerProperties.getClientSecret());
         formParams.add(USERNAME_FORM_KEY, username);
         formParams.add(PASSWORD_FORM_KEY, password);
         formParams.add(GRANT_TYPE_FORM_KEY, GRANT_TYPE_FORM_VALUE);
+        formParams.add(SCOPE_KEY, "openid email roles");
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(formParams, headers);
 
-        return restTemplate.postForObject(authServerProperties.getTokenUri(), request, OpenIdAuthResponse.class);
+        try {
+            return restTemplate.postForObject(authServerProperties.getTokenUri(), request, OpenIdAuthResponse.class);
+        } catch (RestClientException e) {
+            LOGGER.error("Exception when fetching JWT for user: {}", username, e);
+            throw new RuntimeException(String.format("Cannot fetch JWT for user: %s", e.getMessage()));
+        }
+
     }
 
     @Override
@@ -172,6 +188,7 @@ public class KeycloakUserAccountIntegrationAdapter implements OAuthUserAccountPo
         try {
             restTemplate.put(authServerProperties.getResetUserPasswordUri(), updateRequest, userOauthId);
         } catch (RestClientException e) {
+            LOGGER.error("Exception when resetting password for user with OAuthId {}.", userOauthId, e);
             throw new RuntimeException(String.format("Exception when resetting user password on authorization server: %s", e.getMessage()));
         }
 

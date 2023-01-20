@@ -1,28 +1,8 @@
 package com.excentria_it.wamya.adapter.web.adapter;
 
-import static com.c4_soft.springaddons.security.oauth2.test.mockmvc.MockAuthenticationRequestPostProcessor.*;
-import static com.excentria_it.wamya.adapter.web.helper.ResponseBodyMatchers.*;
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.BDDMockito.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-import java.util.List;
-
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MvcResult;
-
 import com.c4_soft.springaddons.security.oauth2.test.mockmvc.MockMvcSupport;
+import com.excentria_it.wamya.adapter.web.WebConfiguration;
+import com.excentria_it.wamya.adapter.web.WebSecurityConfiguration;
 import com.excentria_it.wamya.adapter.web.utils.ValidationHelper;
 import com.excentria_it.wamya.application.port.in.LoadClientJourneyRequestsUseCase;
 import com.excentria_it.wamya.application.port.in.LoadClientJourneyRequestsUseCase.LoadJourneyRequestCommand;
@@ -32,133 +12,169 @@ import com.excentria_it.wamya.common.exception.handlers.RestApiExceptionHandler;
 import com.excentria_it.wamya.domain.ClientJourneyRequestDto;
 import com.excentria_it.wamya.domain.ClientJourneyRequests;
 import com.excentria_it.wamya.test.data.common.JourneyRequestTestData;
-import com.excentria_it.wamya.test.data.common.TestConstants;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
-@ActiveProfiles(profiles = { "web-local" })
-@Import(value = { LoadClientJourneyRequestsController.class, RestApiExceptionHandler.class, MockMvcSupport.class,
-		ValidationHelper.class })
+import java.util.Arrays;
+import java.util.List;
+
+import static com.excentria_it.wamya.adapter.web.helper.ResponseBodyMatchers.responseBody;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@ActiveProfiles(profiles = {"web-local"})
+@ExtendWith(SpringExtension.class)
+@WebAppConfiguration
+@ContextConfiguration(classes = {WebSecurityConfiguration.class, WebConfiguration.class})
+@Import(value = {LoadClientJourneyRequestsController.class, RestApiExceptionHandler.class, MockMvcSupport.class,
+        ValidationHelper.class})
 @WebMvcTest(controllers = LoadClientJourneyRequestsController.class)
 public class LoadClientJourneyRequestsControllerTests {
-	@Autowired
-	private MockMvcSupport api;
+    @Autowired
+    private WebApplicationContext context;
+    private static MockMvc mvc;
 
-	@MockBean
-	private LoadClientJourneyRequestsUseCase loadClientJourneyRequestsUseCase;
+    @BeforeEach
+    void setup() {
+        mvc = MockMvcBuilders
+                .webAppContextSetup(context)
+                .apply(springSecurity())
+                .build();
+    }
 
-	@Autowired
-	private ObjectMapper objectMapper;
+    @MockBean
+    private LoadClientJourneyRequestsUseCase loadClientJourneyRequestsUseCase;
 
-	@Test
-	void givenValidInput_WhenLoadClientJourneyRequests_ThenReturnClientJourneyRequests() throws Exception {
+    @Autowired
+    private ObjectMapper objectMapper;
 
-		// given
-		LoadJourneyRequestsCommand command = JourneyRequestTestData.defaultLoadJourneyRequestsCommandBuilder().build();
+    @Test
+    void givenValidInput_WhenLoadClientJourneyRequests_ThenReturnClientJourneyRequests() throws Exception {
 
-		ClientJourneyRequests expectedResult = JourneyRequestTestData.defaultClientJourneyRequests();
+        // given
+        LoadJourneyRequestsCommand command = JourneyRequestTestData.defaultLoadJourneyRequestsCommandBuilder().build();
 
-		given(loadClientJourneyRequestsUseCase.loadJourneyRequests(any(LoadJourneyRequestsCommand.class),
-				any(String.class))).willReturn(expectedResult);
-		// when
+        ClientJourneyRequests expectedResult = JourneyRequestTestData.defaultClientJourneyRequests();
 
-		MvcResult mvcResult = api
-				.with(mockAuthentication(JwtAuthenticationToken.class).name(command.getClientUsername())
-						.authorities("SCOPE_journey:write"))
-				.perform(get("/users/me/journey-requests").param("period", command.getPeriodCriterion().getValue())
-						.param("page", command.getPageNumber().toString())
-						.param("size", command.getPageSize().toString()).param("sort", "creation-date-time,desc")
-						.param("lang", "fr_FR"))
+        given(loadClientJourneyRequestsUseCase.loadJourneyRequests(any(LoadJourneyRequestsCommand.class),
+                any(String.class))).willReturn(expectedResult);
+        // when
 
-				.andExpect(status().isOk()).andReturn();
+        MvcResult mvcResult =
+                mvc.perform(get("/users/me/journey-requests").with(jwt().jwt(builder -> builder.claim("sub", command.getClientUsername())).authorities(Arrays.asList(new SimpleGrantedAuthority("ROLE_CLIENT"))))
+                                .param("period", command.getPeriodCriterion().getValue())
+                                .param("page", command.getPageNumber().toString())
+                                .param("size", command.getPageSize().toString()).param("sort", "creation-date-time,desc")
+                                .param("lang", "fr_FR"))
 
-		// then
-		ArgumentCaptor<LoadJourneyRequestsCommand> commandCaptor = ArgumentCaptor
-				.forClass(LoadJourneyRequestsCommand.class);
+                        .andExpect(status().isOk()).andReturn();
 
-		then(loadClientJourneyRequestsUseCase).should(times(1)).loadJourneyRequests(commandCaptor.capture(),
-				eq("fr_FR"));
-		assertEquals(command.getClientUsername(), commandCaptor.getValue().getClientUsername());
-		assertEquals(command.getPageNumber(), commandCaptor.getValue().getPageNumber());
-		assertEquals(command.getPageSize(), commandCaptor.getValue().getPageSize());
-		assertEquals(command.getSortingCriterion().getDirection(),
-				commandCaptor.getValue().getSortingCriterion().getDirection());
-		assertEquals(command.getSortingCriterion().getField(),
-				commandCaptor.getValue().getSortingCriterion().getField());
-		assertEquals(command.getPeriodCriterion().getValue(), commandCaptor.getValue().getPeriodCriterion().getValue());
-		assertTrue(command.getPeriodCriterion().getLowerEdge()
-				.isBefore(commandCaptor.getValue().getPeriodCriterion().getLowerEdge())
-				|| command.getPeriodCriterion().getLowerEdge()
-						.equals(commandCaptor.getValue().getPeriodCriterion().getLowerEdge()));
-		assertTrue(command.getPeriodCriterion().getHigherEdge()
-				.isBefore(commandCaptor.getValue().getPeriodCriterion().getHigherEdge())
-				|| command.getPeriodCriterion().getHigherEdge()
-						.equals(commandCaptor.getValue().getPeriodCriterion().getHigherEdge()));
+        // then
+        ArgumentCaptor<LoadJourneyRequestsCommand> commandCaptor = ArgumentCaptor
+                .forClass(LoadJourneyRequestsCommand.class);
 
-		String actualResponseBody = mvcResult.getResponse().getContentAsString();
+        then(loadClientJourneyRequestsUseCase).should(times(1)).loadJourneyRequests(commandCaptor.capture(),
+                eq("fr_FR"));
+        assertEquals(command.getClientUsername(), commandCaptor.getValue().getClientUsername());
+        assertEquals(command.getPageNumber(), commandCaptor.getValue().getPageNumber());
+        assertEquals(command.getPageSize(), commandCaptor.getValue().getPageSize());
+        assertEquals(command.getSortingCriterion().getDirection(),
+                commandCaptor.getValue().getSortingCriterion().getDirection());
+        assertEquals(command.getSortingCriterion().getField(),
+                commandCaptor.getValue().getSortingCriterion().getField());
+        assertEquals(command.getPeriodCriterion().getValue(), commandCaptor.getValue().getPeriodCriterion().getValue());
+        assertTrue(command.getPeriodCriterion().getLowerEdge()
+                .isBefore(commandCaptor.getValue().getPeriodCriterion().getLowerEdge())
+                || command.getPeriodCriterion().getLowerEdge()
+                .equals(commandCaptor.getValue().getPeriodCriterion().getLowerEdge()));
+        assertTrue(command.getPeriodCriterion().getHigherEdge()
+                .isBefore(commandCaptor.getValue().getPeriodCriterion().getHigherEdge())
+                || command.getPeriodCriterion().getHigherEdge()
+                .equals(commandCaptor.getValue().getPeriodCriterion().getHigherEdge()));
 
-		assertThat(actualResponseBody).isEqualToIgnoringWhitespace(objectMapper.writeValueAsString(expectedResult));
-	}
+        String actualResponseBody = mvcResult.getResponse().getContentAsString();
 
-	@Test
-	void givenInvalidInput_WhenLoadClientJourneyRequests_ThenReturnBadRequest() throws Exception {
+        assertThat(actualResponseBody).isEqualToIgnoringWhitespace(objectMapper.writeValueAsString(expectedResult));
+    }
 
-		// given //when
+    @Test
+    void givenInvalidInput_WhenLoadClientJourneyRequests_ThenReturnBadRequest() throws Exception {
 
-		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
-				.authorities("SCOPE_journey:write"))
-				.perform(get("/users/me/journey-requests").param("period", "not_valid_period").param("page", "0")
-						.param("size", "25").param("sort", "not_valid_sort_field,desc"))
-				.andExpect(responseBody().containsApiErrors(List.of(
-						"periodCriterion: Wrong period: 'PeriodCriterion(value=not_valid_period, lowerEdge=null, higherEdge=null)'. Valid period values are: [w1, m1, lm1, lm3].",
-						"sortingCriterion: Wrong sort criterion: 'SortCriterion(field=not_valid_sort_field, direction=desc)'. Valid sort fields are:[creation-date-time, date-time]. Valid sort directions are:[asc, desc].")))
-				.andExpect(status().isBadRequest());
+        // given //when
 
-		// then
-		then(loadClientJourneyRequestsUseCase).should(never())
-				.loadJourneyRequests(any(LoadJourneyRequestsCommand.class), any(String.class));
+        mvc.perform(get("/users/me/journey-requests").with(jwt().authorities(Arrays.asList(new SimpleGrantedAuthority("ROLE_CLIENT")))).param("period", "not_valid_period").param("page", "0")
+                        .param("size", "25").param("sort", "not_valid_sort_field,desc"))
+                .andExpect(responseBody().containsApiErrors(List.of(
+                        "periodCriterion: Wrong period: 'PeriodCriterion(value=not_valid_period, lowerEdge=null, higherEdge=null)'. Valid period values are: [w1, m1, lm1, lm3].",
+                        "sortingCriterion: Wrong sort criterion: 'SortCriterion(field=not_valid_sort_field, direction=desc)'. Valid sort fields are:[creation-date-time, date-time]. Valid sort directions are:[asc, desc].")))
+                .andExpect(status().isBadRequest());
 
-	}
+        // then
+        then(loadClientJourneyRequestsUseCase).should(never())
+                .loadJourneyRequests(any(LoadJourneyRequestsCommand.class), any(String.class));
 
-	@Test
-	void givenInexistentJourneyRequest_WhenLoadClientJourneyRequest_ThenReturnBadRequest() throws Exception {
+    }
 
-		// given
-		LoadJourneyRequestCommand command = JourneyRequestTestData.defaultLoadJourneyRequestCommandBuilder().build();
+    @Test
+    void givenInexistentJourneyRequest_WhenLoadClientJourneyRequest_ThenReturnBadRequest() throws Exception {
 
-		doThrow(new JourneyRequestNotFoundException("SOME ERROR DESCRIPTION")).when(loadClientJourneyRequestsUseCase)
-				.loadJourneyRequest(eq(command), any(String.class));
-		// when //then
-		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
-				.authorities("SCOPE_journey:write"))
-				.perform(get("/users/me/journey-requests/{journeyRequestId}", 1L).param("lang", "fr_FR"))
-				.andExpect(responseBody().containsApiErrors(List.of("SOME ERROR DESCRIPTION")))
-				.andExpect(status().isBadRequest()).andReturn();
-		// then
-		then(loadClientJourneyRequestsUseCase).should(times(1)).loadJourneyRequest(eq(command), eq("fr_FR"));
-	}
+        // given
+        LoadJourneyRequestCommand command = JourneyRequestTestData.defaultLoadJourneyRequestCommandBuilder().build();
 
-	@Test
-	void givenExistentJourneyRequest_WhenLoadClientJourneyRequest_ThenReturnJourneyRequest() throws Exception {
+        doThrow(new JourneyRequestNotFoundException("SOME ERROR DESCRIPTION")).when(loadClientJourneyRequestsUseCase)
+                .loadJourneyRequest(eq(command), any(String.class));
+        // when //then
 
-		// given
-		LoadJourneyRequestCommand command = JourneyRequestTestData.defaultLoadJourneyRequestCommandBuilder().build();
+        mvc.perform(get("/users/me/journey-requests/{journeyRequestId}", 1L).with(jwt().jwt(builder -> builder.claim("sub", command.getClientUsername())).authorities(Arrays.asList(new SimpleGrantedAuthority("ROLE_CLIENT")))).param("lang", "fr_FR"))
+                .andExpect(responseBody().containsApiErrors(List.of("SOME ERROR DESCRIPTION")))
+                .andExpect(status().isBadRequest()).andReturn();
+        // then
+        then(loadClientJourneyRequestsUseCase).should(times(1)).loadJourneyRequest(eq(command), eq("fr_FR"));
+    }
 
-		ClientJourneyRequestDto expectedResult = JourneyRequestTestData.defaultClientJourneyRequestDto();
+    @Test
+    void givenExistentJourneyRequest_WhenLoadClientJourneyRequest_ThenReturnJourneyRequest() throws Exception {
 
-		given(loadClientJourneyRequestsUseCase.loadJourneyRequest(eq(command), any(String.class)))
-				.willReturn(expectedResult);
+        // given
+        LoadJourneyRequestCommand command = JourneyRequestTestData.defaultLoadJourneyRequestCommandBuilder().build();
 
-		// when
-		MvcResult mvcResult = api
-				.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
-						.authorities("SCOPE_journey:write"))
-				.perform(get("/users/me/journey-requests/{journeyRequestId}", 1L).param("lang", "fr_FR"))
+        ClientJourneyRequestDto expectedResult = JourneyRequestTestData.defaultClientJourneyRequestDto();
 
-				.andExpect(status().isOk()).andReturn();
-		// then
-		then(loadClientJourneyRequestsUseCase).should(times(1)).loadJourneyRequest(eq(command), eq("fr_FR"));
-		String actualResponseBody = mvcResult.getResponse().getContentAsString();
+        given(loadClientJourneyRequestsUseCase.loadJourneyRequest(eq(command), any(String.class)))
+                .willReturn(expectedResult);
 
-		assertThat(actualResponseBody).isEqualToIgnoringWhitespace(objectMapper.writeValueAsString(expectedResult));
-	}
+        // when
+        MvcResult mvcResult = mvc.perform(get("/users/me/journey-requests/{journeyRequestId}", 1L).with(jwt().jwt(builder -> builder.claim("sub", command.getClientUsername())).authorities(Arrays.asList(new SimpleGrantedAuthority("ROLE_CLIENT")))).param("lang", "fr_FR"))
+
+                .andExpect(status().isOk()).andReturn();
+        // then
+        then(loadClientJourneyRequestsUseCase).should(times(1)).loadJourneyRequest(eq(command), eq("fr_FR"));
+        String actualResponseBody = mvcResult.getResponse().getContentAsString();
+
+        assertThat(actualResponseBody).isEqualToIgnoringWhitespace(objectMapper.writeValueAsString(expectedResult));
+    }
 }

@@ -25,12 +25,12 @@ INSERT INTO ENGINE_TYPE(id,code) VALUES(14,'TANK_TRANSPORTER') ON CONFLICT DO NO
 /*******************************************
 * INSERTING ENGINE TYPES TRANSLATIONS
 *******************************************/ 
-INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(1,'en_US', 'Utility vehicule', 'Examples of utility vehicule: Renault Kangoo, Ciroën Jumper, Peugeot Partner') ON CONFLICT DO NOTHING;
-INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(1,'fr_FR', 'Véhicule utilitaire', 'Examples de véhicule utilitaire: Renault Kangoo, Ciroën Jumper, Peugeot Partner') ON CONFLICT DO NOTHING;
+INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(1,'en_US', 'Utility vehicule', 'Examples of utility vehicule: Renault Kangoo, Ciroï¿½n Jumper, Peugeot Partner') ON CONFLICT DO NOTHING;
+INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(1,'fr_FR', 'Vï¿½hicule utilitaire', 'Examples de vï¿½hicule utilitaire: Renault Kangoo, Ciroï¿½n Jumper, Peugeot Partner') ON CONFLICT DO NOTHING;
 
-
+0
 INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(2,'en_US', 'Pickup vehicule', 'Examples of pickup vehicule: Isuzu D-max, Mazda BT-50, Mahindra SC') ON CONFLICT DO NOTHING;
-INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(2,'fr_FR', 'Véhicule pickup', 'Examples de véhicule pickup: Isuzu D-max, Mazda BT-50, Mahindra SC') ON CONFLICT DO NOTHING;
+INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(2,'fr_FR', 'Vï¿½hicule pickup', 'Examples de vï¿½hicule pickup: Isuzu D-max, Mazda BT-50, Mahindra SC') ON CONFLICT DO NOTHING;
 
 INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(3,'en_US', 'Bus', 'Examples of bus: Mercedes Tourismo, MAN R07, Irisbus Recreo') ON CONFLICT DO NOTHING;
 INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(3,'fr_FR', 'Bus', 'Examples de bus: Mercedes Tourismo, MAN R07, Irisbus Recreo') ON CONFLICT DO NOTHING;
@@ -41,18 +41,18 @@ INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(4,'fr_FR
 
 
 INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(5,'en_US', 'L1H1 vehicule', 'Examples of L1H1 vehicule: Renault Trafic, Peugeot Boxer, Volkswagen Transporter') ON CONFLICT DO NOTHING;
-INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(5,'fr_FR', 'Véhicule L1H1', 'Examples de Véhicule L1H1: Renault Trafic, Peugeot Boxer, Volkswagen Transporter') ON CONFLICT DO NOTHING;
+INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(5,'fr_FR', 'Vï¿½hicule L1H1', 'Examples de Vï¿½hicule L1H1: Renault Trafic, Peugeot Boxer, Volkswagen Transporter') ON CONFLICT DO NOTHING;
 
 
-INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(6,'en_US', 'L2H2 vehicule', 'Examples of L2H2 vehicule: Renault Master L2H2, Peugeot Boxer L2H2, Citroën Jumper L2H2') ON CONFLICT DO NOTHING;
-INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(6,'fr_FR', 'Véhicule L2H2', 'Examples de Véhicule L2H2: Renault Master L2H2, Peugeot Boxer L2H2, Citroën Jumper L2H2') ON CONFLICT DO NOTHING;
+INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(6,'en_US', 'L2H2 vehicule', 'Examples of L2H2 vehicule: Renault Master L2H2, Peugeot Boxer L2H2, Citroï¿½n Jumper L2H2') ON CONFLICT DO NOTHING;
+INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(6,'fr_FR', 'Vï¿½hicule L2H2', 'Examples de Vï¿½hicule L2H2: Renault Master L2H2, Peugeot Boxer L2H2, Citroï¿½n Jumper L2H2') ON CONFLICT DO NOTHING;
 
 
 INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(7,'en_US', 'L3H3 vehicule', 'Examples of L3H3 vehicule: Renault Master L3H3, Peugeot Boxer L3H3, Fiat Ducato L3H3') ON CONFLICT DO NOTHING;
-INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(7,'fr_FR', 'Véhicule L3H3', 'Examples de Véhicule L1H1: Renault Master L3H3, Peugeot Boxer L3H3, Fiat Ducato L3H3') ON CONFLICT DO NOTHING;
+INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(7,'fr_FR', 'Vï¿½hicule L3H3', 'Examples de Vï¿½hicule L1H1: Renault Master L3H3, Peugeot Boxer L3H3, Fiat Ducato L3H3') ON CONFLICT DO NOTHING;
 
 INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(8,'en_US', 'L4H3 vehicule', 'Examples of L4H3 vehicule: Renault Master L4H3, Peugeot Boxer L4H3, Fiat Ducato L3H3') ON CONFLICT DO NOTHING;
-INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(8,'fr_FR', 'Véhicule L4H3', 'Examples de Véhicule L4H3: Renault Master L4H3, Peugeot Boxer L4H3, Fiat Ducato L3H3') ON CONFLICT DO NOTHING;
+INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(8,'fr_FR', 'Vï¿½hicule L4H3', 'Examples de Vï¿½hicule L4H3: Renault Master L4H3, Peugeot Boxer L4H3, Fiat Ducato L3H3') ON CONFLICT DO NOTHING;
 
 
 INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(9,'en_US', 'Flatbed truck', 'Examples of flatbed truck: Man TGA, Renault Premium, Iveco Trakker') ON CONFLICT DO NOTHING;
@@ -68,7 +68,7 @@ INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(12,'en_U
 INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(12,'fr_FR', 'Camion-citerne', 'Examples de camion-citerne: MAN TGS, Renault Premium, Scania G') ON CONFLICT DO NOTHING;
 
 INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(13,'en_US', 'Dump truck', 'Examples of dump truck: Iveco Stralis, Renault Kerax, Mercedes Arocs') ON CONFLICT DO NOTHING;
-INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(13,'fr_FR', 'Camion à benne basculante', 'Examples de camion à benne basculante: Iveco Stralis, Renault Kerax, Mercedes Arocs') ON CONFLICT DO NOTHING;
+INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(13,'fr_FR', 'Camion ï¿½ benne basculante', 'Examples de camion ï¿½ benne basculante: Iveco Stralis, Renault Kerax, Mercedes Arocs') ON CONFLICT DO NOTHING;
 
 INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(14,'en_US', 'Hook lift truck', 'Examples of hook lift truck: Iveco Stralis, Mercedes Atego, Man TGS') ON CONFLICT DO NOTHING;
 INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(14,'fr_FR', 'Camion Ampliroll', 'Examples de Camion Ampliroll: Iveco Stralis, Mercedes Atego, Man TGS') ON CONFLICT DO NOTHING;
@@ -88,10 +88,10 @@ INSERT INTO public.localized_journey_request_status(id, locale, value) VALUES (1
 INSERT INTO public.localized_journey_request_status(id, locale, value) VALUES (1, 'fr_FR', 'ouvert')ON CONFLICT DO NOTHING;
 
 INSERT INTO public.localized_journey_request_status(id, locale, value) VALUES (2, 'en_US', 'canceled')ON CONFLICT DO NOTHING;
-INSERT INTO public.localized_journey_request_status(id, locale, value) VALUES (2, 'fr_FR', 'annulé')ON CONFLICT DO NOTHING;
+INSERT INTO public.localized_journey_request_status(id, locale, value) VALUES (2, 'fr_FR', 'annulï¿½')ON CONFLICT DO NOTHING;
 
 INSERT INTO public.localized_journey_request_status(id, locale, value) VALUES (3, 'en_US', 'expired')ON CONFLICT DO NOTHING;
-INSERT INTO public.localized_journey_request_status(id, locale, value) VALUES (3, 'fr_FR', 'expiré')ON CONFLICT DO NOTHING;
+INSERT INTO public.localized_journey_request_status(id, locale, value) VALUES (3, 'fr_FR', 'expirï¿½')ON CONFLICT DO NOTHING;
 
 INSERT INTO public.localized_journey_request_status(id, locale, value) VALUES (4, 'en_US', 'fulfilled')ON CONFLICT DO NOTHING;
 INSERT INTO public.localized_journey_request_status(id, locale, value) VALUES (4, 'fr_FR', 'rempli')ON CONFLICT DO NOTHING;
@@ -106,16 +106,16 @@ INSERT INTO public.journey_proposal_status(id, code, description) VALUES (3, 'RE
 INSERT INTO public.journey_proposal_status(id, code, description) VALUES (4, 'ACCEPTED', 'Client accepted this journey proposal.')ON CONFLICT DO NOTHING;
 
 INSERT INTO public.localized_journey_proposal_status(id, locale, value) VALUES (1, 'en_US', 'submitted')ON CONFLICT DO NOTHING;
-INSERT INTO public.localized_journey_proposal_status(id, locale, value) VALUES (1, 'fr_FR', 'envoyée')ON CONFLICT DO NOTHING;
+INSERT INTO public.localized_journey_proposal_status(id, locale, value) VALUES (1, 'fr_FR', 'envoyï¿½e')ON CONFLICT DO NOTHING;
 
 INSERT INTO public.localized_journey_proposal_status(id, locale, value) VALUES (2, 'en_US', 'canceled')ON CONFLICT DO NOTHING;
-INSERT INTO public.localized_journey_proposal_status(id, locale, value) VALUES (2, 'fr_FR', 'annulée')ON CONFLICT DO NOTHING;
+INSERT INTO public.localized_journey_proposal_status(id, locale, value) VALUES (2, 'fr_FR', 'annulï¿½e')ON CONFLICT DO NOTHING;
 
 INSERT INTO public.localized_journey_proposal_status(id, locale, value) VALUES (3, 'en_US', 'rejected')ON CONFLICT DO NOTHING;
-INSERT INTO public.localized_journey_proposal_status(id, locale, value) VALUES (3, 'fr_FR', 'rejetée')ON CONFLICT DO NOTHING;
+INSERT INTO public.localized_journey_proposal_status(id, locale, value) VALUES (3, 'fr_FR', 'rejetï¿½e')ON CONFLICT DO NOTHING;
 
 INSERT INTO public.localized_journey_proposal_status(id, locale, value) VALUES (4, 'en_US', 'accepted')ON CONFLICT DO NOTHING;
-INSERT INTO public.localized_journey_proposal_status(id, locale, value) VALUES (4, 'fr_FR', 'acceptée')ON CONFLICT DO NOTHING;
+INSERT INTO public.localized_journey_proposal_status(id, locale, value) VALUES (4, 'fr_FR', 'acceptï¿½e')ON CONFLICT DO NOTHING;
 
 
 			
@@ -145,10 +145,43 @@ INSERT INTO public.vehicule_model( id, name, constructor_id, length, height, wid
 INSERT INTO public.vehicule_model( id, name, constructor_id, length, height, width) VALUES (9, 'DAILY 29 L H1', 3, 5.07, 2.26, 1.99);
 
 
+/*************************************
+* INSERTING DEFAULT PROFILE DOCUMENTS
+*************************************/
+INSERT INTO public.document(id, creation_date_time, hash, is_default, location, type)
+	VALUES (-1, current_timestamp, '9dbb84cc15ce3e7b8a19c53410e3ea6be1118538e9419c2f9603716d4aba8584', true, '/file-storage/Images/default_man_avatar.jpg', 'IMAGE_JPEG');
 
+INSERT INTO public.document(id, creation_date_time, hash, is_default, location, type)
+	VALUES (-2, current_timestamp, '145149e1f9932c879bd90596f3b98d9fbdbfbe3426725c546101c7802d740b8b', true, '/file-storage/Images/default_woman_avatar.jpg', 'IMAGE_JPEG');
 
+/*************************************
+* INSERTING ENTITLEMENTS
+*************************************/
+INSERT INTO public.entitlement(id, read, type, write) VALUES (1, true, 'SUPPORT', true);
+INSERT INTO public.entitlement(id, read, type, write) VALUES (2, true, 'OWNER', true);
+INSERT INTO public.entitlement(id, read, type, write) VALUES (3, true, 'OTHERS', false);
 
+INSERT INTO public.entitlement(id, read, type, write) VALUES (4, true, 'SUPPORT', true);
+INSERT INTO public.entitlement(id, read, type, write) VALUES (5, true, 'OWNER', true);
+INSERT INTO public.entitlement(id, read, type, write) VALUES (6, true, 'OTHERS', false);
+/*****************************************
+* INSERTING PROFILE DOCUMENTS ENTITLEMENTS
+******************************************/
+INSERT INTO public.document_entitlements(document_jpa_entity_id, entitlements_id) VALUES (-1, 1);
+INSERT INTO public.document_entitlements(document_jpa_entity_id, entitlements_id) VALUES (-1, 3);
 
+INSERT INTO public.document_entitlements(document_jpa_entity_id, entitlements_id) VALUES (-2, 4);
+INSERT INTO public.document_entitlements(document_jpa_entity_id, entitlements_id) VALUES (-2, 6);
 
+/*************************************
+* INSERTING GENDERS
+*************************************/
+INSERT INTO public.gender(id, gender) VALUES (1, 'MAN');
+INSERT INTO public.gender(id, gender) VALUES (2, 'WOMAN');
+
+INSERT INTO public.localized_gender(id, locale, name) VALUES (1, 'en_US', 'Man');
+INSERT INTO public.localized_gender(id, locale, name) VALUES (1, 'fr_FR', 'Homme');
+INSERT INTO public.localized_gender(id, locale, name) VALUES (2, 'en_US', 'Woman');
+INSERT INTO public.localized_gender(id, locale, name) VALUES (2, 'fr_FR', 'Femme');s
 
 

@@ -1,25 +1,8 @@
 package com.excentria_it.wamya.adapter.web.adapter;
 
-import static com.c4_soft.springaddons.security.oauth2.test.mockmvc.MockAuthenticationRequestPostProcessor.*;
-import static com.excentria_it.wamya.adapter.web.helper.ResponseBodyMatchers.*;
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.BDDMockito.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
-import org.springframework.http.MediaType;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
-import org.springframework.test.context.ActiveProfiles;
-
 import com.c4_soft.springaddons.security.oauth2.test.mockmvc.MockMvcSupport;
+import com.excentria_it.wamya.adapter.web.WebConfiguration;
+import com.excentria_it.wamya.adapter.web.WebSecurityConfiguration;
 import com.excentria_it.wamya.application.port.in.CreateJourneyRequestUseCase;
 import com.excentria_it.wamya.application.port.in.CreateJourneyRequestUseCase.CreateJourneyRequestCommand;
 import com.excentria_it.wamya.common.exception.handlers.RestApiExceptionHandler;
@@ -27,79 +10,120 @@ import com.excentria_it.wamya.domain.CreateJourneyRequestDto;
 import com.excentria_it.wamya.test.data.common.JourneyRequestTestData;
 import com.excentria_it.wamya.test.data.common.TestConstants;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
-@ActiveProfiles(value = { "web-local" })
-@Import(value = { CreateJourneyRequestsController.class, RestApiExceptionHandler.class, MockMvcSupport.class })
+import java.util.Arrays;
+
+import static com.excentria_it.wamya.adapter.web.helper.ResponseBodyMatchers.responseBody;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@ActiveProfiles(value = {"web-local"})
+@ExtendWith(SpringExtension.class)
+@WebAppConfiguration
+@ContextConfiguration(classes = {WebSecurityConfiguration.class, WebConfiguration.class})
+@Import(value = {CreateJourneyRequestsController.class, RestApiExceptionHandler.class, MockMvcSupport.class})
 @WebMvcTest(controllers = CreateJourneyRequestsController.class)
 public class CreateJourneyRequestsControllerTests {
 
-	@Autowired
-	private MockMvcSupport api;
 
-	@Autowired
-	private ObjectMapper objectMapper;
+    @Autowired
+    private WebApplicationContext context;
+    private static MockMvc mvc;
 
-	@MockBean
-	private CreateJourneyRequestUseCase createJourneyRequestUseCase;
+    @BeforeEach
+    void setup() {
+        mvc = MockMvcBuilders
+                .webAppContextSetup(context)
+                .apply(springSecurity())
+                .build();
+    }
 
-	@Test
-	void givenValidInput_WhenCreateJourneyRequest_ThenReturnCreatedJourneyRequest() throws Exception {
-		CreateJourneyRequestCommand command = JourneyRequestTestData.defaultCreateJourneyRequestCommandBuilder()
-				.build();
-		CreateJourneyRequestDto journeyRequest = JourneyRequestTestData.defaultCreateJourneyRequestDto();
+    @Autowired
+    private ObjectMapper objectMapper;
 
-		given(createJourneyRequestUseCase.createJourneyRequest(any(CreateJourneyRequestCommand.class),
-				any(String.class), any(String.class))).willReturn(journeyRequest);
+    @MockBean
+    private CreateJourneyRequestUseCase createJourneyRequestUseCase;
 
-		String createJourneyRequestJson = objectMapper.writeValueAsString(command);
+    @Test
+    void givenValidInput_WhenCreateJourneyRequest_ThenReturnCreatedJourneyRequest() throws Exception {
+        CreateJourneyRequestCommand command = JourneyRequestTestData.defaultCreateJourneyRequestCommandBuilder()
+                .build();
+        CreateJourneyRequestDto journeyRequest = JourneyRequestTestData.defaultCreateJourneyRequestDto();
 
-		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
-				.authorities("SCOPE_journey:write"))
-				.perform(post("/journey-requests").contentType(MediaType.APPLICATION_JSON_VALUE)
-						.content(createJourneyRequestJson))
-				.andExpect(status().isCreated())
-				.andExpect(responseBody().containsObjectAsJson(journeyRequest, CreateJourneyRequestDto.class));
+        given(createJourneyRequestUseCase.createJourneyRequest(any(CreateJourneyRequestCommand.class),
+                any(String.class), any(String.class))).willReturn(journeyRequest);
 
-		ArgumentCaptor<CreateJourneyRequestCommand> captor = ArgumentCaptor.forClass(CreateJourneyRequestCommand.class);
+        String createJourneyRequestJson = objectMapper.writeValueAsString(command);
 
-		then(createJourneyRequestUseCase).should(times(1)).createJourneyRequest(captor.capture(),
-				eq(TestConstants.DEFAULT_EMAIL), eq("en_US"));
+        mvc.perform(post("/journey-requests").with(jwt().authorities(Arrays.asList(new SimpleGrantedAuthority("ROLE_CLIENT")))).contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(createJourneyRequestJson))
+                .andExpect(status().isCreated())
+                .andExpect(responseBody().containsObjectAsJson(journeyRequest, CreateJourneyRequestDto.class));
 
-		assertThat(captor.getValue().getDateTime()).isEqualTo(command.getDateTime());
-		assertThat(captor.getValue().getDeparturePlaceId()).isEqualTo(command.getDeparturePlaceId());
-		assertThat(captor.getValue().getDeparturePlaceType()).isEqualTo(command.getDeparturePlaceType());
+        ArgumentCaptor<CreateJourneyRequestCommand> captor = ArgumentCaptor.forClass(CreateJourneyRequestCommand.class);
 
-		assertThat(captor.getValue().getArrivalPlaceId()).isEqualTo(command.getArrivalPlaceId());
+        then(createJourneyRequestUseCase).should(times(1)).createJourneyRequest(captor.capture(),
+                eq("user"), eq("en_US"));
 
-		assertThat(captor.getValue().getArrivalPlaceType()).isEqualTo(command.getArrivalPlaceType());
+        assertThat(captor.getValue().getDateTime()).isEqualTo(command.getDateTime());
+        assertThat(captor.getValue().getDeparturePlaceId()).isEqualTo(command.getDeparturePlaceId());
+        assertThat(captor.getValue().getDeparturePlaceType()).isEqualTo(command.getDeparturePlaceType());
 
-		assertThat(captor.getValue().getEngineTypeId()).isEqualTo(command.getEngineTypeId());
+        assertThat(captor.getValue().getArrivalPlaceId()).isEqualTo(command.getArrivalPlaceId());
 
-		assertThat(captor.getValue().getWorkers()).isEqualTo(command.getWorkers());
-		assertThat(captor.getValue().getDescription()).isEqualTo(command.getDescription());
+        assertThat(captor.getValue().getArrivalPlaceType()).isEqualTo(command.getArrivalPlaceType());
 
-	}
+        assertThat(captor.getValue().getEngineTypeId()).isEqualTo(command.getEngineTypeId());
 
-	@Test
-	void givenValidInputAndBadAuthority_WhenCreateJourneyRequest_ThenReturnForbidden() throws Exception {
-		CreateJourneyRequestCommand command = JourneyRequestTestData.defaultCreateJourneyRequestCommandBuilder()
-				.build();
-		CreateJourneyRequestDto journeyRequest = JourneyRequestTestData.defaultCreateJourneyRequestDto();
+        assertThat(captor.getValue().getWorkers()).isEqualTo(command.getWorkers());
+        assertThat(captor.getValue().getDescription()).isEqualTo(command.getDescription());
 
-		given(createJourneyRequestUseCase.createJourneyRequest(any(CreateJourneyRequestCommand.class),
-				any(String.class), any(String.class))).willReturn(journeyRequest);
+    }
 
-		String createJourneyRequestJson = objectMapper.writeValueAsString(command);
+    @Test
+    void givenValidInputAndBadAuthority_WhenCreateJourneyRequest_ThenReturnForbidden() throws Exception {
+        // given
+        CreateJourneyRequestCommand command = JourneyRequestTestData.defaultCreateJourneyRequestCommandBuilder()
+                .build();
+        CreateJourneyRequestDto journeyRequest = JourneyRequestTestData.defaultCreateJourneyRequestDto();
 
-		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
-				.authorities("SCOPE_journey:read"))
-				.perform(post("/journey-requests").contentType(MediaType.APPLICATION_JSON_VALUE)
-						.content(createJourneyRequestJson))
-				.andExpect(status().isForbidden()).andReturn();
+        given(createJourneyRequestUseCase.createJourneyRequest(any(CreateJourneyRequestCommand.class),
+                any(String.class), any(String.class))).willReturn(journeyRequest);
 
-		then(createJourneyRequestUseCase).should(never()).createJourneyRequest(eq(command),
-				eq(TestConstants.DEFAULT_EMAIL), eq("en_US"));
+        String createJourneyRequestJson = objectMapper.writeValueAsString(command);
 
-	}
+        // when
+        mvc.perform(post("/journey-requests").with(jwt().authorities(Arrays.asList(new SimpleGrantedAuthority("ROLE_TRANSPORTER")))).contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(createJourneyRequestJson))
+                .andExpect(status().isForbidden()).andReturn();
+
+        // then
+        then(createJourneyRequestUseCase).should(never()).createJourneyRequest(eq(command),
+                eq(TestConstants.DEFAULT_EMAIL), eq("en_US"));
+
+    }
 
 }

@@ -1,26 +1,8 @@
 package com.excentria_it.wamya.adapter.web.adapter;
 
-import static com.c4_soft.springaddons.security.oauth2.test.mockmvc.MockAuthenticationRequestPostProcessor.*;
-import static com.excentria_it.wamya.adapter.web.helper.ResponseBodyMatchers.*;
-import static com.excentria_it.wamya.test.data.common.MessageTestData.*;
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.BDDMockito.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
-import org.springframework.http.MediaType;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
-import org.springframework.test.context.ActiveProfiles;
-
 import com.c4_soft.springaddons.security.oauth2.test.mockmvc.MockMvcSupport;
+import com.excentria_it.wamya.adapter.web.WebConfiguration;
+import com.excentria_it.wamya.adapter.web.WebSecurityConfiguration;
 import com.excentria_it.wamya.application.port.in.SendMessageUseCase;
 import com.excentria_it.wamya.application.port.in.SendMessageUseCase.SendMessageCommand;
 import com.excentria_it.wamya.application.port.in.SendMessageUseCase.SendMessageCommand.SendMessageCommandBuilder;
@@ -28,45 +10,87 @@ import com.excentria_it.wamya.common.exception.handlers.RestApiExceptionHandler;
 import com.excentria_it.wamya.domain.LoadDiscussionsDto.MessageDto;
 import com.excentria_it.wamya.test.data.common.TestConstants;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
-@ActiveProfiles(profiles = { "web-local" })
-@Import(value = { SendMessageController.class, RestApiExceptionHandler.class, MockMvcSupport.class })
+import java.util.Arrays;
+
+import static com.excentria_it.wamya.adapter.web.helper.ResponseBodyMatchers.responseBody;
+import static com.excentria_it.wamya.test.data.common.MessageTestData.defaultMessageDto;
+import static com.excentria_it.wamya.test.data.common.MessageTestData.defaultSendMessageCommandBuilder;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@ActiveProfiles(profiles = {"web-local"})
+@ExtendWith(SpringExtension.class)
+@WebAppConfiguration
+@ContextConfiguration(classes = {WebSecurityConfiguration.class, WebConfiguration.class})
+@Import(value = {SendMessageController.class, RestApiExceptionHandler.class, MockMvcSupport.class})
 @WebMvcTest(controllers = SendMessageController.class)
 public class SendMessageControllerTests {
-	@Autowired
-	private MockMvcSupport api;
+    @Autowired
+    private WebApplicationContext context;
+    private static MockMvc mvc;
 
-	@MockBean
-	private SendMessageUseCase sendMessageUseCase;
-	@Autowired
-	private ObjectMapper objectMapper;
+    @BeforeEach
+    void setup() {
+        mvc = MockMvcBuilders
+                .webAppContextSetup(context)
+                .apply(springSecurity())
+                .build();
+    }
 
-	@Test
-	void givenValidInput_WhenSendMessage_ThenReturnMessageDto() throws Exception {
+    @MockBean
+    private SendMessageUseCase sendMessageUseCase;
+    @Autowired
+    private ObjectMapper objectMapper;
 
-		// given
-		SendMessageCommandBuilder commandBuilder = defaultSendMessageCommandBuilder();
-		SendMessageCommand command = commandBuilder.build();
+    @Test
+    void givenValidInput_WhenSendMessage_ThenReturnMessageDto() throws Exception {
 
-		String sendMessageCommandJson = objectMapper.writeValueAsString(command);
+        // given
+        SendMessageCommandBuilder commandBuilder = defaultSendMessageCommandBuilder();
+        SendMessageCommand command = commandBuilder.build();
 
-		MessageDto messageDto = defaultMessageDto();
-		given(sendMessageUseCase.sendMessage(any(SendMessageCommand.class), any(Long.class), any(String.class)))
-				.willReturn(messageDto);
-		// When
-		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
-				.authorities("SCOPE_journey:write"))
-				.perform(post("/users/me/discussions/{discussionId}/messages", 1L)
-						.contentType(MediaType.APPLICATION_JSON_VALUE).content(sendMessageCommandJson))
-				.andExpect(status().isCreated())
-				.andExpect(responseBody().containsObjectAsJson(messageDto, MessageDto.class));
+        String sendMessageCommandJson = objectMapper.writeValueAsString(command);
 
-		ArgumentCaptor<SendMessageCommand> captor = ArgumentCaptor.forClass(SendMessageCommand.class);
-		// then
-		then(sendMessageUseCase).should(times(1)).sendMessage(captor.capture(), eq(1L),
-				eq(TestConstants.DEFAULT_EMAIL));
+        MessageDto messageDto = defaultMessageDto();
+        given(sendMessageUseCase.sendMessage(any(SendMessageCommand.class), any(Long.class), any(String.class)))
+                .willReturn(messageDto);
+        // When
+        mvc.perform(post("/users/me/discussions/{discussionId}/messages", 1L).with(jwt().jwt(builder -> builder.claim("sub", TestConstants.DEFAULT_EMAIL)).authorities(Arrays.asList(new SimpleGrantedAuthority("ROLE_CLIENT"))))
 
-		assertThat(captor.getValue().getContent()).isEqualTo(command.getContent());
+                        .contentType(MediaType.APPLICATION_JSON_VALUE).content(sendMessageCommandJson))
+                .andExpect(status().isCreated())
+                .andExpect(responseBody().containsObjectAsJson(messageDto, MessageDto.class));
 
-	}
+        ArgumentCaptor<SendMessageCommand> captor = ArgumentCaptor.forClass(SendMessageCommand.class);
+        // then
+        then(sendMessageUseCase).should(times(1)).sendMessage(captor.capture(), eq(1L),
+                eq(TestConstants.DEFAULT_EMAIL));
+
+        assertThat(captor.getValue().getContent()).isEqualTo(command.getContent());
+
+    }
 }

@@ -1,127 +1,144 @@
 package com.excentria_it.wamya.adapter.web.adapter;
 
-import static com.c4_soft.springaddons.security.oauth2.test.mockmvc.MockAuthenticationRequestPostProcessor.*;
-import static com.excentria_it.wamya.adapter.web.helper.ResponseBodyMatchers.*;
-import static com.excentria_it.wamya.test.data.common.GeoPlaceTestData.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.BDDMockito.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-import java.math.BigDecimal;
-
+import com.c4_soft.springaddons.security.oauth2.test.mockmvc.MockMvcSupport;
+import com.excentria_it.wamya.adapter.web.WebConfiguration;
+import com.excentria_it.wamya.adapter.web.WebSecurityConfiguration;
+import com.excentria_it.wamya.application.port.in.CreateFavoriteGeoPlaceUseCase;
+import com.excentria_it.wamya.application.port.in.CreateFavoriteGeoPlaceUseCase.CreateFavoriteGeoPlaceCommand;
+import com.excentria_it.wamya.application.port.in.LoadFavoriteGeoPlacesUseCase;
+import com.excentria_it.wamya.common.exception.handlers.RestApiExceptionHandler;
+import com.excentria_it.wamya.domain.GeoPlaceDto;
+import com.excentria_it.wamya.domain.UserFavoriteGeoPlaces;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
-import com.c4_soft.springaddons.security.oauth2.test.mockmvc.MockMvcSupport;
-import com.excentria_it.wamya.application.port.in.CreateFavoriteGeoPlaceUseCase;
-import com.excentria_it.wamya.application.port.in.CreateFavoriteGeoPlaceUseCase.CreateFavoriteGeoPlaceCommand;
-import com.excentria_it.wamya.common.exception.handlers.RestApiExceptionHandler;
-import com.excentria_it.wamya.application.port.in.LoadFavoriteGeoPlacesUseCase;
-import com.excentria_it.wamya.domain.GeoPlaceDto;
-import com.excentria_it.wamya.domain.UserFavoriteGeoPlaces;
-import com.excentria_it.wamya.test.data.common.TestConstants;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.math.BigDecimal;
+import java.util.Arrays;
 
-@ActiveProfiles(profiles = { "web-local" })
-@Import(value = { FavoriteGeoPlaceController.class, RestApiExceptionHandler.class, MockMvcSupport.class })
+import static com.excentria_it.wamya.adapter.web.helper.ResponseBodyMatchers.responseBody;
+import static com.excentria_it.wamya.test.data.common.GeoPlaceTestData.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@ActiveProfiles(profiles = {"web-local"})
+@ExtendWith(SpringExtension.class)
+@WebAppConfiguration
+@ContextConfiguration(classes = {WebSecurityConfiguration.class, WebConfiguration.class})
+@Import(value = {FavoriteGeoPlaceController.class, RestApiExceptionHandler.class, MockMvcSupport.class})
 @WebMvcTest(controllers = FavoriteGeoPlaceController.class)
 public class FavoriteGeoPlaceControllerTests {
 
-	@Autowired
-	private MockMvcSupport api;
+    @Autowired
+    private WebApplicationContext context;
+    private static MockMvc mvc;
 
-	@Autowired
-	private ObjectMapper objectMapper;
+    @BeforeEach
+    void setup() {
+        mvc = MockMvcBuilders
+                .webAppContextSetup(context)
+                .apply(springSecurity())
+                .build();
+    }
 
-	@MockBean
-	private CreateFavoriteGeoPlaceUseCase createFavoriteGeoPlaceUseCase;
+    @Autowired
+    private ObjectMapper objectMapper;
 
-	@MockBean
-	private LoadFavoriteGeoPlacesUseCase loadFavoriteGeoPlaceUseCase;
+    @MockBean
+    private CreateFavoriteGeoPlaceUseCase createFavoriteGeoPlaceUseCase;
 
-	@Test
-	void givenValidInput_WhenCreateFavoriteGeoPlace_ThenReturnGeoPlaceDto() throws Exception {
-		CreateFavoriteGeoPlaceCommand command = defaultCreateFavoriteGeoPlaceCommandBuilder().build();
+    @MockBean
+    private LoadFavoriteGeoPlacesUseCase loadFavoriteGeoPlaceUseCase;
 
-		GeoPlaceDto result = defaultGeoPlaceDto();
-		// given
-		given(createFavoriteGeoPlaceUseCase.createFavoriteGeoPlace(any(String.class), any(BigDecimal.class),
-				any(BigDecimal.class), any(String.class), any(String.class))).willReturn(result);
+    @Test
+    void givenValidInput_WhenCreateFavoriteGeoPlace_ThenReturnGeoPlaceDto() throws Exception {
+        CreateFavoriteGeoPlaceCommand command = defaultCreateFavoriteGeoPlaceCommandBuilder().build();
 
-		String createFavoriteGeoPlaceCommandJson = objectMapper.writeValueAsString(command);
-		// when
-		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
-				.authorities("SCOPE_journey:write"))
-				.perform(post("/geo-places").param("lang", "fr_FR").contentType(MediaType.APPLICATION_JSON_VALUE)
-						.content(createFavoriteGeoPlaceCommandJson))
-				.andExpect(status().isCreated())
-				.andExpect(responseBody().containsObjectAsJson(result, GeoPlaceDto.class));
+        GeoPlaceDto result = defaultGeoPlaceDto();
+        // given
+        given(createFavoriteGeoPlaceUseCase.createFavoriteGeoPlace(any(String.class), any(BigDecimal.class),
+                any(BigDecimal.class), any(String.class), any(String.class))).willReturn(result);
 
-		// then
-		then(createFavoriteGeoPlaceUseCase).should(times(1)).createFavoriteGeoPlace(eq(command.getName()),
-				eq(command.getLatitude()), eq(command.getLongitude()), eq(TestConstants.DEFAULT_EMAIL), eq("fr_FR"));
-	}
+        String createFavoriteGeoPlaceCommandJson = objectMapper.writeValueAsString(command);
+        // when
+        mvc.perform(post("/geo-places").with(jwt().authorities(Arrays.asList(new SimpleGrantedAuthority("ROLE_CLIENT")))).param("lang", "fr_FR").contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(createFavoriteGeoPlaceCommandJson))
+                .andExpect(status().isCreated())
+                .andExpect(responseBody().containsObjectAsJson(result, GeoPlaceDto.class));
 
-	@Test
-	void givenValidInputAndBadAuthority_WhenCreateFavoriteGeoPlace_ThenReturnUnauthorized() throws Exception {
-		CreateFavoriteGeoPlaceCommand command = defaultCreateFavoriteGeoPlaceCommandBuilder().build();
+        // then
+        then(createFavoriteGeoPlaceUseCase).should(times(1)).createFavoriteGeoPlace(eq(command.getName()),
+                eq(command.getLatitude()), eq(command.getLongitude()), eq("user"), eq("fr_FR"));
+    }
 
-		GeoPlaceDto result = defaultGeoPlaceDto();
-		// given
-		given(createFavoriteGeoPlaceUseCase.createFavoriteGeoPlace(any(String.class), any(BigDecimal.class),
-				any(BigDecimal.class), any(String.class), any(String.class))).willReturn(result);
+    @Test
+    void givenValidInputAndBadAuthority_WhenCreateFavoriteGeoPlace_ThenReturnUnauthorized() throws Exception {
+        CreateFavoriteGeoPlaceCommand command = defaultCreateFavoriteGeoPlaceCommandBuilder().build();
 
-		String createFavoriteGeoPlaceCommandJson = objectMapper.writeValueAsString(command);
-		// when
-		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
-				.authorities("SCOPE_journey:read"))
-				.perform(post("/geo-places").param("lang", "fr_FR").contentType(MediaType.APPLICATION_JSON_VALUE)
-						.content(createFavoriteGeoPlaceCommandJson))
-				.andExpect(status().isForbidden());
+        GeoPlaceDto result = defaultGeoPlaceDto();
+        // given
+        given(createFavoriteGeoPlaceUseCase.createFavoriteGeoPlace(any(String.class), any(BigDecimal.class),
+                any(BigDecimal.class), any(String.class), any(String.class))).willReturn(result);
 
-		// then
-		then(createFavoriteGeoPlaceUseCase).should(never()).createFavoriteGeoPlace(any(String.class),
-				any(BigDecimal.class), any(BigDecimal.class), any(String.class), any(String.class));
-	}
+        String createFavoriteGeoPlaceCommandJson = objectMapper.writeValueAsString(command);
 
-	@Test
-	void givenValidInput_WhenLoadFavoriteGeoPlaces_ThenReturnUserFavoriteGeoPlaces() throws Exception {
+        // when
+        mvc.perform(post("/geo-places").with(jwt().authorities(Arrays.asList(new SimpleGrantedAuthority("ROLE_TRANSPORTER")))).param("lang", "fr_FR").contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(createFavoriteGeoPlaceCommandJson))
+                .andExpect(status().isForbidden());
 
-		UserFavoriteGeoPlaces userFavoriteGeoPlaces = defaultUserFavoriteGeoPlaces();
-		// given
-		given(loadFavoriteGeoPlaceUseCase.loadFavoriteGeoPlaces(any(String.class), any(String.class)))
-				.willReturn(userFavoriteGeoPlaces);
+        // then
+        then(createFavoriteGeoPlaceUseCase).should(never()).createFavoriteGeoPlace(any(String.class),
+                any(BigDecimal.class), any(BigDecimal.class), any(String.class), any(String.class));
+    }
 
-		// when
-		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
-				.authorities("SCOPE_journey:write")).perform(get("/geo-places").param("lang", "fr_FR"))
-				.andExpect(status().isOk())
-				.andExpect(responseBody().containsObjectAsJson(userFavoriteGeoPlaces, UserFavoriteGeoPlaces.class));
+    @Test
+    void givenValidInput_WhenLoadFavoriteGeoPlaces_ThenReturnUserFavoriteGeoPlaces() throws Exception {
 
-		// then
-		then(loadFavoriteGeoPlaceUseCase).should(times(1)).loadFavoriteGeoPlaces(eq(TestConstants.DEFAULT_EMAIL),
-				eq("fr_FR"));
-	}
+        UserFavoriteGeoPlaces userFavoriteGeoPlaces = defaultUserFavoriteGeoPlaces();
+        // given
+        given(loadFavoriteGeoPlaceUseCase.loadFavoriteGeoPlaces(any(String.class), any(String.class)))
+                .willReturn(userFavoriteGeoPlaces);
 
-	@Test
-	void givenValidInputAndBadAuthority_WhenLoadFavoriteGeoPlaces_ThenReturnForbidden() throws Exception {
+        // when
+        mvc.perform(get("/geo-places").with(jwt().authorities(Arrays.asList(new SimpleGrantedAuthority("ROLE_CLIENT")))).param("lang", "fr_FR"))
+                .andExpect(status().isOk())
+                .andExpect(responseBody().containsObjectAsJson(userFavoriteGeoPlaces, UserFavoriteGeoPlaces.class));
+        // then
+        then(loadFavoriteGeoPlaceUseCase).should(times(1)).loadFavoriteGeoPlaces(eq("user"),
+                eq("fr_FR"));
+    }
 
-		// given
+    @Test
+    void givenValidInputAndBadAuthority_WhenLoadFavoriteGeoPlaces_ThenReturnForbidden() throws Exception {
 
-		// when
-		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
-				.authorities("SCOPE_journey:read")).perform(get("/geo-places").param("lang", "fr_FR"))
-				.andExpect(status().isForbidden());
+        // given
 
-		// then
-		then(loadFavoriteGeoPlaceUseCase).should(never()).loadFavoriteGeoPlaces(any(String.class), any(String.class));
-	}
+        // when
+        mvc.perform(get("/geo-places").with(jwt().authorities(Arrays.asList(new SimpleGrantedAuthority("ROLE_TRANSPORTER")))).param("lang", "fr_FR"))
+                .andExpect(status().isForbidden());
+
+        // then
+        then(loadFavoriteGeoPlaceUseCase).should(never()).loadFavoriteGeoPlaces(any(String.class), any(String.class));
+    }
 }

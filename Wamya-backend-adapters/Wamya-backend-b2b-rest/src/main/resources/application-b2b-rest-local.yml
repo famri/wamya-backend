@@ -11,8 +11,8 @@ spring:
             scope: 'user:create'
         provider:
           on-prem-auth-server:
-            token-uri: "http://${app.auth-server}:9595/realms/fretto/protocol/openid-connect/token"
-            jwk-set-uri: "http://${app.auth-server}:9595/realms/fretto/protocol/openid-connect/certs"
+            token-uri: "http://${app.auth-server}:${app.auth-server-port}/realms/fretto/protocol/openid-connect/token"
+            jwk-set-uri: "http://${app.auth-server}:${app.auth-server-port}/realms/fretto/protocol/openid-connect/certs"
 
 app:
   auth-server: localhost

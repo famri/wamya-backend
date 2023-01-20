@@ -1,25 +1,8 @@
 package com.excentria_it.wamya.adapter.web.adapter;
 
-import static com.c4_soft.springaddons.security.oauth2.test.mockmvc.MockAuthenticationRequestPostProcessor.*;
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.BDDMockito.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MvcResult;
-
 import com.c4_soft.springaddons.security.oauth2.test.mockmvc.MockMvcSupport;
+import com.excentria_it.wamya.adapter.web.WebConfiguration;
+import com.excentria_it.wamya.adapter.web.WebSecurityConfiguration;
 import com.excentria_it.wamya.adapter.web.utils.ValidationHelper;
 import com.excentria_it.wamya.application.port.in.LoadVehiculesUseCase;
 import com.excentria_it.wamya.application.port.in.LoadVehiculesUseCase.LoadVehiculesCommand;
@@ -28,57 +11,97 @@ import com.excentria_it.wamya.domain.TransporterVehicules;
 import com.excentria_it.wamya.test.data.common.TestConstants;
 import com.excentria_it.wamya.test.data.common.VehiculeTestData;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
-@ActiveProfiles(profiles = { "web-local" })
-@Import(value = { LoadTransporterVehiculesController.class, RestApiExceptionHandler.class, MockMvcSupport.class,
-		ValidationHelper.class })
+import java.util.Arrays;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@ActiveProfiles(profiles = {"web-local"})
+@ExtendWith(SpringExtension.class)
+@WebAppConfiguration
+@ContextConfiguration(classes = {WebSecurityConfiguration.class, WebConfiguration.class})
+@Import(value = {LoadTransporterVehiculesController.class, RestApiExceptionHandler.class, MockMvcSupport.class,
+        ValidationHelper.class})
 @WebMvcTest(controllers = LoadTransporterVehiculesController.class)
 public class LoadTransporterVehiculesControllerTests {
 
-	@Autowired
-	private MockMvcSupport api;
+    @Autowired
+    private WebApplicationContext context;
+    private static MockMvc mvc;
 
-	@MockBean
-	private LoadVehiculesUseCase loadVehiculesUseCase;
+    @BeforeEach
+    void setup() {
+        mvc = MockMvcBuilders
+                .webAppContextSetup(context)
+                .apply(springSecurity())
+                .build();
+    }
 
-	@Autowired
-	private ObjectMapper objectMapper;
+    @MockBean
+    private LoadVehiculesUseCase loadVehiculesUseCase;
 
-	@Test
-	void testLoadTransporterVehicules() throws Exception {
+    @Autowired
+    private ObjectMapper objectMapper;
 
-		// given
+    @Test
+    void testLoadTransporterVehicules() throws Exception {
 
-		LoadVehiculesCommand command = VehiculeTestData.defaultLoadVehiculesCommandBuilder().build();
+        // given
 
-		TransporterVehicules transporterVehicules = VehiculeTestData.defaultTransporterVehicules();
+        LoadVehiculesCommand command = VehiculeTestData.defaultLoadVehiculesCommandBuilder().build();
 
-		given(loadVehiculesUseCase.loadTransporterVehicules(any(LoadVehiculesCommand.class), any(String.class)))
-				.willReturn(transporterVehicules);
+        TransporterVehicules transporterVehicules = VehiculeTestData.defaultTransporterVehicules();
 
-		ArgumentCaptor<LoadVehiculesCommand> commandCaptor = ArgumentCaptor.forClass(LoadVehiculesCommand.class);
-		// when
+        given(loadVehiculesUseCase.loadTransporterVehicules(any(LoadVehiculesCommand.class), any(String.class)))
+                .willReturn(transporterVehicules);
 
-		MvcResult mvcResult = api
-				.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
-						.authorities("SCOPE_vehicule:read"))
-				.perform(get("/users/me/vehicules").param("sort", "id,asc")).andExpect(status().isOk()).andReturn();
+        ArgumentCaptor<LoadVehiculesCommand> commandCaptor = ArgumentCaptor.forClass(LoadVehiculesCommand.class);
+        // when
 
-		TransporterVehicules response = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
-				TransporterVehicules.class);
-		// then
+        MvcResult mvcResult =
+                mvc.perform(get("/users/me/vehicules").with(jwt().jwt(builder -> builder.claim("sub", TestConstants.DEFAULT_EMAIL)).authorities(Arrays.asList(new SimpleGrantedAuthority("ROLE_TRANSPORTER"))))
+                        .param("sort", "id,asc")).andExpect(status().isOk()).andReturn();
 
-		then(loadVehiculesUseCase).should(times(1)).loadTransporterVehicules(commandCaptor.capture(), eq("en_US"));
+        TransporterVehicules response = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
+                TransporterVehicules.class);
+        // then
 
-		assertThat(commandCaptor.getValue().getTransporterUsername()).isEqualTo(command.getTransporterUsername());
+        then(loadVehiculesUseCase).should(times(1)).loadTransporterVehicules(commandCaptor.capture(), eq("en_US"));
 
-		assertThat(commandCaptor.getValue().getSortingCriterion().getField())
-				.isEqualTo(command.getSortingCriterion().getField());
-		assertThat(commandCaptor.getValue().getSortingCriterion().getDirection())
-				.isEqualTo(command.getSortingCriterion().getDirection());
+        assertThat(commandCaptor.getValue().getTransporterUsername()).isEqualTo(command.getTransporterUsername());
 
-		assertEquals(transporterVehicules, response);
+        assertThat(commandCaptor.getValue().getSortingCriterion().getField())
+                .isEqualTo(command.getSortingCriterion().getField());
+        assertThat(commandCaptor.getValue().getSortingCriterion().getDirection())
+                .isEqualTo(command.getSortingCriterion().getDirection());
 
-	}
+        assertEquals(transporterVehicules, response);
+
+    }
 
 }

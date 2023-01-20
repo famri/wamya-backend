@@ -1,77 +1,126 @@
 package com.excentria_it.wamya.adapter.web.adapter;
 
-import static com.c4_soft.springaddons.security.oauth2.test.mockmvc.MockAuthenticationRequestPostProcessor.*;
-import static com.excentria_it.wamya.adapter.web.helper.ResponseBodyMatchers.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.BDDMockito.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-import java.util.List;
-
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
-import org.springframework.http.MediaType;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
-import org.springframework.test.context.ActiveProfiles;
-
 import com.c4_soft.springaddons.security.oauth2.test.mockmvc.MockMvcSupport;
+import com.excentria_it.wamya.adapter.web.WebConfiguration;
+import com.excentria_it.wamya.adapter.web.WebSecurityConfiguration;
 import com.excentria_it.wamya.application.port.in.SaveUserPreferenceUseCase;
 import com.excentria_it.wamya.application.port.in.SaveUserPreferenceUseCase.SaveUserPreferenceCommand;
 import com.excentria_it.wamya.common.exception.handlers.RestApiExceptionHandler;
 import com.excentria_it.wamya.test.data.common.TestConstants;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
-@ActiveProfiles(profiles = { "web-local" })
-@Import(value = { UserPreferencesController.class, RestApiExceptionHandler.class, MockMvcSupport.class })
+import java.util.Arrays;
+import java.util.List;
+
+import static com.excentria_it.wamya.adapter.web.helper.ResponseBodyMatchers.responseBody;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@ActiveProfiles(profiles = {"web-local"})
+@ExtendWith(SpringExtension.class)
+@WebAppConfiguration
+@ContextConfiguration(classes = {WebSecurityConfiguration.class, WebConfiguration.class})
+@Import(value = {UserPreferencesController.class, RestApiExceptionHandler.class, MockMvcSupport.class})
 @WebMvcTest(controllers = UserPreferencesController.class)
 public class UserPreferencesControllerTests {
-	@Autowired
-	private MockMvcSupport api;
+    @Autowired
+    private WebApplicationContext context;
+    private static MockMvc mvc;
 
-	@MockBean
-	private SaveUserPreferenceUseCase saveUserPreferenceUseCase;
+    @BeforeEach
+    void setup() {
+        mvc = MockMvcBuilders
+                .webAppContextSetup(context)
+                .apply(springSecurity())
+                .build();
+    }
 
-	@Autowired
-	private ObjectMapper objectMapper;
+    @MockBean
+    private SaveUserPreferenceUseCase saveUserPreferenceUseCase;
 
-	@Test
-	void givenValidInput_WhenCreateUserPreference_ThenSucceed() throws Exception {
+    @Autowired
+    private ObjectMapper objectMapper;
 
-		SaveUserPreferenceCommand command = new SaveUserPreferenceCommand("timezone", "Africa/Tunis");
+    @Test
+    void givenValidInputAndClientRole_WhenCreateUserPreference_ThenSucceed() throws Exception {
 
-		String commandJson = objectMapper.writeValueAsString(command);
+        SaveUserPreferenceCommand command = new SaveUserPreferenceCommand("timezone", "Africa/Tunis");
 
-		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
-				.authorities("SCOPE_offer:write"))
-				.perform(post("/user-preferences").contentType(MediaType.APPLICATION_JSON_VALUE).content(commandJson))
-				.andExpect(status().isCreated()).andReturn();
+        String commandJson = objectMapper.writeValueAsString(command);
 
-		then(saveUserPreferenceUseCase).should(times(1)).saveUserPreference(command.getKey(), command.getValue(),
-				TestConstants.DEFAULT_EMAIL);
+        mvc.perform(post("/user-preferences").with(jwt().jwt(builder -> builder.claim("sub", TestConstants.DEFAULT_EMAIL)).authorities(Arrays.asList(new SimpleGrantedAuthority("ROLE_CLIENT"))))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE).content(commandJson))
+                .andExpect(status().isCreated());
+        then(saveUserPreferenceUseCase).should(times(1)).saveUserPreference(command.getKey(), command.getValue(),
+                TestConstants.DEFAULT_EMAIL);
 
-	}
+    }
 
-	@Test
-	void givenInvalidInput_WhenCreateUserPreference_ThenBadRequest() throws Exception {
+    @Test
+    void givenValidInputAndTransporterRole_WhenCreateUserPreference_ThenSucceed() throws Exception {
 
-		SaveUserPreferenceCommand command = new SaveUserPreferenceCommand("bad key", "Africa/Tunis");
+        SaveUserPreferenceCommand command = new SaveUserPreferenceCommand("timezone", "Africa/Tunis");
 
-		String commandJson = objectMapper.writeValueAsString(command);
+        String commandJson = objectMapper.writeValueAsString(command);
 
-		api.with(mockAuthentication(JwtAuthenticationToken.class).name(TestConstants.DEFAULT_EMAIL)
-				.authorities("SCOPE_offer:write"))
-				.perform(post("/user-preferences").contentType(MediaType.APPLICATION_JSON_VALUE).content(commandJson))
-				.andExpect(status().isBadRequest()).andExpect(responseBody().containsApiErrors(
-						List.of("key: Wrong value: 'bad key'. Valid values are: [timezone, locale].")));
+        mvc.perform(post("/user-preferences").with(jwt().jwt(builder -> builder.claim("sub", TestConstants.DEFAULT_EMAIL)).authorities(Arrays.asList(new SimpleGrantedAuthority("ROLE_TRANSPORTER"))))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE).content(commandJson))
+                .andExpect(status().isCreated());
+        then(saveUserPreferenceUseCase).should(times(1)).saveUserPreference(command.getKey(), command.getValue(),
+                TestConstants.DEFAULT_EMAIL);
 
-		then(saveUserPreferenceUseCase).should(never()).saveUserPreference(any(String.class), any(String.class),
-				any(String.class));
+    }
 
-	}
+
+    @Test
+    void givenValidInputAndBadRole_WhenCreateUserPreference_ThenReturnForbidden() throws Exception {
+
+        SaveUserPreferenceCommand command = new SaveUserPreferenceCommand("timezone", "Africa/Tunis");
+
+        String commandJson = objectMapper.writeValueAsString(command);
+
+        mvc.perform(post("/user-preferences").with(jwt().jwt(builder -> builder.claim("sub", TestConstants.DEFAULT_EMAIL)).authorities(Arrays.asList(new SimpleGrantedAuthority("ROLE_BAD_ROLE"))))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE).content(commandJson))
+                .andExpect(status().isForbidden());
+        then(saveUserPreferenceUseCase).should(never()).saveUserPreference(any(String.class), any(String.class),
+                any(String.class));
+
+    }
+
+    @Test
+    void givenInvalidInputAndTransporterRole_WhenCreateUserPreference_ThenBadRequest() throws Exception {
+
+        SaveUserPreferenceCommand command = new SaveUserPreferenceCommand("bad key", "Africa/Tunis");
+
+        String commandJson = objectMapper.writeValueAsString(command);
+
+        mvc.perform(post("/user-preferences").with(jwt().jwt(builder -> builder.claim("sub", TestConstants.DEFAULT_EMAIL)).authorities(Arrays.asList(new SimpleGrantedAuthority("ROLE_TRANSPORTER")))).contentType(MediaType.APPLICATION_JSON_VALUE).content(commandJson))
+                .andExpect(status().isBadRequest()).andExpect(responseBody().containsApiErrors(
+                        List.of("key: Wrong value: 'bad key'. Valid values are: [timezone, locale].")));
+
+        then(saveUserPreferenceUseCase).should(never()).saveUserPreference(any(String.class), any(String.class),
+                any(String.class));
+
+    }
 
 }
