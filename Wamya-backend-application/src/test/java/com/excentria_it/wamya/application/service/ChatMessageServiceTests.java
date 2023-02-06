@@ -84,7 +84,7 @@ public class ChatMessageServiceTests {
     private ChatMessageService chatMessageService;
 
     @Test
-    void givenTransporterDeviceTokenExistsAndTransporterIsWebSocketConnected_WhenSendMessageToTransporter_ThenSendWebSocketMessageAndDontSendPushNotificationMessageAndReturnSentMessage()
+    void givenTransporterDeviceTokenExistsAndTransporterIsWebSocketConnected_WhenSendMessageToTransporter_ThenSendWebSocketMessageAndDoNotSendPushNotificationMessageAndReturnSentMessage()
             throws JsonProcessingException {
         // given
         SendMessageCommandBuilder commandBuilder = defaultSendMessageCommandBuilder();
@@ -93,13 +93,13 @@ public class ChatMessageServiceTests {
         UserAccount transporterUserAccount = defaultTransporterUserAccountBuilder()
                 .deviceRegistrationToken("SOME_DEVICE_REGISTRATION_TOKEN").isWebSocketConnected(true).build();
 
-        given(loadUserAccountPort.loadUserAccountByUsername(clientUserAccount.getEmail()))
+        given(loadUserAccountPort.loadUserAccountBySubject(clientUserAccount.getOauthId()))
                 .willReturn(Optional.of(clientUserAccount));
 
         LoadDiscussionsOutput loadDiscussionsOutput = defaultClientLoadDiscussionsOutput();
         given(loadDiscussionsPort.loadDiscussionById(any(Long.class))).willReturn(Optional.of(loadDiscussionsOutput));
 
-        given(loadUserAccountPort.loadUserAccountByUsername(loadDiscussionsOutput.getTransporter().getEmail()))
+        given(loadUserAccountPort.loadUserAccountBySubject(loadDiscussionsOutput.getTransporter().getId()))
                 .willReturn(Optional.of(transporterUserAccount));
 
         MessageOutput messageOutput = defaultClient1MessageOutput();
@@ -111,11 +111,11 @@ public class ChatMessageServiceTests {
 
         // when
         MessageDto messageDto = chatMessageService.sendMessage(command, loadDiscussionsOutput.getId(),
-                clientUserAccount.getEmail());
+                clientUserAccount.getOauthId());
         // then
 
-        then(loadUserAccountPort).should(times(1)).loadUserAccountByUsername(clientUserAccount.getEmail());
-        then(loadUserAccountPort).should(times(1)).loadUserAccountByUsername(transporterUserAccount.getEmail());
+        then(loadUserAccountPort).should(times(1)).loadUserAccountBySubject(clientUserAccount.getOauthId());
+        then(loadUserAccountPort).should(times(1)).loadUserAccountBySubject(transporterUserAccount.getOauthId());
         then(loadDiscussionsPort).should(times(1)).loadDiscussionById(loadDiscussionsOutput.getId());
         then(addMessageToDiscussionPort).should(times(1)).addMessage(loadDiscussionsOutput.getId(),
                 clientUserAccount.getOauthId(), command.getContent());
@@ -127,7 +127,7 @@ public class ChatMessageServiceTests {
 
         then(messagingPort).should(never()).sendPushMessage(any(PushMessage.class));
         then(sendMessagePort).should(times(1)).sendMessage(eq(toReceiverMessageDto), eq(loadDiscussionsOutput.getId()),
-                eq(transporterUserAccount.getEmail()));
+                eq(transporterUserAccount.getOauthId()));
 
         assertEquals(messageOutput.getId(), messageDto.getId());
         assertEquals(messageOutput.getAuthorId(), messageDto.getAuthorId());
@@ -140,7 +140,7 @@ public class ChatMessageServiceTests {
     }
 
     @Test
-    void givenTransporterDeviceTokenExistsAndTransporterWebSocketIsNotConnected_WhenSendMessageToTransporter_ThenSendPushNotificationMessageAndDontSendWebSocketMessageAndReturnSentMessage()
+    void givenTransporterDeviceTokenExistsAndTransporterWebSocketIsNotConnected_WhenSendMessageToTransporter_ThenSendPushNotificationMessageAndDoNotSendWebSocketMessageAndReturnSentMessage()
             throws JsonProcessingException {
         // given
         SendMessageCommandBuilder commandBuilder = defaultSendMessageCommandBuilder();
@@ -149,13 +149,13 @@ public class ChatMessageServiceTests {
         UserAccount transporterUserAccount = defaultTransporterUserAccountBuilder()
                 .deviceRegistrationToken("SOME_DEVICE_REGISTRATION_TOKEN").isWebSocketConnected(false).build();
 
-        given(loadUserAccountPort.loadUserAccountByUsername(clientUserAccount.getEmail()))
+        given(loadUserAccountPort.loadUserAccountBySubject(clientUserAccount.getOauthId()))
                 .willReturn(Optional.of(clientUserAccount));
 
         LoadDiscussionsOutput loadDiscussionsOutput = defaultClientLoadDiscussionsOutput();
         given(loadDiscussionsPort.loadDiscussionById(any(Long.class))).willReturn(Optional.of(loadDiscussionsOutput));
 
-        given(loadUserAccountPort.loadUserAccountByUsername(loadDiscussionsOutput.getTransporter().getEmail()))
+        given(loadUserAccountPort.loadUserAccountBySubject(loadDiscussionsOutput.getTransporter().getId()))
                 .willReturn(Optional.of(transporterUserAccount));
 
         MessageOutput messageOutput = defaultClient1MessageOutput();
@@ -167,11 +167,11 @@ public class ChatMessageServiceTests {
 
         // when
         MessageDto messageDto = chatMessageService.sendMessage(command, loadDiscussionsOutput.getId(),
-                clientUserAccount.getEmail());
+                clientUserAccount.getOauthId());
         // then
 
-        then(loadUserAccountPort).should(times(1)).loadUserAccountByUsername(clientUserAccount.getEmail());
-        then(loadUserAccountPort).should(times(1)).loadUserAccountByUsername(transporterUserAccount.getEmail());
+        then(loadUserAccountPort).should(times(1)).loadUserAccountBySubject(clientUserAccount.getOauthId());
+        then(loadUserAccountPort).should(times(1)).loadUserAccountBySubject(transporterUserAccount.getOauthId());
         then(loadDiscussionsPort).should(times(1)).loadDiscussionById(loadDiscussionsOutput.getId());
         then(addMessageToDiscussionPort).should(times(1)).addMessage(loadDiscussionsOutput.getId(),
                 clientUserAccount.getOauthId(), command.getContent());
@@ -213,13 +213,13 @@ public class ChatMessageServiceTests {
         UserAccount transporterUserAccount = defaultTransporterUserAccountBuilder()
                 .deviceRegistrationToken("SOME_DEVICE_TOKEN").isWebSocketConnected(false).build();
 
-        given(loadUserAccountPort.loadUserAccountByUsername(clientUserAccount.getEmail()))
+        given(loadUserAccountPort.loadUserAccountBySubject(clientUserAccount.getOauthId()))
                 .willReturn(Optional.of(clientUserAccount));
 
         LoadDiscussionsOutput loadDiscussionsOutput = defaultClientLoadDiscussionsOutput();
         given(loadDiscussionsPort.loadDiscussionById(any(Long.class))).willReturn(Optional.of(loadDiscussionsOutput));
 
-        given(loadUserAccountPort.loadUserAccountByUsername(loadDiscussionsOutput.getTransporter().getEmail()))
+        given(loadUserAccountPort.loadUserAccountBySubject(loadDiscussionsOutput.getTransporter().getId()))
                 .willReturn(Optional.of(transporterUserAccount));
 
         MessageOutput messageOutput = defaultClient1MessageOutput();
@@ -234,11 +234,11 @@ public class ChatMessageServiceTests {
 
         // when
         MessageDto messageDto = chatMessageService.sendMessage(command, loadDiscussionsOutput.getId(),
-                clientUserAccount.getEmail());
+                clientUserAccount.getOauthId());
         // then
 
-        then(loadUserAccountPort).should(times(1)).loadUserAccountByUsername(clientUserAccount.getEmail());
-        then(loadUserAccountPort).should(times(1)).loadUserAccountByUsername(transporterUserAccount.getEmail());
+        then(loadUserAccountPort).should(times(1)).loadUserAccountBySubject(clientUserAccount.getOauthId());
+        then(loadUserAccountPort).should(times(1)).loadUserAccountBySubject(transporterUserAccount.getOauthId());
         then(loadDiscussionsPort).should(times(1)).loadDiscussionById(loadDiscussionsOutput.getId());
         then(addMessageToDiscussionPort).should(times(1)).addMessage(loadDiscussionsOutput.getId(),
                 clientUserAccount.getOauthId(), command.getContent());
@@ -265,13 +265,13 @@ public class ChatMessageServiceTests {
         UserAccount transporterUserAccount = defaultTransporterUserAccountBuilder().deviceRegistrationToken(null)
                 .isWebSocketConnected(false).build();
 
-        given(loadUserAccountPort.loadUserAccountByUsername(clientUserAccount.getEmail()))
+        given(loadUserAccountPort.loadUserAccountBySubject(clientUserAccount.getOauthId()))
                 .willReturn(Optional.of(clientUserAccount));
 
         LoadDiscussionsOutput loadDiscussionsOutput = defaultClientLoadDiscussionsOutput();
         given(loadDiscussionsPort.loadDiscussionById(any(Long.class))).willReturn(Optional.of(loadDiscussionsOutput));
 
-        given(loadUserAccountPort.loadUserAccountByUsername(loadDiscussionsOutput.getTransporter().getEmail()))
+        given(loadUserAccountPort.loadUserAccountBySubject(loadDiscussionsOutput.getTransporter().getId()))
                 .willReturn(Optional.of(transporterUserAccount));
 
         MessageOutput messageOutput = defaultClient1MessageOutput();
@@ -285,11 +285,11 @@ public class ChatMessageServiceTests {
 
         // when
         MessageDto messageDto = chatMessageService.sendMessage(command, loadDiscussionsOutput.getId(),
-                clientUserAccount.getEmail());
+                clientUserAccount.getOauthId());
         // then
 
-        then(loadUserAccountPort).should(times(1)).loadUserAccountByUsername(clientUserAccount.getEmail());
-        then(loadUserAccountPort).should(times(1)).loadUserAccountByUsername(transporterUserAccount.getEmail());
+        then(loadUserAccountPort).should(times(1)).loadUserAccountBySubject(clientUserAccount.getOauthId());
+        then(loadUserAccountPort).should(times(1)).loadUserAccountBySubject(transporterUserAccount.getOauthId());
         then(loadDiscussionsPort).should(times(1)).loadDiscussionById(loadDiscussionsOutput.getId());
         then(addMessageToDiscussionPort).should(times(1)).addMessage(loadDiscussionsOutput.getId(),
                 clientUserAccount.getOauthId(), command.getContent());
@@ -301,7 +301,7 @@ public class ChatMessageServiceTests {
 
         then(messagingPort).should(times(1)).sendEmailMessage(emailMessageCaptor.capture());
 
-        assertThat(emailMessageCaptor.getValue().getTo()).isEqualTo(transporterUserAccount.getEmail());
+        assertThat(emailMessageCaptor.getValue().getTo()).isEqualTo(transporterUserAccount.getOauthId());
 
         assertThat(emailMessageCaptor.getValue().getTemplate()).isEqualTo(EmailTemplate.RECEIVED_MESSAGE);
 
@@ -340,13 +340,13 @@ public class ChatMessageServiceTests {
         UserAccount clientUserAccount = defaultClientUserAccountBuilder()
                 .deviceRegistrationToken("SOME_DEVICE_REGISTRATION_TOKEN").isWebSocketConnected(true).build();
 
-        given(loadUserAccountPort.loadUserAccountByUsername(eq(transporterUserAccount.getEmail())))
+        given(loadUserAccountPort.loadUserAccountBySubject(eq(transporterUserAccount.getOauthId())))
                 .willReturn(Optional.of(transporterUserAccount));
 
         LoadDiscussionsOutput loadDiscussionsOutput = defaultClientLoadDiscussionsOutput();
         given(loadDiscussionsPort.loadDiscussionById(any(Long.class))).willReturn(Optional.of(loadDiscussionsOutput));
 
-        given(loadUserAccountPort.loadUserAccountByUsername(eq(loadDiscussionsOutput.getClient().getEmail())))
+        given(loadUserAccountPort.loadUserAccountBySubject(eq(loadDiscussionsOutput.getClient().getId())))
                 .willReturn(Optional.of(clientUserAccount));
 
         MessageOutput messageOutput = defaultTransporter1MessageOutput();
@@ -358,11 +358,11 @@ public class ChatMessageServiceTests {
 
         // when
         MessageDto messageDto = chatMessageService.sendMessage(command, loadDiscussionsOutput.getId(),
-                transporterUserAccount.getEmail());
+                transporterUserAccount.getOauthId());
         // then
 
-        then(loadUserAccountPort).should(times(1)).loadUserAccountByUsername(transporterUserAccount.getEmail());
-        then(loadUserAccountPort).should(times(1)).loadUserAccountByUsername(clientUserAccount.getEmail());
+        then(loadUserAccountPort).should(times(1)).loadUserAccountBySubject(transporterUserAccount.getOauthId());
+        then(loadUserAccountPort).should(times(1)).loadUserAccountBySubject(clientUserAccount.getOauthId());
         then(loadDiscussionsPort).should(times(1)).loadDiscussionById(loadDiscussionsOutput.getId());
         then(addMessageToDiscussionPort).should(times(1)).addMessage(loadDiscussionsOutput.getId(),
                 transporterUserAccount.getOauthId(), command.getContent());
@@ -374,7 +374,7 @@ public class ChatMessageServiceTests {
 
         then(messagingPort).should(never()).sendPushMessage(any(PushMessage.class));
         then(sendMessagePort).should(times(1)).sendMessage(eq(toReceiverMessageDto), eq(loadDiscussionsOutput.getId()),
-                eq(clientUserAccount.getEmail()));
+                eq(clientUserAccount.getOauthId()));
 
         assertEquals(messageOutput.getId(), messageDto.getId());
         assertEquals(messageOutput.getAuthorId(), messageDto.getAuthorId());
@@ -396,13 +396,13 @@ public class ChatMessageServiceTests {
         UserAccount clientUserAccount = defaultClientUserAccountBuilder()
                 .deviceRegistrationToken("SOME_DEVICE_REGISTRATION_TOKEN").isWebSocketConnected(false).build();
 
-        given(loadUserAccountPort.loadUserAccountByUsername(eq(transporterUserAccount.getEmail())))
+        given(loadUserAccountPort.loadUserAccountBySubject(eq(transporterUserAccount.getOauthId())))
                 .willReturn(Optional.of(transporterUserAccount));
 
         LoadDiscussionsOutput loadDiscussionsOutput = defaultClientLoadDiscussionsOutput();
         given(loadDiscussionsPort.loadDiscussionById(any(Long.class))).willReturn(Optional.of(loadDiscussionsOutput));
 
-        given(loadUserAccountPort.loadUserAccountByUsername(eq(loadDiscussionsOutput.getClient().getEmail())))
+        given(loadUserAccountPort.loadUserAccountBySubject(eq(loadDiscussionsOutput.getClient().getId())))
                 .willReturn(Optional.of(clientUserAccount));
 
         MessageOutput messageOutput = defaultTransporter1MessageOutput();
@@ -414,11 +414,11 @@ public class ChatMessageServiceTests {
 
         // when
         MessageDto messageDto = chatMessageService.sendMessage(command, loadDiscussionsOutput.getId(),
-                transporterUserAccount.getEmail());
+                transporterUserAccount.getOauthId());
         // then
 
-        then(loadUserAccountPort).should(times(1)).loadUserAccountByUsername(transporterUserAccount.getEmail());
-        then(loadUserAccountPort).should(times(1)).loadUserAccountByUsername(clientUserAccount.getEmail());
+        then(loadUserAccountPort).should(times(1)).loadUserAccountBySubject(transporterUserAccount.getOauthId());
+        then(loadUserAccountPort).should(times(1)).loadUserAccountBySubject(clientUserAccount.getOauthId());
         then(loadDiscussionsPort).should(times(1)).loadDiscussionById(loadDiscussionsOutput.getId());
         then(addMessageToDiscussionPort).should(times(1)).addMessage(loadDiscussionsOutput.getId(),
                 transporterUserAccount.getOauthId(), command.getContent());
@@ -460,13 +460,13 @@ public class ChatMessageServiceTests {
         UserAccount transporterUserAccount = defaultTransporterUserAccountBuilder().deviceRegistrationToken(null)
                 .isWebSocketConnected(false).build();
 
-        given(loadUserAccountPort.loadUserAccountByUsername(clientUserAccount.getEmail()))
+        given(loadUserAccountPort.loadUserAccountBySubject(clientUserAccount.getOauthId()))
                 .willReturn(Optional.of(clientUserAccount));
 
         LoadDiscussionsOutput loadDiscussionsOutput = defaultClientLoadDiscussionsOutput();
         given(loadDiscussionsPort.loadDiscussionById(any(Long.class))).willReturn(Optional.of(loadDiscussionsOutput));
 
-        given(loadUserAccountPort.loadUserAccountByUsername(loadDiscussionsOutput.getTransporter().getEmail()))
+        given(loadUserAccountPort.loadUserAccountBySubject(loadDiscussionsOutput.getTransporter().getId()))
                 .willReturn(Optional.of(transporterUserAccount));
 
         MessageOutput messageOutput = defaultTransporter1MessageOutput();
@@ -480,11 +480,11 @@ public class ChatMessageServiceTests {
 
         // when
         MessageDto messageDto = chatMessageService.sendMessage(command, loadDiscussionsOutput.getId(),
-                transporterUserAccount.getEmail());
+                transporterUserAccount.getOauthId());
         // then
 
-        then(loadUserAccountPort).should(times(1)).loadUserAccountByUsername(clientUserAccount.getEmail());
-        then(loadUserAccountPort).should(times(1)).loadUserAccountByUsername(transporterUserAccount.getEmail());
+        then(loadUserAccountPort).should(times(1)).loadUserAccountBySubject(clientUserAccount.getOauthId());
+        then(loadUserAccountPort).should(times(1)).loadUserAccountBySubject(transporterUserAccount.getOauthId());
         then(loadDiscussionsPort).should(times(1)).loadDiscussionById(loadDiscussionsOutput.getId());
         then(addMessageToDiscussionPort).should(times(1)).addMessage(loadDiscussionsOutput.getId(),
                 transporterUserAccount.getOauthId(), command.getContent());
@@ -496,7 +496,7 @@ public class ChatMessageServiceTests {
 
         then(messagingPort).should(times(1)).sendEmailMessage(emailMessageCaptor.capture());
 
-        assertThat(emailMessageCaptor.getValue().getTo()).isEqualTo(clientUserAccount.getEmail());
+        assertThat(emailMessageCaptor.getValue().getTo()).isEqualTo(clientUserAccount.getOauthId());
 
         assertThat(emailMessageCaptor.getValue().getTemplate()).isEqualTo(EmailTemplate.RECEIVED_MESSAGE);
 
@@ -540,7 +540,7 @@ public class ChatMessageServiceTests {
         SendMessageCommand command = commandBuilder.build();
         UserAccount clientUserAccount = defaultClientUserAccountBuilder().build();
 
-        given(loadUserAccountPort.loadUserAccountByUsername(any(String.class)))
+        given(loadUserAccountPort.loadUserAccountBySubject(any(String.class)))
                 .willReturn(Optional.of(clientUserAccount));
 
         given(loadDiscussionsPort.loadDiscussionById(any(Long.class))).willReturn(Optional.empty());
@@ -559,7 +559,7 @@ public class ChatMessageServiceTests {
         SendMessageCommand command = commandBuilder.build();
         UserAccount clientUserAccount = defaultClientUserAccountBuilder().oauthId("400").build();
 
-        given(loadUserAccountPort.loadUserAccountByUsername(any(String.class)))
+        given(loadUserAccountPort.loadUserAccountBySubject(any(String.class)))
                 .willReturn(Optional.of(clientUserAccount));
 
         LoadDiscussionsOutput loadDiscussionsOutput = defaultClientLoadDiscussionsOutput();
@@ -578,7 +578,7 @@ public class ChatMessageServiceTests {
         SendMessageCommand command = commandBuilder.build();
         UserAccount transporterUserAccount = defaultTransporterUserAccountBuilder().oauthId("600").build();
 
-        given(loadUserAccountPort.loadUserAccountByUsername(any(String.class)))
+        given(loadUserAccountPort.loadUserAccountBySubject(any(String.class)))
                 .willReturn(Optional.of(transporterUserAccount));
 
         LoadDiscussionsOutput loadDiscussionsOutput = defaultClientLoadDiscussionsOutput();
@@ -599,7 +599,7 @@ public class ChatMessageServiceTests {
 
         UserAccount transporterUserAccount = defaultTransporterUserAccountBuilder().build();
 
-        given(loadUserAccountPort.loadUserAccountByUsername(any(String.class)))
+        given(loadUserAccountPort.loadUserAccountBySubject(any(String.class)))
                 .willReturn(Optional.of(transporterUserAccount));
 
         given(loadDiscussionsPort.loadDiscussionById(any(Long.class))).willReturn(Optional.empty());
@@ -618,7 +618,7 @@ public class ChatMessageServiceTests {
 
         UserAccount clientUserAccount = defaultClientUserAccountBuilder().oauthId("400").build();
 
-        given(loadUserAccountPort.loadUserAccountByUsername(any(String.class)))
+        given(loadUserAccountPort.loadUserAccountBySubject(any(String.class)))
                 .willReturn(Optional.of(clientUserAccount));
 
         LoadDiscussionsOutput loadDiscussionsOutput = defaultClientLoadDiscussionsOutput();
@@ -638,7 +638,7 @@ public class ChatMessageServiceTests {
 
         UserAccount transporterUserAccount = defaultTransporterUserAccountBuilder().oauthId("600").build();
 
-        given(loadUserAccountPort.loadUserAccountByUsername(any(String.class)))
+        given(loadUserAccountPort.loadUserAccountBySubject(any(String.class)))
                 .willReturn(Optional.of(transporterUserAccount));
 
         LoadDiscussionsOutput loadDiscussionsOutput = defaultClientLoadDiscussionsOutput();
@@ -658,7 +658,7 @@ public class ChatMessageServiceTests {
 
         UserAccount transporterUserAccount = defaultTransporterUserAccountBuilder().build();
 
-        given(loadUserAccountPort.loadUserAccountByUsername(any(String.class)))
+        given(loadUserAccountPort.loadUserAccountBySubject(any(String.class)))
                 .willReturn(Optional.of(transporterUserAccount));
 
         LoadDiscussionsOutput loadDiscussionsOutput = defaultTransporterLoadDiscussionsOutput();
@@ -681,7 +681,7 @@ public class ChatMessageServiceTests {
         then(updateMessagePort).should(times(1)).updateRead(messageIds, true);
 
         then(sendMessageNotificationPort).should(times(1)).sendReadNotification(
-                loadDiscussionsOutput.getClient().getEmail(), loadDiscussionsOutput.getId(), messageIds);
+                loadDiscussionsOutput.getClient().getId(), loadDiscussionsOutput.getId(), messageIds);
 
         assertEquals(command.getPageNumber(), result.getPageNumber());
         assertEquals(command.getPageSize(), result.getPageSize());
@@ -702,7 +702,7 @@ public class ChatMessageServiceTests {
 
         UserAccount clientUserAccount = defaultClientUserAccountBuilder().build();
 
-        given(loadUserAccountPort.loadUserAccountByUsername(any(String.class)))
+        given(loadUserAccountPort.loadUserAccountBySubject(any(String.class)))
                 .willReturn(Optional.of(clientUserAccount));
 
         LoadDiscussionsOutput loadDiscussionsOutput = defaultClientLoadDiscussionsOutput();
@@ -725,7 +725,7 @@ public class ChatMessageServiceTests {
         then(updateMessagePort).should(times(1)).updateRead(messageIds, true);
 
         then(sendMessageNotificationPort).should(times(1)).sendReadNotification(
-                loadDiscussionsOutput.getTransporter().getEmail(), loadDiscussionsOutput.getId(), messageIds);
+                loadDiscussionsOutput.getTransporter().getId(), loadDiscussionsOutput.getId(), messageIds);
 
         assertEquals(command.getPageNumber(), result.getPageNumber());
         assertEquals(command.getPageSize(), result.getPageSize());
@@ -742,7 +742,7 @@ public class ChatMessageServiceTests {
         // given
         given(loadDiscussionsPort.loadDiscussionById(any(Long.class))).willReturn(Optional.empty());
         UserAccount userAccount = defaultClientUserAccountBuilder().build();
-        given(loadUserAccountPort.loadUserAccountByUsername(any(String.class))).willReturn(Optional.of(userAccount));
+        given(loadUserAccountPort.loadUserAccountBySubject(any(String.class))).willReturn(Optional.of(userAccount));
 
         UpdateMessageReadStatusCommand command = UpdateMessageReadStatusCommand.builder().isRead("true").build();
         // when // then
@@ -759,7 +759,7 @@ public class ChatMessageServiceTests {
         given(loadDiscussionsPort.loadDiscussionById(any(Long.class))).willReturn(Optional.of(discussionOutput));
         UserAccount userAccount = defaultTransporterUserAccountBuilder()
                 .oauthId(discussionOutput.getTransporter().getId() + 1).build();
-        given(loadUserAccountPort.loadUserAccountByUsername(any(String.class))).willReturn(Optional.of(userAccount));
+        given(loadUserAccountPort.loadUserAccountBySubject(any(String.class))).willReturn(Optional.of(userAccount));
 
         UpdateMessageReadStatusCommand command = UpdateMessageReadStatusCommand.builder().isRead("true").build();
         // when // then
@@ -776,7 +776,7 @@ public class ChatMessageServiceTests {
         given(loadDiscussionsPort.loadDiscussionById(any(Long.class))).willReturn(Optional.of(discussionOutput));
         UserAccount userAccount = defaultClientUserAccountBuilder().oauthId(discussionOutput.getClient().getId() + 1)
                 .build();
-        given(loadUserAccountPort.loadUserAccountByUsername(any(String.class))).willReturn(Optional.of(userAccount));
+        given(loadUserAccountPort.loadUserAccountBySubject(any(String.class))).willReturn(Optional.of(userAccount));
 
         UpdateMessageReadStatusCommand command = UpdateMessageReadStatusCommand.builder().isRead("true").build();
         // when // then
@@ -793,7 +793,7 @@ public class ChatMessageServiceTests {
         given(loadDiscussionsPort.loadDiscussionById(any(Long.class))).willReturn(Optional.of(discussionOutput));
         UserAccount userAccount = defaultClientUserAccountBuilder().oauthId(discussionOutput.getClient().getId())
                 .build();
-        given(loadUserAccountPort.loadUserAccountByUsername(any(String.class))).willReturn(Optional.of(userAccount));
+        given(loadUserAccountPort.loadUserAccountBySubject(any(String.class))).willReturn(Optional.of(userAccount));
 
         UpdateMessageReadStatusCommand command = UpdateMessageReadStatusCommand.builder().isRead("true").build();
         // when
@@ -811,12 +811,12 @@ public class ChatMessageServiceTests {
     @Test
     void givenCountMessageCommand_whenCountMessages_thenReturnMessagesCount() {
         // given
-        CountMessagesCommand command = CountMessagesCommand.builder().username(TestConstants.DEFAULT_EMAIL)
+        CountMessagesCommand command = CountMessagesCommand.builder().subject(TestConstants.DEFAULT_EMAIL)
                 .read("false").build();
         given(loadMessagesPort.countMessages(any(String.class), any(Boolean.class), any(Boolean.class)))
                 .willReturn(10L);
         UserAccount userAccount = defaultClientUserAccountBuilder().build();
-        given(loadUserAccountPort.loadUserAccountByUsername(any(String.class))).willReturn(Optional.of(userAccount));
+        given(loadUserAccountPort.loadUserAccountBySubject(any(String.class))).willReturn(Optional.of(userAccount));
         // When
         Long count = chatMessageService.countMessages(command);
         // then

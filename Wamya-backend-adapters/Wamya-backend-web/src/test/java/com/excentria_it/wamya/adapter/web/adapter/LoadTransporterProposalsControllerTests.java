@@ -1,6 +1,5 @@
 package com.excentria_it.wamya.adapter.web.adapter;
 
-import com.c4_soft.springaddons.security.oauth2.test.mockmvc.MockMvcSupport;
 import com.excentria_it.wamya.adapter.web.WebConfiguration;
 import com.excentria_it.wamya.adapter.web.WebSecurityConfiguration;
 import com.excentria_it.wamya.adapter.web.utils.ValidationHelper;
@@ -47,7 +46,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
 @ContextConfiguration(classes = {WebSecurityConfiguration.class, WebConfiguration.class})
-@Import(value = {LoadTransporterProposalsController.class, RestApiExceptionHandler.class, MockMvcSupport.class,
+@Import(value = {LoadTransporterProposalsController.class, RestApiExceptionHandler.class,
         ValidationHelper.class})
 @WebMvcTest(controllers = LoadTransporterProposalsController.class)
 public class LoadTransporterProposalsControllerTests {

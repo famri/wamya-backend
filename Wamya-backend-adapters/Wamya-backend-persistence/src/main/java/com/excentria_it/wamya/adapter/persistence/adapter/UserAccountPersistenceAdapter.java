@@ -25,7 +25,6 @@ import java.util.Set;
 public class UserAccountPersistenceAdapter
         implements CreateUserAccountPort, LoadUserAccountPort, UpdateUserAccountPort {
 
-    private static final String FRANCE_ICC = "+33";
 
     private final UserAccountRepository userAccountRepository;
 
@@ -81,45 +80,21 @@ public class UserAccountPersistenceAdapter
     }
 
     @Override
-    public Optional<UserAccount> loadUserAccountByUsername(String username) {
+    public Optional<UserAccount> loadUserAccountBySubject(String subject) {
 
-        if (username == null || (!username.contains("@") && !username.contains("_"))) {
+        if (subject == null) {
             return Optional.empty();
         }
-        if (username.contains("@")) {
-            Optional<UserAccountJpaEntity> optionalEntity = userAccountRepository.findByEmail(username);
-            if (optionalEntity.isEmpty())
-                return Optional.empty();
-            UserAccountJpaEntity entity = optionalEntity.get();
 
-            UserAccount userAccount = userAccountMapper.mapToDomainEntity(entity);
-            return Optional.of(userAccount);
-        } else {
-            final String[] mobileNumber = username.split("_");
-            final String internationalCallingCode = mobileNumber[0];
-            final String phoneNumber = mobileNumber[1];
+        Optional<UserAccountJpaEntity> optionalEntity = userAccountRepository.findBySubject(subject);
+        if (optionalEntity.isEmpty())
+            return Optional.empty();
 
-            Optional<UserAccountJpaEntity> optionalEntity = userAccountRepository
-                    .findByMobilePhoneNumber(internationalCallingCode, phoneNumber);
+        UserAccountJpaEntity entity = optionalEntity.get();
 
-            if (optionalEntity.isEmpty() && FRANCE_ICC.equals(internationalCallingCode)) {
+        UserAccount userAccount = userAccountMapper.mapToDomainEntity(entity);
+        return Optional.of(userAccount);
 
-                if (phoneNumber.startsWith("0")) {
-                    // strip first zero from mobile number: 07 11 11 11 11 => 7 11 11 11 11
-                    optionalEntity = userAccountRepository
-                            .findByMobilePhoneNumber(internationalCallingCode, phoneNumber.substring(1));
-                }
-            }
-
-            if (optionalEntity.isEmpty())
-                return Optional.empty();
-
-            UserAccountJpaEntity entity = optionalEntity.get();
-
-            UserAccount userAccount = userAccountMapper.mapToDomainEntity(entity);
-
-            return Optional.of(userAccount);
-        }
 
     }
 
@@ -281,6 +256,11 @@ public class UserAccountPersistenceAdapter
 
         } else
             throw new UserAccountNotFoundException(String.format("No account was found by ID %d.", userId));
+    }
+
+    @Override
+    public boolean existsBySubject(String userSubject) {
+        return userAccountRepository.existsBySubject(userSubject);
     }
 
     @Override

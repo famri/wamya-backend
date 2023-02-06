@@ -6,7 +6,6 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
-import static org.mockito.Mockito.*;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -21,14 +20,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.excentria_it.wamya.application.port.in.LoadProposalsUseCase.LoadProposalsCommand;
 import com.excentria_it.wamya.application.port.in.MakeProposalUseCase.MakeProposalCommand;
 import com.excentria_it.wamya.application.port.out.AcceptProposalPort;
-import com.excentria_it.wamya.application.port.out.CheckUserVehiculePort;
+import com.excentria_it.wamya.application.port.out.CheckUserVehiclePort;
 import com.excentria_it.wamya.application.port.out.LoadJourneyRequestPort;
 import com.excentria_it.wamya.application.port.out.LoadProposalsPort;
 import com.excentria_it.wamya.application.port.out.LoadTransporterVehiculesPort;
 import com.excentria_it.wamya.application.port.out.MakeProposalPort;
 import com.excentria_it.wamya.application.port.out.RejectProposalPort;
 import com.excentria_it.wamya.common.domain.StatusCode;
-import com.excentria_it.wamya.common.exception.InvalidTransporterVehiculeException;
+import com.excentria_it.wamya.common.exception.InvalidTransporterVehicleException;
 import com.excentria_it.wamya.common.exception.JourneyProposalNotFoundException;
 import com.excentria_it.wamya.common.exception.JourneyRequestExpiredException;
 import com.excentria_it.wamya.common.exception.JourneyRequestNotFoundException;
@@ -54,7 +53,7 @@ public class JourneyProposalServiceTests {
 	@Mock
 	private RejectProposalPort rejectProposalPort;
 	@Mock
-	private CheckUserVehiculePort checkUserVehiculePort;
+	private CheckUserVehiclePort checkUserVehiclePort;
 
 	@InjectMocks
 	private JourneyProposalService journeyProposalService;
@@ -80,7 +79,7 @@ public class JourneyProposalServiceTests {
 
 		given(loadJourneyRequestPort.loadJourneyRequestById(any(Long.class)))
 				.willReturn(Optional.of(journeyRequestInputOutputBuilder.build()));
-		given(checkUserVehiculePort.isUserVehicule(any(String.class), any(Long.class))).willReturn(true);
+		given(checkUserVehiclePort.isUserVehicle(any(String.class), any(Long.class))).willReturn(true);
 		given(makeProposalPort.makeProposal(any(String.class), any(Double.class), any(Long.class), any(Long.class),
 				any(String.class))).willReturn(defaultMakeProposalDto());
 
@@ -135,10 +134,10 @@ public class JourneyProposalServiceTests {
 
 		given(loadJourneyRequestPort.loadJourneyRequestById(any(Long.class)))
 				.willReturn(Optional.of(journeyRequestInputOutputBuilder.build()));
-		given(checkUserVehiculePort.isUserVehicule(any(String.class), any(Long.class))).willReturn(false);
+		given(checkUserVehiclePort.isUserVehicle(any(String.class), any(Long.class))).willReturn(false);
 
 		// when //then
-		assertThrows(InvalidTransporterVehiculeException.class, () -> journeyProposalService
+		assertThrows(InvalidTransporterVehicleException.class, () -> journeyProposalService
 				.makeProposal(makeProposalCommand, 1L, TestConstants.DEFAULT_EMAIL, "en_US"));
 
 	}
@@ -148,7 +147,7 @@ public class JourneyProposalServiceTests {
 		// given
 		LoadProposalsCommand command = defaultLoadProposalsCommandBuilder().build();
 		ClientJourneyRequestDtoOutput clientJourneyRequestDto = defaultClientJourneyRequestDtoOutput();
-		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class),
+		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientSubject(any(Long.class), any(String.class),
 				any(String.class))).willReturn(Optional.of(clientJourneyRequestDto));
 
 		JourneyRequestProposals journeyRequestProposals = defaultJourneyRequestProposals();
@@ -171,7 +170,7 @@ public class JourneyProposalServiceTests {
 		// given
 		LoadProposalsCommand command = defaultLoadProposalsCommandBuilder().build();
 
-		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class),
+		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientSubject(any(Long.class), any(String.class),
 				any(String.class))).willReturn(Optional.empty());
 
 		// when // then
@@ -185,7 +184,7 @@ public class JourneyProposalServiceTests {
 	void givenClientEmailAndInexistentClientJourneyRequest_WhenAcceptProposal_ThenThrowJourneyRequestNotFoundException() {
 
 		// given
-		given(loadJourneyRequestPort.isExistentAndNotExpiredJourneyRequestByIdAndClientEmail(any(Long.class),
+		given(loadJourneyRequestPort.isExistentAndNotExpiredJourneyRequestByIdAndClientSubject(any(Long.class),
 				any(String.class))).willReturn(false);
 
 		// when //then
@@ -200,7 +199,7 @@ public class JourneyProposalServiceTests {
 	void givenClientEmailAndInexistentJourneyProposal_WhenAcceptProposal_ThenThrowJourneyProposalNotFoundException() {
 
 		// given
-		given(loadJourneyRequestPort.isExistentAndNotExpiredJourneyRequestByIdAndClientEmail(any(Long.class),
+		given(loadJourneyRequestPort.isExistentAndNotExpiredJourneyRequestByIdAndClientSubject(any(Long.class),
 				any(String.class))).willReturn(true);
 
 		given(loadPropsalsPort.isExistentJourneyProposalByIdAndJourneyRequestIdAndStatusCode(any(Long.class),
@@ -217,7 +216,7 @@ public class JourneyProposalServiceTests {
 
 		// given
 
-		given(loadJourneyRequestPort.isExistentAndNotExpiredJourneyRequestByIdAndClientEmail(any(Long.class),
+		given(loadJourneyRequestPort.isExistentAndNotExpiredJourneyRequestByIdAndClientSubject(any(Long.class),
 				any(String.class))).willReturn(true);
 
 		given(loadPropsalsPort.isExistentJourneyProposalByIdAndJourneyRequestIdAndStatusCode(any(Long.class),
@@ -233,7 +232,7 @@ public class JourneyProposalServiceTests {
 	void givenClientEmailAndInexistentClientJourneyRequest_WhenRejectProposal_ThenThrowJourneyRequestNotFoundException() {
 
 		// given
-		given(loadJourneyRequestPort.isExistentAndNotExpiredJourneyRequestByIdAndClientEmail(any(Long.class),
+		given(loadJourneyRequestPort.isExistentAndNotExpiredJourneyRequestByIdAndClientSubject(any(Long.class),
 				any(String.class))).willReturn(false);
 
 		// when //then
@@ -246,7 +245,7 @@ public class JourneyProposalServiceTests {
 	void givenClientEmailAndInexistentJourneyProposal_WhenRejectProposal_ThenThrowJourneyProposalNotFoundException() {
 
 		// given
-		given(loadJourneyRequestPort.isExistentAndNotExpiredJourneyRequestByIdAndClientEmail(any(Long.class),
+		given(loadJourneyRequestPort.isExistentAndNotExpiredJourneyRequestByIdAndClientSubject(any(Long.class),
 				any(String.class))).willReturn(true);
 
 		given(loadPropsalsPort.isExistentJourneyProposalByIdAndJourneyRequestIdAndStatusCode(any(Long.class),
@@ -263,7 +262,7 @@ public class JourneyProposalServiceTests {
 
 		// given
 
-		given(loadJourneyRequestPort.isExistentAndNotExpiredJourneyRequestByIdAndClientEmail(any(Long.class),
+		given(loadJourneyRequestPort.isExistentAndNotExpiredJourneyRequestByIdAndClientSubject(any(Long.class),
 				any(String.class))).willReturn(true);
 
 		given(loadPropsalsPort.isExistentJourneyProposalByIdAndJourneyRequestIdAndStatusCode(any(Long.class),

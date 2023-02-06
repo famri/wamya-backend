@@ -334,28 +334,28 @@ public class UserAccountServiceTest {
 
     private void givenNonExistentEmailUsername() {
 
-        given(loadUserAccountPort.loadUserAccountByUsername(eq(TestConstants.DEFAULT_EMAIL)))
+        given(loadUserAccountPort.loadUserAccountBySubject(eq(TestConstants.DEFAULT_EMAIL)))
                 .willReturn(Optional.empty());
 
     }
 
     private void givenAnExistentEmailUsername() {
 
-        given(loadUserAccountPort.loadUserAccountByUsername(eq(TestConstants.DEFAULT_EMAIL)))
+        given(loadUserAccountPort.loadUserAccountBySubject(eq(TestConstants.DEFAULT_EMAIL)))
                 .willReturn(Optional.of(notYetValidatedEmailUserAccount()));
 
     }
 
     private void givenNonExistentMobileNumberUsername() {
 
-        given(loadUserAccountPort.loadUserAccountByUsername(eq(TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME)))
+        given(loadUserAccountPort.loadUserAccountBySubject(eq(TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME)))
                 .willReturn(Optional.empty());
 
     }
 
     private void givenAnExistentMobileNumberUsername() {
 
-        given(loadUserAccountPort.loadUserAccountByUsername(eq(TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME)))
+        given(loadUserAccountPort.loadUserAccountBySubject(eq(TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME)))
                 .willReturn(Optional.of(notYetValidatedMobileNumberUserAccount()));
 
     }

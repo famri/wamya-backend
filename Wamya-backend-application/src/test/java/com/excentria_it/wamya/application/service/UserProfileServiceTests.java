@@ -66,11 +66,11 @@ public class UserProfileServiceTests {
         // given
         UpdateEmailSectionCommand command = UserProfileTestData.defaultUpdateEmailSectionCommandBuilder().build();
 
-        given(loadUserAccountPort.loadUserAccountByUsername(command.getEmail())).willReturn(Optional.empty());
+        given(loadUserAccountPort.loadUserAccountBySubject(command.getEmail())).willReturn(Optional.empty());
 
         UserAccount userAccount = UserAccountTestData.defaultClientUserAccountBuilder().build();
 
-        given(loadUserAccountPort.loadUserAccountByUsername(TestConstants.DEFAULT_EMAIL))
+        given(loadUserAccountPort.loadUserAccountBySubject(TestConstants.DEFAULT_EMAIL))
                 .willReturn(Optional.of(userAccount));
 
         // when
@@ -78,9 +78,9 @@ public class UserProfileServiceTests {
 
         // then
 
-        then(loadUserAccountPort).should(times(1)).loadUserAccountByUsername(command.getEmail());
+        then(loadUserAccountPort).should(times(1)).loadUserAccountBySubject(command.getEmail());
 
-        then(loadUserAccountPort).should(times(1)).loadUserAccountByUsername(TestConstants.DEFAULT_EMAIL);
+        then(loadUserAccountPort).should(times(1)).loadUserAccountBySubject(TestConstants.DEFAULT_EMAIL);
 
         then(updateProfileInfoPort).should(times(1)).updateEmailSection(TestConstants.DEFAULT_EMAIL,
                 command.getEmail());
@@ -96,7 +96,7 @@ public class UserProfileServiceTests {
         UserAccount existentUserAccount = UserAccountTestData.defaultClientUserAccountBuilder()
                 .email(command.getEmail()).build();
 
-        given(loadUserAccountPort.loadUserAccountByUsername(command.getEmail()))
+        given(loadUserAccountPort.loadUserAccountBySubject(command.getEmail()))
                 .willReturn(Optional.of(existentUserAccount));
 
         // when // then
@@ -104,7 +104,7 @@ public class UserProfileServiceTests {
         assertThrows(UserAccountAlreadyExistsException.class,
                 () -> userProfileService.updateEmailSection(command, TestConstants.DEFAULT_EMAIL));
 
-        then(loadUserAccountPort).should(times(1)).loadUserAccountByUsername(command.getEmail());
+        then(loadUserAccountPort).should(times(1)).loadUserAccountBySubject(command.getEmail());
 
         then(updateProfileInfoPort).should(never()).updateEmailSection(TestConstants.DEFAULT_EMAIL, command.getEmail());
 
@@ -117,7 +117,7 @@ public class UserProfileServiceTests {
         UpdateMobileSectionCommand command = UserProfileTestData.defaultUpdateMobileSectionCommandBuilder().build();
 
         UserAccount userAccount = UserAccountTestData.defaultClientUserAccountBuilder().build();
-        given(loadUserAccountPort.loadUserAccountByUsername(TestConstants.DEFAULT_EMAIL))
+        given(loadUserAccountPort.loadUserAccountBySubject(TestConstants.DEFAULT_EMAIL))
                 .willReturn(Optional.of(userAccount));
         // when
         userProfileService.updateMobileSection(command, TestConstants.DEFAULT_EMAIL);

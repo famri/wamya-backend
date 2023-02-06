@@ -385,13 +385,13 @@ public class RestApiExceptionHandlerTest {
     }
 
     @Test
-    void whenHandleInvalidTransporterVehiculeException_ThenStatusIsBadRequest() {
+    void whenHandleInvalidTransporterVehicleException_ThenStatusIsBadRequest() {
         // given
-        InvalidTransporterVehiculeException exception = givenInvalidTransporterVehiculeException();
+        InvalidTransporterVehicleException exception = givenInvalidTransporterVehiculeException();
 
         // When
         ResponseEntity<ApiError> responseEntity = restApiExceptionHandler
-                .handleInvalidTransporterVehiculeException(exception);
+                .handleInvalidTransporterVehicleException(exception);
 
         // Then
         then(responseEntity.getBody() instanceof ApiError);
@@ -616,12 +616,12 @@ public class RestApiExceptionHandlerTest {
     }
 
     @Test
-    void whenVehiculeNotFoundException_thenStatusIsNotFound() {
+    void whenVehicleNotFoundException_thenStatusIsNotFound() {
         // given
-        VehiculeNotFoundException exception = givenVehiculeNotFoundException();
+        VehicleNotFoundException exception = givenVehiculeNotFoundException();
 
         // When
-        ResponseEntity<ApiError> responseEntity = restApiExceptionHandler.handleVehiculeNotFoundException(exception);
+        ResponseEntity<ApiError> responseEntity = restApiExceptionHandler.handleVehicleNotFoundException(exception);
 
         // Then
         then(responseEntity.getBody() instanceof ApiError);
@@ -737,8 +737,8 @@ public class RestApiExceptionHandlerTest {
         return exception;
     }
 
-    private VehiculeNotFoundException givenVehiculeNotFoundException() {
-        VehiculeNotFoundException exception = Mockito.mock(VehiculeNotFoundException.class);
+    private VehicleNotFoundException givenVehiculeNotFoundException() {
+        VehicleNotFoundException exception = Mockito.mock(VehicleNotFoundException.class);
         given(exception.getMessage()).willReturn(SOME_MESSAGE);
 
         return exception;
@@ -793,8 +793,8 @@ public class RestApiExceptionHandlerTest {
         return exception;
     }
 
-    private InvalidTransporterVehiculeException givenInvalidTransporterVehiculeException() {
-        InvalidTransporterVehiculeException exception = Mockito.mock(InvalidTransporterVehiculeException.class);
+    private InvalidTransporterVehicleException givenInvalidTransporterVehiculeException() {
+        InvalidTransporterVehicleException exception = Mockito.mock(InvalidTransporterVehicleException.class);
         given(exception.getMessage()).willReturn(SOME_MESSAGE);
 
         return exception;

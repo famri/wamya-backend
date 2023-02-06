@@ -56,9 +56,9 @@ public class ChatMessageService
     private static final String DISCUSSIONS_URL_TEMPLATE = "${protocol}://${host}:${port}/discussions";
 
     @Override
-    public MessageDto sendMessage(SendMessageCommand command, Long discussionId, String senderUsername) {
+    public MessageDto sendMessage(SendMessageCommand command, Long discussionId, String senderSubject) {
 
-        Optional<UserAccount> senderAccountOptional = loadUserAccountPort.loadUserAccountByUsername(senderUsername);
+        Optional<UserAccount> senderAccountOptional = loadUserAccountPort.loadUserAccountBySubject(senderSubject);
 
         Boolean isTransporter = senderAccountOptional.get().getIsTransporter();
 
@@ -72,15 +72,8 @@ public class ChatMessageService
 
         LoadDiscussionsOutput loadDiscussionsOutput = loadDiscussionsOutputOptional.get();
 
-        String receiverUsername = null;
-
-        if (isTransporter) {
-            receiverUsername = loadDiscussionsOutput.getClient().getEmail();
-
-        } else {
-            receiverUsername = loadDiscussionsOutput.getTransporter().getEmail();
-
-        }
+        // receiver oauthId
+        String receiverSubject = isTransporter ? loadDiscussionsOutput.getClient().getId() : loadDiscussionsOutput.getTransporter().getId();
 
         if ((isTransporter
                 && !loadDiscussionsOutput.getTransporter().getId().equals(senderAccountOptional.get().getOauthId()))
@@ -89,7 +82,7 @@ public class ChatMessageService
             throw new OperationDeniedException("Discussion does not belong to user.");
         }
 
-        Optional<UserAccount> receiverAccountOptional = loadUserAccountPort.loadUserAccountByUsername(receiverUsername);
+        Optional<UserAccount> receiverAccountOptional = loadUserAccountPort.loadUserAccountBySubject(receiverSubject);
 
         ZoneId senderZoneId = ZoneId.of(senderAccountOptional.get().getPreferences().get(UserPreferenceKey.TIMEZONE));
         ZoneId receiverZoneId = ZoneId
@@ -113,7 +106,7 @@ public class ChatMessageService
         if (receiverAccountOptional.get().getIsWebSocketConnected() != null
                 && receiverAccountOptional.get().getIsWebSocketConnected()) {
             synchronousMessageSendingPort.sendMessage(toReceiverMessageDtoBuilder.sent(true).build(), discussionId,
-                    receiverUsername);
+                    receiverSubject);
         } else if (receiverAccountOptional.get().getDeviceRegistrationToken() != null) {
 
             // if receiver was connected at least once through smart phone, send him a push
@@ -151,7 +144,7 @@ public class ChatMessageService
                             + senderAccountOptional.get().getLastname().toUpperCase(),
                     EmailTemplate.RECEIVED_MESSAGE.getTemplateParams().get(1), discussionsLink);
 
-            EmailMessage emailMessage = EmailMessage.builder().from(EmailSender.FRETTO_TEAM).to(receiverUsername)
+            EmailMessage emailMessage = EmailMessage.builder().from(EmailSender.FRETTO_TEAM).to(receiverSubject)
                     .subject(messageSource.getMessage(EmailSubject.RECEIVED_MESSAGE, null,
                             new Locale(receiverLanguageAndCountry[0], receiverLanguageAndCountry[1])))
                     .template(EmailTemplate.RECEIVED_MESSAGE).params(emailTemplateParams).language(receiverLocale)
@@ -167,7 +160,7 @@ public class ChatMessageService
     @Override
     public LoadMessagesResult loadMessages(LoadMessagesCommand command) {
         Optional<UserAccount> userAccountOptional = loadUserAccountPort
-                .loadUserAccountByUsername(command.getUsername());
+                .loadUserAccountBySubject(command.getUsername());
 
         Boolean isTransporter = userAccountOptional.get().getIsTransporter();
 
@@ -203,10 +196,10 @@ public class ChatMessageService
             updateMessagePort.updateRead(messagesIds, true);
 
             if (isTransporter) {
-                sendMessageNotificationPort.sendReadNotification(loadDiscussionsOutput.getClient().getEmail(),
+                sendMessageNotificationPort.sendReadNotification(loadDiscussionsOutput.getClient().getId(),
                         command.getDiscussionId(), messagesIds);
             } else {
-                sendMessageNotificationPort.sendReadNotification(loadDiscussionsOutput.getTransporter().getEmail(),
+                sendMessageNotificationPort.sendReadNotification(loadDiscussionsOutput.getTransporter().getId(),
                         command.getDiscussionId(), messagesIds);
             }
         }
@@ -220,10 +213,10 @@ public class ChatMessageService
     }
 
     @Override
-    public void updateMessageReadStatus(Long discussionId, Long messageId, String username,
+    public void updateMessageReadStatus(Long discussionId, Long messageId, String readerSubject,
                                         UpdateMessageReadStatusCommand command) {
 
-        Optional<UserAccount> userAccountOptional = loadUserAccountPort.loadUserAccountByUsername(username);
+        Optional<UserAccount> userAccountOptional = loadUserAccountPort.loadUserAccountBySubject(readerSubject);
 
         Boolean isTransporter = userAccountOptional.get().getIsTransporter();
 
@@ -266,10 +259,10 @@ public class ChatMessageService
     public Long countMessages(CountMessagesCommand command) {
 
         Optional<UserAccount> userAccountOptional = loadUserAccountPort
-                .loadUserAccountByUsername(command.getUsername());
+                .loadUserAccountBySubject(command.getSubject());
 
         Boolean isTransporter = userAccountOptional.get().getIsTransporter();
 
-        return loadMessagesPort.countMessages(command.getUsername(), Boolean.valueOf(command.getRead()), isTransporter);
+        return loadMessagesPort.countMessages(command.getSubject(), Boolean.valueOf(command.getRead()), isTransporter);
     }
 }

@@ -36,7 +36,7 @@ public class IdentityDocumentService implements UploadIdentityDocumentUseCase {
 
 	@Override
 	public void uploadIdentityDocument(BufferedInputStream documentInputStream, String originalFilename,
-			String username) {
+			String subject) {
 		// detect document type
 		String mediaType = null;
 		try {
@@ -71,7 +71,7 @@ public class IdentityDocumentService implements UploadIdentityDocumentUseCase {
 		String hash = DigestUtils.sha256Hex(location.getBytes());
 
 		// create database document entry for document file
-		Optional<UserAccount> userAccountOptional = loadUserAccountPort.loadUserAccountByUsername(username);
+		Optional<UserAccount> userAccountOptional = loadUserAccountPort.loadUserAccountBySubject(subject);
 		Long userId = userAccountOptional.get().getId();
 
 		String oldIdentityFileLocation = null;

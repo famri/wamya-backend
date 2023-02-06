@@ -42,7 +42,7 @@ public class LoadDiscussionsController {
 		SortCriterion sortingCriterion = ParameterUtils.parameterToSortCriterion(sort, "date-time,desc");
 		FilterCriterion filteringCriterion = ParameterUtils.parameterToFilterCriterion(filter);
 
-		LoadDiscussionsCommand command = LoadDiscussionsCommand.builder().username(principal.getName())
+		LoadDiscussionsCommand command = LoadDiscussionsCommand.builder().subject(principal.getName())
 				.pageNumber(pageNumber).pageSize(pageSize).sortingCriterion(sortingCriterion)
 				.filteringCriterion(filteringCriterion).build();
 

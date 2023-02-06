@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 
 public interface SearchJourneyRequestsUseCase {
 
-	JourneyRequestsSearchResult searchJourneyRequests(SearchJourneyRequestsCommand command, String username,
+	JourneyRequestsSearchResult searchJourneyRequests(SearchJourneyRequestsCommand command, String userSubject,
 			String locale);
 
 	@Data

@@ -20,7 +20,7 @@ public class JourneyProposalDto {
 
     private TransporterDto transporter;
 
-    private VehiculeDto vehicule;
+    private VehicleDto vehicle;
 
     @AllArgsConstructor
     @NoArgsConstructor
@@ -40,7 +40,7 @@ public class JourneyProposalDto {
     @AllArgsConstructor
     @NoArgsConstructor
     @Data
-    public static class VehiculeDto {
+    public static class VehicleDto {
 
         private Long id;
 

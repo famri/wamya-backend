@@ -1,7 +1,5 @@
 package com.excentria_it.wamya.adapter.persistence.adapter;
 
-import java.time.LocalDate;
-
 import com.excentria_it.wamya.adapter.persistence.entity.UserAccountJpaEntity;
 import com.excentria_it.wamya.adapter.persistence.mapper.UserAccountMapper;
 import com.excentria_it.wamya.adapter.persistence.mapper.UserAccountUpdater;
@@ -11,68 +9,63 @@ import com.excentria_it.wamya.application.port.out.UpdateProfileInfoPort;
 import com.excentria_it.wamya.common.annotation.PersistenceAdapter;
 import com.excentria_it.wamya.common.exception.UserAccountNotFoundException;
 import com.excentria_it.wamya.domain.ProfileInfoDto;
-
 import lombok.RequiredArgsConstructor;
+
+import java.time.LocalDate;
 
 @RequiredArgsConstructor
 @PersistenceAdapter
 public class ProfileInfoPersistenceAdapter implements LoadProfileInfoPort, UpdateProfileInfoPort {
 
-	private final UserAccountRepository userAccountRepository;
+    private final UserAccountRepository userAccountRepository;
 
-	private final UserAccountMapper userAccountMapper;
+    private final UserAccountMapper userAccountMapper;
 
-	private final UserAccountUpdater userAccountUpdater;
+    private final UserAccountUpdater userAccountUpdater;
 
-	@Override
-	public ProfileInfoDto loadInfo(String username, String locale) {
+    @Override
+    public ProfileInfoDto loadInfo(String subject, String locale) {
 
-		UserAccountJpaEntity userAccount = findUserAccountJpaEntityByUsername(username);
+        UserAccountJpaEntity userAccount = userAccountRepository.findBySubject(subject).orElseThrow(
+                () -> new UserAccountNotFoundException(String.format("User not found by subject: %s", subject)));
 
-		return userAccountMapper.mapToProfileInfoDto(userAccount, locale);
-	}
 
-	@Override
-	public void updateAboutSection(String username, Long genderId, String firstname, String lastname,
-			LocalDate dateOfBirth, String minibio) {
+        return userAccountMapper.mapToProfileInfoDto(userAccount, locale);
+    }
 
-		UserAccountJpaEntity userAccount = findUserAccountJpaEntityByUsername(username);
+    @Override
+    public void updateAboutSection(String subject, Long genderId, String firstname, String lastname,
+                                   LocalDate dateOfBirth, String miniBio) {
 
-		userAccount = userAccountUpdater.updateAboutSection(userAccount, genderId, firstname, lastname, dateOfBirth,
-				minibio);
-		userAccountRepository.save(userAccount);
-	}
+        UserAccountJpaEntity userAccount = userAccountRepository.findBySubject(subject).orElseThrow(
+                () -> new UserAccountNotFoundException(String.format("User not found by subject: %s", subject)));
 
-	@Override
-	public void updateEmailSection(String username, String email) {
-		UserAccountJpaEntity userAccount = findUserAccountJpaEntityByUsername(username);
 
-		userAccount = userAccountUpdater.updateEmailSection(userAccount, email);
-		userAccountRepository.save(userAccount);
+        userAccount = userAccountUpdater.updateAboutSection(userAccount, genderId, firstname, lastname, dateOfBirth,
+                miniBio);
+        userAccountRepository.save(userAccount);
+    }
 
-	}
+    @Override
+    public void updateEmailSection(String subject, String email) {
+        UserAccountJpaEntity userAccount = userAccountRepository.findBySubject(subject).orElseThrow(
+                () -> new UserAccountNotFoundException(String.format("User not found by subject: %s", subject)));
 
-	@Override
-	public void updateMobileSection(String username, String mobileNumber, Long iccId) {
-		UserAccountJpaEntity userAccount = findUserAccountJpaEntityByUsername(username);
 
-		userAccount = userAccountUpdater.updateMobileSection(userAccount, mobileNumber, iccId);
-		userAccountRepository.save(userAccount);
+        userAccount = userAccountUpdater.updateEmailSection(userAccount, email);
+        userAccountRepository.save(userAccount);
 
-	}
+    }
 
-	private UserAccountJpaEntity findUserAccountJpaEntityByUsername(String username) {
-		if (username == null) {
-			throw new UserAccountNotFoundException("Username cannot be null.");
-		}
+    @Override
+    public void updateMobileSection(String subject, String mobileNumber, Long iccId) {
+        UserAccountJpaEntity userAccount = userAccountRepository.findBySubject(subject).orElseThrow(
+                () -> new UserAccountNotFoundException(String.format("User not found by subject: %s", subject)));
 
-		if (username.contains("@")) {
-			return userAccountRepository.findByEmail(username).orElseThrow(
-					() -> new UserAccountNotFoundException(String.format("User not found by email: %s", username)));
 
-		}
+        userAccount = userAccountUpdater.updateMobileSection(userAccount, mobileNumber, iccId);
+        userAccountRepository.save(userAccount);
 
-		throw new UserAccountNotFoundException("Username should be an email or a mobile number.");
+    }
 
-	}
 }

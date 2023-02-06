@@ -29,7 +29,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping(path = "/journey-requests", produces = MediaType.APPLICATION_JSON_VALUE)
 public class UpdateJourneyRequestStatusController {
 
-	private final UpdateJourneyRequestStatusUseCase updatelJourneyRequestStatusUseCase;
+	private final UpdateJourneyRequestStatusUseCase updateJourneyRequestStatusUseCase;
 
 	@PatchMapping(path = "/{id}/status", consumes = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.NO_CONTENT)
@@ -37,7 +37,7 @@ public class UpdateJourneyRequestStatusController {
 			@Valid @RequestBody UpdateJourneyRequestStatusCommand command,
 			final @AuthenticationPrincipal JwtAuthenticationToken principal, Locale locale) {
 
-		updatelJourneyRequestStatusUseCase.updateStatus(journeyRequestId, principal.getName(),
+		updateJourneyRequestStatusUseCase.updateStatus(journeyRequestId, principal.getName(),
 				JourneyRequestStatusCode.valueOf(command.getStatus().toUpperCase()),
 				LocaleUtils.getSupporedLocale(locale).toString());
 

@@ -13,7 +13,7 @@ import com.excentria_it.wamya.common.annotation.UseCase;
 import com.excentria_it.wamya.domain.LoadTransporterProposalsCriteria;
 import com.excentria_it.wamya.domain.TransporterProposalDto;
 import com.excentria_it.wamya.domain.TransporterProposalDto.JourneyRequestDto;
-import com.excentria_it.wamya.domain.TransporterProposalDto.TransporterVehiculeDto;
+import com.excentria_it.wamya.domain.TransporterProposalDto.TransporterVehicleDto;
 import com.excentria_it.wamya.domain.TransporterProposalOutput;
 import com.excentria_it.wamya.domain.TransporterProposals;
 import com.excentria_it.wamya.domain.TransporterProposalsOutput;
@@ -56,13 +56,13 @@ public class LoadTransporterProposalsService implements LoadTransporterProposals
 	private TransporterProposalDto mapTransporterProposalOutputToTransporterProposalDto(TransporterProposalOutput po,
 			ZoneId transporterZoneId) {
 
-		TransporterProposalDto.TransporterVehiculeDto vehicule = TransporterVehiculeDto.builder()
-				.id(po.getVehicule().getId()).registrationNumber(po.getVehicule().getRegistrationNumber())
-				.circulationDate(po.getVehicule().getCirculationDate())
-				.constructorName(po.getVehicule().getConstructorName()).modelName(po.getVehicule().getModelName())
-				.engineTypeId(po.getVehicule().getEngineTypeId()).engineTypeName(po.getVehicule().getEngineTypeName())
+		TransporterVehicleDto vehicle = TransporterVehicleDto.builder()
+				.id(po.getVehicle().getId()).registrationNumber(po.getVehicle().getRegistrationNumber())
+				.circulationDate(po.getVehicle().getCirculationDate())
+				.constructorName(po.getVehicle().getConstructorName()).modelName(po.getVehicle().getModelName())
+				.engineTypeId(po.getVehicle().getEngineTypeId()).engineTypeName(po.getVehicle().getEngineTypeName())
 				.photoUrl(
-						documentUrlResolver.resolveUrl(po.getVehicule().getImageId(), po.getVehicule().getImageHash()))
+						documentUrlResolver.resolveUrl(po.getVehicle().getImageId(), po.getVehicle().getImageHash()))
 				.build();
 
 		JourneyRequestDto.Place departurePlace = new JourneyRequestDto.Place(
@@ -93,7 +93,7 @@ public class LoadTransporterProposalsService implements LoadTransporterProposals
 				.build();
 
 		return TransporterProposalDto.builder().id(po.getId()).price(po.getPrice()).status(po.getStatus())
-				.statusCode(po.getStatusCode()).vehicule(vehicule).journey(journey).build();
+				.statusCode(po.getStatusCode()).vehicle(vehicle).journey(journey).build();
 	}
 
 }

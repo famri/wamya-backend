@@ -163,11 +163,11 @@ public class DiscussionsPersistenceAdapter implements LoadDiscussionsPort, Creat
     @Override
     public LoadDiscussionsOutput createDiscussion(String clientOauthId, String transporterOauthId) {
 
-        Optional<ClientJpaEntity> clientAccount = clientRepository.findByOauthId(clientOauthId);
+        Optional<ClientJpaEntity> clientAccount = clientRepository.findClientByOauthId(clientOauthId);
         if (clientAccount.isEmpty()) {
             return null;
         }
-        Optional<TransporterJpaEntity> transporterAccount = transporterRepository.findByOauthId(transporterOauthId);
+        Optional<TransporterJpaEntity> transporterAccount = transporterRepository.findTransporterByOauthId(transporterOauthId);
         if (transporterAccount.isEmpty()) {
             return null;
         }

@@ -24,9 +24,9 @@ public class DateTimeHelper {
 
 
 
-	public ZoneId findUserZoneId(String username) {
+	public ZoneId findUserZoneId(String subject) {
 		Optional<UserPreference> userPreferenceOptional = loadUserPreferencesPort
-				.loadUserPreferenceByKeyAndUsername(UserPreferenceKey.TIMEZONE, username);
+				.loadUserPreferenceByKeyAndSubject(UserPreferenceKey.TIMEZONE, subject);
 		if (userPreferenceOptional.isEmpty())
 			return null;
 

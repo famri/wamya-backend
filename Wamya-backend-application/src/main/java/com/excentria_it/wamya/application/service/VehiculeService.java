@@ -19,8 +19,8 @@ import com.excentria_it.wamya.common.exception.EngineTypeNotFoundException;
 import com.excentria_it.wamya.domain.AddVehiculeDto;
 import com.excentria_it.wamya.domain.ConstructorDto;
 import com.excentria_it.wamya.domain.EngineTypeDto;
-import com.excentria_it.wamya.domain.LoadTransporterVehiculesCriteria;
-import com.excentria_it.wamya.domain.TransporterVehicules;
+import com.excentria_it.wamya.domain.LoadTransporterVehiclesCriteria;
+import com.excentria_it.wamya.domain.TransporterVehicles;
 
 import lombok.RequiredArgsConstructor;
 
@@ -38,8 +38,8 @@ public class VehiculeService implements AddVehiculeUseCase, LoadVehiculesUseCase
 	private final LoadTransporterVehiculesPort loadTransporterVehiculesPort;
 
 	@Override
-	public TransporterVehicules loadTransporterVehicules(LoadVehiculesCommand command, String locale) {
-		LoadTransporterVehiculesCriteria criteria = LoadTransporterVehiculesCriteria.builder()
+	public TransporterVehicles loadTransporterVehicules(LoadVehiculesCommand command, String locale) {
+		LoadTransporterVehiclesCriteria criteria = LoadTransporterVehiclesCriteria.builder()
 				.transporterUsername(command.getTransporterUsername())
 				.sortingCriterion(command.getSortingCriterion()).build();
 
@@ -48,7 +48,7 @@ public class VehiculeService implements AddVehiculeUseCase, LoadVehiculesUseCase
 	}
 
 	@Override
-	public AddVehiculeDto addVehicule(AddVehiculeCommand command, String transporterUsername, String locale) {
+	public AddVehiculeDto addVehicle(AddVehicleCommand command, String transporterSubject, String locale) {
 
 		// check if engineTypeId exists
 		checkEngineType(command.getEngineTypeId(), locale);
@@ -59,11 +59,11 @@ public class VehiculeService implements AddVehiculeUseCase, LoadVehiculesUseCase
 
 		AddVehiculeDto addVehiculeDto = null;
 		if (constructorAndModelExist) {
-			addVehiculeDto = addVehiculePort.addVehicule(transporterUsername, command.getConstructorId(),
+			addVehiculeDto = addVehiculePort.addVehicle(transporterSubject, command.getConstructorId(),
 					command.getModelId(), command.getEngineTypeId(), command.getCirculationDate(),
 					command.getRegistration(), locale);
 		} else {
-			addVehiculeDto = addVehiculePort.addVehicule(transporterUsername, command.getConstructorName(),
+			addVehiculeDto = addVehiculePort.addVehicle(transporterSubject, command.getConstructorName(),
 					command.getModelName(), command.getEngineTypeId(), command.getCirculationDate(),
 					command.getRegistration(), locale);
 		}

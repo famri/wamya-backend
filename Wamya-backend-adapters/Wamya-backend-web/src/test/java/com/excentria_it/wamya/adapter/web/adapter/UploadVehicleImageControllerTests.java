@@ -1,9 +1,8 @@
 package com.excentria_it.wamya.adapter.web.adapter;
 
-import com.c4_soft.springaddons.security.oauth2.test.mockmvc.MockMvcSupport;
 import com.excentria_it.wamya.adapter.web.WebConfiguration;
 import com.excentria_it.wamya.adapter.web.WebSecurityConfiguration;
-import com.excentria_it.wamya.application.port.in.UploadVehiculeImageUseCase;
+import com.excentria_it.wamya.application.port.in.UploadVehicleImageUseCase;
 import com.excentria_it.wamya.common.exception.handlers.RestApiExceptionHandler;
 import com.excentria_it.wamya.test.data.common.TestConstants;
 import org.apache.commons.io.IOUtils;
@@ -44,9 +43,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
 @ContextConfiguration(classes = {WebSecurityConfiguration.class, WebConfiguration.class})
-@Import(value = {UploadVehiculeImageController.class, RestApiExceptionHandler.class, MockMvcSupport.class})
-@WebMvcTest(controllers = UploadVehiculeImageController.class)
-public class UploadVehiculeImageControllerTests {
+@Import(value = {UploadVehicleImageController.class, RestApiExceptionHandler.class})
+@WebMvcTest(controllers = UploadVehicleImageController.class)
+public class UploadVehicleImageControllerTests {
     @Autowired
     private WebApplicationContext context;
     private static MockMvc mvc;
@@ -60,20 +59,20 @@ public class UploadVehiculeImageControllerTests {
     }
 
     @MockBean
-    private UploadVehiculeImageUseCase uploadVehiculeImageUseCase;
+    private UploadVehicleImageUseCase uploadVehicleImageUseCase;
 
     @Test
     void givenMultipartFileAndTransporterRole_WhenUploadProfileImage_ThenSucceed() throws Exception {
-        InputStream imageIs = UploadVehiculeImageController.class.getResourceAsStream("/Image.jpg");
+        InputStream imageIs = UploadVehicleImageController.class.getResourceAsStream("/Image.jpg");
 
         MockMultipartFile image = new MockMultipartFile("image", "image.jpg", "image/jpeg", imageIs);
 
-        mvc.perform(MockMvcRequestBuilders.multipart("/vehicules/1/images").file(image).with(jwt().jwt(builder -> builder.claim("sub", TestConstants.DEFAULT_EMAIL)).authorities(Arrays.asList(new SimpleGrantedAuthority("ROLE_TRANSPORTER")))))
+        mvc.perform(MockMvcRequestBuilders.multipart("/vehicles/1/images").file(image).with(jwt().jwt(builder -> builder.claim("sub", TestConstants.DEFAULT_EMAIL)).authorities(Arrays.asList(new SimpleGrantedAuthority("ROLE_TRANSPORTER")))))
                 .andExpect(status().isCreated()).andReturn();
 
         ArgumentCaptor<BufferedInputStream> isArgumentCaptor = ArgumentCaptor.forClass(BufferedInputStream.class);
 
-        then(uploadVehiculeImageUseCase).should(times(1)).uploadVehiculeImage(isArgumentCaptor.capture(),
+        then(uploadVehicleImageUseCase).should(times(1)).uploadVehicleImage(isArgumentCaptor.capture(),
                 eq(image.getOriginalFilename()), eq(1L), eq(TestConstants.DEFAULT_EMAIL));
 
         assertTrue(IOUtils.contentEquals(image.getInputStream(), isArgumentCaptor.getValue()));
@@ -82,16 +81,16 @@ public class UploadVehiculeImageControllerTests {
 
     @Test
     void givenMultipartFileAndClientRole_WhenUploadProfileImage_ThenReturnForbidden() throws Exception {
-        InputStream imageIs = UploadVehiculeImageController.class.getResourceAsStream("/Image.jpg");
+        InputStream imageIs = UploadVehicleImageController.class.getResourceAsStream("/Image.jpg");
 
         MockMultipartFile image = new MockMultipartFile("image", "image.jpg", "image/jpeg", imageIs);
 
-        mvc.perform(MockMvcRequestBuilders.multipart("/vehicules/1/images").file(image).with(jwt().jwt(builder -> builder.claim("sub", TestConstants.DEFAULT_EMAIL)).authorities(Arrays.asList(new SimpleGrantedAuthority("ROLE_CLIENT")))))
+        mvc.perform(MockMvcRequestBuilders.multipart("/vehicles/1/images").file(image).with(jwt().jwt(builder -> builder.claim("sub", TestConstants.DEFAULT_EMAIL)).authorities(Arrays.asList(new SimpleGrantedAuthority("ROLE_CLIENT")))))
                 .andExpect(status().isForbidden()).andReturn();
 
         ArgumentCaptor<BufferedInputStream> isArgumentCaptor = ArgumentCaptor.forClass(BufferedInputStream.class);
 
-        then(uploadVehiculeImageUseCase).should(never()).uploadVehiculeImage(any(BufferedInputStream.class),
+        then(uploadVehicleImageUseCase).should(never()).uploadVehicleImage(any(BufferedInputStream.class),
                 any(String.class), any(Long.class), any(String.class));
 
 

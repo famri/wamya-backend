@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull;
 
 public interface CreateDiscussionUseCase {
 
-    LoadDiscussionsDto createDiscussion(CreateDiscussionCommand command, String username);
+    LoadDiscussionsDto createDiscussion(CreateDiscussionCommand command, String subject);
 
     @Data
     @NoArgsConstructor

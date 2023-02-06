@@ -3,7 +3,6 @@ package com.excentria_it.wamya.application.service;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
-import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -53,7 +52,7 @@ public class UpdateJourneyRequestStatusServiceTests {
 	@Test
 	void givenJourneyRequestNotFoundByIdAndClientEmail_whenCancelJourneyRequest_thenThrowJourneyRequestNotFoundException() {
 		// given
-		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class),
+		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientSubject(any(Long.class), any(String.class),
 				any(String.class))).willReturn(Optional.empty());
 		// when
 		// then
@@ -65,7 +64,7 @@ public class UpdateJourneyRequestStatusServiceTests {
 	void givenJourneyRequestExistsByIdAndClientEmail_whenCancelJourneyRequest_thenCancelJourneyRequest() {
 		// given
 		ClientJourneyRequestDtoOutput clientJourneyRequestDto = JourneyRequestTestData.defaultClientJourneyRequestDtoOutput();
-		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class),
+		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientSubject(any(Long.class), any(String.class),
 				any(String.class))).willReturn(Optional.of(clientJourneyRequestDto));
 
 		Set<TransporterNotificationInfo> tniSet = Set.of(
@@ -97,7 +96,7 @@ public class UpdateJourneyRequestStatusServiceTests {
 	void givenJourneyRequestExistsByIdAndClientEmail_andExceptionWhenSendingNotification_whenCancelJourneyRequest_thenCancelJourneyRequest() {
 		// given
 		ClientJourneyRequestDtoOutput clientJourneyRequestDto = JourneyRequestTestData.defaultClientJourneyRequestDtoOutput();
-		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class),
+		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientSubject(any(Long.class), any(String.class),
 				any(String.class))).willReturn(Optional.of(clientJourneyRequestDto));
 
 		Set<TransporterNotificationInfo> tniSet = Set.of(

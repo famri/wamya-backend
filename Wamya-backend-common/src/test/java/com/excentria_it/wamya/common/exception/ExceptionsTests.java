@@ -74,7 +74,7 @@ public class ExceptionsTests {
     @Test
     void testInvalidTransporterVehiculeException() {
         String message = "SOME MESSAGE";
-        InvalidTransporterVehiculeException exception = new InvalidTransporterVehiculeException(message);
+        InvalidTransporterVehicleException exception = new InvalidTransporterVehicleException(message);
         assertEquals(exception.getMessage(), message);
 
     }
@@ -181,7 +181,7 @@ public class ExceptionsTests {
     @Test
     void testVehiculeNotFoundException() {
         String message = "SOME MESSAGE";
-        VehiculeNotFoundException exception = new VehiculeNotFoundException(message);
+        VehicleNotFoundException exception = new VehicleNotFoundException(message);
         assertEquals(exception.getMessage(), message);
     }
 

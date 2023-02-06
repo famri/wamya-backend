@@ -180,7 +180,7 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({Exception.class})
     public ResponseEntity<Object> handleAll(final Exception ex, final WebRequest request) {
-        log.error("Exception at " + ex.getClass().getName() + ": ", ex);
+        log.warn("Exception at " + ex.getClass().getName() + ": ", ex);
 
         final ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.INTERNAL_SERVER_ERROR,
                 "error occurred.");
@@ -190,7 +190,7 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler({UserAccountNotFoundException.class})
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ResponseEntity<ApiError> handleUserAccountNotFoundException(UserAccountNotFoundException exception) {
-        log.warn("Exception at " + exception.getClass() + ": ", exception);
+        log.warn("Exception at {} : {}", exception.getClass().getName(), exception.getMessage());
 
         final ApiError apiError = new ApiError(HttpStatus.UNAUTHORIZED, ErrorCode.AUTHORIZATION,
                 "Bad credentials.");
@@ -202,8 +202,7 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ApiError> handleUserMobileNumberValidationException(
             UserMobileNumberValidationException exception) {
-        log.warn("Exception at " + exception.getClass() + ": ", exception);
-
+        log.warn("Exception at {} : {}", exception.getClass().getName(), exception.getMessage());
         final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ErrorCode.MOBILE_VALIDATION,
                 exception.getMessage());
         return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
@@ -212,7 +211,7 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler({UserEmailValidationException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ApiError> handleUserEmailValidationException(UserEmailValidationException exception) {
-        log.warn("Exception at " + exception.getClass() + ": ", exception);
+        log.warn("Exception at {} : {}", exception.getClass().getName(), exception.getMessage());
 
         final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ErrorCode.EMAIL_VALIDATION,
                 exception.getMessage());
@@ -224,7 +223,7 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<ApiError> handleUserAccountAlreadyExistsException(
             UserAccountAlreadyExistsException exception) {
 
-        log.warn("Exception at " + exception.getClass() + ": ", exception);
+        log.warn("Exception at {} : {}", exception.getClass().getName(), exception.getMessage());
         final String error = "User account already exists.";
         final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ErrorCode.ACCOUNT_EXISTS, error);
         return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
@@ -236,7 +235,7 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<ApiError> handleUnsupportedInternationalCallingCode(
             UnsupportedInternationalCallingCodeException exception) {
 
-        log.warn("Exception at " + exception.getClass() + ": ", exception);
+        log.warn("Exception at {} : {}", exception.getClass().getName(), exception.getMessage());
         final String error = "International calling code is not supported.";
         final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ErrorCode.VALIDATION_ERROR, error);
         return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
@@ -247,7 +246,7 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ResponseEntity<ApiError> handleAuthorizationException(AuthorizationException exception) {
 
-        log.warn("Exception at " + exception.getClass() + ": ", exception);
+        log.warn("Exception at {} : {}", exception.getClass().getName(), exception.getMessage());
         final String error = "Bad credentials.";
         final ApiError apiError = new ApiError(HttpStatus.UNAUTHORIZED, ErrorCode.AUTHORIZATION, error);
         return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
@@ -258,7 +257,7 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ApiError> handleJourneyRequestNotFoundException(JourneyRequestNotFoundException exception) {
 
-        log.warn("Exception at " + exception.getClass() + ": ", exception);
+        log.warn("Exception at {} : {}", exception.getClass().getName(), exception.getMessage());
         final String error = exception.getMessage();
         final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ErrorCode.OBJECT_NOT_FOUND, error);
         return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
@@ -269,19 +268,19 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ApiError> handleJourneyRequestExpiredException(JourneyRequestExpiredException exception) {
 
-        log.warn("Exception at " + exception.getClass() + ": ", exception);
+        log.warn("Exception at {} : {}", exception.getClass().getName(), exception.getMessage());
         final String error = exception.getMessage();
         final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ErrorCode.VALIDATION_ERROR, error);
         return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
 
     }
 
-    @ExceptionHandler({InvalidTransporterVehiculeException.class})
+    @ExceptionHandler({InvalidTransporterVehicleException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<ApiError> handleInvalidTransporterVehiculeException(
-            InvalidTransporterVehiculeException exception) {
+    public ResponseEntity<ApiError> handleInvalidTransporterVehicleException(
+            InvalidTransporterVehicleException exception) {
 
-        log.warn("Exception at " + exception.getClass() + ": ", exception);
+        log.warn("Exception at {} : {}", exception.getClass().getName(), exception.getMessage());
         final String error = exception.getMessage();
         final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ErrorCode.VALIDATION_ERROR, error);
         return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
@@ -292,7 +291,7 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ApiError> handleCountryNotFoundException(CountryNotFoundException exception) {
 
-        log.warn("Exception at " + exception.getClass() + ": ", exception);
+        log.warn("Exception at {} : {}", exception.getClass().getName(), exception.getMessage());
         final String error = exception.getMessage();
         final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ErrorCode.VALIDATION_ERROR, error);
         return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
@@ -303,7 +302,7 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ApiError> handleInvalidPlaceTypeException(InvalidPlaceTypeException exception) {
 
-        log.warn("Exception at " + exception.getClass() + ": ", exception);
+        log.warn("Exception at {} : {}", exception.getClass().getName(), exception.getMessage());
         final String error = exception.getMessage();
         final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ErrorCode.VALIDATION_ERROR, error);
         return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
@@ -313,7 +312,7 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<ApiError> handleDepartmentNotFoundException(DepartmentNotFoundException exception) {
 
-        log.error("Exception at " + exception.getClass() + ": ", exception);
+        log.warn("Exception at {} : {}", exception.getClass().getName(), exception.getMessage());
         final String error = exception.getMessage();
         final ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, ErrorCode.OBJECT_NOT_FOUND, error);
         return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
@@ -323,7 +322,7 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ApiError> handleOperationDeniedException(OperationDeniedException exception) {
 
-        log.error("Exception at " + exception.getClass() + ": ", exception);
+        log.warn("Exception at {} : {}", exception.getClass().getName(), exception.getMessage());
         final String error = exception.getMessage();
         final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ErrorCode.VALIDATION_ERROR, error);
         return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
@@ -333,7 +332,7 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ApiError> handleJourneyProposalNotFoundException(JourneyProposalNotFoundException exception) {
 
-        log.error("Exception at " + exception.getClass() + ": ", exception);
+        log.warn("Exception at {} : {}", exception.getClass().getName(), exception.getMessage());
         final String error = exception.getMessage();
         final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ErrorCode.OBJECT_NOT_FOUND, error);
         return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
@@ -343,7 +342,7 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<ApiError> handleDiscussionNotFoundException(DiscussionNotFoundException exception) {
 
-        log.error("Exception at " + exception.getClass() + ": ", exception);
+        log.warn("Exception at {} : {}", exception.getClass().getName(), exception.getMessage());
         final String error = exception.getMessage();
         final ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, ErrorCode.OBJECT_NOT_FOUND, error);
         return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
@@ -353,7 +352,7 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<ApiError> handleGenderNotFoundException(GenderNotFoundException exception) {
 
-        log.error("Exception at " + exception.getClass() + ": ", exception);
+        log.warn("Exception at {} : {}", exception.getClass().getName(), exception.getMessage());
         final String error = exception.getMessage();
         final ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, ErrorCode.OBJECT_NOT_FOUND, error);
         return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
@@ -363,7 +362,7 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<ApiError> handleDocumentAccessException(DocumentAccessException exception) {
 
-        log.error("Exception at " + exception.getClass() + ": ", exception);
+        log.warn("Exception at {} : {}", exception.getClass().getName(), exception.getMessage());
         final String error = exception.getMessage();
         final ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.INTERNAL_SERVER_ERROR,
                 error);
@@ -374,7 +373,7 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ResponseEntity<ApiError> handleForbiddenAccessException(ForbiddenAccessException exception) {
 
-        log.error("Exception at " + exception.getClass() + ": ", exception);
+        log.warn("Exception at {} : {}", exception.getClass().getName(), exception.getMessage());
         final String error = exception.getMessage();
         final ApiError apiError = new ApiError(HttpStatus.FORBIDDEN, ErrorCode.AUTHORIZATION, error);
         return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
@@ -385,17 +384,18 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<ApiError> handleUnsupportedMimeTypeException(UnsupportedMimeTypeException exception) {
 
         log.error("Exception at " + exception.getClass() + ": ", exception);
+
         final String error = exception.getMessage();
         final ApiError apiError = new ApiError(HttpStatus.UNSUPPORTED_MEDIA_TYPE, ErrorCode.UNSUPPORTED_MEDIA_TYPE,
                 error);
         return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
     }
 
-    @ExceptionHandler({VehiculeNotFoundException.class})
+    @ExceptionHandler({VehicleNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseEntity<ApiError> handleVehiculeNotFoundException(VehiculeNotFoundException exception) {
+    public ResponseEntity<ApiError> handleVehicleNotFoundException(VehicleNotFoundException exception) {
 
-        log.error("Exception at " + exception.getClass() + ": ", exception);
+        log.warn("Exception at {} : {}", exception.getClass().getName(), exception.getMessage());
         final String error = exception.getMessage();
         final ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, ErrorCode.OBJECT_NOT_FOUND, error);
         return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
@@ -405,7 +405,7 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<ApiError> handleLinkExpiredException(LinkExpiredException exception) {
 
-        log.error("Exception at " + exception.getClass() + ": ", exception);
+        log.warn("Exception at {} : {}", exception.getClass().getName(), exception.getMessage());
         final String error = exception.getMessage();
         final ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, ErrorCode.NOT_FOUND, error);
         return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
@@ -415,7 +415,7 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ApiError> handleJourneyRequestUpdateException(JourneyRequestUpdateException exception) {
 
-        log.error("Exception at " + exception.getClass() + ": ", exception);
+        log.warn("Exception at {} : {}", exception.getClass().getName(), exception.getMessage());
         final String error = exception.getMessage();
         final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ErrorCode.VALIDATION_ERROR, error);
         return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
@@ -425,7 +425,7 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<ApiError> handleTransporterRatingDetailsNotFoundException(TransporterRatingRequestNotFoundException exception) {
 
-        log.error("Exception at " + exception.getClass() + ": ", exception);
+        log.warn("Exception at {} : {}", exception.getClass().getName(), exception.getMessage());
         final String error = exception.getMessage();
         final ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, ErrorCode.NOT_FOUND, error);
         return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
@@ -435,7 +435,7 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<ApiError> handleUserCreationException(UserCreationException exception) {
 
-        log.error("Exception at " + exception.getClass() + ": ", exception);
+        log.warn("Exception at {} : {}", exception.getClass().getName(), exception.getMessage());
         final String error = "Cannot create user. Please contact support.";
         final ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.INTERNAL_SERVER_ERROR, error);
         return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());

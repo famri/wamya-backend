@@ -2,7 +2,6 @@ package com.excentria_it.wamya.application.service;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
-import static org.mockito.Mockito.*;
 
 import java.util.Optional;
 
@@ -35,7 +34,7 @@ public class DeviceRegistrationTokenServiceTests {
 		// given
 
 		UserAccount userAccount = UserAccountTestData.defaultClientUserAccountBuilder().build();
-		given(loadUserAccountPort.loadUserAccountByUsername(any(String.class))).willReturn(Optional.of(userAccount));
+		given(loadUserAccountPort.loadUserAccountBySubject(any(String.class))).willReturn(Optional.of(userAccount));
 
 		// when
 		deviceRegistrationTokenService.updateToken("some-device-registration-token", TestConstants.DEFAULT_EMAIL);

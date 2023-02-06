@@ -1,238 +1,206 @@
 package com.excentria_it.wamya.adapter.persistence.adapter;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
+import com.excentria_it.wamya.adapter.persistence.entity.*;
+import com.excentria_it.wamya.adapter.persistence.mapper.JourneyProposalMapper;
+import com.excentria_it.wamya.adapter.persistence.repository.*;
+import com.excentria_it.wamya.application.port.out.*;
+import com.excentria_it.wamya.common.SortCriterion;
+import com.excentria_it.wamya.common.annotation.PersistenceAdapter;
+import com.excentria_it.wamya.common.domain.StatusCode;
+import com.excentria_it.wamya.common.utils.ParameterUtils;
+import com.excentria_it.wamya.domain.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 
-import com.excentria_it.wamya.adapter.persistence.entity.JourneyProposalJpaEntity;
-import com.excentria_it.wamya.adapter.persistence.entity.JourneyProposalStatusJpaEntity;
-import com.excentria_it.wamya.adapter.persistence.entity.JourneyRequestJpaEntity;
-import com.excentria_it.wamya.adapter.persistence.entity.TransporterJpaEntity;
-import com.excentria_it.wamya.adapter.persistence.entity.VehiculeJpaEntity;
-import com.excentria_it.wamya.adapter.persistence.mapper.JourneyProposalMapper;
-import com.excentria_it.wamya.adapter.persistence.repository.JourneyProposalRepository;
-import com.excentria_it.wamya.adapter.persistence.repository.JourneyProposalStatusRepository;
-import com.excentria_it.wamya.adapter.persistence.repository.JourneyRequestRepository;
-import com.excentria_it.wamya.adapter.persistence.repository.TransporterRepository;
-import com.excentria_it.wamya.adapter.persistence.repository.VehiculeRepository;
-import com.excentria_it.wamya.application.port.out.AcceptProposalPort;
-import com.excentria_it.wamya.application.port.out.LoadProposalsPort;
-import com.excentria_it.wamya.application.port.out.LoadTransporterProposalsPort;
-import com.excentria_it.wamya.application.port.out.MakeProposalPort;
-import com.excentria_it.wamya.application.port.out.RejectProposalPort;
-import com.excentria_it.wamya.common.SortCriterion;
-import com.excentria_it.wamya.common.annotation.PersistenceAdapter;
-import com.excentria_it.wamya.common.domain.StatusCode;
-import com.excentria_it.wamya.common.utils.ParameterUtils;
-import com.excentria_it.wamya.domain.JourneyProposalDto;
-import com.excentria_it.wamya.domain.JourneyProposalStatusCode;
-import com.excentria_it.wamya.domain.JourneyRequestProposals;
-import com.excentria_it.wamya.domain.LoadJourneyProposalsCriteria;
-import com.excentria_it.wamya.domain.LoadTransporterProposalsCriteria;
-import com.excentria_it.wamya.domain.MakeProposalDto;
-import com.excentria_it.wamya.domain.TransporterNotificationInfo;
-import com.excentria_it.wamya.domain.TransporterProposalsOutput;
-
-import lombok.RequiredArgsConstructor;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @PersistenceAdapter
 public class ProposalPersistenceAdapter implements MakeProposalPort, LoadProposalsPort, AcceptProposalPort,
-		RejectProposalPort, LoadTransporterProposalsPort {
+        RejectProposalPort, LoadTransporterProposalsPort {
 
-	private final JourneyProposalRepository journeyProposalRepository;
+    private final JourneyProposalRepository journeyProposalRepository;
 
-	private final JourneyRequestRepository journeyRequestRepository;
+    private final JourneyRequestRepository journeyRequestRepository;
 
-	private final TransporterRepository transporterRepository;
+    private final TransporterRepository transporterRepository;
 
-	private final VehiculeRepository vehiculeRepository;
+    private final VehicleRepository vehicleRepository;
 
-	private final JourneyProposalMapper journeyProposalMapper;
+    private final JourneyProposalMapper journeyProposalMapper;
 
-	private final JourneyProposalStatusRepository journeyProposalStatusRepository;
+    private final JourneyProposalStatusRepository journeyProposalStatusRepository;
 
-	@Override
-	public MakeProposalDto makeProposal(String username, Double price, Long vehiculeId, Long journeyRequestId,
-			String locale) {
+    @Override
+    public MakeProposalDto makeProposal(String transporterSubject, Double price, Long vehicleId, Long journeyRequestId,
+                                        String locale) {
 
-		Optional<TransporterJpaEntity> transporterJpaEntityOptional = null;
+        Optional<TransporterJpaEntity> transporterJpaEntityOptional = transporterRepository.findTransporterBySubject(transporterSubject);
 
-		if (username.contains("@")) {
+        Optional<VehicleJpaEntity> vehicleJpaEntityOptional = vehicleRepository.findById(vehicleId);
 
-			transporterJpaEntityOptional = transporterRepository.findByEmail(username);
+        JourneyProposalJpaEntity journeyProposalJpaEntity = journeyProposalMapper.mapToJpaEntity(price,
+                transporterJpaEntityOptional.get(), vehicleJpaEntityOptional.get());
 
-		} else {
+        JourneyProposalStatusJpaEntity status = journeyProposalStatusRepository
+                .findByCode(JourneyProposalStatusCode.SUBMITTED);
+        journeyProposalJpaEntity.setStatus(status);
 
-			String[] mobilePhoneNumber = username.split("_");
-			transporterJpaEntityOptional = transporterRepository.findByIcc_ValueAndMobileNumber(mobilePhoneNumber[0],
-					mobilePhoneNumber[1]);
-		}
+        journeyProposalJpaEntity = journeyProposalRepository.save(journeyProposalJpaEntity);
 
-		Optional<VehiculeJpaEntity> vehiculeJpaEntityOptional = vehiculeRepository.findById(vehiculeId);
+        Optional<JourneyRequestJpaEntity> journeyRequestJpaEntityOptional = journeyRequestRepository
+                .findById(journeyRequestId);
 
-		JourneyProposalJpaEntity journeyProposalJpaEntity = journeyProposalMapper.mapToJpaEntity(price,
-				transporterJpaEntityOptional.get(), vehiculeJpaEntityOptional.get());
+        JourneyRequestJpaEntity journeyRequestJpaEntity = journeyRequestJpaEntityOptional.get();
+        journeyRequestJpaEntity.addProposal(journeyProposalJpaEntity);
 
-		JourneyProposalStatusJpaEntity status = journeyProposalStatusRepository
-				.findByCode(JourneyProposalStatusCode.SUBMITTED);
-		journeyProposalJpaEntity.setStatus(status);
+        journeyRequestRepository.save(journeyRequestJpaEntity);
 
-		journeyProposalJpaEntity = journeyProposalRepository.save(journeyProposalJpaEntity);
+        return new MakeProposalDto(journeyProposalJpaEntity.getId(), price, status.getValue(locale));
+    }
 
-		Optional<JourneyRequestJpaEntity> journeyRequestJpaEntityOptional = journeyRequestRepository
-				.findById(journeyRequestId);
+    @Override
+    public JourneyRequestProposals loadJourneyProposals(LoadJourneyProposalsCriteria criteria, String locale) {
+        Sort sort = convertToSort(criteria.getSortingCriterion());
+        List<JourneyProposalJpaEntity> list;
 
-		JourneyRequestJpaEntity journeyRequestJpaEntity = journeyRequestJpaEntityOptional.get();
-		journeyRequestJpaEntity.addProposal(journeyProposalJpaEntity);
+        if (criteria.getStatusCodes().isEmpty()) {
+            list = journeyProposalRepository.findByJourneyRequest_Id(criteria.getJourneyRequestId(), sort);
+        } else {
+            List<JourneyProposalStatusCode> statusCodes = criteria.getStatusCodes().stream()
+                    .map(s -> JourneyProposalStatusCode.valueOf(s.name())).collect(Collectors.toList());
+            list = journeyProposalRepository.findByJourneyRequest_IdAndStatus_CodeIn(criteria.getJourneyRequestId(),
+                    statusCodes, sort);
+        }
 
-		journeyRequestRepository.save(journeyRequestJpaEntity);
+        if (list == null) {
+            return new JourneyRequestProposals(0, Collections.<JourneyProposalDto>emptyList());
+        }
 
-		return new MakeProposalDto(journeyProposalJpaEntity.getId(), price, status.getValue(locale));
-	}
+        List<JourneyProposalDto> journeyProposalDtoList = list.stream()
+                .map(p -> journeyProposalMapper.mapToJourneyProposalDto(p, locale)).collect(Collectors.toList());
 
-	@Override
-	public JourneyRequestProposals loadJourneyProposals(LoadJourneyProposalsCriteria criteria, String locale) {
-		Sort sort = convertToSort(criteria.getSortingCriterion());
-		List<JourneyProposalJpaEntity> list;
+        return new JourneyRequestProposals(list.size(), journeyProposalDtoList);
 
-		if (criteria.getStatusCodes().isEmpty()) {
-			list = journeyProposalRepository.findByJourneyRequest_Id(criteria.getJourneyRequestId(), sort);
-		} else {
-			List<JourneyProposalStatusCode> statusCodes = criteria.getStatusCodes().stream()
-					.map(s -> JourneyProposalStatusCode.valueOf(s.name())).collect(Collectors.toList());
-			list = journeyProposalRepository.findByJourneyRequest_IdAndStatus_CodeIn(criteria.getJourneyRequestId(),
-					statusCodes, sort);
-		}
+    }
 
-		if (list == null) {
-			return new JourneyRequestProposals(0, Collections.<JourneyProposalDto>emptyList());
-		}
+    @Override
+    public Optional<JourneyProposalDto> loadJourneyProposalByIdAndJourneyRequestId(Long proposalId,
+                                                                                   Long journeyRequestId, String locale) {
 
-		List<JourneyProposalDto> journeyProposalDtoList = list.stream()
-				.map(p -> journeyProposalMapper.mapToJourneyProposalDto(p, locale)).collect(Collectors.toList());
+        Optional<JourneyProposalJpaEntity> journeyProposalJpaEntity = journeyProposalRepository
+                .findByIdAndJourneyRequest_Id(proposalId, journeyRequestId);
 
-		return new JourneyRequestProposals(list.size(), journeyProposalDtoList);
+        if (journeyProposalJpaEntity.isEmpty())
+            return Optional.empty();
 
-	}
+        return Optional.of(journeyProposalMapper.mapToJourneyProposalDto(journeyProposalJpaEntity.get(), locale));
+    }
 
-	@Override
-	public Optional<JourneyProposalDto> loadJourneyProposalByIdAndJourneyRequestId(Long proposalId,
-			Long journeyRequestId, String locale) {
+    @Override
+    public boolean acceptProposal(Long journeyRequestId, Long proposalId) {
 
-		Optional<JourneyProposalJpaEntity> journeyProposalJpaEntity = journeyProposalRepository
-				.findByIdAndJourneyRequest_Id(proposalId, journeyRequestId);
+        Optional<JourneyRequestJpaEntity> journeyRequestOptional = journeyRequestRepository.findById(journeyRequestId);
 
-		if (journeyProposalJpaEntity.isEmpty())
-			return Optional.empty();
+        if (journeyRequestOptional.isEmpty())
+            return false;
 
-		return Optional.of(journeyProposalMapper.mapToJourneyProposalDto(journeyProposalJpaEntity.get(), locale));
-	}
+        Set<JourneyProposalJpaEntity> journeyProposals = journeyRequestOptional.get().getProposals();
+        boolean proposalExists = journeyProposals.stream().anyMatch(p -> p.getId().equals(proposalId));
 
-	@Override
-	public boolean acceptProposal(Long journeyRequestId, Long proposalId) {
+        if (!proposalExists)
+            return false;
 
-		Optional<JourneyRequestJpaEntity> journeyRequestOptional = journeyRequestRepository.findById(journeyRequestId);
+        JourneyProposalStatusJpaEntity acceptedStatus = journeyProposalStatusRepository
+                .findByCode(JourneyProposalStatusCode.ACCEPTED);
 
-		if (journeyRequestOptional.isEmpty())
-			return false;
+        JourneyProposalStatusJpaEntity rejectedStatus = journeyProposalStatusRepository
+                .findByCode(JourneyProposalStatusCode.REJECTED);
 
-		Set<JourneyProposalJpaEntity> journeyProposals = journeyRequestOptional.get().getProposals();
-		boolean proposalExists = journeyProposals.stream().anyMatch(p -> p.getId().equals(proposalId));
+        journeyProposals.forEach(p -> {
+            if (p.getId().equals(proposalId)) {
+                p.setStatus(acceptedStatus);
+            } else {
+                p.setStatus(rejectedStatus);
+            }
+        });
 
-		if (!proposalExists)
-			return false;
+        journeyRequestRepository.save(journeyRequestOptional.get());
+        return true;
+    }
 
-		JourneyProposalStatusJpaEntity acceptedStatus = journeyProposalStatusRepository
-				.findByCode(JourneyProposalStatusCode.ACCEPTED);
+    @Override
+    public boolean rejectProposal(Long journeyRequestId, Long proposalId) {
+        Optional<JourneyRequestJpaEntity> journeyRequestOptional = journeyRequestRepository.findById(journeyRequestId);
 
-		JourneyProposalStatusJpaEntity rejectedStatus = journeyProposalStatusRepository
-				.findByCode(JourneyProposalStatusCode.REJECTED);
+        if (journeyRequestOptional.isEmpty())
+            return false;
 
-		journeyProposals.forEach(p -> {
-			if (p.getId().equals(proposalId)) {
-				p.setStatus(acceptedStatus);
-			} else {
-				p.setStatus(rejectedStatus);
-			}
-		});
+        Set<JourneyProposalJpaEntity> journeyProposals = journeyRequestOptional.get().getProposals();
+        boolean proposalExists = journeyProposals.stream().anyMatch(p -> p.getId().equals(proposalId));
 
-		journeyRequestRepository.save(journeyRequestOptional.get());
-		return true;
-	}
+        if (!proposalExists)
+            return false;
 
-	@Override
-	public boolean rejectProposal(Long journeyRequestId, Long proposalId) {
-		Optional<JourneyRequestJpaEntity> journeyRequestOptional = journeyRequestRepository.findById(journeyRequestId);
+        JourneyProposalStatusJpaEntity rejectedStatus = journeyProposalStatusRepository
+                .findByCode(JourneyProposalStatusCode.REJECTED);
 
-		if (journeyRequestOptional.isEmpty())
-			return false;
+        journeyProposals.stream().filter(p -> p.getId().equals(proposalId)).forEach(p -> p.setStatus(rejectedStatus));
 
-		Set<JourneyProposalJpaEntity> journeyProposals = journeyRequestOptional.get().getProposals();
-		boolean proposalExists = journeyProposals.stream().anyMatch(p -> p.getId().equals(proposalId));
+        journeyRequestRepository.save(journeyRequestOptional.get());
 
-		if (!proposalExists)
-			return false;
+        return true;
+    }
 
-		JourneyProposalStatusJpaEntity rejectedStatus = journeyProposalStatusRepository
-				.findByCode(JourneyProposalStatusCode.REJECTED);
+    private Sort convertToSort(SortCriterion sortingCriterion) {
 
-		journeyProposals.stream().filter(p -> p.getId().equals(proposalId)).forEach(p -> p.setStatus(rejectedStatus));
+        return Sort.by(Direction.valueOf(sortingCriterion.getDirection().toUpperCase()),
+                ParameterUtils.kebabToCamelCase(sortingCriterion.getField()));
+    }
 
-		journeyRequestRepository.save(journeyRequestOptional.get());
+    @Override
+    public boolean isExistentJourneyProposalByIdAndJourneyRequestIdAndStatusCode(Long proposalId, Long journeyRequestId,
+                                                                                 StatusCode statusCode) {
 
-		return true;
-	}
+        return journeyProposalRepository.existsByIdAndJourneyRequestIdAndStatusCode(proposalId, journeyRequestId,
+                JourneyProposalStatusCode.valueOf(statusCode.name()));
 
-	private Sort convertToSort(SortCriterion sortingCriterion) {
+    }
 
-		return Sort.by(Direction.valueOf(sortingCriterion.getDirection().toUpperCase()),
-				ParameterUtils.kebabToCamelCase(sortingCriterion.getField()));
-	}
+    @Override
+    public Set<TransporterNotificationInfo> loadTransportersNotificationInfo(Long journeyRequestId) {
+        return journeyProposalRepository.loadTransportersNotificationInfo(journeyRequestId);
 
-	@Override
-	public boolean isExistentJourneyProposalByIdAndJourneyRequestIdAndStatusCode(Long proposalId, Long journeyRequestId,
-			StatusCode statusCode) {
+    }
 
-		return journeyProposalRepository.existsByIdAndJourneyRequestIdAndStatusCode(proposalId, journeyRequestId,
-				JourneyProposalStatusCode.valueOf(statusCode.name()));
+    @Override
+    public TransporterProposalsOutput loadTransporterProposals(LoadTransporterProposalsCriteria criteria, String locale) {
+        Sort sort = convertToSort(criteria.getSortingCriterion());
 
-	}
+        Pageable pagingSort = PageRequest.of(criteria.getPageNumber(), criteria.getPageSize(), sort);
 
-	@Override
-	public Set<TransporterNotificationInfo> loadTransportersNotificationInfo(Long journeyRequestId) {
-		return journeyProposalRepository.loadTransportersNotificationInfo(journeyRequestId);
+        Page<JourneyProposalJpaEntity> transporterProposalsPage = journeyProposalRepository
+                .findByTransporter_EmailAndJourneyDateTimeBetweenAndProposal_Status_Code(
+                        criteria.getPeriodCriterion().getLowerEdge().toInstant(),
+                        criteria.getPeriodCriterion().getHigherEdge().toInstant(), criteria.getTransporterUsername(),
+                        criteria.getStatusCodes(), locale, pagingSort);
 
-	}
+        return TransporterProposalsOutput.builder().totalPages(transporterProposalsPage.getTotalPages())
+                .totalElements(transporterProposalsPage.getTotalElements())
+                .pageNumber(transporterProposalsPage.getNumber()).pageSize(transporterProposalsPage.getSize())
+                .hasNext(transporterProposalsPage.hasNext())
+                .content(transporterProposalsPage.getContent().stream()
+                        .map(tp -> journeyProposalMapper.mapToTransporterProposalOutput(tp, locale))
+                        .collect(Collectors.toList()))
+                .build();
 
-	@Override
-	public TransporterProposalsOutput loadTransporterProposals(LoadTransporterProposalsCriteria criteria, String locale) {
-		Sort sort = convertToSort(criteria.getSortingCriterion());
-
-		Pageable pagingSort = PageRequest.of(criteria.getPageNumber(), criteria.getPageSize(), sort);
-
-		Page<JourneyProposalJpaEntity> transporterProposalsPage = journeyProposalRepository
-				.findByTransporter_EmailAndJourneyDateTimeBetweenAndProposal_Status_Code(
-						criteria.getPeriodCriterion().getLowerEdge().toInstant(),
-						criteria.getPeriodCriterion().getHigherEdge().toInstant(), criteria.getTransporterUsername(),
-						criteria.getStatusCodes(), locale, pagingSort);
-
-		return TransporterProposalsOutput.builder().totalPages(transporterProposalsPage.getTotalPages())
-				.totalElements(transporterProposalsPage.getTotalElements())
-				.pageNumber(transporterProposalsPage.getNumber()).pageSize(transporterProposalsPage.getSize())
-				.hasNext(transporterProposalsPage.hasNext())
-				.content(transporterProposalsPage.getContent().stream()
-						.map(tp -> journeyProposalMapper.mapToTransporterProposalOutput(tp, locale))
-						.collect(Collectors.toList()))
-				.build();
-
-	}
+    }
 }

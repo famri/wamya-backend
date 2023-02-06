@@ -19,7 +19,7 @@ public class TransporterProposalDto {
     private String status;
     private JourneyProposalStatusCode statusCode;
     private JourneyRequestDto journey;
-    private TransporterVehiculeDto vehicule;
+    private TransporterVehicleDto vehicle;
 
     @AllArgsConstructor
     @NoArgsConstructor
@@ -99,7 +99,7 @@ public class TransporterProposalDto {
     @NoArgsConstructor
     @Data
     @Builder
-    public static class TransporterVehiculeDto {
+    public static class TransporterVehicleDto {
         private Long id;
 
         private String registrationNumber;

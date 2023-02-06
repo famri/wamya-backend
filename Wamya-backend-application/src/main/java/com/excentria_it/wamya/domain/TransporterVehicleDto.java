@@ -11,10 +11,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Builder
-public class TransporterVehiculeDto {
+public class TransporterVehicleDto {
 	private Long id;
 
-	private String regsitrationNumber;
+	private String registrationNumber;
 
 	private LocalDate circulationDate;
 

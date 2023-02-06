@@ -23,7 +23,7 @@ public class TransporterProposalOutput {
 
     private JourneyProposalStatusCode statusCode;
 
-    private TransporterVehiculeOutput vehicule;
+    private TransporterVehicleOutput vehicle;
 
     private JourneyRequestOutput journey;
 
@@ -31,7 +31,7 @@ public class TransporterProposalOutput {
     @NoArgsConstructor
     @Data
     @Builder
-    public static class TransporterVehiculeOutput {
+    public static class TransporterVehicleOutput {
 
         private Long id;
 

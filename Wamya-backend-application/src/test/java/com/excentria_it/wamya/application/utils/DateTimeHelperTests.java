@@ -30,7 +30,7 @@ public class DateTimeHelperTests {
 	void testFindUserZoneIdByUsername() {
 		// given
 		UserPreference userPreference = new UserPreference(1L, "timezone", "Africa/Tunis");
-		given(loadUserPreferencesPort.loadUserPreferenceByKeyAndUsername(any(String.class), any(String.class)))
+		given(loadUserPreferencesPort.loadUserPreferenceByKeyAndSubject(any(String.class), any(String.class)))
 				.willReturn(Optional.of(userPreference));
 
 		// when
@@ -55,7 +55,7 @@ public class DateTimeHelperTests {
 	@Test
 	void testFindUserZoneIdByBadUsername() {
 		// given
-		given(loadUserPreferencesPort.loadUserPreferenceByKeyAndUsername(any(String.class), any(String.class)))
+		given(loadUserPreferencesPort.loadUserPreferenceByKeyAndSubject(any(String.class), any(String.class)))
 				.willReturn(Optional.empty());
 		// when
 		ZoneId userZoneId = dateTimeHelper.findUserZoneId("A BAD USERNAME");

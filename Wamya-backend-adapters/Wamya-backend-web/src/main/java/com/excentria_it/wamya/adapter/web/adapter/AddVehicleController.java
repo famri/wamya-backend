@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.excentria_it.wamya.application.port.in.AddVehiculeUseCase;
-import com.excentria_it.wamya.application.port.in.AddVehiculeUseCase.AddVehiculeCommand;
 import com.excentria_it.wamya.common.annotation.WebAdapter;
 import com.excentria_it.wamya.common.utils.LocaleUtils;
 import com.excentria_it.wamya.domain.AddVehiculeDto;
@@ -26,18 +25,18 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "/users", produces = MediaType.APPLICATION_JSON_VALUE)
-public class AddVehiculeController {
+public class AddVehicleController {
 
 	private final AddVehiculeUseCase addVehiculeUseCase;
 
-	@PostMapping(path = "/me/vehicules", consumes = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(path = "/me/vehicles", consumes = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
-	public AddVehiculeDto addTransporterVehicule(@Valid @RequestBody AddVehiculeCommand command,
-			final @AuthenticationPrincipal JwtAuthenticationToken principal, Locale locale) {
+	public AddVehiculeDto addTransporterVehicle(@Valid @RequestBody AddVehiculeUseCase.AddVehicleCommand command,
+												final @AuthenticationPrincipal JwtAuthenticationToken principal, Locale locale) {
 
 		Locale supportedLocale = LocaleUtils.getSupporedLocale(locale);
 
-		return addVehiculeUseCase.addVehicule(command, principal.getName(), supportedLocale.toString());
+		return addVehiculeUseCase.addVehicle(command, principal.getName(), supportedLocale.toString());
 
 	}
 }

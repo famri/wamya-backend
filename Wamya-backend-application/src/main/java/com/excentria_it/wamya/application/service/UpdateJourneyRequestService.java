@@ -52,7 +52,7 @@ public class UpdateJourneyRequestService implements UpdateJourneyRequestUseCase 
 		boolean updateJourneyTravelInfo = false;
 
 		ClientJourneyRequestDtoOutput clientJourneyRequest = loadJourneyRequestPort
-				.loadJourneyRequestByIdAndClientEmail(journeyRequestId, username, locale)
+				.loadJourneyRequestByIdAndClientSubject(journeyRequestId, username, locale)
 				.orElseThrow(() -> new JourneyRequestNotFoundException(
 						String.format("Journey request not found by ID: %d", journeyRequestId)));
 

@@ -32,7 +32,7 @@ public class CountMissedMessagesController {
 	public CountMissedMessagesResult countMissedMessages(@RequestParam(name = "read") Boolean read,
 			final @AuthenticationPrincipal JwtAuthenticationToken principal) {
 
-		CountMessagesCommand command = CountMessagesCommand.builder().username(principal.getName())
+		CountMessagesCommand command = CountMessagesCommand.builder().subject(principal.getName())
 				.read(read.toString()).build();
 		
 		validationHelper.validateInput(command);

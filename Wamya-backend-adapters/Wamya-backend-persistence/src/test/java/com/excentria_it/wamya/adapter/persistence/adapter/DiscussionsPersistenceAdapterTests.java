@@ -276,7 +276,7 @@ public class DiscussionsPersistenceAdapterTests {
     @Test
     void givenInexistentClient_WhenCreateDiscussion_ThenReturnFalse() {
         // given
-        given(clientRepository.findByOauthId(any(String.class))).willReturn(Optional.empty());
+        given(clientRepository.findClientByOauthId(any(String.class))).willReturn(Optional.empty());
 
         // when
         LoadDiscussionsOutput result = discussionsPersistenceAdapter.createDiscussion(OAuthId.CLIENT1_UUID, OAuthId.TRANSPORTER1_UUID);
@@ -288,8 +288,8 @@ public class DiscussionsPersistenceAdapterTests {
     void givenInexistentTransporter_WhenCreateDiscussion_ThenReturnFalse() {
         // given
         ClientJpaEntity clientJpaEntity = defaultExistentClientJpaEntity();
-        given(clientRepository.findByOauthId(any(String.class))).willReturn(Optional.of(clientJpaEntity));
-        given(transporterRepository.findByOauthId(any(String.class))).willReturn(Optional.empty());
+        given(clientRepository.findClientByOauthId(any(String.class))).willReturn(Optional.of(clientJpaEntity));
+        given(transporterRepository.findTransporterByOauthId(any(String.class))).willReturn(Optional.empty());
 
         // when
         LoadDiscussionsOutput result = discussionsPersistenceAdapter.createDiscussion(clientJpaEntity.getOauthId(), "some-non-existent-transporter-uuid");
@@ -301,10 +301,10 @@ public class DiscussionsPersistenceAdapterTests {
     void givenExistentClientAndTransporter_WhenCreateDiscussion_ThenReturnLoadDiscussionsOutput() {
         // given
         ClientJpaEntity clientJpaEntity = defaultExistentClientJpaEntity();
-        given(clientRepository.findByOauthId(any(String.class))).willReturn(Optional.of(clientJpaEntity));
+        given(clientRepository.findClientByOauthId(any(String.class))).willReturn(Optional.of(clientJpaEntity));
 
         TransporterJpaEntity transporterJpaEntity = defaultExistentTransporterJpaEntity();
-        given(transporterRepository.findByOauthId(any(String.class))).willReturn(Optional.of(transporterJpaEntity));
+        given(transporterRepository.findTransporterByOauthId(any(String.class))).willReturn(Optional.of(transporterJpaEntity));
 
         DiscussionJpaEntity discussionJpaEntity = defaultDiscussionJpaEntity();
         given(discussionsRepository.save(any(DiscussionJpaEntity.class))).willReturn(discussionJpaEntity);

@@ -13,15 +13,15 @@ import com.excentria_it.wamya.common.domain.StatusCode;
 import com.excentria_it.wamya.domain.*;
 import com.excentria_it.wamya.domain.JourneyProposalDto.StatusDto;
 import com.excentria_it.wamya.domain.JourneyProposalDto.TransporterDto;
-import com.excentria_it.wamya.domain.JourneyProposalDto.VehiculeDto;
+import com.excentria_it.wamya.domain.JourneyProposalDto.VehicleDto;
 import com.excentria_it.wamya.domain.LoadJourneyProposalsCriteria.LoadJourneyProposalsCriteriaBuilder;
 import com.excentria_it.wamya.domain.TransporterProposalDto.JourneyRequestDto;
-import com.excentria_it.wamya.domain.TransporterProposalDto.TransporterVehiculeDto;
+import com.excentria_it.wamya.domain.TransporterProposalDto.TransporterVehicleDto;
 import com.excentria_it.wamya.domain.TransporterProposalOutput.JourneyRequestOutput;
 import com.excentria_it.wamya.domain.TransporterProposalOutput.JourneyRequestOutput.ClientOutput;
 import com.excentria_it.wamya.domain.TransporterProposalOutput.JourneyRequestOutput.EngineTypeDto;
 import com.excentria_it.wamya.domain.TransporterProposalOutput.JourneyRequestOutput.PlaceDto;
-import com.excentria_it.wamya.domain.TransporterProposalOutput.TransporterVehiculeOutput;
+import com.excentria_it.wamya.domain.TransporterProposalOutput.TransporterVehicleOutput;
 
 import java.math.BigDecimal;
 import java.time.*;
@@ -39,18 +39,18 @@ public class JourneyProposalTestData {
     private static final List<JourneyProposalDto> journeyProposalDtos = List.of(
             JourneyProposalDto.builder().id(1L).price(220.0).status(new StatusDto(StatusCode.SUBMITTED, "submitted"))
                     .transporter(new TransporterDto(UUID_1, "transporter1", "https://path/to/transporter1/photo", 4.5))
-                    .vehicule(new VehiculeDto(1L, "RENAULT", "KANGOO", "https://path/to/vehicule1/photo")).build(),
+                    .vehicle(new VehicleDto(1L, "RENAULT", "KANGOO", "https://path/to/vehicle1/photo")).build(),
             JourneyProposalDto.builder().id(2L).price(230.0).status(new StatusDto(StatusCode.SUBMITTED, "submitted"))
                     .transporter(new TransporterDto(UUID_2, "transporter2", "https://path/to/transporter2/photo", 4.9))
-                    .vehicule(new VehiculeDto(2L, "PEUGEOT", "PARTNER", "https://path/to/vehicule2/photo")).build(),
+                    .vehicle(new VehicleDto(2L, "PEUGEOT", "PARTNER", "https://path/to/vehicle2/photo")).build(),
             JourneyProposalDto.builder().id(2L).price(240.0).status(new StatusDto(StatusCode.SUBMITTED, "submitted"))
                     .transporter(new TransporterDto(UUID_3, "transporter3", "https://path/to/transporter3/photo", 4.7))
-                    .vehicule(new VehiculeDto(3L, "PEUGEOT", "PARTNER", "https://path/to/vehicule3/photo")).build());
+                    .vehicle(new VehicleDto(3L, "PEUGEOT", "PARTNER", "https://path/to/vehicle3/photo")).build());
 
     public static final Double JOURNEY_PROPOSAL_PRICE = 250.0;
 
     public static final MakeProposalCommandBuilder defaultMakeProposalCommandBuilder() {
-        return MakeProposalCommand.builder().price(JOURNEY_PROPOSAL_PRICE).vehiculeId(1L);
+        return MakeProposalCommand.builder().price(JOURNEY_PROPOSAL_PRICE).vehicleId(1L);
     }
 
     public static final LoadProposalsCommandBuilder defaultLoadProposalsCommandBuilder() {
@@ -90,11 +90,11 @@ public class JourneyProposalTestData {
     private static final List<TransporterProposalOutput> transporterProposalOutputs = List.of(
             TransporterProposalOutput
                     .builder().id(1L).price(250.0).status("Accepté").statusCode(JourneyProposalStatusCode.ACCEPTED)
-                    .vehicule(
-                            TransporterVehiculeOutput.builder().id(1L).registrationNumber("1 TUN 220")
+                    .vehicle(
+                            TransporterVehicleOutput.builder().id(1L).registrationNumber("1 TUN 220")
                                     .circulationDate(LocalDate.of(2020, 01, 01)).constructorName("PEUGEOT")
                                     .modelName("PARTNER").engineTypeId(1L).engineTypeName("Véhicule Utilitaire")
-                                    .imageHash("VEHICULE_1_HASH").imageId(1L).build())
+                                    .imageHash("VEHICLE_1_HASH").imageId(1L).build())
                     .journey(JourneyRequestOutput.builder().id(1L)
                             .departurePlace(PlaceDto.builder().id(1L).type("DEPARTMENT").name("Sfax")
                                     .latitude(new BigDecimal(38.0)).longitude(new BigDecimal(10.0)).departmentId(1L)
@@ -114,9 +114,9 @@ public class JourneyProposalTestData {
                     .build(),
 
             TransporterProposalOutput.builder().id(2L).price(280.0).status("Envoyé").statusCode(JourneyProposalStatusCode.SUBMITTED)
-                    .vehicule(TransporterVehiculeOutput.builder().id(2L).registrationNumber("2 TUN 220")
+                    .vehicle(TransporterVehicleOutput.builder().id(2L).registrationNumber("2 TUN 220")
                             .circulationDate(LocalDate.of(2020, 01, 01)).constructorName("CITROEN").modelName("NEMO")
-                            .engineTypeId(1L).engineTypeName("Véhicule Utilitaire").imageHash("VEHICULE_2_HASH")
+                            .engineTypeId(1L).engineTypeName("Véhicule Utilitaire").imageHash("VEHICLE_2_HASH")
                             .imageId(2L).build())
                     .journey(JourneyRequestOutput.builder().id(2L)
                             .departurePlace(PlaceDto.builder().id(3L).type("DEPARTMENT").name("Sousse")
@@ -138,10 +138,10 @@ public class JourneyProposalTestData {
 
     private static final List<TransporterProposalDto> transporterProposals = List.of(
             TransporterProposalDto.builder().id(1L).price(250.0).status("Accepté").statusCode(JourneyProposalStatusCode.ACCEPTED)
-                    .vehicule(TransporterVehiculeDto.builder().id(1L).registrationNumber("1 TUN 220")
+                    .vehicle(TransporterVehicleDto.builder().id(1L).registrationNumber("1 TUN 220")
                             .circulationDate(LocalDate.of(2020, 01, 01)).constructorName("PEUGEOT").modelName("PARTNER")
                             .engineTypeId(1L).engineTypeName("Véhicule Utilitaire")
-                            .photoUrl("https://vehicule1/photo/url").build())
+                            .photoUrl("https://vehicle1/photo/url").build())
                     .journey(JourneyRequestDto.builder().id(1L)
                             .departurePlace(JourneyRequestDto.Place
                                     .builder().id(1L).type("DEPARTMENT").name("Sfax").latitude(new BigDecimal(38.0))
@@ -164,10 +164,10 @@ public class JourneyProposalTestData {
                     .build(),
 
             TransporterProposalDto.builder().id(2L).price(250.0).status("Envoyé").statusCode(JourneyProposalStatusCode.SUBMITTED)
-                    .vehicule(TransporterVehiculeDto.builder().id(1L).registrationNumber("2 TUN 220")
+                    .vehicle(TransporterVehicleDto.builder().id(1L).registrationNumber("2 TUN 220")
                             .circulationDate(LocalDate.of(2020, 01, 01)).constructorName("CITROEN").modelName("NEMO")
                             .engineTypeId(1L).engineTypeName("Véhicule Utilitaire")
-                            .photoUrl("https://vehicule2/photo/url").build())
+                            .photoUrl("https://vehicle2/photo/url").build())
                     .journey(JourneyRequestDto.builder().id(2L)
                             .departurePlace(JourneyRequestDto.Place.builder().id(3L).type("DEPARTMENT").name("Sousse")
                                     .latitude(new BigDecimal(39.0)).longitude(new BigDecimal(11.0)).departmentId(1L)

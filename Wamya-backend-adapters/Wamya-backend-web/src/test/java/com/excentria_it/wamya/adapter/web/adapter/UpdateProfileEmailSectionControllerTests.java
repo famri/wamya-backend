@@ -1,6 +1,5 @@
 package com.excentria_it.wamya.adapter.web.adapter;
 
-import com.c4_soft.springaddons.security.oauth2.test.mockmvc.MockMvcSupport;
 import com.excentria_it.wamya.adapter.web.WebConfiguration;
 import com.excentria_it.wamya.adapter.web.WebSecurityConfiguration;
 import com.excentria_it.wamya.application.port.in.UpdateEmailSectionUseCase;
@@ -41,7 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
 @ContextConfiguration(classes = {WebSecurityConfiguration.class, WebConfiguration.class})
-@Import(value = {UpdateProfileEmailSectionController.class, RestApiExceptionHandler.class, MockMvcSupport.class})
+@Import(value = {UpdateProfileEmailSectionController.class, RestApiExceptionHandler.class})
 @WebMvcTest(controllers = UpdateProfileEmailSectionController.class)
 public class UpdateProfileEmailSectionControllerTests {
     @Autowired

@@ -4,7 +4,6 @@ import static com.excentria_it.wamya.test.data.common.TestConstants.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
-import static org.mockito.Mockito.*;
 
 import java.util.Locale;
 import java.util.Optional;
@@ -229,25 +228,25 @@ public class SendValidationCodeServiceTests {
 
 	private void givenNonExistentEmail() {
 
-		given(loadUserAccountPort.loadUserAccountByUsername(any(String.class))).willReturn(Optional.empty());
+		given(loadUserAccountPort.loadUserAccountBySubject(any(String.class))).willReturn(Optional.empty());
 
 	}
 
 	private void givenExistentEmail(UserAccount account) {
 
-		given(loadUserAccountPort.loadUserAccountByUsername(any(String.class))).willReturn(Optional.of(account));
+		given(loadUserAccountPort.loadUserAccountBySubject(any(String.class))).willReturn(Optional.of(account));
 
 	}
 
 	private void givenExistentMobilePhoneNumber(UserAccount account) {
 
-		given(loadUserAccountPort.loadUserAccountByUsername(any(String.class))).willReturn(Optional.of(account));
+		given(loadUserAccountPort.loadUserAccountBySubject(any(String.class))).willReturn(Optional.of(account));
 
 	}
 
 	private void givenNonExistentMobilePhoneNumber() {
 
-		given(loadUserAccountPort.loadUserAccountByUsername(any(String.class))).willReturn(Optional.empty());
+		given(loadUserAccountPort.loadUserAccountBySubject(any(String.class))).willReturn(Optional.empty());
 
 	}
 

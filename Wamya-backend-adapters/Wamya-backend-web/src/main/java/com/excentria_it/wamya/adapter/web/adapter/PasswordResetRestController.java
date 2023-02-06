@@ -37,7 +37,7 @@ public class PasswordResetRestController {
 	public void requestPasswordReset(@Valid @RequestBody RequestPasswordResetCommand command, Locale locale) {
 
 		Locale supportedLocale = LocaleUtils.getSupporedLocale(locale);
-		requestPasswordResetUseCase.requestPasswordReset(command.getUsername(), supportedLocale);
+		requestPasswordResetUseCase.requestPasswordReset(command.getUserLogin(), supportedLocale);
 
 	}
 

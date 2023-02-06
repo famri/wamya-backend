@@ -4,6 +4,7 @@ import com.excentria_it.wamya.adapter.b2b.rest.dto.KeyCloakRealmRole;
 import com.excentria_it.wamya.adapter.b2b.rest.props.AuthServerProperties;
 import com.excentria_it.wamya.application.port.out.OAuthUserAccountPort;
 import com.excentria_it.wamya.common.annotation.WebAdapter;
+import com.excentria_it.wamya.common.exception.UserAccountNotFoundException;
 import com.excentria_it.wamya.common.exception.UserCreationException;
 import com.excentria_it.wamya.domain.OAuthUserAccount;
 import com.excentria_it.wamya.domain.OAuthUserAccountAttribute;
@@ -160,6 +161,11 @@ public class KeycloakUserAccountIntegrationAdapter implements OAuthUserAccountPo
         try {
             return restTemplate.postForObject(authServerProperties.getTokenUri(), request, OpenIdAuthResponse.class);
         } catch (RestClientException e) {
+            // incorrect login/password
+            if (e.getMessage() != null && e.getMessage().contains("401 Unauthorized")) {
+                LOGGER.error("Incorrect login/password combination for user {}: {}", username, e.getMessage());
+                throw new UserAccountNotFoundException(String.format("Incorrect login/password combination for user %s.", username));
+            }
             LOGGER.error("Exception when fetching JWT for user: {}", username, e);
             throw new RuntimeException(String.format("Cannot fetch JWT for user: %s", e.getMessage()));
         }

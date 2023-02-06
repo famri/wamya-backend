@@ -3,7 +3,6 @@ package com.excentria_it.wamya.application.service;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
-import static org.mockito.Mockito.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -52,7 +51,7 @@ public class UpdateJourneyRequestServiceTests {
 	@Test
 	void givenJourneyRequestNotFoundByIdAndClientEmail_whenUpdateJourneyRequest_thenThrowJourneyRequestNotFoundException() {
 		// given
-		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class),
+		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientSubject(any(Long.class), any(String.class),
 				any(String.class))).willReturn(Optional.empty());
 		CreateJourneyRequestCommand command = JourneyRequestTestData.defaultCreateJourneyRequestCommandBuilder()
 				.build();
@@ -67,7 +66,7 @@ public class UpdateJourneyRequestServiceTests {
 	void givenJourneyRequestExistsByIdAndClientEmail_andOffersHaveBeenMade_whenUpdateJourneyRequest_thenThrowJourneyRequestUpdateException() {
 		// given
 		ClientJourneyRequestDtoOutput clientJourneyRequestDto = JourneyRequestTestData.defaultClientJourneyRequestDtoOutput();
-		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class),
+		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientSubject(any(Long.class), any(String.class),
 				any(String.class))).willReturn(Optional.of(clientJourneyRequestDto));
 		CreateJourneyRequestCommand command = JourneyRequestTestData.defaultCreateJourneyRequestCommandBuilder()
 				.build();
@@ -83,7 +82,7 @@ public class UpdateJourneyRequestServiceTests {
 		// given
 		ClientJourneyRequestDtoOutput clientJourneyRequestDto = JourneyRequestTestData
 				.defaultClientJourneyRequestDtoWithNoProposals();
-		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class),
+		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientSubject(any(Long.class), any(String.class),
 				any(String.class))).willReturn(Optional.of(clientJourneyRequestDto));
 		given(dateTimeHelper.findUserZoneId(any(String.class))).willReturn(ZoneOffset.UTC);
 		given(dateTimeHelper.userLocalToSystemDateTime(any(LocalDateTime.class), any(ZoneId.class)))
@@ -109,7 +108,7 @@ public class UpdateJourneyRequestServiceTests {
 		// given
 		ClientJourneyRequestDtoOutput clientJourneyRequestDto = JourneyRequestTestData
 				.defaultClientJourneyRequestDtoWithNoProposals();
-		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class),
+		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientSubject(any(Long.class), any(String.class),
 				any(String.class))).willReturn(Optional.of(clientJourneyRequestDto));
 		given(dateTimeHelper.findUserZoneId(any(String.class))).willReturn(ZoneOffset.UTC);
 		given(dateTimeHelper.userLocalToSystemDateTime(any(LocalDateTime.class), any(ZoneId.class)))
@@ -167,7 +166,7 @@ public class UpdateJourneyRequestServiceTests {
 		// given
 		ClientJourneyRequestDtoOutput clientJourneyRequestDto = JourneyRequestTestData
 				.defaultClientJourneyRequestDtoWithNoProposals();
-		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientEmail(any(Long.class), any(String.class),
+		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientSubject(any(Long.class), any(String.class),
 				any(String.class))).willReturn(Optional.of(clientJourneyRequestDto));
 		given(dateTimeHelper.findUserZoneId(any(String.class))).willReturn(ZoneOffset.UTC);
 		given(dateTimeHelper.userLocalToSystemDateTime(any(LocalDateTime.class), any(ZoneId.class)))

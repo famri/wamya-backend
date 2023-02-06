@@ -1,10 +1,10 @@
 package com.excentria_it.wamya.application.port.out;
 
-import com.excentria_it.wamya.domain.LoadTransporterVehiculesCriteria;
-import com.excentria_it.wamya.domain.TransporterVehicules;
+import com.excentria_it.wamya.domain.LoadTransporterVehiclesCriteria;
+import com.excentria_it.wamya.domain.TransporterVehicles;
 
 public interface LoadTransporterVehiculesPort {
 
-	TransporterVehicules loadTransporterVehicules(LoadTransporterVehiculesCriteria criteria, String locale);
+	TransporterVehicles loadTransporterVehicules(LoadTransporterVehiclesCriteria criteria, String locale);
 
 }

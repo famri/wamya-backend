@@ -2,7 +2,6 @@ package com.excentria_it.wamya.application.service;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Optional;
 
 import javax.transaction.Transactional;
@@ -36,7 +35,7 @@ public class ProfileImageService implements UploadProfileImageUseCase {
 	private final UpdateUserAccountPort updateUserAccountPort;
 
 	@Override
-	public void uploadProfileImage(BufferedInputStream imageInputStream, String imageOriginalName, String username) {
+	public void uploadProfileImage(BufferedInputStream imageInputStream, String imageOriginalName, String subject) {
 
 		// detect document type
 		String documentType = null;
@@ -65,7 +64,7 @@ public class ProfileImageService implements UploadProfileImageUseCase {
 		String hash = DigestUtils.sha256Hex(location.getBytes());
 
 		// create database document entry for image file
-		Optional<UserAccount> userAccountOptional = loadUserAccountPort.loadUserAccountByUsername(username);
+		Optional<UserAccount> userAccountOptional = loadUserAccountPort.loadUserAccountBySubject(subject);
 		Long userId = userAccountOptional.get().getId();
 
 		String oldAvatarFileLocation = null;

@@ -16,8 +16,8 @@ public class UserPreferenceService implements SaveUserPreferenceUseCase {
 	private final SaveUserPreferencePort saveUserPreferencePort;
 
 	@Override
-	public void saveUserPreference(String key, String value, String username) {
-		saveUserPreferencePort.saveUserPreference(key, value, username);
+	public void saveUserPreference(String key, String value, String subject) {
+		saveUserPreferencePort.saveUserPreference(key, value, subject);
 	}
 
 }

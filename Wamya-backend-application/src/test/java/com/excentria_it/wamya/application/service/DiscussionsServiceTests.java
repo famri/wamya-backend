@@ -55,7 +55,7 @@ public class DiscussionsServiceTests {
     void testLoadDiscussions() {
         // given
         UserAccount userAccount = defaultUserAccountBuilder().build();
-        given(loadUserAccountPort.loadUserAccountByUsername(any(String.class))).willReturn(Optional.of(userAccount));
+        given(loadUserAccountPort.loadUserAccountBySubject(any(String.class))).willReturn(Optional.of(userAccount));
 
         ZoneId userZoneId = ZoneId.of("Africa/Tunis");
         doReturn(userZoneId).when(dateTimeHelper).findUserZoneId(any(String.class));
@@ -125,7 +125,7 @@ public class DiscussionsServiceTests {
     void testLoadDiscussionsWithNullFilterCriterion() {
         // given
         UserAccount userAccount = defaultUserAccountBuilder().build();
-        given(loadUserAccountPort.loadUserAccountByUsername(any(String.class))).willReturn(Optional.of(userAccount));
+        given(loadUserAccountPort.loadUserAccountBySubject(any(String.class))).willReturn(Optional.of(userAccount));
 
         ZoneId userZoneId = ZoneId.of("Africa/Tunis");
         doReturn(userZoneId).when(dateTimeHelper).findUserZoneId(any(String.class));
@@ -196,7 +196,7 @@ public class DiscussionsServiceTests {
     @Test
     void givenBadUsername_WhenLoadDiscussions_ThenThrowUserAccountNotFoundException() {
         // given
-        given(loadUserAccountPort.loadUserAccountByUsername(any(String.class))).willReturn(Optional.empty());
+        given(loadUserAccountPort.loadUserAccountBySubject(any(String.class))).willReturn(Optional.empty());
 
         LoadDiscussionsCommandBuilder commandBuilder = defaultLoadDiscussionsCommandBuilder();
 
@@ -215,7 +215,7 @@ public class DiscussionsServiceTests {
         FindDiscussionByClientIdAndTransporterIdCommand command = commandBuilder.build();
         UserAccount clientUserAccount = defaultClientUserAccountBuilder().build();
 
-        given(loadUserAccountPort.loadUserAccountByUsername(any(String.class)))
+        given(loadUserAccountPort.loadUserAccountBySubject(any(String.class)))
                 .willReturn(Optional.of(clientUserAccount));
 
         LoadDiscussionsOutput loadDiscussionsOutput = defaultClientLoadDiscussionsOutput();
@@ -228,7 +228,7 @@ public class DiscussionsServiceTests {
         LoadDiscussionsDto loadDiscussionsDto = discussionsService.findDiscussionByClientIdAndTransporterId(command);
         // then
 
-        then(loadUserAccountPort).should(times(1)).loadUserAccountByUsername(command.getUsername());
+        then(loadUserAccountPort).should(times(1)).loadUserAccountBySubject(command.getSubject());
         then(loadDiscussionsPort).should(times(1)).loadDiscussionByClientIdAndTransporterId(command.getClientId(),
                 command.getTransporterId());
 
@@ -266,11 +266,11 @@ public class DiscussionsServiceTests {
     void givenCommandClientIdAndTransporterIdAreDifferentFromAuthenticatedUserId_WhenFindDiscussion_ThenThrowDiscussionNotFoundException() {
         // given
         FindDiscussionByClientIdAndTransporterIdCommandBuilder commandBuilder = defaultFindDiscussionByClientIdAndTransporterIdCommandBuilder();
-        FindDiscussionByClientIdAndTransporterIdCommand command = commandBuilder.clientId(OAuthId.CLIENT1_UUID).transporterId(OAuthId.TRANSPORTER1_UUID).username("some-other-username")
+        FindDiscussionByClientIdAndTransporterIdCommand command = commandBuilder.clientId(OAuthId.CLIENT1_UUID).transporterId(OAuthId.TRANSPORTER1_UUID).subject("some-other-username")
                 .build();
         UserAccount userAccount = defaultUserAccountBuilder().build();
 
-        given(loadUserAccountPort.loadUserAccountByUsername(any(String.class)))
+        given(loadUserAccountPort.loadUserAccountBySubject(any(String.class)))
                 .willReturn(Optional.of(userAccount));
 
         // when
@@ -287,7 +287,7 @@ public class DiscussionsServiceTests {
         FindDiscussionByClientIdAndTransporterIdCommand command = commandBuilder.build();
         UserAccount clientUserAccount = defaultClientUserAccountBuilder().build();
 
-        given(loadUserAccountPort.loadUserAccountByUsername(any(String.class)))
+        given(loadUserAccountPort.loadUserAccountBySubject(any(String.class)))
                 .willReturn(Optional.of(clientUserAccount));
         given(loadDiscussionsPort.loadDiscussionByClientIdAndTransporterId(any(String.class), any(String.class)))
                 .willReturn(Optional.empty());
@@ -350,7 +350,7 @@ public class DiscussionsServiceTests {
     void givenDiscussionClientEmailAndTransporterEmailAreDifferentFromAuthenticatedUserEmail_WhenFindDiscussionById_ThenThrowDiscussionNotFoundException() {
         // given
         FindDiscussionByIdCommandBuilder commandBuilder = defaultFindDiscussionByIdCommandBuilder();
-        FindDiscussionByIdCommand command = commandBuilder.discussionId(600L).username("some_username@gmail.com")
+        FindDiscussionByIdCommand command = commandBuilder.discussionId(600L).subject("some_username@gmail.com")
                 .build();
         LoadDiscussionsOutput loadDiscussionsOutput = defaultClientLoadDiscussionsOutput();
         given(loadDiscussionsPort.loadDiscussionById(any(Long.class))).willReturn(Optional.of(loadDiscussionsOutput));
@@ -381,7 +381,7 @@ public class DiscussionsServiceTests {
         CreateDiscussionCommand command = commandBuilder.build();
         UserAccount clientUserAccount = defaultClientUserAccountBuilder().build();
 
-        given(loadUserAccountPort.loadUserAccountByUsername(any(String.class)))
+        given(loadUserAccountPort.loadUserAccountBySubject(any(String.class)))
                 .willReturn(Optional.of(clientUserAccount));
 
         given(loadUserAccountPort.existsByOauthId(any(String.class))).willReturn(true);
@@ -398,7 +398,7 @@ public class DiscussionsServiceTests {
                 TestConstants.DEFAULT_EMAIL);
         // then
 
-        then(loadUserAccountPort).should(times(1)).loadUserAccountByUsername(TestConstants.DEFAULT_EMAIL);
+        then(loadUserAccountPort).should(times(1)).loadUserAccountBySubject(TestConstants.DEFAULT_EMAIL);
         then(loadUserAccountPort).should(times(1)).existsByOauthId(command.getTransporterId());
         then(createDiscussionPort).should(times(1)).createDiscussion(command.getClientId(), command.getTransporterId());
 
@@ -439,7 +439,7 @@ public class DiscussionsServiceTests {
         CreateDiscussionCommand command = commandBuilder.transporterId("some-other-uuid").build();
 
 
-        given(loadUserAccountPort.loadUserAccountByUsername(eq(TestConstants.DEFAULT_EMAIL)))
+        given(loadUserAccountPort.loadUserAccountBySubject(eq(TestConstants.DEFAULT_EMAIL)))
                 .willReturn(Optional.of(transporterUserAccount));
 
         assertThrows(OperationDeniedException.class,
@@ -454,7 +454,7 @@ public class DiscussionsServiceTests {
         CreateDiscussionCommand command = commandBuilder.clientId(clientUserAccount.getOauthId()).build();
 
 
-        given(loadUserAccountPort.loadUserAccountByUsername(eq(TestConstants.DEFAULT_EMAIL)))
+        given(loadUserAccountPort.loadUserAccountBySubject(eq(TestConstants.DEFAULT_EMAIL)))
                 .willReturn(Optional.of(clientUserAccount));
 
         assertThrows(OperationDeniedException.class,
@@ -468,7 +468,7 @@ public class DiscussionsServiceTests {
 
         UserAccount clientUserAccount = defaultClientUserAccountBuilder().build();
 
-        given(loadUserAccountPort.loadUserAccountByUsername(any(String.class)))
+        given(loadUserAccountPort.loadUserAccountBySubject(any(String.class)))
                 .willReturn(Optional.of(clientUserAccount));
         given(loadUserAccountPort.existsByOauthId(any(String.class))).willReturn(false);
 
@@ -483,7 +483,7 @@ public class DiscussionsServiceTests {
 
         UserAccount transporterUserAccount = defaultTransporterUserAccountBuilder().build();
 
-        given(loadUserAccountPort.loadUserAccountByUsername(any(String.class)))
+        given(loadUserAccountPort.loadUserAccountBySubject(any(String.class)))
                 .willReturn(Optional.of(transporterUserAccount));
         given(loadUserAccountPort.existsByOauthId(any(String.class))).willReturn(false);
 

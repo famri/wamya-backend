@@ -6,7 +6,7 @@ import java.util.Optional;
 
 public interface LoadUserAccountPort {
 
-    Optional<UserAccount> loadUserAccountByUsername(String username);
+    Optional<UserAccount> loadUserAccountBySubject(String subject);
 
     Boolean existsByOauthId(String userOauthId);
 
@@ -18,4 +18,5 @@ public interface LoadUserAccountPort {
 
     String loadIdentityDocumentLocation(Long userId);
 
+    boolean existsBySubject(String username);
 }

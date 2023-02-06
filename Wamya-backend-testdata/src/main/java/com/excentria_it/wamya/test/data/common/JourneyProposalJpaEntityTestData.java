@@ -26,14 +26,14 @@ public class JourneyProposalJpaEntityTestData {
 		return JourneyProposalJpaEntity.builder().id(1L).price(250.0)
 				.creationDateTime(LocalDateTime.now(ZoneOffset.UTC)).status(defaultJourneyProposalStatusJpaEntity())
 				.transporter(UserAccountJpaEntityTestData.defaultExistentTransporterJpaEntity())
-				.vehicule(VehiculeJpaEntityTestData.defaultVehiculeJpaEntity());
+				.vehicle(VehicleJpaEntityTestData.defaultVehicleJpaEntity());
 	}
 
 	public static JourneyProposalJpaEntity defaultJourneyProposalJpaEntity() {
 		return JourneyProposalJpaEntity.builder().id(10L).price(250.0)
 				.creationDateTime(LocalDateTime.now(ZoneOffset.UTC)).status(defaultJourneyProposalStatusJpaEntity())
 				.transporter(UserAccountJpaEntityTestData.defaultExistentTransporterJpaEntity())
-				.vehicule(VehiculeJpaEntityTestData.defaultVehiculeJpaEntity()).build();
+				.vehicle(VehicleJpaEntityTestData.defaultVehicleJpaEntity()).build();
 	}
 
 	public static JourneyProposalStatusJpaEntity defaultJourneyProposalStatusJpaEntity() {
@@ -62,13 +62,13 @@ public class JourneyProposalJpaEntityTestData {
 			JourneyProposalJpaEntity.builder().id(10L).price(350.0).creationDateTime(LocalDateTime.now(ZoneOffset.UTC))
 					.status(defaultJourneyProposalStatusJpaEntity())
 					.transporter(UserAccountJpaEntityTestData.defaultExistentTransporterJpaEntity())
-					.vehicule(VehiculeJpaEntityTestData.defaultVehiculeJpaEntity())
+					.vehicle(VehicleJpaEntityTestData.defaultVehicleJpaEntity())
 					.journeyRequest(JourneyRequestJpaTestData.defaultExistentJourneyRequestJpaEntity()).build(),
 			JourneyProposalJpaEntity.builder().id(20L).price(250.0).creationDateTime(LocalDateTime.now(ZoneOffset.UTC))
 					.status(defaultJourneyProposalStatusJpaEntityBuilder().code(JourneyProposalStatusCode.ACCEPTED)
 							.id(2L).build())
 					.transporter(UserAccountJpaEntityTestData.defaultExistentTransporterJpaEntity())
-					.vehicule(VehiculeJpaEntityTestData.defaultVehiculeJpaEntity())
+					.vehicle(VehicleJpaEntityTestData.defaultVehicleJpaEntity())
 					.journeyRequest(JourneyRequestJpaTestData.defaultExistentJourneyRequestJpaEntity()).build());
 
 	public static Page<JourneyProposalJpaEntity> defaultJourneyProposalJpaEntityPage() {

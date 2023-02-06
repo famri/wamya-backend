@@ -1,7 +1,6 @@
 package com.excentria_it.wamya.domain;
 
 import com.excentria_it.wamya.common.SortCriterion;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,10 +10,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Builder
-public class LoadTransporterVehiculesCriteria {
+public class LoadTransporterVehiclesCriteria {
 
-	private String transporterUsername;
+    private String transporterUsername;
 
-	private SortCriterion sortingCriterion;
+    private SortCriterion sortingCriterion;
 
 }

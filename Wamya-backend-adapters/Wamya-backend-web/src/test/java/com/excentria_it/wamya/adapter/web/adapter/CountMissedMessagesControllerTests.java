@@ -1,6 +1,5 @@
 package com.excentria_it.wamya.adapter.web.adapter;
 
-import com.c4_soft.springaddons.security.oauth2.test.mockmvc.MockMvcSupport;
 import com.excentria_it.wamya.adapter.web.WebConfiguration;
 import com.excentria_it.wamya.adapter.web.WebSecurityConfiguration;
 import com.excentria_it.wamya.adapter.web.utils.ValidationHelper;
@@ -38,8 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
 @ContextConfiguration(classes = {WebSecurityConfiguration.class, WebConfiguration.class})
-@Import(value = {CountMissedMessagesController.class, RestApiExceptionHandler.class, MockMvcSupport.class,
-        ValidationHelper.class})
+@Import(value = {CountMissedMessagesController.class, RestApiExceptionHandler.class, ValidationHelper.class})
 @WebMvcTest(controllers = CountMissedMessagesController.class)
 public class CountMissedMessagesControllerTests {
 
@@ -62,7 +60,7 @@ public class CountMissedMessagesControllerTests {
     void testCountMissedMessages() throws Exception {
         // given
         CountMessagesCommand command = CountMessagesCommand.builder().read("false")
-                .username("user").build();
+                .subject("user").build();
 
         given(counMessagesUseCase.countMessages(any(CountMessagesCommand.class))).willReturn(5L);
 

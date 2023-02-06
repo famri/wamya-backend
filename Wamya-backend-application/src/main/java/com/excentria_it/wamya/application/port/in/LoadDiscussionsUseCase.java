@@ -23,7 +23,7 @@ public interface LoadDiscussionsUseCase {
 	@NoArgsConstructor
 	class LoadDiscussionsCommand {
 		@NotNull
-		private String username;
+		private String subject;
 		@NotNull
 		private Integer pageNumber;
 		@NotNull

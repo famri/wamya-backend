@@ -19,7 +19,7 @@ import com.excentria_it.wamya.common.SortCriterion;
 import com.excentria_it.wamya.common.annotation.WebAdapter;
 import com.excentria_it.wamya.common.utils.LocaleUtils;
 import com.excentria_it.wamya.common.utils.ParameterUtils;
-import com.excentria_it.wamya.domain.TransporterVehicules;
+import com.excentria_it.wamya.domain.TransporterVehicles;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,13 +27,13 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "/users", produces = MediaType.APPLICATION_JSON_VALUE)
-public class LoadTransporterVehiculesController {
+public class LoadTransporterVehiclesController {
 
 	private final LoadVehiculesUseCase loadVehiculesUseCase;
 
-	@GetMapping(path = "/me/vehicules")
+	@GetMapping(path = "/me/vehicles")
 	@ResponseStatus(HttpStatus.OK)
-	public TransporterVehicules loadTransporterVehicules(
+	public TransporterVehicles loadTransporterVehicules(
 
 			@RequestParam(name = "sort") Optional<String> sort,
 			final @AuthenticationPrincipal JwtAuthenticationToken principal, Locale locale) {

@@ -34,7 +34,7 @@ public class SearchJourneyRequestsInput {
 
 	private Set<JourneyRequestStatusCode> statusCodes;
 
-	private String username;
+	private String userSubject;
 
 	private String locale;
 

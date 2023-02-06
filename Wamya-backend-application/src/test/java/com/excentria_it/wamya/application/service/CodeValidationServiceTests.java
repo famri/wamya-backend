@@ -3,7 +3,6 @@ package com.excentria_it.wamya.application.service;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
-import static org.mockito.Mockito.*;
 
 import java.util.Optional;
 
@@ -34,7 +33,7 @@ public class CodeValidationServiceTests {
 	@Test
 	void givenInexistentUserAccountByEmail_whenValidateCode_thenReturnFalse() {
 		// given
-		given(loadUserAccountPort.loadUserAccountByUsername(any(String.class))).willReturn(Optional.empty());
+		given(loadUserAccountPort.loadUserAccountBySubject(any(String.class))).willReturn(Optional.empty());
 		// when
 		boolean result = codeValidationService.validateCode(
 				ValidateMobileValidationCodeCommand.builder().code("1234").build(), TestConstants.DEFAULT_EMAIL);
@@ -46,7 +45,7 @@ public class CodeValidationServiceTests {
 	void givenExistentUserAccountByEmailAndSameCode_whenValidateCode_thenReturnTrue() {
 		// given
 		UserAccount userAccount = UserAccountTestData.defaultClientUserAccountBuilder().build();
-		given(loadUserAccountPort.loadUserAccountByUsername(any(String.class))).willReturn(Optional.of(userAccount));
+		given(loadUserAccountPort.loadUserAccountBySubject(any(String.class))).willReturn(Optional.of(userAccount));
 		// when
 		boolean result = codeValidationService.validateCode(
 				ValidateMobileValidationCodeCommand.builder().code(userAccount.getMobileNumberValidationCode()).build(),
@@ -60,7 +59,7 @@ public class CodeValidationServiceTests {
 	void givenExistentUserAccountByEmailAndDifferentCode_whenValidateCode_thenReturnFalse() {
 		// given
 		UserAccount userAccount = UserAccountTestData.defaultClientUserAccountBuilder().build();
-		given(loadUserAccountPort.loadUserAccountByUsername(any(String.class))).willReturn(Optional.of(userAccount));
+		given(loadUserAccountPort.loadUserAccountBySubject(any(String.class))).willReturn(Optional.of(userAccount));
 		// when
 		boolean result = codeValidationService.validateCode(
 				ValidateMobileValidationCodeCommand.builder().code("0000").build(), TestConstants.DEFAULT_EMAIL);

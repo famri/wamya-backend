@@ -22,14 +22,14 @@ import lombok.NoArgsConstructor;
 
 @Generated
 @Entity
-@Table(name = "vehicule_constructor")
+@Table(name = "vehicle_constructor")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @SequenceGenerator(name = ConstructorJpaEntity.CONSTRUCTOR_SEQ, initialValue = 1, allocationSize = 5)
 public class ConstructorJpaEntity {
 
-	public static final String CONSTRUCTOR_SEQ = "vehicule_constructor_seq";
+	public static final String CONSTRUCTOR_SEQ = "vehicle_constructor_seq";
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = CONSTRUCTOR_SEQ)

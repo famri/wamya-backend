@@ -22,7 +22,7 @@ public interface FindDiscussionUseCase {
     @Builder
     class FindDiscussionByIdCommand {
         @NotEmpty
-        private String username;
+        private String subject;
         @NotNull
         private Long discussionId;
 
@@ -34,7 +34,7 @@ public interface FindDiscussionUseCase {
     @Builder
     class FindDiscussionByClientIdAndTransporterIdCommand {
         @NotEmpty
-        private String username;
+        private String subject;
         @NotNull
         private String clientId;
         @NotNull

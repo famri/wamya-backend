@@ -76,7 +76,7 @@ public class LoadJourneyRequestsService implements LoadClientJourneyRequestsUseC
 		ZoneId userZoneId = dateTimeHelper.findUserZoneId(command.getClientUsername());
 
 		Optional<ClientJourneyRequestDtoOutput> cjrOutputDtoOptional = loadJourneyRequestPort
-				.loadJourneyRequestByIdAndClientEmail(command.getJourneyRequestId(), command.getClientUsername(),
+				.loadJourneyRequestByIdAndClientSubject(command.getJourneyRequestId(), command.getClientUsername(),
 						locale);
 
 		if (cjrOutputDtoOptional.isEmpty()) {

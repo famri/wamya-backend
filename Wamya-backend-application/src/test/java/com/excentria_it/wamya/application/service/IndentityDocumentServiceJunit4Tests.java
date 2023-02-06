@@ -3,7 +3,6 @@ package com.excentria_it.wamya.application.service;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
-import static org.mockito.Mockito.*;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -62,7 +61,7 @@ public class IndentityDocumentServiceJunit4Tests {
 				.willReturn("/Images/" + currentTime + "-Image.jpg");
 
 		UserAccount userAccount = UserAccountTestData.defaultUserAccountBuilder().build();
-		given(loadUserAccountPort.loadUserAccountByUsername(TestConstants.DEFAULT_EMAIL))
+		given(loadUserAccountPort.loadUserAccountBySubject(TestConstants.DEFAULT_EMAIL))
 				.willReturn(Optional.of(userAccount));
 
 		given(loadUserAccountPort.hasNoIdentityImage(userAccount.getId())).willReturn(false);
@@ -102,7 +101,7 @@ public class IndentityDocumentServiceJunit4Tests {
 				"Identity.pdf")).willReturn("/Documents/" + currentTime + "-Identity.pdf");
 
 		UserAccount userAccount = UserAccountTestData.defaultUserAccountBuilder().build();
-		given(loadUserAccountPort.loadUserAccountByUsername(TestConstants.DEFAULT_EMAIL))
+		given(loadUserAccountPort.loadUserAccountBySubject(TestConstants.DEFAULT_EMAIL))
 				.willReturn(Optional.of(userAccount));
 
 		given(loadUserAccountPort.hasNoIdentityImage(userAccount.getId())).willReturn(true);
@@ -219,7 +218,7 @@ public class IndentityDocumentServiceJunit4Tests {
 				.willReturn("/Images/" + currentTime + "-Image.jpg");
 
 		UserAccount userAccount = UserAccountTestData.defaultUserAccountBuilder().build();
-		given(loadUserAccountPort.loadUserAccountByUsername(TestConstants.DEFAULT_EMAIL))
+		given(loadUserAccountPort.loadUserAccountBySubject(TestConstants.DEFAULT_EMAIL))
 				.willReturn(Optional.of(userAccount));
 
 		given(loadUserAccountPort.hasNoIdentityImage(userAccount.getId())).willReturn(false);

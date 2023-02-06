@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Builder
-public class TransporterVehicules {
+public class TransporterVehicles {
 
-	private List<TransporterVehiculeDto> content;
+	private List<TransporterVehicleDto> content;
 }

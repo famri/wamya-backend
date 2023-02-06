@@ -4,7 +4,7 @@ import javax.validation.constraints.NotNull;
 
 import com.excentria_it.wamya.common.SortCriterion;
 import com.excentria_it.wamya.common.annotation.Sort;
-import com.excentria_it.wamya.domain.TransporterVehicules;
+import com.excentria_it.wamya.domain.TransporterVehicles;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 
 public interface LoadVehiculesUseCase {
 
-	TransporterVehicules loadTransporterVehicules(LoadVehiculesCommand command, String locale);
+	TransporterVehicles loadTransporterVehicules(LoadVehiculesCommand command, String locale);
 
 	@Data
 	@Builder

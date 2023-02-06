@@ -49,7 +49,7 @@ public class UpdateJourneyRequestStatusService implements UpdateJourneyRequestSt
 	@Override
 	public void updateStatus(Long journeyRequestId, String username, JourneyRequestStatusCode status, String locale) {
 		ClientJourneyRequestDtoOutput clientJourneyRequestDto = loadJourneyRequestPort
-				.loadJourneyRequestByIdAndClientEmail(journeyRequestId, username, locale)
+				.loadJourneyRequestByIdAndClientSubject(journeyRequestId, username, locale)
 				.orElseThrow(() -> new JourneyRequestNotFoundException(
 						String.format("Journey request not found by ID: %d", journeyRequestId)));
 

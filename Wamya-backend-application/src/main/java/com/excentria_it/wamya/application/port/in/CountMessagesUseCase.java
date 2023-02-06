@@ -19,7 +19,7 @@ public interface CountMessagesUseCase {
 	@Builder
 	class CountMessagesCommand {
 		@NotEmpty
-		String username;
+		String subject;
 
 		@Among(value = { "false" })
 		String read;

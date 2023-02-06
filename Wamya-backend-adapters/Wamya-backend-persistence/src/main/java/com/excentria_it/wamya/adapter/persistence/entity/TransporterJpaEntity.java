@@ -23,7 +23,7 @@ public class TransporterJpaEntity extends UserAccountJpaEntity {
     @OneToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST,
             CascadeType.REFRESH}, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id")
-    private Set<VehiculeJpaEntity> vehicules = new HashSet<>();
+    private Set<VehicleJpaEntity> vehicles = new HashSet<>();
 
     @OneToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST,
             CascadeType.REFRESH}, orphanRemoval = true, fetch = FetchType.LAZY)
@@ -44,12 +44,12 @@ public class TransporterJpaEntity extends UserAccountJpaEntity {
         proposal.setTransporter(this);
     }
 
-    public void removeVehicule(VehiculeJpaEntity vehicule) {
-        vehicules.remove(vehicule);
+    public void removeVehicle(VehicleJpaEntity vehicle) {
+        vehicles.remove(vehicle);
     }
 
-    public void addVehicule(VehiculeJpaEntity vehicule) {
-        vehicules.add(vehicule);
+    public void addVehicle(VehicleJpaEntity vehicle) {
+        vehicles.add(vehicle);
     }
 
     public void removeProposal(JourneyProposalJpaEntity proposal) {
@@ -72,8 +72,8 @@ public class TransporterJpaEntity extends UserAccountJpaEntity {
 
     }
 
-    public Set<VehiculeJpaEntity> getVehicules() {
-        return Collections.unmodifiableSet(vehicules);
+    public Set<VehicleJpaEntity> getVehicles() {
+        return Collections.unmodifiableSet(vehicles);
 
     }
 

@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
-import static org.mockito.Mockito.*;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -81,7 +80,7 @@ public class LoadJourneyRequestsServiceTests {
 		ClientJourneyRequestDtoOutput clientJourneyRequestDtoOutput = defaultClientJourneyRequestDtoOutput();
 		// when
 
-		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientEmail(command.getJourneyRequestId(),
+		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientSubject(command.getJourneyRequestId(),
 				command.getClientUsername(), "en_US")).willReturn(Optional.of(clientJourneyRequestDtoOutput));
 
 		ZonedDateTime userDateTimeZoned = clientJourneyRequestDtoOutput.getDateTime().atZone(ZoneId.of("Africa/Tunis"));
@@ -95,7 +94,7 @@ public class LoadJourneyRequestsServiceTests {
 		ClientJourneyRequestDto result = loadJourneyRequestsService.loadJourneyRequest(command, "en_US");
 
 		// then
-		then(loadJourneyRequestPort).should(times(1)).loadJourneyRequestByIdAndClientEmail(
+		then(loadJourneyRequestPort).should(times(1)).loadJourneyRequestByIdAndClientSubject(
 				eq(command.getJourneyRequestId()), eq(command.getClientUsername()), eq("en_US"));
 
 		assertEquals(clientJourneyRequestDtoOutput.getId(), result.getId());
@@ -140,7 +139,7 @@ public class LoadJourneyRequestsServiceTests {
 
 		// when
 
-		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientEmail(command.getJourneyRequestId(),
+		given(loadJourneyRequestPort.loadJourneyRequestByIdAndClientSubject(command.getJourneyRequestId(),
 				command.getClientUsername(), "en_US")).willReturn(Optional.empty());
 
 		// when // then

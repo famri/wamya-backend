@@ -7,7 +7,6 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
-import static org.mockito.Mockito.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -225,7 +224,7 @@ public class CreateJourneyRequestServiceTests {
 		CreateJourneyRequestCommandBuilder commandBuilder = defaultCreateJourneyRequestCommandBuilder();
 		CreateJourneyRequestCommand command = commandBuilder.build();
 
-		given(loadUserAccountPort.loadUserAccountByUsername(any(String.class))).willReturn(Optional.empty());
+		given(loadUserAccountPort.loadUserAccountBySubject(any(String.class))).willReturn(Optional.empty());
 		// when
 		assertThrows(UserAccountNotFoundException.class,
 				() -> createJourneyRequestsService.createJourneyRequest(command, TestConstants.DEFAULT_EMAIL, "en_US"));
@@ -244,7 +243,7 @@ public class CreateJourneyRequestServiceTests {
 
 		UserAccount userAccount = notYetValidatedMobileNumberUserAccount();
 
-		given(loadUserAccountPort.loadUserAccountByUsername(any(String.class))).willReturn(Optional.of(userAccount));
+		given(loadUserAccountPort.loadUserAccountBySubject(any(String.class))).willReturn(Optional.of(userAccount));
 		// when
 		assertThrows(UserMobileNumberValidationException.class,
 				() -> createJourneyRequestsService.createJourneyRequest(command, TestConstants.DEFAULT_EMAIL, "en_US"));
@@ -326,7 +325,7 @@ public class CreateJourneyRequestServiceTests {
 
 		UserAccount userAccount = notYetValidatedMobileNumberUserAccount();
 
-		given(loadUserAccountPort.loadUserAccountByUsername(any(String.class))).willReturn(Optional.of(userAccount));
+		given(loadUserAccountPort.loadUserAccountBySubject(any(String.class))).willReturn(Optional.of(userAccount));
 		// when
 		assertThrows(UserMobileNumberValidationException.class, () -> createJourneyRequestsService
 				.createJourneyRequest(command, TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME, "en_US"));

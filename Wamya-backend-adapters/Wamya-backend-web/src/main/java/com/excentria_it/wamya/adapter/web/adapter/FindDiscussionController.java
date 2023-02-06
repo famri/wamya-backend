@@ -30,7 +30,7 @@ public class FindDiscussionController {
             final @AuthenticationPrincipal JwtAuthenticationToken principal) {
 
         FindDiscussionByClientIdAndTransporterIdCommand command = FindDiscussionByClientIdAndTransporterIdCommand
-                .builder().username(principal.getName()).clientId(clientOauthId).transporterId(transporterOauthId)
+                .builder().subject(principal.getName()).clientId(clientOauthId).transporterId(transporterOauthId)
                 .build();
 
         validationHelper.validateInput(command);
@@ -44,7 +44,7 @@ public class FindDiscussionController {
 
                                                  final @AuthenticationPrincipal JwtAuthenticationToken principal) {
 
-        FindDiscussionByIdCommand command = FindDiscussionByIdCommand.builder().username(principal.getName())
+        FindDiscussionByIdCommand command = FindDiscussionByIdCommand.builder().subject(principal.getName())
                 .discussionId(discussionId).build();
 
         validationHelper.validateInput(command);

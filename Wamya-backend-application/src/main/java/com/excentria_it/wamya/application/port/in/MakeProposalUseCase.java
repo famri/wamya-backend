@@ -25,6 +25,6 @@ public interface MakeProposalUseCase {
 		private Double price;
 
 		@NotNull
-		private Long vehiculeId;
+		private Long vehicleId;
 	}
 }

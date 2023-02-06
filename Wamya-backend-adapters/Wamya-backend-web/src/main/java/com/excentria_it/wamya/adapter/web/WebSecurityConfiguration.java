@@ -72,8 +72,8 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                         .antMatchers(HttpMethod.GET, "/constructors/{\\d+}/models/**", "/constructors**")
                         .hasAuthority(UserRole.ROLE_TRANSPORTER.name())
 
-                        .antMatchers(HttpMethod.POST, "/users/me/vehicules/**").hasAuthority(UserRole.ROLE_TRANSPORTER.name())
-                        .antMatchers(HttpMethod.GET, "/users/me/vehicules/**").hasAuthority(UserRole.ROLE_TRANSPORTER.name())
+                        .antMatchers(HttpMethod.POST, "/users/me/vehicles/**").hasAuthority(UserRole.ROLE_TRANSPORTER.name())
+                        .antMatchers(HttpMethod.GET, "/users/me/vehicles/**").hasAuthority(UserRole.ROLE_TRANSPORTER.name())
 
                         .antMatchers(HttpMethod.GET, "/users/me/journey-requests/**")
                         .hasAuthority(UserRole.ROLE_CLIENT.name())
@@ -85,7 +85,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                         .hasAnyAuthority(UserRole.ROLE_TRANSPORTER.name(), UserRole.ROLE_CLIENT.name())
                         .antMatchers(HttpMethod.POST, "/validation-codes/email/send/**")
                         .hasAnyAuthority(UserRole.ROLE_TRANSPORTER.name(), UserRole.ROLE_CLIENT.name()).antMatchers(HttpMethod.POST, "/users/me/identities/**")
-                        .hasAnyAuthority(UserRole.ROLE_TRANSPORTER.name(), UserRole.ROLE_CLIENT.name()).antMatchers(HttpMethod.POST, "/vehicules/{\\d+}/images/**")
+                        .hasAnyAuthority(UserRole.ROLE_TRANSPORTER.name(), UserRole.ROLE_CLIENT.name()).antMatchers(HttpMethod.POST, "/vehicles/{\\d+}/images/**")
                         .hasAuthority(UserRole.ROLE_TRANSPORTER.name()).anyRequest().authenticated())
                 .oauth2ResourceServer().bearerTokenResolver(bearerTokenResolver()).jwt().jwtAuthenticationConverter(jwtAuthenticationConverter());
 

@@ -103,18 +103,18 @@ public class DiscussionTestData {
     }
 
     public static LoadDiscussionsCommandBuilder defaultLoadDiscussionsCommandBuilder() {
-        return LoadDiscussionsCommand.builder().username("client1@gmail.com").pageNumber(0).pageSize(25)
+        return LoadDiscussionsCommand.builder().subject("client1@gmail.com").pageNumber(0).pageSize(25)
                 .sortingCriterion(new SortCriterion("date-time", "desc"))
                 .filteringCriterion(new FilterCriterion("active", "true"));
     }
 
     public static FindDiscussionByClientIdAndTransporterIdCommandBuilder defaultFindDiscussionByClientIdAndTransporterIdCommandBuilder() {
         return FindDiscussionByClientIdAndTransporterIdCommand.builder().clientId(OAuthId.CLIENT1_UUID).transporterId(OAuthId.TRANSPORTER1_UUID)
-                .username("client1@gmail.com");
+                .subject("client1@gmail.com");
     }
 
     public static FindDiscussionByIdCommandBuilder defaultFindDiscussionByIdCommandBuilder() {
-        return FindDiscussionByIdCommand.builder().discussionId(100L).username("client1@gmail.com");
+        return FindDiscussionByIdCommand.builder().discussionId(100L).subject("client1@gmail.com");
     }
 
     public static CreateDiscussionCommandBuilder defaultCreateDiscussionCommandBuilder() {

@@ -60,7 +60,7 @@ public class PasswordResetServiceTests {
     @Test
     void givenUserAccountNotFoundByUsername_whenRequestPasswordReset_thenReturnWithoutRegistringRequest() {
         // given
-        given(loadUserAccountPort.loadUserAccountByUsername(any(String.class))).willReturn(Optional.empty());
+        given(loadUserAccountPort.loadUserAccountBySubject(any(String.class))).willReturn(Optional.empty());
 
         // when
         passwordResetService.requestPasswordReset(TestConstants.DEFAULT_EMAIL, new Locale("fr", "FR"));
@@ -74,7 +74,7 @@ public class PasswordResetServiceTests {
 
         // given
         UserAccount userAccount = UserAccountTestData.defaultClientUserAccountBuilder().build();
-        given(loadUserAccountPort.loadUserAccountByUsername(any(String.class))).willReturn(Optional.of(userAccount));
+        given(loadUserAccountPort.loadUserAccountBySubject(any(String.class))).willReturn(Optional.of(userAccount));
         given(passwordResetProperties.getRequestValidity()).willReturn(Validity.H3);
 
         UUID uuid = UUID.randomUUID();
@@ -110,7 +110,7 @@ public class PasswordResetServiceTests {
 
         // given
         UserAccount userAccount = UserAccountTestData.defaultClientUserAccountBuilder().build();
-        given(loadUserAccountPort.loadUserAccountByUsername(any(String.class))).willReturn(Optional.of(userAccount));
+        given(loadUserAccountPort.loadUserAccountBySubject(any(String.class))).willReturn(Optional.of(userAccount));
         given(passwordResetProperties.getRequestValidity()).willReturn(Validity.H3);
 
         UUID uuid = UUID.randomUUID();

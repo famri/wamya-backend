@@ -163,26 +163,26 @@ public class DocumentJpaTestData {
 
 	}
 
-	public static DocumentJpaEntity defaultVehiculeImageDocumentJpaEntity() {
+	public static DocumentJpaEntity defaultVehicleImageDocumentJpaEntity() {
 		EntitlementJpaEntity ownerEntitlement = new EntitlementJpaEntity(EntitlementType.OWNER, true, true);
 		EntitlementJpaEntity othersEntitlement = new EntitlementJpaEntity(EntitlementType.OTHERS, true, false);
 		EntitlementJpaEntity supportEntitlement = new EntitlementJpaEntity(EntitlementType.SUPPORT, true, true);
-		DocumentJpaEntity document = new DocumentJpaEntity(null, "/Images/1621329097610-default_vehicule_avatar.jpg",
+		DocumentJpaEntity document = new DocumentJpaEntity(null, "/Images/1621329097610-default_vehicle_avatar.jpg",
 				DocumentType.IMAGE_JPEG, Instant.ofEpochMilli(1621329097610L),
 				Set.of(ownerEntitlement, othersEntitlement, supportEntitlement),
-				DigestUtils.sha256Hex("/Images/1621329097610-default_vehicule_avatar.jpg".getBytes()), true);
+				DigestUtils.sha256Hex("/Images/1621329097610-default_vehicle_avatar.jpg".getBytes()), true);
 		document.setId(-3L);
 		return document;
 	}
 
-	public static DocumentJpaEntity nonDefaultVehiculeImageDocumentJpaEntity() {
+	public static DocumentJpaEntity nonDefaultVehicleImageDocumentJpaEntity() {
 		EntitlementJpaEntity ownerEntitlement = new EntitlementJpaEntity(EntitlementType.OWNER, true, true);
 		EntitlementJpaEntity othersEntitlement = new EntitlementJpaEntity(EntitlementType.OTHERS, true, false);
 		EntitlementJpaEntity supportEntitlement = new EntitlementJpaEntity(EntitlementType.SUPPORT, true, true);
 		DocumentJpaEntity document = new DocumentJpaEntity(null,
-				"/Images/1621329097610-non_default_vehicule_avatar.jpg", DocumentType.IMAGE_JPEG,
+				"/Images/1621329097610-non_default_vehicle_avatar.jpg", DocumentType.IMAGE_JPEG,
 				Instant.ofEpochMilli(1621329097610L), Set.of(ownerEntitlement, othersEntitlement, supportEntitlement),
-				DigestUtils.sha256Hex("/Images/1621329097610-non_default_vehicule_avatar.jpg".getBytes()), false);
+				DigestUtils.sha256Hex("/Images/1621329097610-non_default_vehicle_avatar.jpg".getBytes()), false);
 		document.setId(-4L);
 		return document;
 	}
@@ -264,98 +264,98 @@ public class DocumentJpaTestData {
 		return document;
 	}
 
-	public static DocumentJpaEntity defaultUtilityVehiculeImageDocumentJpaEntity() {
+	public static DocumentJpaEntity defaultUtilityVehicleImageDocumentJpaEntity() {
 		DocumentJpaEntity document = new DocumentJpaEntity(null,
-				"/Images/1621329097610-default_utility_vehicule_image.jpg", DocumentType.IMAGE_JPEG,
+				"/Images/1621329097610-default_utility_vehicle_image.jpg", DocumentType.IMAGE_JPEG,
 				Instant.ofEpochMilli(1621329097610L), null,
-				DigestUtils.sha256Hex("/Images/1621329097610-default_utility_vehicule_image.jpg".getBytes()), true);
+				DigestUtils.sha256Hex("/Images/1621329097610-default_utility_vehicle_image.jpg".getBytes()), true);
 		document.setId(-11L);
 
 		return document;
 
 	}
 
-	public static DocumentJpaEntity defaultPickupVehiculeImageDocumentJpaEntity() {
+	public static DocumentJpaEntity defaultPickupVehicleImageDocumentJpaEntity() {
 		DocumentJpaEntity document = new DocumentJpaEntity(null,
-				"/Images/1621329097610-default_pickup_vehicule_image.jpg", DocumentType.IMAGE_JPEG,
+				"/Images/1621329097610-default_pickup_vehicle_image.jpg", DocumentType.IMAGE_JPEG,
 				Instant.ofEpochMilli(1621329097610L), null,
-				DigestUtils.sha256Hex("/Images/1621329097610-default_pickup_vehicule_image.jpg".getBytes()), true);
+				DigestUtils.sha256Hex("/Images/1621329097610-default_pickup_vehicle_image.jpg".getBytes()), true);
 		document.setId(-12L);
 
 		return document;
 
 	}
 
-	public static DocumentJpaEntity defaultBusVehiculeImageDocumentJpaEntity() {
-		DocumentJpaEntity document = new DocumentJpaEntity(null, "/Images/1621329097610-default_bus_vehicule_image.jpg",
+	public static DocumentJpaEntity defaultBusVehicleImageDocumentJpaEntity() {
+		DocumentJpaEntity document = new DocumentJpaEntity(null, "/Images/1621329097610-default_bus_vehicle_image.jpg",
 				DocumentType.IMAGE_JPEG, Instant.ofEpochMilli(1621329097610L), null,
-				DigestUtils.sha256Hex("/Images/1621329097610-default_bus_vehicule_image.jpg".getBytes()), true);
+				DigestUtils.sha256Hex("/Images/1621329097610-default_bus_vehicle_image.jpg".getBytes()), true);
 		document.setId(-13L);
 
 		return document;
 
 	}
 
-	public static DocumentJpaEntity defaultMinibusVehiculeImageDocumentJpaEntity() {
+	public static DocumentJpaEntity defaultMinibusVehicleImageDocumentJpaEntity() {
 		DocumentJpaEntity document = new DocumentJpaEntity(null,
-				"/Images/1621329097610-default_minibus_vehicule_image.jpg", DocumentType.IMAGE_JPEG,
+				"/Images/1621329097610-default_minibus_vehicle_image.jpg", DocumentType.IMAGE_JPEG,
 				Instant.ofEpochMilli(1621329097610L), null,
-				DigestUtils.sha256Hex("/Images/1621329097610-default_minibus_vehicule_image.jpg".getBytes()), true);
+				DigestUtils.sha256Hex("/Images/1621329097610-default_minibus_vehicle_image.jpg".getBytes()), true);
 		document.setId(-14L);
 
 		return document;
 
 	}
 
-	public static DocumentJpaEntity defaultVanL1H1VehiculeImageDocumentJpaEntity() {
+	public static DocumentJpaEntity defaultVanL1H1VehicleImageDocumentJpaEntity() {
 		DocumentJpaEntity document = new DocumentJpaEntity(null,
-				"/Images/1621329097610-default_vanL1H1_vehicule_image.jpg", DocumentType.IMAGE_JPEG,
+				"/Images/1621329097610-default_vanL1H1_vehicle_image.jpg", DocumentType.IMAGE_JPEG,
 				Instant.ofEpochMilli(1621329097610L), null,
-				DigestUtils.sha256Hex("/Images/1621329097610-default_vanL1H1_vehicule_image.jpg".getBytes()), true);
+				DigestUtils.sha256Hex("/Images/1621329097610-default_vanL1H1_vehicle_image.jpg".getBytes()), true);
 		document.setId(-15L);
 
 		return document;
 
 	}
 
-	public static DocumentJpaEntity defaultVanL2H2VehiculeImageDocumentJpaEntity() {
+	public static DocumentJpaEntity defaultVanL2H2VehicleImageDocumentJpaEntity() {
 		DocumentJpaEntity document = new DocumentJpaEntity(null,
-				"/Images/1621329097610-default_vanL2H2_vehicule_image.jpg", DocumentType.IMAGE_JPEG,
+				"/Images/1621329097610-default_vanL2H2_vehicle_image.jpg", DocumentType.IMAGE_JPEG,
 				Instant.ofEpochMilli(1621329097610L), null,
-				DigestUtils.sha256Hex("/Images/1621329097610-default_vanL2H2_vehicule_image.jpg".getBytes()), true);
+				DigestUtils.sha256Hex("/Images/1621329097610-default_vanL2H2_vehicle_image.jpg".getBytes()), true);
 		document.setId(-16L);
 
 		return document;
 
 	}
 
-	public static DocumentJpaEntity defaultVanL3H3VehiculeImageDocumentJpaEntity() {
+	public static DocumentJpaEntity defaultVanL3H3VehicleImageDocumentJpaEntity() {
 		DocumentJpaEntity document = new DocumentJpaEntity(null,
-				"/Images/1621329097610-default_vanL3H3_vehicule_image.jpg", DocumentType.IMAGE_JPEG,
+				"/Images/1621329097610-default_vanL3H3_vehicle_image.jpg", DocumentType.IMAGE_JPEG,
 				Instant.ofEpochMilli(1621329097610L), null,
-				DigestUtils.sha256Hex("/Images/1621329097610-default_vanL3H3_vehicule_image.jpg".getBytes()), true);
+				DigestUtils.sha256Hex("/Images/1621329097610-default_vanL3H3_vehicle_image.jpg".getBytes()), true);
 		document.setId(-15L);
 
 		return document;
 
 	}
 
-	public static DocumentJpaEntity defaultVanL4H3VehiculeImageDocumentJpaEntity() {
+	public static DocumentJpaEntity defaultVanL4H3VehicleImageDocumentJpaEntity() {
 		DocumentJpaEntity document = new DocumentJpaEntity(null,
-				"/Images/1621329097610-default_vanL4H3_vehicule_image.jpg", DocumentType.IMAGE_JPEG,
+				"/Images/1621329097610-default_vanL4H3_vehicle_image.jpg", DocumentType.IMAGE_JPEG,
 				Instant.ofEpochMilli(1621329097610L), null,
-				DigestUtils.sha256Hex("/Images/1621329097610-default_vanL4H3_vehicule_image.jpg".getBytes()), true);
+				DigestUtils.sha256Hex("/Images/1621329097610-default_vanL4H3_vehicle_image.jpg".getBytes()), true);
 		document.setId(-17L);
 
 		return document;
 
 	}
 
-	public static DocumentJpaEntity defaultFlatbedTruckVehiculeImageDocumentJpaEntity() {
+	public static DocumentJpaEntity defaultFlatbedTruckVehicleImageDocumentJpaEntity() {
 		DocumentJpaEntity document = new DocumentJpaEntity(null,
-				"/Images/1621329097610-default_flatbed_truck_vehicule_image.jpg", DocumentType.IMAGE_JPEG,
+				"/Images/1621329097610-default_flatbed_truck_vehicle_image.jpg", DocumentType.IMAGE_JPEG,
 				Instant.ofEpochMilli(1621329097610L), null,
-				DigestUtils.sha256Hex("/Images/1621329097610-default_flatbed_truck_vehicule_image.jpg".getBytes()),
+				DigestUtils.sha256Hex("/Images/1621329097610-default_flatbed_truck_vehicle_image.jpg".getBytes()),
 				true);
 		document.setId(-18L);
 
@@ -363,22 +363,22 @@ public class DocumentJpaTestData {
 
 	}
 
-	public static DocumentJpaEntity defaultBoxTruckVehiculeImageDocumentJpaEntity() {
+	public static DocumentJpaEntity defaultBoxTruckVehicleImageDocumentJpaEntity() {
 		DocumentJpaEntity document = new DocumentJpaEntity(null,
-				"/Images/1621329097610-default_box_truck_vehicule_image.jpg", DocumentType.IMAGE_JPEG,
+				"/Images/1621329097610-default_box_truck_vehicle_image.jpg", DocumentType.IMAGE_JPEG,
 				Instant.ofEpochMilli(1621329097610L), null,
-				DigestUtils.sha256Hex("/Images/1621329097610-default_box_truck_vehicule_image.jpg".getBytes()), true);
+				DigestUtils.sha256Hex("/Images/1621329097610-default_box_truck_vehicle_image.jpg".getBytes()), true);
 		document.setId(-19L);
 
 		return document;
 
 	}
 
-	public static DocumentJpaEntity defaultRegrigeratedTruckVehiculeImageDocumentJpaEntity() {
+	public static DocumentJpaEntity defaultRegrigeratedTruckVehicleImageDocumentJpaEntity() {
 		DocumentJpaEntity document = new DocumentJpaEntity(null,
-				"/Images/1621329097610-default_refrigerated_truck_vehicule_image.jpg", DocumentType.IMAGE_JPEG,
+				"/Images/1621329097610-default_refrigerated_truck_vehicle_image.jpg", DocumentType.IMAGE_JPEG,
 				Instant.ofEpochMilli(1621329097610L), null,
-				DigestUtils.sha256Hex("/Images/1621329097610-default_refrigerated_truck_vehicule_image.jpg".getBytes()),
+				DigestUtils.sha256Hex("/Images/1621329097610-default_refrigerated_truck_vehicle_image.jpg".getBytes()),
 				true);
 		document.setId(-20L);
 
@@ -386,33 +386,33 @@ public class DocumentJpaTestData {
 
 	}
 
-	public static DocumentJpaEntity defaultTankerVehiculeImageDocumentJpaEntity() {
+	public static DocumentJpaEntity defaultTankerVehicleImageDocumentJpaEntity() {
 		DocumentJpaEntity document = new DocumentJpaEntity(null,
-				"/Images/1621329097610-default_tanker_vehicule_image.jpg", DocumentType.IMAGE_JPEG,
+				"/Images/1621329097610-default_tanker_vehicle_image.jpg", DocumentType.IMAGE_JPEG,
 				Instant.ofEpochMilli(1621329097610L), null,
-				DigestUtils.sha256Hex("/Images/1621329097610-default_tanker_vehicule_image.jpg".getBytes()), true);
+				DigestUtils.sha256Hex("/Images/1621329097610-default_tanker_vehicle_image.jpg".getBytes()), true);
 		document.setId(-21L);
 
 		return document;
 
 	}
 
-	public static DocumentJpaEntity defaultDumpTruckVehiculeImageDocumentJpaEntity() {
+	public static DocumentJpaEntity defaultDumpTruckVehicleImageDocumentJpaEntity() {
 		DocumentJpaEntity document = new DocumentJpaEntity(null,
-				"/Images/1621329097610-default_dump_truck_vehicule_image.jpg", DocumentType.IMAGE_JPEG,
+				"/Images/1621329097610-default_dump_truck_vehicle_image.jpg", DocumentType.IMAGE_JPEG,
 				Instant.ofEpochMilli(1621329097610L), null,
-				DigestUtils.sha256Hex("/Images/1621329097610-default_dump_truck_vehicule_image.jpg".getBytes()), true);
+				DigestUtils.sha256Hex("/Images/1621329097610-default_dump_truck_vehicle_image.jpg".getBytes()), true);
 		document.setId(-22L);
 
 		return document;
 
 	}
 
-	public static DocumentJpaEntity defaultHookLiftTruckVehiculeImageDocumentJpaEntity() {
+	public static DocumentJpaEntity defaultHookLiftTruckVehicleImageDocumentJpaEntity() {
 		DocumentJpaEntity document = new DocumentJpaEntity(null,
-				"/Images/1621329097610-default_hook_lift_truck_vehicule_image.jpg", DocumentType.IMAGE_JPEG,
+				"/Images/1621329097610-default_hook_lift_truck_vehicle_image.jpg", DocumentType.IMAGE_JPEG,
 				Instant.ofEpochMilli(1621329097610L), null,
-				DigestUtils.sha256Hex("/Images/1621329097610-default_hook_lift_truck_vehicule_image.jpg".getBytes()),
+				DigestUtils.sha256Hex("/Images/1621329097610-default_hook_lift_truck_vehicle_image.jpg".getBytes()),
 				true);
 		document.setId(-23L);
 
@@ -420,11 +420,11 @@ public class DocumentJpaTestData {
 
 	}
 
-	public static DocumentJpaEntity defaultTankTransporterVehiculeImageDocumentJpaEntity() {
+	public static DocumentJpaEntity defaultTankTransporterVehicleImageDocumentJpaEntity() {
 		DocumentJpaEntity document = new DocumentJpaEntity(null,
-				"/Images/1621329097610-default_tank_transporter_vehicule_image.jpg", DocumentType.IMAGE_JPEG,
+				"/Images/1621329097610-default_tank_transporter_vehicle_image.jpg", DocumentType.IMAGE_JPEG,
 				Instant.ofEpochMilli(1621329097610L), null,
-				DigestUtils.sha256Hex("/Images/1621329097610-default_tank_transporter_vehicule_image.jpg".getBytes()),
+				DigestUtils.sha256Hex("/Images/1621329097610-default_tank_transporter_vehicle_image.jpg".getBytes()),
 				true);
 		document.setId(-24L);
 

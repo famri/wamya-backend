@@ -3,14 +3,12 @@ package com.excentria_it.wamya.application.service;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
-import static org.mockito.Mockito.*;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
-import java.util.Optional;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Test;
@@ -21,7 +19,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import com.excentria_it.wamya.application.port.out.CheckUserVehiculePort;
+import com.excentria_it.wamya.application.port.out.CheckUserVehiclePort;
 import com.excentria_it.wamya.application.port.out.DeleteFilePort;
 import com.excentria_it.wamya.application.port.out.LoadVehiculePort;
 import com.excentria_it.wamya.application.port.out.SaveFilePort;
@@ -31,9 +29,7 @@ import com.excentria_it.wamya.common.exception.DocumentAccessException;
 import com.excentria_it.wamya.common.exception.ForbiddenAccessException;
 import com.excentria_it.wamya.common.exception.UnsupportedMimeTypeException;
 import com.excentria_it.wamya.domain.DocumentType;
-import com.excentria_it.wamya.domain.UserAccount;
 import com.excentria_it.wamya.test.data.common.TestConstants;
-import com.excentria_it.wamya.test.data.common.UserAccountTestData;
 
 @RunWith(PowerMockRunner.class)
 public class VehiculeImageServiceJUnit4Tests {
@@ -42,26 +38,26 @@ public class VehiculeImageServiceJUnit4Tests {
 	@Mock
 	private DeleteFilePort deleteFilePort;
 	@Mock
-	private CheckUserVehiculePort checkUserVehiculePort;
+	private CheckUserVehiclePort checkUserVehiclePort;
 	@Mock
 	private UpdateVehiculePort updateVehiculePort;
 	@Mock
 	private LoadVehiculePort loadVehiculePort;
 
 	@InjectMocks
-	private VehiculeImageService vehiculeImageService;
+	private VehicleImageService vehiculeImageService;
 
 	@Test
 	public void givenNotCurrentUserVehicule_whenUploadVehiculeImage_thenThrowForbiddenAccessException() {
 		// given
-		given(checkUserVehiculePort.isUserVehicule(any(String.class), any(Long.class))).willReturn(false);
+		given(checkUserVehiclePort.isUserVehicle(any(String.class), any(Long.class))).willReturn(false);
 
 		byte[] initialArray = { 0, 1, 2 };
 		BufferedInputStream imageInputStream = new BufferedInputStream(new ByteArrayInputStream(initialArray));
 
 		// When // then
 
-		assertThrows(ForbiddenAccessException.class, () -> vehiculeImageService.uploadVehiculeImage(imageInputStream,
+		assertThrows(ForbiddenAccessException.class, () -> vehiculeImageService.uploadVehicleImage(imageInputStream,
 				"Image.jpg", 1L, TestConstants.DEFAULT_EMAIL));
 
 	}
@@ -71,7 +67,7 @@ public class VehiculeImageServiceJUnit4Tests {
 	public void givenBadDocumentType_whenUploadVehiculeImage_thenThrowUnsupportedMimeTypeException()
 			throws IOException {
 		// given
-		given(checkUserVehiculePort.isUserVehicule(any(String.class), any(Long.class))).willReturn(true);
+		given(checkUserVehiclePort.isUserVehicle(any(String.class), any(Long.class))).willReturn(true);
 
 		byte[] initialArray = { 0, 1, 2 };
 		BufferedInputStream imageInputStream = new BufferedInputStream(new ByteArrayInputStream(initialArray));
@@ -82,7 +78,7 @@ public class VehiculeImageServiceJUnit4Tests {
 		// When // then
 
 		assertThrows(UnsupportedMimeTypeException.class, () -> vehiculeImageService
-				.uploadVehiculeImage(imageInputStream, "Image.jpg", 1L, TestConstants.DEFAULT_EMAIL));
+				.uploadVehicleImage(imageInputStream, "Image.jpg", 1L, TestConstants.DEFAULT_EMAIL));
 
 	}
 
@@ -91,7 +87,7 @@ public class VehiculeImageServiceJUnit4Tests {
 	public void givenIOExceptionWhenDetectingDocumentType_whenUploadVehiculeImage_thenThrowDocumentAccessException()
 			throws IOException {
 		// given
-		given(checkUserVehiculePort.isUserVehicule(any(String.class), any(Long.class))).willReturn(true);
+		given(checkUserVehiclePort.isUserVehicle(any(String.class), any(Long.class))).willReturn(true);
 
 		byte[] initialArray = { 0, 1, 2 };
 		BufferedInputStream imageInputStream = new BufferedInputStream(new ByteArrayInputStream(initialArray));
@@ -101,7 +97,7 @@ public class VehiculeImageServiceJUnit4Tests {
 
 		// When // then
 
-		assertThrows(DocumentAccessException.class, () -> vehiculeImageService.uploadVehiculeImage(imageInputStream,
+		assertThrows(DocumentAccessException.class, () -> vehiculeImageService.uploadVehicleImage(imageInputStream,
 				"Image.jpg", 1L, TestConstants.DEFAULT_EMAIL));
 
 	}
@@ -110,7 +106,7 @@ public class VehiculeImageServiceJUnit4Tests {
 	@PrepareForTest(MimeTypeDetectionFacade.class)
 	public void givenIOExceptionWhenSavingFile_whenUploadVehiculeImage_thenThrowDocumentAccessException()
 			throws IOException {
-		given(checkUserVehiculePort.isUserVehicule(any(String.class), any(Long.class))).willReturn(true);
+		given(checkUserVehiclePort.isUserVehicle(any(String.class), any(Long.class))).willReturn(true);
 		// given
 		byte[] initialArray = { 0, 1, 2 };
 		BufferedInputStream imageInputStream = new BufferedInputStream(new ByteArrayInputStream(initialArray));
@@ -122,7 +118,7 @@ public class VehiculeImageServiceJUnit4Tests {
 		PowerMockito.when(MimeTypeDetectionFacade.detectContentType(any(InputStream.class))).thenReturn("image/jpeg");
 
 		// when // then
-		assertThrows(DocumentAccessException.class, () -> vehiculeImageService.uploadVehiculeImage(imageInputStream,
+		assertThrows(DocumentAccessException.class, () -> vehiculeImageService.uploadVehicleImage(imageInputStream,
 				"Image.jpg", 1L, TestConstants.DEFAULT_EMAIL));
 
 	}
@@ -131,7 +127,7 @@ public class VehiculeImageServiceJUnit4Tests {
 	@PrepareForTest(MimeTypeDetectionFacade.class)
 	public void givenIOExceptionWhenDeletingFile_whenUploadVehiculeImage_thenThrowDocumentAccessException()
 			throws IOException {
-		given(checkUserVehiculePort.isUserVehicule(any(String.class), any(Long.class))).willReturn(true);
+		given(checkUserVehiclePort.isUserVehicle(any(String.class), any(Long.class))).willReturn(true);
 		// given
 		byte[] initialArray = { 0, 1, 2 };
 		BufferedInputStream imageInputStream = new BufferedInputStream(new ByteArrayInputStream(initialArray));
@@ -150,7 +146,7 @@ public class VehiculeImageServiceJUnit4Tests {
 		doThrow(IOException.class).when(deleteFilePort).deleteFile(any(String.class));
 
 		// when // then
-		assertThrows(DocumentAccessException.class, () -> vehiculeImageService.uploadVehiculeImage(imageInputStream,
+		assertThrows(DocumentAccessException.class, () -> vehiculeImageService.uploadVehicleImage(imageInputStream,
 				"Image.jpg", 1L, TestConstants.DEFAULT_EMAIL));
 
 	}
@@ -164,7 +160,7 @@ public class VehiculeImageServiceJUnit4Tests {
 		byte[] initialArray = { 0, 1, 2 };
 		BufferedInputStream imageInputStream = new BufferedInputStream(new ByteArrayInputStream(initialArray));
 
-		given(checkUserVehiculePort.isUserVehicule(any(String.class), any(Long.class))).willReturn(true);
+		given(checkUserVehiclePort.isUserVehicle(any(String.class), any(Long.class))).willReturn(true);
 		
 		PowerMockito.mockStatic(MimeTypeDetectionFacade.class);
 		PowerMockito.when(MimeTypeDetectionFacade.detectContentType(any(InputStream.class))).thenReturn("image/jpeg");
@@ -181,7 +177,7 @@ public class VehiculeImageServiceJUnit4Tests {
 		
 
 		// when
-		vehiculeImageService.uploadVehiculeImage(imageInputStream, "Image.jpg", 1L, TestConstants.DEFAULT_EMAIL);
+		vehiculeImageService.uploadVehicleImage(imageInputStream, "Image.jpg", 1L, TestConstants.DEFAULT_EMAIL);
 
 		// then
 		PowerMockito.verifyStatic(MimeTypeDetectionFacade.class, times(1));
@@ -205,7 +201,7 @@ public class VehiculeImageServiceJUnit4Tests {
 		byte[] initialArray = { 0, 1, 2 };
 		BufferedInputStream imageInputStream = new BufferedInputStream(new ByteArrayInputStream(initialArray));
 
-		given(checkUserVehiculePort.isUserVehicule(any(String.class), any(Long.class))).willReturn(true);
+		given(checkUserVehiclePort.isUserVehicle(any(String.class), any(Long.class))).willReturn(true);
 		
 		PowerMockito.mockStatic(MimeTypeDetectionFacade.class);
 		PowerMockito.when(MimeTypeDetectionFacade.detectContentType(any(InputStream.class))).thenReturn("image/jpeg");
@@ -221,7 +217,7 @@ public class VehiculeImageServiceJUnit4Tests {
 		
 
 		// when
-		vehiculeImageService.uploadVehiculeImage(imageInputStream, "Image.jpg", 1L, TestConstants.DEFAULT_EMAIL);
+		vehiculeImageService.uploadVehicleImage(imageInputStream, "Image.jpg", 1L, TestConstants.DEFAULT_EMAIL);
 
 		// then
 		PowerMockito.verifyStatic(MimeTypeDetectionFacade.class, times(1));

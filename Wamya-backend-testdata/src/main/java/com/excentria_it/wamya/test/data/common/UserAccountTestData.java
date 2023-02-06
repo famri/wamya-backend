@@ -17,7 +17,7 @@ public class UserAccountTestData {
 
     public static UserAccountBuilder defaultUserAccountBuilder() {
         Map<String, String> preferences = new HashMap<>();
-        preferences.put("timezone", "Africa/Tunis");
+        preferences.put("timezone", "Europe/Paris");
         preferences.put("locale", "fr_FR");
         return UserAccount.builder().id(1L).isTransporter(false).genderId(1L).firstname(DEFAULT_FIRSTNAME).oauthId(OAuthId.USER_UUID)
                 .lastname(DEFAULT_LASTNAME).dateOfBirth(DEFAULT_DATE_OF_BIRTH).email(DEFAULT_EMAIL)
@@ -30,7 +30,7 @@ public class UserAccountTestData {
 
     public static UserAccountBuilder defaultClientUserAccountBuilder() {
         Map<String, String> preferences = new HashMap<>();
-        preferences.put("timezone", "Africa/Tunis");
+        preferences.put("timezone", "Europe/Paris");
         preferences.put("locale", "fr_FR");
 
         return UserAccount.builder().id(1L).isTransporter(false).genderId(1L).firstname("client1").oauthId(OAuthId.CLIENT1_UUID)
@@ -44,7 +44,7 @@ public class UserAccountTestData {
 
     public static UserAccountBuilder defaultTransporterUserAccountBuilder() {
         Map<String, String> preferences = new HashMap<>();
-        preferences.put("timezone", "Europe/Helsinki");
+        preferences.put("timezone", "Europe/Paris");
         preferences.put("locale", "fr_FR");
 
         return UserAccount.builder().id(2L).isTransporter(true).genderId(1L).firstname("transporter1").oauthId(OAuthId.TRANSPORTER1_UUID)

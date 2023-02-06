@@ -3,8 +3,8 @@ package com.excentria_it.wamya.adapter.persistence.mapper;
 import org.springframework.stereotype.Component;
 
 import com.excentria_it.wamya.application.utils.DocumentUrlResolver;
-import com.excentria_it.wamya.domain.TransporterVehiculeDto;
-import com.excentria_it.wamya.domain.TransporterVehiculeOutput;
+import com.excentria_it.wamya.domain.TransporterVehicleDto;
+import com.excentria_it.wamya.domain.TransporterVehicleOutput;
 
 import lombok.RequiredArgsConstructor;
 
@@ -14,26 +14,26 @@ public class VehiculeMapper {
 
 	private final DocumentUrlResolver documentUrlResolver;
 
-	public TransporterVehiculeDto mapToDomainEntity(TransporterVehiculeOutput transporterVehiculeOutput) {
+	public TransporterVehicleDto mapToDomainEntity(TransporterVehicleOutput transporterVehicleOutput) {
 
-		String vehiculeImageUrl = (transporterVehiculeOutput.getImage().getId() != null
-				&& transporterVehiculeOutput.getImage().getHash() != null)
-						? documentUrlResolver.resolveUrl(transporterVehiculeOutput.getImage().getId(),
-								transporterVehiculeOutput.getImage().getHash())
-						: documentUrlResolver.resolveUrl(transporterVehiculeOutput.getEngineType().getImageId(),
-								transporterVehiculeOutput.getEngineType().getImageHash());
+		String vehiculeImageUrl = (transporterVehicleOutput.getImage().getId() != null
+				&& transporterVehicleOutput.getImage().getHash() != null)
+						? documentUrlResolver.resolveUrl(transporterVehicleOutput.getImage().getId(),
+								transporterVehicleOutput.getImage().getHash())
+						: documentUrlResolver.resolveUrl(transporterVehicleOutput.getEngineType().getImageId(),
+								transporterVehicleOutput.getEngineType().getImageHash());
 
-		return TransporterVehiculeDto.builder().id(transporterVehiculeOutput.getId())
-				.regsitrationNumber(transporterVehiculeOutput.getRegistrationNumber())
-				.circulationDate(transporterVehiculeOutput.getCirculationDate())
-				.constructorName(transporterVehiculeOutput.getConstructor().getTemporaryName() != null
-						? transporterVehiculeOutput.getConstructor().getTemporaryName()
-						: transporterVehiculeOutput.getConstructor().getName())
-				.modelName(transporterVehiculeOutput.getModel().getTemporaryName() != null
-						? transporterVehiculeOutput.getModel().getTemporaryName()
-						: transporterVehiculeOutput.getModel().getName())
-				.engineTypeId(transporterVehiculeOutput.getEngineType().getId())
-				.engineTypeName(transporterVehiculeOutput.getEngineType().getName()).photoUrl(vehiculeImageUrl)
+		return TransporterVehicleDto.builder().id(transporterVehicleOutput.getId())
+				.registrationNumber(transporterVehicleOutput.getRegistrationNumber())
+				.circulationDate(transporterVehicleOutput.getCirculationDate())
+				.constructorName(transporterVehicleOutput.getConstructor().getTemporaryName() != null
+						? transporterVehicleOutput.getConstructor().getTemporaryName()
+						: transporterVehicleOutput.getConstructor().getName())
+				.modelName(transporterVehicleOutput.getModel().getTemporaryName() != null
+						? transporterVehicleOutput.getModel().getTemporaryName()
+						: transporterVehicleOutput.getModel().getName())
+				.engineTypeId(transporterVehicleOutput.getEngineType().getId())
+				.engineTypeName(transporterVehicleOutput.getEngineType().getName()).photoUrl(vehiculeImageUrl)
 
 				.build();
 

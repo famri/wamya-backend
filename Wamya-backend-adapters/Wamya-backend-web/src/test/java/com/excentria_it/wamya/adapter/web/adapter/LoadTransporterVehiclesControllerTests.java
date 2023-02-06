@@ -1,13 +1,12 @@
 package com.excentria_it.wamya.adapter.web.adapter;
 
-import com.c4_soft.springaddons.security.oauth2.test.mockmvc.MockMvcSupport;
 import com.excentria_it.wamya.adapter.web.WebConfiguration;
 import com.excentria_it.wamya.adapter.web.WebSecurityConfiguration;
 import com.excentria_it.wamya.adapter.web.utils.ValidationHelper;
 import com.excentria_it.wamya.application.port.in.LoadVehiculesUseCase;
 import com.excentria_it.wamya.application.port.in.LoadVehiculesUseCase.LoadVehiculesCommand;
 import com.excentria_it.wamya.common.exception.handlers.RestApiExceptionHandler;
-import com.excentria_it.wamya.domain.TransporterVehicules;
+import com.excentria_it.wamya.domain.TransporterVehicles;
 import com.excentria_it.wamya.test.data.common.TestConstants;
 import com.excentria_it.wamya.test.data.common.VehiculeTestData;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -45,10 +44,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
 @ContextConfiguration(classes = {WebSecurityConfiguration.class, WebConfiguration.class})
-@Import(value = {LoadTransporterVehiculesController.class, RestApiExceptionHandler.class, MockMvcSupport.class,
+@Import(value = {LoadTransporterVehiclesController.class, RestApiExceptionHandler.class,
         ValidationHelper.class})
-@WebMvcTest(controllers = LoadTransporterVehiculesController.class)
-public class LoadTransporterVehiculesControllerTests {
+@WebMvcTest(controllers = LoadTransporterVehiclesController.class)
+public class LoadTransporterVehiclesControllerTests {
 
     @Autowired
     private WebApplicationContext context;
@@ -75,7 +74,7 @@ public class LoadTransporterVehiculesControllerTests {
 
         LoadVehiculesCommand command = VehiculeTestData.defaultLoadVehiculesCommandBuilder().build();
 
-        TransporterVehicules transporterVehicules = VehiculeTestData.defaultTransporterVehicules();
+        TransporterVehicles transporterVehicules = VehiculeTestData.defaultTransporterVehicles();
 
         given(loadVehiculesUseCase.loadTransporterVehicules(any(LoadVehiculesCommand.class), any(String.class)))
                 .willReturn(transporterVehicules);
@@ -84,11 +83,11 @@ public class LoadTransporterVehiculesControllerTests {
         // when
 
         MvcResult mvcResult =
-                mvc.perform(get("/users/me/vehicules").with(jwt().jwt(builder -> builder.claim("sub", TestConstants.DEFAULT_EMAIL)).authorities(Arrays.asList(new SimpleGrantedAuthority("ROLE_TRANSPORTER"))))
+                mvc.perform(get("/users/me/vehicles").with(jwt().jwt(builder -> builder.claim("sub", TestConstants.DEFAULT_EMAIL)).authorities(Arrays.asList(new SimpleGrantedAuthority("ROLE_TRANSPORTER"))))
                         .param("sort", "id,asc")).andExpect(status().isOk()).andReturn();
 
-        TransporterVehicules response = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
-                TransporterVehicules.class);
+        TransporterVehicles response = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
+                TransporterVehicles.class);
         // then
 
         then(loadVehiculesUseCase).should(times(1)).loadTransporterVehicules(commandCaptor.capture(), eq("en_US"));

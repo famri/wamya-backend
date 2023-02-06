@@ -70,12 +70,12 @@ public class GeoPlacePersistenceAdapter implements LoadFavoriteGeoPlacePort, Cre
 
 		Optional<ClientJpaEntity> client = Optional.empty();
 		if (username.contains("@")) {
-			client = clientRepository.findByEmail(username);
+			client = clientRepository.findClientByEmail(username);
 		} else if (username.contains("_")) {
 
 			String[] userMobilePhone = username.split("_");
 
-			client = clientRepository.findByIcc_ValueAndMobileNumber(userMobilePhone[0], userMobilePhone[1]);
+			client = clientRepository.findClientByIcc_ValueAndMobileNumber(userMobilePhone[0], userMobilePhone[1]);
 		} else {
 			throw new UserAccountNotFoundException(String.format("User account not found by username: %s", username));
 		}

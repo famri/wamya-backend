@@ -1,13 +1,10 @@
 package com.excentria_it.wamya.adapter.persistence.adapter;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.BDDMockito.*;
-import static org.mockito.Mockito.*;
-
-import java.util.Optional;
-
+import com.excentria_it.wamya.adapter.persistence.entity.UserAccountJpaEntity;
+import com.excentria_it.wamya.adapter.persistence.repository.UserAccountRepository;
+import com.excentria_it.wamya.adapter.persistence.repository.UserPreferenceRepository;
+import com.excentria_it.wamya.domain.UserPreference;
+import com.excentria_it.wamya.test.data.common.UserAccountJpaEntityTestData;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -15,152 +12,106 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.excentria_it.wamya.adapter.persistence.entity.UserAccountJpaEntity;
-import com.excentria_it.wamya.adapter.persistence.repository.UserAccountRepository;
-import com.excentria_it.wamya.adapter.persistence.repository.UserPreferenceRepository;
-import com.excentria_it.wamya.domain.UserPreference;
-import com.excentria_it.wamya.test.data.common.TestConstants;
-import com.excentria_it.wamya.test.data.common.UserAccountJpaEntityTestData;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class UserPreferencePersistenceAdapterTests {
-	@Mock
-	private UserAccountRepository userAccountRepository;
-	@Mock
-	private UserPreferenceRepository userPreferenceRepository;
+    private final String preferenceKey = "SOME_KEY";
+    private final String preferenceValue = "SOME_VALUE";
+    private final String userSubject = "some_user-oauth-id";
+    private final String timezone = "timezone";
+    private final String timezoneValue = "Europe/Paris";
+    @Mock
+    private UserAccountRepository userAccountRepository;
+    @Mock
+    private UserPreferenceRepository userPreferenceRepository;
 
-	@InjectMocks
-	private UserPreferencePersistenceAdapter userPreferencePersistenceAdapter;
+    @InjectMocks
+    private UserPreferencePersistenceAdapter userPreferencePersistenceAdapter;
 
-	@Test
-	void testSaveUserPreferenceWithEmailUsername() {
-		// given
-		UserAccountJpaEntity userAccountEntity = UserAccountJpaEntityTestData.defaultExistentClientJpaEntity();
-		given(userAccountRepository.findByEmailWithUserPreferences(any(String.class)))
-				.willReturn(Optional.of(userAccountEntity));
+    @Test
+    void testSaveUserPreference() {
+        // given
+        UserAccountJpaEntity userAccountEntity = UserAccountJpaEntityTestData.defaultExistentClientJpaEntity();
+        given(userAccountRepository.findBySubjectWithUserPreferences(any(String.class)))
+                .willReturn(Optional.of(userAccountEntity));
 
-		// When
-		userPreferencePersistenceAdapter.saveUserPreference("SOME_KEY", "SOME_VALUE", TestConstants.DEFAULT_EMAIL);
-		// then
-		ArgumentCaptor<UserAccountJpaEntity> captor = ArgumentCaptor.forClass(UserAccountJpaEntity.class);
+        // When
+        userPreferencePersistenceAdapter.saveUserPreference(preferenceKey, preferenceValue, userSubject);
+        // then
+        ArgumentCaptor<UserAccountJpaEntity> captor = ArgumentCaptor.forClass(UserAccountJpaEntity.class);
 
-		then(userAccountRepository).should(times(1)).save(captor.capture());
+        then(userAccountRepository).should(times(1)).save(captor.capture());
 
-		assertTrue(captor.getValue().getPreferences().get("SOME_KEY") != null
-				&& "SOME_VALUE".equals(captor.getValue().getPreferences().get("SOME_KEY").getValue()));
-		assertTrue(captor.getValue().getPreferences().get("SOME_KEY") != null
-				&& captor.getValue().getPreferences().get("SOME_KEY").getUserAccount().equals(userAccountEntity));
-	}
+        assertTrue(captor.getValue().getPreferences().get(preferenceKey) != null
+                && preferenceValue.equals(captor.getValue().getPreferences().get(preferenceKey).getValue()));
+        assertTrue(captor.getValue().getPreferences().get(preferenceKey) != null
+                && captor.getValue().getPreferences().get(preferenceKey).getUserAccount().equals(userAccountEntity));
+    }
 
-	@Test
-	void testSaveUserPreferenceWithMobilePhoneNumberUsername() {
-		// given
-		UserAccountJpaEntity userAccountEntity = UserAccountJpaEntityTestData.defaultExistentClientJpaEntity();
-		given(userAccountRepository.findByMobilePhoneNumberWithUserPreferences(any(String.class), any(String.class)))
-				.willReturn(Optional.of(userAccountEntity));
 
-		// When
-		userPreferencePersistenceAdapter.saveUserPreference("SOME_KEY", "SOME_VALUE",
-				TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME);
-		// then
-		ArgumentCaptor<UserAccountJpaEntity> captor = ArgumentCaptor.forClass(UserAccountJpaEntity.class);
+    @Test
+    void givenUserAccountNotFoundBySubject_WhenSaveUserPreference_ThenDoNotSavePreference() {
+        // given
 
-		then(userAccountRepository).should(times(1)).save(captor.capture());
 
-		assertTrue(captor.getValue().getPreferences().get("SOME_KEY") != null
-				&& "SOME_VALUE".equals(captor.getValue().getPreferences().get("SOME_KEY").getValue()));
-		assertTrue(captor.getValue().getPreferences().get("SOME_KEY") != null
-				&& captor.getValue().getPreferences().get("SOME_KEY").getUserAccount().equals(userAccountEntity));
-	}
+        given(userAccountRepository.findBySubjectWithUserPreferences(any(String.class))).willReturn(Optional.empty());
 
-	@Test
-	void testSaveUserPreferenceWithBadUsername() {
-		// given
+        // When
+        userPreferencePersistenceAdapter.saveUserPreference(preferenceKey, preferenceValue, userSubject);
+        // then
 
-		// When
-		userPreferencePersistenceAdapter.saveUserPreference("SOME_KEY", "SOME_VALUE", "BAD USER NAME");
-		// then
-		then(userAccountRepository).should(never()).save(any(UserAccountJpaEntity.class));
+        then(userAccountRepository).should(never()).save(any(UserAccountJpaEntity.class));
 
-	}
+    }
 
-	@Test
-	void givenUserAccountNotFoundByUserName_WehnSaveUserPreference_ThenDoNotSavePreference() {
-		// given
+    @Test
+    void givenUserIdAndExistentUserPreference_WhenLoadUserPreferenceByKeyAndUserId_ThenReturnUserPreference() {
+        // given
+        UserPreference userPreference = new UserPreference(1L, timezone, timezoneValue);
+        given(userPreferenceRepository.findByKeyAndUserAccountId(any(String.class), any(Long.class)))
+                .willReturn(Optional.of(userPreference));
+        // when
+        Optional<UserPreference> userPreferenceOptional = userPreferencePersistenceAdapter
+                .loadUserPreferenceByKeyAndUserId(timezone, 1L);
+        // Then
 
-		given(userAccountRepository.findByEmailWithUserPreferences(any(String.class))).willReturn(Optional.empty());
+        then(userPreferenceRepository).should(times(1)).findByKeyAndUserAccountId(eq(timezone),
+                eq(1L));
+        assertEquals(userPreference, userPreferenceOptional.get());
+    }
 
-		// When
-		userPreferencePersistenceAdapter.saveUserPreference("SOME_KEY", "SOME_VALUE", TestConstants.DEFAULT_EMAIL);
-		// then
+    @Test
+    void givenNonExistentUserPreference_WhenLoadUserPreferenceByKeyAndUserId_ThenReturnEmpty() {
+        // given
+        given(userPreferenceRepository.findByKeyAndUserAccountId(any(String.class), any(Long.class)))
+                .willReturn(Optional.empty());
+        // when
+        Optional<UserPreference> userPreferenceOptional = userPreferencePersistenceAdapter
+                .loadUserPreferenceByKeyAndUserId(timezone, 1L);
+        // Then
 
-		then(userAccountRepository).should(never()).save(any(UserAccountJpaEntity.class));
+        then(userPreferenceRepository).should(times(1)).findByKeyAndUserAccountId(eq(timezone),
+                eq(1L));
+        assertTrue(userPreferenceOptional.isEmpty());
+    }
 
-	}
-
-	@Test
-	void givenEmailUsernameAndExistentUserPreference_WhenLoadUserPreferenceByKeyAndUsername_ThenReturnUserPreference() {
-
-		// given
-		UserPreference userPreference = new UserPreference(1L, "timezone", "Africa/tunis");
-		given(userPreferenceRepository.findByKeyAndUserAccountEmail(any(String.class), any(String.class)))
-				.willReturn(Optional.of(userPreference));
-		// when
-		Optional<UserPreference> userPreferenceOptional = userPreferencePersistenceAdapter
-				.loadUserPreferenceByKeyAndUsername("timezone", TestConstants.DEFAULT_EMAIL);
-		// Then
-		then(userPreferenceRepository).should(times(1)).findByKeyAndUserAccountEmail(eq("timezone"),
-				eq(TestConstants.DEFAULT_EMAIL));
-		assertEquals(userPreference, userPreferenceOptional.get());
-
-	}
-
-	@Test
-	void givenMobileNumberUsernameAndExistentUserPreference_WhenLoadUserPreferenceByKeyAndUsername_ThenReturnUserPreference() {
-
-		// given
-		UserPreference userPreference = new UserPreference(1L, "timezone", "Africa/tunis");
-		given(userPreferenceRepository.findByKeyAndUserAccountMobileNumber(any(String.class), any(String.class),
-				any(String.class))).willReturn(Optional.of(userPreference));
-		// when
-		Optional<UserPreference> userPreferenceOptional = userPreferencePersistenceAdapter
-				.loadUserPreferenceByKeyAndUsername("timezone", TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME);
-		// Then
-
-		then(userPreferenceRepository).should(times(1)).findByKeyAndUserAccountMobileNumber(eq("timezone"),
-				eq(TestConstants.DEFAULT_INTERNATIONAL_CALLING_CODE), eq(TestConstants.DEFAULT_MOBILE_NUMBER));
-		assertEquals(userPreference, userPreferenceOptional.get());
-
-	}
-
-	@Test
-	void givenBadUsername_WhenLoadUserPreferenceByKeyAndUsername_ThenReturnEmptyUserPreference() {
-
-		// given
-
-		// when
-		Optional<UserPreference> userPreferenceOptional = userPreferencePersistenceAdapter
-				.loadUserPreferenceByKeyAndUsername("timezone", "BAD USERNAME");
-		// Then
-		then(userPreferenceRepository).should(never()).findByKeyAndUserAccountEmail(any(String.class),
-				any(String.class));
-		assertThat(userPreferenceOptional).isEmpty();
-
-	}
-
-	@Test
-	void givenUserIdAndExistentUserPreference_WhenLoadUserPreferenceByKeyAndUserId_ThenReturnUserPreference() {
-		// given
-		UserPreference userPreference = new UserPreference(1L, "timezone", "Africa/tunis");
-		given(userPreferenceRepository.findByKeyAndUserAccountId(any(String.class), any(Long.class)))
-				.willReturn(Optional.of(userPreference));
-		// when
-		Optional<UserPreference> userPreferenceOptional = userPreferencePersistenceAdapter
-				.loadUserPreferenceByKeyAndUserId("timezone", 1L);
-		// Then
-
-		then(userPreferenceRepository).should(times(1)).findByKeyAndUserAccountId(eq("timezone"),
-				eq(1L));
-		assertEquals(userPreference, userPreferenceOptional.get());
-	}
+    @Test
+    void testLoadUserPreferenceByKeyAndSubject() {
+        // given
+        UserPreference userPreference = new UserPreference(1L, timezone, timezoneValue);
+        given(userPreferenceRepository.findByKeyAndUserAccountSubject(any(String.class), any(String.class))).willReturn(Optional.of(userPreference));
+        // when
+        Optional<UserPreference> userPreferenceOptional = userPreferencePersistenceAdapter.loadUserPreferenceByKeyAndSubject("timezone", "some-user-oauth-id");
+        // then
+        assertEquals(userPreference.getKey(), userPreferenceOptional.get().getKey());
+        assertEquals(userPreference.getId(), userPreferenceOptional.get().getId());
+        assertEquals(userPreference.getValue(), userPreferenceOptional.get().getValue());
+    }
 }

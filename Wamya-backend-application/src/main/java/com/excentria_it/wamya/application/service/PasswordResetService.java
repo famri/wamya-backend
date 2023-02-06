@@ -53,11 +53,11 @@ public class PasswordResetService implements RequestPasswordResetUseCase, ResetP
     private static final String PASSWORD_RESET_URL_TEMPLATE = "${protocol}://${host}:${port}/reset-password?uuid=${uuid}&exp=${expiry}&lang=${lang}";
 
     @Override
-    public void requestPasswordReset(String username, Locale locale) {
+    public void requestPasswordReset(String userLogin, Locale locale) {
 
-        Optional<UserAccount> userAccountOptional = loadUserAccountPort.loadUserAccountByUsername(username);
+        Optional<UserAccount> userAccountOptional = loadUserAccountPort.loadUserAccountBySubject(userLogin);
         if (userAccountOptional.isEmpty()) {
-            log.warn(String.format("UserAccount not found by username: %s", username));
+            log.warn(String.format("UserAccount not found by login: %s", userLogin));
             return;
         }
 

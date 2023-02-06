@@ -2,6 +2,7 @@ package com.excentria_it.wamya.adapter.b2b.rest.adapter;
 
 import com.excentria_it.wamya.adapter.b2b.rest.dto.KeyCloakRealmRole;
 import com.excentria_it.wamya.adapter.b2b.rest.props.AuthServerProperties;
+import com.excentria_it.wamya.common.exception.UserAccountNotFoundException;
 import com.excentria_it.wamya.common.exception.UserCreationException;
 import com.excentria_it.wamya.domain.OAuthUserAccount;
 import com.excentria_it.wamya.domain.OAuthUserAccountAttribute;
@@ -272,6 +273,27 @@ public class KeycloakUserAccountIntegrationAdapterTests {
         // When
         // Then
         assertThrows(RuntimeException.class, () -> oAuthUserAccountIntegrationAdapter.fetchJwtTokenForUser("test",
+                "test"));
+
+    }
+
+    @Test
+    void givenFetchJWTTokenCallToAuthorizationServerThrowsRestClientExceptionWith401UnauthorizedMessage_whenFetchJwtTokenForUser_thenThrowUserAccountNotFoundException() throws JsonProcessingException, URISyntaxException {
+        // Given
+        final MultiValueMap<String, String> formParams = new LinkedMultiValueMap<>();
+        formParams.add(OAuthConstants.CLIENT_ID_KEY, authServerProperties.getClientId());
+        formParams.add(OAuthConstants.CLIENT_SECRET_KEY, authServerProperties.getClientSecret());
+
+        formParams.add(OAuthConstants.USERNAME_FORM_KEY, "test");
+        formParams.add(OAuthConstants.PASSWORD_FORM_KEY, "test");
+        formParams.add(OAuthConstants.GRANT_TYPE_FORM_KEY, OAuthConstants.GRANT_TYPE_FORM_VALUE);
+        formParams.add(OAuthConstants.SCOPE_KEY, "openid email roles");
+
+        mockRestServiceServer.expect(ExpectedCount.once(), requestTo(new URI(authServerProperties.getTokenUri())))
+                .andExpect(method(HttpMethod.POST)).andExpect(content().formData(formParams)).andRespond(withStatus(HttpStatus.UNAUTHORIZED).body("401 Unauthorized"));
+        // When
+        // Then
+        assertThrows(UserAccountNotFoundException.class, () -> oAuthUserAccountIntegrationAdapter.fetchJwtTokenForUser("test",
                 "test"));
 
     }

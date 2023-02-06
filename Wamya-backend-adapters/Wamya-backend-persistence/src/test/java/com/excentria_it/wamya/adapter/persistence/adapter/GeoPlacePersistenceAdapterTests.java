@@ -12,7 +12,6 @@ import static org.mockito.BDDMockito.*;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -99,7 +98,7 @@ public class GeoPlacePersistenceAdapterTests {
 		given(departmentRepository.findById(any(Long.class))).willReturn(Optional.of(department));
 
 		ClientJpaEntity client = defaultExistentClientJpaEntity();
-		given(clientRepository.findByEmail(any(String.class))).willReturn(Optional.of(client));
+		given(clientRepository.findClientByEmail(any(String.class))).willReturn(Optional.of(client));
 
 		GeoPlaceJpaEntity geoPlace = defaultGeoPlaceJpaEntity();
 		given(geoPlaceRepository.save(any(GeoPlaceJpaEntity.class))).willReturn(geoPlace);
@@ -123,7 +122,7 @@ public class GeoPlacePersistenceAdapterTests {
 		given(departmentRepository.findById(any(Long.class))).willReturn(Optional.of(department));
 
 		ClientJpaEntity client = defaultExistentClientJpaEntity();
-		given(clientRepository.findByIcc_ValueAndMobileNumber(any(String.class), any(String.class)))
+		given(clientRepository.findClientByIcc_ValueAndMobileNumber(any(String.class), any(String.class)))
 				.willReturn(Optional.of(client));
 
 		GeoPlaceJpaEntity geoPlace = defaultGeoPlaceJpaEntity();
@@ -174,7 +173,7 @@ public class GeoPlacePersistenceAdapterTests {
 		DepartmentJpaEntity department = defaultExistentDepartmentJpaEntity();
 		given(departmentRepository.findById(any(Long.class))).willReturn(Optional.of(department));
 
-		given(clientRepository.findByEmail(any(String.class))).willReturn(Optional.empty());
+		given(clientRepository.findClientByEmail(any(String.class))).willReturn(Optional.empty());
 
 		// when
 		assertThrows(UserAccountNotFoundException.class,

@@ -335,7 +335,7 @@ public class JourneyRequestTestData {
 		return SearchJourneyRequestsInput.builder().departurePlaceDepartmentId(1L)
 				.arrivalPlaceDepartmentIds(Set.of(2L, 3L)).startDateTime(startDate.toInstant())
 				.endDateTime(endDate.toInstant()).engineTypes(Set.of(1L, 2L)).pageNumber(0).pageSize(2)
-				.username(TestConstants.DEFAULT_EMAIL).statusCodes(Set.of(JourneyRequestStatusCode.OPENED))
+				.userSubject(TestConstants.DEFAULT_EMAIL).statusCodes(Set.of(JourneyRequestStatusCode.OPENED))
 				.sortingCriterion(new SortCriterion("date-time", "desc")).locale("en_US");
 
 	}

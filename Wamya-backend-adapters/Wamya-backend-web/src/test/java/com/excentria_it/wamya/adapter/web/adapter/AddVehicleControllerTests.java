@@ -2,7 +2,7 @@ package com.excentria_it.wamya.adapter.web.adapter;
 
 import com.excentria_it.wamya.adapter.web.WebSecurityConfiguration;
 import com.excentria_it.wamya.application.port.in.AddVehiculeUseCase;
-import com.excentria_it.wamya.application.port.in.AddVehiculeUseCase.AddVehiculeCommand;
+import com.excentria_it.wamya.application.port.in.AddVehiculeUseCase.AddVehicleCommand;
 import com.excentria_it.wamya.common.exception.handlers.RestApiExceptionHandler;
 import com.excentria_it.wamya.domain.AddVehiculeDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,8 +15,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
-import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -41,9 +39,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
 @ContextConfiguration(classes = WebSecurityConfiguration.class)
-@Import(value = {AddVehiculeController.class, RestApiExceptionHandler.class, WebSecurityConfiguration.class})
-@WebMvcTest(controllers = AddVehiculeController.class)
-public class AddVehiculeControllerTests {
+@Import(value = {AddVehicleController.class, RestApiExceptionHandler.class, WebSecurityConfiguration.class})
+@WebMvcTest(controllers = AddVehicleController.class)
+public class AddVehicleControllerTests {
 
     @Autowired
     private WebApplicationContext context;
@@ -64,37 +62,24 @@ public class AddVehiculeControllerTests {
     }
 
     @Test
-    void givenValidInputAndTransporterEmail_WhenAddVehicule_ThenSucceed() throws Exception {
+    void givenValidInputAndTransporterEmail_WhenAddVehicle_ThenSucceed() throws Exception {
 
         // given
-        AddVehiculeCommand command = defaultAddVehiculeCommandBuilder().build();
+        AddVehicleCommand command = defaultAddVehiculeCommandBuilder().build();
 
-        String addVehiculeCommandJson = objectMapper.writeValueAsString(command);
+        String addVehicleCommandJson = objectMapper.writeValueAsString(command);
 
         AddVehiculeDto addVehiculeDto = defaultAddVehiculeDtoBuilder().build();
 
-        given(addVehiculeUseCase.addVehicule(any(AddVehiculeCommand.class), any(String.class), any(String.class)))
+        given(addVehiculeUseCase.addVehicle(any(AddVehicleCommand.class), any(String.class), any(String.class)))
                 .willReturn(addVehiculeDto);
 
         // when // then
-        mvc.perform(post("/users/me/vehicules").with(jwt().authorities(Arrays.asList(new SimpleGrantedAuthority("ROLE_TRANSPORTER")))).contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(addVehiculeCommandJson))
+        mvc.perform(post("/users/me/vehicles").with(jwt().authorities(Arrays.asList(new SimpleGrantedAuthority("ROLE_TRANSPORTER")))).contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(addVehicleCommandJson))
                 .andExpect(status().isCreated())
                 .andExpect(responseBody().containsObjectAsJson(addVehiculeDto, AddVehiculeDto.class));
 
     }
 
-    public JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter() {
-        JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
-        grantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
-        grantedAuthoritiesConverter.setAuthoritiesClaimName("realm_access.roles");
-        return grantedAuthoritiesConverter;
-
-    }
-
-    public JwtAuthenticationConverter jwtAuthenticationConverter() {
-        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
-        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter());
-        return jwtAuthenticationConverter;
-    }
 }

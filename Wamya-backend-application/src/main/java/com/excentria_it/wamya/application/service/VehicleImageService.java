@@ -8,8 +8,8 @@ import javax.transaction.Transactional;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.http.MediaType;
 
-import com.excentria_it.wamya.application.port.in.UploadVehiculeImageUseCase;
-import com.excentria_it.wamya.application.port.out.CheckUserVehiculePort;
+import com.excentria_it.wamya.application.port.in.UploadVehicleImageUseCase;
+import com.excentria_it.wamya.application.port.out.CheckUserVehiclePort;
 import com.excentria_it.wamya.application.port.out.DeleteFilePort;
 import com.excentria_it.wamya.application.port.out.LoadVehiculePort;
 import com.excentria_it.wamya.application.port.out.SaveFilePort;
@@ -26,21 +26,21 @@ import lombok.RequiredArgsConstructor;
 @UseCase
 @Transactional
 @RequiredArgsConstructor
-public class VehiculeImageService implements UploadVehiculeImageUseCase {
+public class VehicleImageService implements UploadVehicleImageUseCase {
 
 	private final SaveFilePort saveFilePort;
 	private final DeleteFilePort deleteFilePort;
-	private final CheckUserVehiculePort checkUserVehiculePort;
+	private final CheckUserVehiclePort checkUserVehiclePort;
 	private final UpdateVehiculePort updateVehiculePort;
 	private final LoadVehiculePort loadVehiculePort;
 
 	@Override
-	public void uploadVehiculeImage(BufferedInputStream imageInputStream, String imageOriginalName, Long vehiculeId,
-			String username) {
+	public void uploadVehicleImage(BufferedInputStream imageInputStream, String imageOriginalName, Long vehicleId,
+								   String subject) {
 
-		Boolean isUserVehicule = checkUserVehiculePort.isUserVehicule(username, vehiculeId);
+		Boolean isUserVehicle = checkUserVehiclePort.isUserVehicle(subject, vehicleId);
 
-		if (!isUserVehicule) {
+		if (!isUserVehicle) {
 			throw new ForbiddenAccessException("You are not authorized to change vehicule image.");
 		}
 
@@ -72,13 +72,13 @@ public class VehiculeImageService implements UploadVehiculeImageUseCase {
 
 		// create database document entry for image file
 		String oldVehiculeImageFileLocation = null;
-		Boolean shouldDeleteOldImage = !loadVehiculePort.hasDefaultVehiculeImage(vehiculeId);
+		Boolean shouldDeleteOldImage = !loadVehiculePort.hasDefaultVehiculeImage(vehicleId);
 		if (shouldDeleteOldImage) {
 
-			oldVehiculeImageFileLocation = loadVehiculePort.loadImageLocation(vehiculeId);
+			oldVehiculeImageFileLocation = loadVehiculePort.loadImageLocation(vehicleId);
 		}
 		// update user profile image Document
-		updateVehiculePort.updateVehiculeImage(username, vehiculeId, location, hash);
+		updateVehiculePort.updateVehiculeImage(subject, vehicleId, location, hash);
 
 		// delete old profile image physical file if not default
 		if (shouldDeleteOldImage) {

@@ -95,14 +95,14 @@ public class UserAccountService implements CreateUserAccountUseCase {
 
     public void checkExistingAccount(CreateUserAccountCommand command) {
 
-        Optional<UserAccount> userAccountOptional = loadUserAccountPort.loadUserAccountByUsername(command.getEmail());
+        Optional<UserAccount> userAccountOptional = loadUserAccountPort.loadUserAccountBySubject(command.getEmail());
         if (userAccountOptional.isPresent()) {
             throw new UserAccountAlreadyExistsException(
                     String.format("Email already registred for another account %s", command.getEmail()));
         }
 
         userAccountOptional = loadUserAccountPort
-                .loadUserAccountByUsername(command.getIcc() + "_" + command.getMobileNumber());
+                .loadUserAccountBySubject(command.getIcc() + "_" + command.getMobileNumber());
         if (userAccountOptional.isPresent()) {
             throw new UserAccountAlreadyExistsException(
                     String.format("Mobile number already registred for another account %s %s", command.getIcc(),

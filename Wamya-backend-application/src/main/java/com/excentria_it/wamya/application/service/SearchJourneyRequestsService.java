@@ -34,10 +34,10 @@ public class SearchJourneyRequestsService implements SearchJourneyRequestsUseCas
 	private final DocumentUrlResolver documentUrlResolver;
 
 	@Override
-	public JourneyRequestsSearchResult searchJourneyRequests(SearchJourneyRequestsCommand command, String username,
+	public JourneyRequestsSearchResult searchJourneyRequests(SearchJourneyRequestsCommand command, String userSubject,
 			String locale) {
 
-		ZoneId userZoneId = dateTimeHelper.findUserZoneId(username);
+		ZoneId userZoneId = dateTimeHelper.findUserZoneId(userSubject);
 
 		Instant startInstant = dateTimeHelper.userLocalToSystemDateTime(command.getStartDateTime(), userZoneId);
 		Instant endInstant = dateTimeHelper.userLocalToSystemDateTime(command.getEndDateTime(), userZoneId);
@@ -45,7 +45,7 @@ public class SearchJourneyRequestsService implements SearchJourneyRequestsUseCas
 		SearchJourneyRequestsInput searchCriteria = new SearchJourneyRequestsInput(
 				command.getDeparturePlaceDepartmentId(), command.getArrivalPlaceDepartmentIds(), startInstant,
 				endInstant, command.getEngineTypes(), command.getPageNumber(), command.getPageSize(),
-				command.getSortingCriterion(), command.getStatusCodes(), username, locale);
+				command.getSortingCriterion(), command.getStatusCodes(), userSubject, locale);
 
 		JourneyRequestsSearchOutputResult searchOutput = searchJourneyRequestsPort
 				.searchJourneyRequests(searchCriteria);

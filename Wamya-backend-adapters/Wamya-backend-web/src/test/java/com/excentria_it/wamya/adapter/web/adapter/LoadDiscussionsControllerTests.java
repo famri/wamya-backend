@@ -1,6 +1,5 @@
 package com.excentria_it.wamya.adapter.web.adapter;
 
-import com.c4_soft.springaddons.security.oauth2.test.mockmvc.MockMvcSupport;
 import com.excentria_it.wamya.adapter.web.WebConfiguration;
 import com.excentria_it.wamya.adapter.web.WebSecurityConfiguration;
 import com.excentria_it.wamya.adapter.web.utils.ValidationHelper;
@@ -44,7 +43,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
 @ContextConfiguration(classes = {WebSecurityConfiguration.class, WebConfiguration.class})
-@Import(value = {LoadDiscussionsController.class, RestApiExceptionHandler.class, MockMvcSupport.class,
+@Import(value = {LoadDiscussionsController.class, RestApiExceptionHandler.class,
         ValidationHelper.class})
 @WebMvcTest(controllers = LoadDiscussionsController.class)
 public class LoadDiscussionsControllerTests {
@@ -82,7 +81,7 @@ public class LoadDiscussionsControllerTests {
 
         assertThat(captor.getValue().getFilteringCriterion()).isEqualTo(new FilterCriterion("active", "true"));
         assertThat(captor.getValue().getSortingCriterion()).isEqualTo(new SortCriterion("date-time", "desc"));
-        assertThat(captor.getValue().getUsername()).isEqualTo(TestConstants.DEFAULT_EMAIL);
+        assertThat(captor.getValue().getSubject()).isEqualTo(TestConstants.DEFAULT_EMAIL);
         assertThat(captor.getValue().getPageNumber()).isEqualTo(0);
         assertThat(captor.getValue().getPageSize()).isEqualTo(25);
 
@@ -109,7 +108,7 @@ public class LoadDiscussionsControllerTests {
 
         assertThat(captor.getValue().getFilteringCriterion()).isEqualTo(new FilterCriterion("active", "true"));
         assertThat(captor.getValue().getSortingCriterion()).isEqualTo(new SortCriterion("date-time", "desc"));
-        assertThat(captor.getValue().getUsername()).isEqualTo(TestConstants.DEFAULT_EMAIL);
+        assertThat(captor.getValue().getSubject()).isEqualTo(TestConstants.DEFAULT_EMAIL);
         assertThat(captor.getValue().getPageNumber()).isEqualTo(0);
         assertThat(captor.getValue().getPageSize()).isEqualTo(25);
 

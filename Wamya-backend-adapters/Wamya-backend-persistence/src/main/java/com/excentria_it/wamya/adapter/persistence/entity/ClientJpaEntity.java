@@ -33,14 +33,14 @@ public class ClientJpaEntity extends UserAccountJpaEntity {
     }
 
     public ClientJpaEntity(Long id, String oauthId, GenderJpaEntity gender, String firstname, String lastname,
-                           ValidationState identityValidationState, String minibio, LocalDate dateOfBirth, String email,
+                           ValidationState identityValidationState, String miniBio, LocalDate dateOfBirth, String email,
                            String emailValidationCode, Boolean isValidatedEmail, InternationalCallingCodeJpaEntity icc,
                            String mobileNumber, String mobileNumberValidationCode, Boolean isValidatedMobileNumber,
                            Boolean receiveNewsletter, Instant creationDateTime, DocumentJpaEntity profileImage,
                            Map<String, UserPreferenceJpaEntity> preferences, DocumentJpaEntity identityDocument,
                            String deviceRegistrationToken, Boolean isWebSocketConnected) {
 
-        super(id, oauthId, gender, firstname, lastname, identityValidationState, minibio, dateOfBirth, email,
+        super(id, oauthId, gender, firstname, lastname, identityValidationState, miniBio, dateOfBirth, email,
                 emailValidationCode, isValidatedEmail, icc, mobileNumber, mobileNumberValidationCode,
                 isValidatedMobileNumber, receiveNewsletter, creationDateTime, profileImage, preferences,
                 identityDocument, deviceRegistrationToken, isWebSocketConnected);

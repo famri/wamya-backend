@@ -23,7 +23,7 @@ public class DeviceRegistrationTokenService implements UpdateDeviceRegistrationT
 	@Override
 	public void updateToken(String token, String username) {
 
-		Optional<UserAccount> userAccountOptional = loadUserAccountPort.loadUserAccountByUsername(username);
+		Optional<UserAccount> userAccountOptional = loadUserAccountPort.loadUserAccountBySubject(username);
 		Long userId = userAccountOptional.get().getId();
 
 		updateUserAccountPort.updateDeviceRegistrationToken(userId, token);

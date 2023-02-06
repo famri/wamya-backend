@@ -1,26 +1,16 @@
 package com.excentria_it.wamya.adapter.persistence.adapter;
 
-import static com.excentria_it.wamya.test.data.common.JourneyProposalJpaEntityTestData.*;
-import static com.excentria_it.wamya.test.data.common.JourneyProposalTestData.*;
-import static com.excentria_it.wamya.test.data.common.JourneyRequestJpaTestData.*;
-import static com.excentria_it.wamya.test.data.common.UserAccountJpaEntityTestData.*;
-import static com.excentria_it.wamya.test.data.common.VehiculeJpaEntityTestData.*;
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.BDDMockito.*;
-import static org.mockito.Mockito.*;
-
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
+import com.excentria_it.wamya.adapter.persistence.entity.*;
+import com.excentria_it.wamya.adapter.persistence.mapper.JourneyProposalMapper;
+import com.excentria_it.wamya.adapter.persistence.repository.*;
+import com.excentria_it.wamya.common.PeriodCriterion;
+import com.excentria_it.wamya.common.PeriodCriterion.PeriodValue;
+import com.excentria_it.wamya.common.SortCriterion;
+import com.excentria_it.wamya.common.domain.StatusCode;
+import com.excentria_it.wamya.domain.*;
+import com.excentria_it.wamya.test.data.common.JourneyProposalJpaEntityTestData;
+import com.excentria_it.wamya.test.data.common.JourneyProposalTestData;
+import com.excentria_it.wamya.test.data.common.TestConstants;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -30,423 +20,384 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-import com.excentria_it.wamya.adapter.persistence.entity.JourneyProposalJpaEntity;
-import com.excentria_it.wamya.adapter.persistence.entity.JourneyProposalStatusJpaEntity;
-import com.excentria_it.wamya.adapter.persistence.entity.JourneyRequestJpaEntity;
-import com.excentria_it.wamya.adapter.persistence.entity.TransporterJpaEntity;
-import com.excentria_it.wamya.adapter.persistence.entity.VehiculeJpaEntity;
-import com.excentria_it.wamya.adapter.persistence.mapper.JourneyProposalMapper;
-import com.excentria_it.wamya.adapter.persistence.repository.JourneyProposalRepository;
-import com.excentria_it.wamya.adapter.persistence.repository.JourneyProposalStatusRepository;
-import com.excentria_it.wamya.adapter.persistence.repository.JourneyRequestRepository;
-import com.excentria_it.wamya.adapter.persistence.repository.TransporterRepository;
-import com.excentria_it.wamya.adapter.persistence.repository.VehiculeRepository;
-import com.excentria_it.wamya.common.PeriodCriterion;
-import com.excentria_it.wamya.common.PeriodCriterion.PeriodValue;
-import com.excentria_it.wamya.common.SortCriterion;
-import com.excentria_it.wamya.common.domain.StatusCode;
-import com.excentria_it.wamya.domain.JourneyProposalDto;
-import com.excentria_it.wamya.domain.JourneyProposalStatusCode;
-import com.excentria_it.wamya.domain.JourneyRequestProposals;
-import com.excentria_it.wamya.domain.LoadJourneyProposalsCriteria;
-import com.excentria_it.wamya.domain.LoadTransporterProposalsCriteria;
-import com.excentria_it.wamya.domain.TransporterProposalsOutput;
-import com.excentria_it.wamya.test.data.common.JourneyProposalJpaEntityTestData;
-import com.excentria_it.wamya.test.data.common.JourneyProposalTestData;
-import com.excentria_it.wamya.test.data.common.TestConstants;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static com.excentria_it.wamya.test.data.common.JourneyProposalJpaEntityTestData.*;
+import static com.excentria_it.wamya.test.data.common.JourneyProposalTestData.defaultJourneyProposalDto;
+import static com.excentria_it.wamya.test.data.common.JourneyProposalTestData.defaultTransporterProposalOutputList;
+import static com.excentria_it.wamya.test.data.common.JourneyRequestJpaTestData.defaultExistentJourneyRequestJpaEntity;
+import static com.excentria_it.wamya.test.data.common.UserAccountJpaEntityTestData.defaultExistentTransporterJpaEntity;
+import static com.excentria_it.wamya.test.data.common.VehicleJpaEntityTestData.defaultVehicleJpaEntity;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class ProposalPersistenceAdapterTests {
-	@Mock
-	private JourneyProposalRepository journeyProposalRepository;
-	@Mock
-	private JourneyRequestRepository journeyRequestRepository;
-	@Mock
-	private TransporterRepository transporterRepository;
-	@Mock
-	private VehiculeRepository vehiculeRepository;
-	@Mock
-	private JourneyProposalMapper journeyProposalMapper;
-	@Mock
-	private JourneyProposalStatusRepository journeyProposalStatusRepository;
-	@InjectMocks
-	private ProposalPersistenceAdapter proposalPersistenceAdapter;
+    @Mock
+    private JourneyProposalRepository journeyProposalRepository;
+    @Mock
+    private JourneyRequestRepository journeyRequestRepository;
+    @Mock
+    private TransporterRepository transporterRepository;
+    @Mock
+    private VehicleRepository vehicleRepository;
+    @Mock
+    private JourneyProposalMapper journeyProposalMapper;
+    @Mock
+    private JourneyProposalStatusRepository journeyProposalStatusRepository;
+    @InjectMocks
+    private ProposalPersistenceAdapter proposalPersistenceAdapter;
 
-	private static final Double JOURNEY_PRICE = 250.0;
-	private static final Long VEHICULE_ID = 1L;
-	private static final Long JOURNEY_REQUEST_ID = 1L;
+    private static final Double JOURNEY_PRICE = 250.0;
+    private static final Long VEHICLE_ID = 1L;
+    private static final Long JOURNEY_REQUEST_ID = 1L;
 
-	@Test
-	void givenEmailUsername_WhenMakeProposal_ThenScceed() {
-		// given
-		TransporterJpaEntity transporterJpaEntity = defaultExistentTransporterJpaEntity();
-		VehiculeJpaEntity vehiculeJpaEntity = defaultVehiculeJpaEntity();
-		JourneyProposalJpaEntity journeyProposalJpaEntity = defaultJourneyProposalJpaEntity();
+    @Test
+    void givenExistentTransporterBySubject_WhenMakeProposal_ThenSucceed() {
+        // given
+        TransporterJpaEntity transporterJpaEntity = defaultExistentTransporterJpaEntity();
+        VehicleJpaEntity vehicleJpaEntity = defaultVehicleJpaEntity();
+        JourneyProposalJpaEntity journeyProposalJpaEntity = defaultJourneyProposalJpaEntity();
 
-		JourneyRequestJpaEntity journeyRequestJpaEntity = defaultExistentJourneyRequestJpaEntity();
+        JourneyRequestJpaEntity journeyRequestJpaEntity = defaultExistentJourneyRequestJpaEntity();
 
-		given(transporterRepository.findByEmail(any(String.class))).willReturn(Optional.of(transporterJpaEntity));
-		given(vehiculeRepository.findById(any(Long.class))).willReturn(Optional.of(vehiculeJpaEntity));
+        given(transporterRepository.findTransporterBySubject(any(String.class))).willReturn(Optional.of(transporterJpaEntity));
+        given(vehicleRepository.findById(any(Long.class))).willReturn(Optional.of(vehicleJpaEntity));
 
-		given(journeyProposalMapper.mapToJpaEntity(any(Double.class), any(TransporterJpaEntity.class),
-				any(VehiculeJpaEntity.class))).willReturn(journeyProposalJpaEntity);
-		given(journeyRequestRepository.findById(any(Long.class))).willReturn(Optional.of(journeyRequestJpaEntity));
+        given(journeyProposalMapper.mapToJpaEntity(any(Double.class), any(TransporterJpaEntity.class),
+                any(VehicleJpaEntity.class))).willReturn(journeyProposalJpaEntity);
+        given(journeyRequestRepository.findById(any(Long.class))).willReturn(Optional.of(journeyRequestJpaEntity));
 
-		given(journeyProposalRepository.save(journeyProposalJpaEntity)).willReturn(journeyProposalJpaEntity);
+        given(journeyProposalRepository.save(journeyProposalJpaEntity)).willReturn(journeyProposalJpaEntity);
 
-		JourneyProposalStatusJpaEntity status = defaultJourneyProposalStatusJpaEntity();
-		given(journeyProposalStatusRepository.findByCode(JourneyProposalStatusCode.SUBMITTED)).willReturn(status);
+        JourneyProposalStatusJpaEntity status = defaultJourneyProposalStatusJpaEntity();
+        given(journeyProposalStatusRepository.findByCode(JourneyProposalStatusCode.SUBMITTED)).willReturn(status);
 
-		// when
-		proposalPersistenceAdapter.makeProposal(TestConstants.DEFAULT_EMAIL, JOURNEY_PRICE, VEHICULE_ID,
-				JOURNEY_REQUEST_ID, "en_US");
+        // when
+        proposalPersistenceAdapter.makeProposal("some-existent-transporter-uuid", JOURNEY_PRICE, VEHICLE_ID,
+                JOURNEY_REQUEST_ID, "en_US");
 
-		// then
+        // then
 
-		then(journeyProposalRepository).should(times(1)).save(journeyProposalJpaEntity);
-		then(journeyRequestJpaEntity.getProposals().contains(journeyProposalJpaEntity));
-		then(journeyRequestRepository).should(times(1)).save(journeyRequestJpaEntity);
+        then(journeyProposalRepository).should(times(1)).save(journeyProposalJpaEntity);
+        then(journeyRequestJpaEntity.getProposals().contains(journeyProposalJpaEntity));
+        then(journeyRequestRepository).should(times(1)).save(journeyRequestJpaEntity);
 
-	}
+    }
 
-	@Test
-	void givenMobileNumberUsername_WhenMakeProposal_ThenScceed() {
-		// given
-		TransporterJpaEntity transporterJpaEntity = defaultExistentTransporterJpaEntity();
-		VehiculeJpaEntity vehiculeJpaEntity = defaultVehiculeJpaEntity();
-		JourneyProposalJpaEntity journeyProposalJpaEntity = defaultJourneyProposalJpaEntity();
 
-		JourneyRequestJpaEntity journeyRequestJpaEntity = defaultExistentJourneyRequestJpaEntity();
+    @Test
+    void givenLoadJourneyProposalsCriteria_WhenLoadJourneyProposals_ThenSucceed() {
+        // given
 
-		JourneyProposalStatusJpaEntity status = defaultJourneyProposalStatusJpaEntity();
-		given(journeyProposalStatusRepository.findByCode(JourneyProposalStatusCode.SUBMITTED)).willReturn(status);
+        List<JourneyProposalJpaEntity> list = List
+                .of(JourneyProposalJpaEntityTestData.defaultJourneyProposalJpaEntity());
 
-		given(transporterRepository.findByIcc_ValueAndMobileNumber(any(String.class), any(String.class)))
-				.willReturn(Optional.of(transporterJpaEntity));
-		given(vehiculeRepository.findById(any(Long.class))).willReturn(Optional.of(vehiculeJpaEntity));
+        given(journeyProposalRepository.findByJourneyRequest_Id(any(Long.class), any(Sort.class))).willReturn(list);
 
-		given(journeyProposalMapper.mapToJpaEntity(any(Double.class), any(TransporterJpaEntity.class),
-				any(VehiculeJpaEntity.class))).willReturn(journeyProposalJpaEntity);
-		given(journeyRequestRepository.findById(any(Long.class))).willReturn(Optional.of(journeyRequestJpaEntity));
+        JourneyProposalDto journeyProposalDto = JourneyProposalTestData.defaultJourneyProposalDto();
+        given(journeyProposalMapper.mapToJourneyProposalDto(any(JourneyProposalJpaEntity.class), any(String.class)))
+                .willReturn(journeyProposalDto);
 
-		given(journeyProposalRepository.save(journeyProposalJpaEntity)).willReturn(journeyProposalJpaEntity);
-		// when
-		proposalPersistenceAdapter.makeProposal(TestConstants.DEFAULT_MOBILE_NUMBER_USERNAME, JOURNEY_PRICE,
-				VEHICULE_ID, JOURNEY_REQUEST_ID, "en_US");
+        LoadJourneyProposalsCriteria criteria = JourneyProposalTestData.defaultLoadJourneyProposalsCriteriaBuilder()
+                .statusCodes(Collections.emptyList()).build();
 
-		// then
+        // when
+        JourneyRequestProposals result = proposalPersistenceAdapter.loadJourneyProposals(criteria, "en_US");
 
-		then(journeyProposalRepository).should(times(1)).save(journeyProposalJpaEntity);
-		then(journeyRequestJpaEntity.getProposals().contains(journeyProposalJpaEntity));
-		then(journeyRequestRepository).should(times(1)).save(journeyRequestJpaEntity);
+        // then
 
-	}
+        then(journeyProposalRepository).should(times(1)).findByJourneyRequest_Id(eq(criteria.getJourneyRequestId()),
+                any(Sort.class));
 
-	@Test
-	void givenLoadJourneyProposalsCriteria_WhenLoadJourneyProposals_ThenScceed() {
-		// given
+        assertThat(result.getContent()).containsExactlyInAnyOrder(journeyProposalDto);
+    }
 
-		List<JourneyProposalJpaEntity> list = List
-				.of(JourneyProposalJpaEntityTestData.defaultJourneyProposalJpaEntity());
+    @Test
+    void givenLoadJourneyProposalsCriteriaWithStatusCodes_WhenLoadJourneyProposals_ThenSucceed() {
+        // given
 
-		given(journeyProposalRepository.findByJourneyRequest_Id(any(Long.class), any(Sort.class))).willReturn(list);
+        List<JourneyProposalJpaEntity> list = List
+                .of(JourneyProposalJpaEntityTestData.defaultJourneyProposalJpaEntity());
 
-		JourneyProposalDto journeyProposalDto = JourneyProposalTestData.defaultJourneyProposalDto();
-		given(journeyProposalMapper.mapToJourneyProposalDto(any(JourneyProposalJpaEntity.class), any(String.class)))
-				.willReturn(journeyProposalDto);
+        given(journeyProposalRepository.findByJourneyRequest_IdAndStatus_CodeIn(any(Long.class), any(List.class),
+                any(Sort.class))).willReturn(list);
 
-		LoadJourneyProposalsCriteria criteria = JourneyProposalTestData.defaultLoadJourneyProposalsCriteriaBuilder()
-				.statusCodes(Collections.emptyList()).build();
+        JourneyProposalDto journeyProposalDto = JourneyProposalTestData.defaultJourneyProposalDto();
+        given(journeyProposalMapper.mapToJourneyProposalDto(any(JourneyProposalJpaEntity.class), any(String.class)))
+                .willReturn(journeyProposalDto);
 
-		// when
-		JourneyRequestProposals result = proposalPersistenceAdapter.loadJourneyProposals(criteria, "en_US");
+        LoadJourneyProposalsCriteria criteria = JourneyProposalTestData.defaultLoadJourneyProposalsCriteriaBuilder()
+                .build();
 
-		// then
+        // when
+        JourneyRequestProposals result = proposalPersistenceAdapter.loadJourneyProposals(criteria, "en_US");
 
-		then(journeyProposalRepository).should(times(1)).findByJourneyRequest_Id(eq(criteria.getJourneyRequestId()),
-				any(Sort.class));
+        // then
 
-		assertThat(result.getContent()).containsExactlyInAnyOrder(journeyProposalDto);
-	}
+        then(journeyProposalRepository).should(times(1)).findByJourneyRequest_IdAndStatus_CodeIn(
+                eq(criteria.getJourneyRequestId()), eq(criteria.getStatusCodes().stream()
+                        .map(s -> JourneyProposalStatusCode.valueOf(s.name())).collect(Collectors.toList())),
+                any(Sort.class));
 
-	@Test
-	void givenLoadJourneyProposalsCriteriaWithStatusCodes_WhenLoadJourneyProposals_ThenScceed() {
-		// given
+        assertThat(result.getContent()).containsExactlyInAnyOrder(journeyProposalDto);
+    }
 
-		List<JourneyProposalJpaEntity> list = List
-				.of(JourneyProposalJpaEntityTestData.defaultJourneyProposalJpaEntity());
+    @Test
+    void givenNullJourneyProposalJpaEntityPage_WhenLoadJourneyProposals_ThenReturnEmptyJourneyRequestProposals() {
+        // given
 
-		given(journeyProposalRepository.findByJourneyRequest_IdAndStatus_CodeIn(any(Long.class), any(List.class),
-				any(Sort.class))).willReturn(list);
+        given(journeyProposalRepository.findByJourneyRequest_Id(any(Long.class), any(Sort.class))).willReturn(null);
 
-		JourneyProposalDto journeyProposalDto = JourneyProposalTestData.defaultJourneyProposalDto();
-		given(journeyProposalMapper.mapToJourneyProposalDto(any(JourneyProposalJpaEntity.class), any(String.class)))
-				.willReturn(journeyProposalDto);
+        LoadJourneyProposalsCriteria criteria = JourneyProposalTestData.defaultLoadJourneyProposalsCriteriaBuilder()
+                .statusCodes(Collections.emptyList()).build();
 
-		LoadJourneyProposalsCriteria criteria = JourneyProposalTestData.defaultLoadJourneyProposalsCriteriaBuilder()
-				.build();
+        // when
+        JourneyRequestProposals result = proposalPersistenceAdapter.loadJourneyProposals(criteria, "en_US");
 
-		// when
-		JourneyRequestProposals result = proposalPersistenceAdapter.loadJourneyProposals(criteria, "en_US");
+        // then
 
-		// then
+        then(journeyProposalRepository).should(times(1)).findByJourneyRequest_Id(eq(criteria.getJourneyRequestId()),
+                any(Sort.class));
 
-		then(journeyProposalRepository).should(times(1)).findByJourneyRequest_IdAndStatus_CodeIn(
-				eq(criteria.getJourneyRequestId()), eq(criteria.getStatusCodes().stream()
-						.map(s -> JourneyProposalStatusCode.valueOf(s.name())).collect(Collectors.toList())),
-				any(Sort.class));
+        assertThat(result.getTotalElements()).isEqualTo(0L);
 
-		assertThat(result.getContent()).containsExactlyInAnyOrder(journeyProposalDto);
-	}
+        assertThat(result.getContent()).isEmpty();
+    }
 
-	@Test
-	void givenNullJourneyProposalJpaEntityPage_WhenLoadJourneyProposals_ThenReturnEmptyJourneyRequestProposals() {
-		// given
+    @Test
+    void givenNullJourneyProposalJpaEntityPageAndCriteriaWithStatusCode_WhenLoadJourneyProposals_ThenReturnEmptyJourneyRequestProposals() {
+        // given
 
-		given(journeyProposalRepository.findByJourneyRequest_Id(any(Long.class), any(Sort.class))).willReturn(null);
+        given(journeyProposalRepository.findByJourneyRequest_IdAndStatus_CodeIn(any(Long.class), any(List.class),
+                any(Sort.class))).willReturn(null);
 
-		LoadJourneyProposalsCriteria criteria = JourneyProposalTestData.defaultLoadJourneyProposalsCriteriaBuilder()
-				.statusCodes(Collections.emptyList()).build();
+        LoadJourneyProposalsCriteria criteria = JourneyProposalTestData.defaultLoadJourneyProposalsCriteriaBuilder()
+                .build();
 
-		// when
-		JourneyRequestProposals result = proposalPersistenceAdapter.loadJourneyProposals(criteria, "en_US");
+        // when
+        JourneyRequestProposals result = proposalPersistenceAdapter.loadJourneyProposals(criteria, "en_US");
 
-		// then
+        // then
 
-		then(journeyProposalRepository).should(times(1)).findByJourneyRequest_Id(eq(criteria.getJourneyRequestId()),
-				any(Sort.class));
+        then(journeyProposalRepository).should(times(1)).findByJourneyRequest_IdAndStatus_CodeIn(
+                eq(criteria.getJourneyRequestId()), eq(criteria.getStatusCodes().stream()
+                        .map(s -> JourneyProposalStatusCode.valueOf(s.name())).collect(Collectors.toList())),
+                any(Sort.class));
 
-		assertThat(result.getTotalElements()).isEqualTo(0L);
+        assertThat(result.getTotalElements()).isEqualTo(0L);
+        assertThat(result.getContent()).isEmpty();
+    }
 
-		assertThat(result.getContent()).isEmpty();
-	}
+    @Test
+    void givenEmptyJourneyProposalJpaEntity_WhenLoadJourneyProposalByIdAndJourneyRequestId_ThenReturnEmptyJourneyProposalDto() {
+        // given
 
-	@Test
-	void givenNullJourneyProposalJpaEntityPageAndCriteriaWithStatusCode_WhenLoadJourneyProposals_ThenReturnEmptyJourneyRequestProposals() {
-		// given
+        given(journeyProposalRepository.findByIdAndJourneyRequest_Id(any(Long.class), any(Long.class)))
+                .willReturn(Optional.empty());
 
-		given(journeyProposalRepository.findByJourneyRequest_IdAndStatus_CodeIn(any(Long.class), any(List.class),
-				any(Sort.class))).willReturn(null);
+        // when
+        Optional<JourneyProposalDto> journeyProposalDtoOptional = proposalPersistenceAdapter
+                .loadJourneyProposalByIdAndJourneyRequestId(1L, 1L, "en_US");
 
-		LoadJourneyProposalsCriteria criteria = JourneyProposalTestData.defaultLoadJourneyProposalsCriteriaBuilder()
-				.build();
+        // then
+        assertTrue(journeyProposalDtoOptional.isEmpty());
+    }
 
-		// when
-		JourneyRequestProposals result = proposalPersistenceAdapter.loadJourneyProposals(criteria, "en_US");
+    @Test
+    void givenJourneyProposalJpaEntity_WhenLoadJourneyProposalByIdAndJourneyRequestId_ThenReturnJourneyProposalDtoOptional() {
+        // given
+        JourneyProposalJpaEntity journeyProposalJpaEntity = defaultJourneyProposalJpaEntity();
 
-		// then
+        given(journeyProposalRepository.findByIdAndJourneyRequest_Id(any(Long.class), any(Long.class)))
+                .willReturn(Optional.of(journeyProposalJpaEntity));
 
-		then(journeyProposalRepository).should(times(1)).findByJourneyRequest_IdAndStatus_CodeIn(
-				eq(criteria.getJourneyRequestId()), eq(criteria.getStatusCodes().stream()
-						.map(s -> JourneyProposalStatusCode.valueOf(s.name())).collect(Collectors.toList())),
-				any(Sort.class));
+        JourneyProposalDto journeyProposalDto = defaultJourneyProposalDto();
+        given(journeyProposalMapper.mapToJourneyProposalDto(journeyProposalJpaEntity, "en_US"))
+                .willReturn(journeyProposalDto);
+        // when
+        Optional<JourneyProposalDto> journeyProposalDtoOptional = proposalPersistenceAdapter
+                .loadJourneyProposalByIdAndJourneyRequestId(1L, 1L, "en_US");
 
-		assertThat(result.getTotalElements()).isEqualTo(0L);
-		assertThat(result.getContent()).isEmpty();
-	}
+        // then
+        assertEquals(journeyProposalDto, journeyProposalDtoOptional.get());
+    }
 
-	@Test
-	void givenEmptyJourneyProposalJpaEntity_WhenLoadJourneyProposalByIdAndJourneyRequestId_ThenReturnEmptyJourneyProposalDto() {
-		// given
+    @Test
+    void givenEmptyJourneyRequestByID_WhenAcceptProposal_ThenReturnFalse() {
+        // given
+        given(journeyRequestRepository.findById(any(Long.class))).willReturn(Optional.empty());
+        // when
+        boolean result = proposalPersistenceAdapter.acceptProposal(1L, 1L);
+        // then
+        assertFalse(result);
+    }
 
-		given(journeyProposalRepository.findByIdAndJourneyRequest_Id(any(Long.class), any(Long.class)))
-				.willReturn(Optional.empty());
+    @Test
+    void givenProposalIdNotInJourneyRequestProposalIds_WhenAcceptProposal_ThenReturnFalse() {
 
-		// when
-		Optional<JourneyProposalDto> journeyProposalDtoOptional = proposalPersistenceAdapter
-				.loadJourneyProposalByIdAndJourneyRequestId(1L, 1L, "en_US");
+        // given
+        JourneyRequestJpaEntity journeyRequestJpaEntity = defaultExistentJourneyRequestJpaEntity();
+        given(journeyRequestRepository.findById(any(Long.class))).willReturn(Optional.of(journeyRequestJpaEntity));
 
-		// then
-		assertTrue(journeyProposalDtoOptional.isEmpty());
-	}
-
-	@Test
-	void givenJourneyProposalJpaEntity_WhenLoadJourneyProposalByIdAndJourneyRequestId_ThenReturnJourneyProposalDtoOptional() {
-		// given
-		JourneyProposalJpaEntity journeyProposalJpaEntity = defaultJourneyProposalJpaEntity();
-
-		given(journeyProposalRepository.findByIdAndJourneyRequest_Id(any(Long.class), any(Long.class)))
-				.willReturn(Optional.of(journeyProposalJpaEntity));
-
-		JourneyProposalDto journeyProposalDto = defaultJourneyProposalDto();
-		given(journeyProposalMapper.mapToJourneyProposalDto(journeyProposalJpaEntity, "en_US"))
-				.willReturn(journeyProposalDto);
-		// when
-		Optional<JourneyProposalDto> journeyProposalDtoOptional = proposalPersistenceAdapter
-				.loadJourneyProposalByIdAndJourneyRequestId(1L, 1L, "en_US");
-
-		// then
-		assertEquals(journeyProposalDto, journeyProposalDtoOptional.get());
-	}
-
-	@Test
-	void givenEmptyJourneyRequestByID_WhenAcceptProposal_ThenReturnFalse() {
-		// given
-		given(journeyRequestRepository.findById(any(Long.class))).willReturn(Optional.empty());
-		// when
-		boolean result = proposalPersistenceAdapter.acceptProposal(1L, 1L);
-		// then
-		assertFalse(result);
-	}
-
-	@Test
-	void givenProposalIdNotInJourneyRequestProposalIds_WhenAcceptProposal_ThenReturnFalse() {
-
-		// given
-		JourneyRequestJpaEntity journeyRequestJpaEntity = defaultExistentJourneyRequestJpaEntity();
-		given(journeyRequestRepository.findById(any(Long.class))).willReturn(Optional.of(journeyRequestJpaEntity));
-
-		// when
-		boolean result = proposalPersistenceAdapter.acceptProposal(1L, 10L);
-
-		// then
-		assertFalse(result);
-
-	}
-
-	@Test
-	void givenProposalInJourneyRequestProposalIds_WhenAcceptProposal_ThenReturnTrue() {
-
-		// given
-		JourneyRequestJpaEntity journeyRequestJpaEntity = defaultExistentJourneyRequestJpaEntity();
-		JourneyProposalJpaEntity proposal1 = defaultJourneyProposalJpaEntityBuilder().id(1L).build();
-		JourneyProposalJpaEntity proposal2 = defaultJourneyProposalJpaEntityBuilder().id(2L).build();
-
-		journeyRequestJpaEntity.addProposal(proposal1);
-		journeyRequestJpaEntity.addProposal(proposal2);
-
-		given(journeyRequestRepository.findById(any(Long.class))).willReturn(Optional.of(journeyRequestJpaEntity));
-
-		given(journeyProposalStatusRepository.findByCode(JourneyProposalStatusCode.ACCEPTED)).willReturn(
-				defaultJourneyProposalStatusJpaEntityBuilder().code(JourneyProposalStatusCode.ACCEPTED).build());
-		given(journeyProposalStatusRepository.findByCode(JourneyProposalStatusCode.REJECTED)).willReturn(
-				defaultJourneyProposalStatusJpaEntityBuilder().code(JourneyProposalStatusCode.REJECTED).build());
-		// when
-		boolean result = proposalPersistenceAdapter.acceptProposal(1L, 1L);
-
-		// then
-		then(journeyRequestRepository).should(times(1)).save(journeyRequestJpaEntity);
-		assertTrue(result);
-		assertEquals(proposal1.getStatus().getCode(), JourneyProposalStatusCode.ACCEPTED);
-		assertEquals(proposal2.getStatus().getCode(), JourneyProposalStatusCode.REJECTED);
-	}
-
-	@Test
-	void givenEmptyJourneyRequestByID_WhenRejectProposal_ThenReturnFalse() {
-		// given
-		given(journeyRequestRepository.findById(any(Long.class))).willReturn(Optional.empty());
-		// when
-		boolean result = proposalPersistenceAdapter.rejectProposal(1L, 1L);
-		// then
-		assertFalse(result);
-	}
-
-	@Test
-	void givenProposalIdNotInJourneyRequestProposalIds_WhenRejectProposal_ThenReturnFalse() {
-
-		// given
-		JourneyRequestJpaEntity journeyRequestJpaEntity = defaultExistentJourneyRequestJpaEntity();
-
-		given(journeyRequestRepository.findById(any(Long.class))).willReturn(Optional.of(journeyRequestJpaEntity));
-
-		// when
-		boolean result = proposalPersistenceAdapter.rejectProposal(1L, 2L);
-
-		// then
-		assertFalse(result);
-
-	}
-
-	@Test
-	void givenProposalInJourneyRequestProposalIds_WhenRejectProposal_ThenReturnTrue() {
-
-		// given
-		JourneyRequestJpaEntity journeyRequestJpaEntity = defaultExistentJourneyRequestJpaEntity();
-		JourneyProposalJpaEntity proposal1 = defaultJourneyProposalJpaEntityBuilder().id(1L).build();
-		JourneyProposalJpaEntity proposal2 = defaultJourneyProposalJpaEntityBuilder().id(2L).build();
-
-		journeyRequestJpaEntity.addProposal(proposal1);
-		journeyRequestJpaEntity.addProposal(proposal2);
-
-		given(journeyRequestRepository.findById(any(Long.class))).willReturn(Optional.of(journeyRequestJpaEntity));
-
-		given(journeyProposalStatusRepository.findByCode(JourneyProposalStatusCode.REJECTED)).willReturn(
-				defaultJourneyProposalStatusJpaEntityBuilder().code(JourneyProposalStatusCode.REJECTED).build());
-		// when
-		boolean result = proposalPersistenceAdapter.rejectProposal(1L, 1L);
-
-		// then
-		then(journeyRequestRepository).should(times(1)).save(journeyRequestJpaEntity);
-		assertTrue(result);
-		assertEquals(proposal1.getStatus().getCode(), JourneyProposalStatusCode.REJECTED);
-		assertEquals(proposal2.getStatus().getCode(), JourneyProposalStatusCode.SUBMITTED);
-	}
-
-	@Test
-	void testTrueIsExistentJourneyProposalByIdAndJourneyRequestIdAndStatusCode() {
-		// given
-		given(journeyProposalRepository.existsByIdAndJourneyRequestIdAndStatusCode(any(Long.class), any(Long.class),
-				any(JourneyProposalStatusCode.class))).willReturn(true);
-		// when
-		boolean result = proposalPersistenceAdapter.isExistentJourneyProposalByIdAndJourneyRequestIdAndStatusCode(1L,
-				1L, StatusCode.SUBMITTED);
-		// then
-		assertTrue(result);
-	}
-
-	@Test
-	void testFalseIsExistentJourneyProposalByIdAndJourneyRequestIdAndStatusCode() {
-		// given
-		given(journeyProposalRepository.existsByIdAndJourneyRequestIdAndStatusCode(any(Long.class), any(Long.class),
-				any(JourneyProposalStatusCode.class))).willReturn(false);
-		// when
-		boolean result = proposalPersistenceAdapter.isExistentJourneyProposalByIdAndJourneyRequestIdAndStatusCode(1L,
-				1L, StatusCode.SUBMITTED);
-		// then
-		assertFalse(result);
-	}
-
-	@Test
-	void testLoadTransporterNotificationInfo() {
-		proposalPersistenceAdapter.loadTransportersNotificationInfo(1L);
-		then(journeyProposalRepository).should(times(1)).loadTransportersNotificationInfo(1L);
-	}
-
-	@Test
-	void testLoadTransporterProposals() {
-		// given
-
-		ZonedDateTime[] edges = PeriodValue.M1
-				.calculateLowerAndHigherEdges(Instant.now().atZone(ZoneId.of("Africa/Tunis")));
-
-		LoadTransporterProposalsCriteria criteria = LoadTransporterProposalsCriteria.builder()
-				.transporterUsername(TestConstants.DEFAULT_EMAIL).pageNumber(0).pageSize(25)
-				.statusCodes(Arrays.stream(JourneyProposalStatusCode.values()).collect(Collectors.toSet()))
-				.sortingCriterion(new SortCriterion("date-time", "desc"))
-				.periodCriterion(new PeriodCriterion("m1", edges[0], edges[1])).build();
-		Page<JourneyProposalJpaEntity> jpPage = defaultJourneyProposalJpaEntityPage();
-
-		given(journeyProposalRepository.findByTransporter_EmailAndJourneyDateTimeBetweenAndProposal_Status_Code(
-				any(Instant.class), any(Instant.class), any(String.class), any(Set.class), any(String.class),
-				any(Pageable.class))).willReturn(jpPage);
-
-		given(journeyProposalMapper.mapToTransporterProposalOutput(jpPage.getContent().get(0), "en_US"))
-				.willReturn(defaultTransporterProposalOutputList().get(0));
-		given(journeyProposalMapper.mapToTransporterProposalOutput(jpPage.getContent().get(1), "en_US"))
-				.willReturn(defaultTransporterProposalOutputList().get(1));
-
-		// When
-		TransporterProposalsOutput tpo = proposalPersistenceAdapter.loadTransporterProposals(criteria, "en_US");
-		// then
-
-		assertEquals(jpPage.getTotalPages(), tpo.getTotalPages());
-		assertEquals(jpPage.getTotalElements(), tpo.getTotalElements());
-		assertEquals(jpPage.getNumber(), tpo.getPageNumber());
-		assertEquals(jpPage.getSize(), tpo.getPageSize());
-		assertEquals(tpo.getContent().size(), 2);
-		assertEquals(tpo.getContent().get(0), defaultTransporterProposalOutputList().get(0));
-		assertEquals(tpo.getContent().get(1), defaultTransporterProposalOutputList().get(1));
-
-	}
+        // when
+        boolean result = proposalPersistenceAdapter.acceptProposal(1L, 10L);
+
+        // then
+        assertFalse(result);
+
+    }
+
+    @Test
+    void givenProposalInJourneyRequestProposalIds_WhenAcceptProposal_ThenReturnTrue() {
+
+        // given
+        JourneyRequestJpaEntity journeyRequestJpaEntity = defaultExistentJourneyRequestJpaEntity();
+        JourneyProposalJpaEntity proposal1 = defaultJourneyProposalJpaEntityBuilder().id(1L).build();
+        JourneyProposalJpaEntity proposal2 = defaultJourneyProposalJpaEntityBuilder().id(2L).build();
+
+        journeyRequestJpaEntity.addProposal(proposal1);
+        journeyRequestJpaEntity.addProposal(proposal2);
+
+        given(journeyRequestRepository.findById(any(Long.class))).willReturn(Optional.of(journeyRequestJpaEntity));
+
+        given(journeyProposalStatusRepository.findByCode(JourneyProposalStatusCode.ACCEPTED)).willReturn(
+                defaultJourneyProposalStatusJpaEntityBuilder().code(JourneyProposalStatusCode.ACCEPTED).build());
+        given(journeyProposalStatusRepository.findByCode(JourneyProposalStatusCode.REJECTED)).willReturn(
+                defaultJourneyProposalStatusJpaEntityBuilder().code(JourneyProposalStatusCode.REJECTED).build());
+        // when
+        boolean result = proposalPersistenceAdapter.acceptProposal(1L, 1L);
+
+        // then
+        then(journeyRequestRepository).should(times(1)).save(journeyRequestJpaEntity);
+        assertTrue(result);
+        assertEquals(proposal1.getStatus().getCode(), JourneyProposalStatusCode.ACCEPTED);
+        assertEquals(proposal2.getStatus().getCode(), JourneyProposalStatusCode.REJECTED);
+    }
+
+    @Test
+    void givenEmptyJourneyRequestByID_WhenRejectProposal_ThenReturnFalse() {
+        // given
+        given(journeyRequestRepository.findById(any(Long.class))).willReturn(Optional.empty());
+        // when
+        boolean result = proposalPersistenceAdapter.rejectProposal(1L, 1L);
+        // then
+        assertFalse(result);
+    }
+
+    @Test
+    void givenProposalIdNotInJourneyRequestProposalIds_WhenRejectProposal_ThenReturnFalse() {
+
+        // given
+        JourneyRequestJpaEntity journeyRequestJpaEntity = defaultExistentJourneyRequestJpaEntity();
+
+        given(journeyRequestRepository.findById(any(Long.class))).willReturn(Optional.of(journeyRequestJpaEntity));
+
+        // when
+        boolean result = proposalPersistenceAdapter.rejectProposal(1L, 2L);
+
+        // then
+        assertFalse(result);
+
+    }
+
+    @Test
+    void givenProposalInJourneyRequestProposalIds_WhenRejectProposal_ThenReturnTrue() {
+
+        // given
+        JourneyRequestJpaEntity journeyRequestJpaEntity = defaultExistentJourneyRequestJpaEntity();
+        JourneyProposalJpaEntity proposal1 = defaultJourneyProposalJpaEntityBuilder().id(1L).build();
+        JourneyProposalJpaEntity proposal2 = defaultJourneyProposalJpaEntityBuilder().id(2L).build();
+
+        journeyRequestJpaEntity.addProposal(proposal1);
+        journeyRequestJpaEntity.addProposal(proposal2);
+
+        given(journeyRequestRepository.findById(any(Long.class))).willReturn(Optional.of(journeyRequestJpaEntity));
+
+        given(journeyProposalStatusRepository.findByCode(JourneyProposalStatusCode.REJECTED)).willReturn(
+                defaultJourneyProposalStatusJpaEntityBuilder().code(JourneyProposalStatusCode.REJECTED).build());
+        // when
+        boolean result = proposalPersistenceAdapter.rejectProposal(1L, 1L);
+
+        // then
+        then(journeyRequestRepository).should(times(1)).save(journeyRequestJpaEntity);
+        assertTrue(result);
+        assertEquals(proposal1.getStatus().getCode(), JourneyProposalStatusCode.REJECTED);
+        assertEquals(proposal2.getStatus().getCode(), JourneyProposalStatusCode.SUBMITTED);
+    }
+
+    @Test
+    void testExistentJourneyProposalByIdAndJourneyRequestIdAndStatusCode() {
+        // given
+        given(journeyProposalRepository.existsByIdAndJourneyRequestIdAndStatusCode(any(Long.class), any(Long.class),
+                any(JourneyProposalStatusCode.class))).willReturn(true);
+        // when
+        boolean result = proposalPersistenceAdapter.isExistentJourneyProposalByIdAndJourneyRequestIdAndStatusCode(1L,
+                1L, StatusCode.SUBMITTED);
+        // then
+        assertTrue(result);
+    }
+
+    @Test
+    void testNonExistentJourneyProposalByIdAndJourneyRequestIdAndStatusCode() {
+        // given
+        given(journeyProposalRepository.existsByIdAndJourneyRequestIdAndStatusCode(any(Long.class), any(Long.class),
+                any(JourneyProposalStatusCode.class))).willReturn(false);
+        // when
+        boolean result = proposalPersistenceAdapter.isExistentJourneyProposalByIdAndJourneyRequestIdAndStatusCode(1L,
+                1L, StatusCode.SUBMITTED);
+        // then
+        assertFalse(result);
+    }
+
+    @Test
+    void testLoadTransporterNotificationInfo() {
+        proposalPersistenceAdapter.loadTransportersNotificationInfo(1L);
+        then(journeyProposalRepository).should(times(1)).loadTransportersNotificationInfo(1L);
+    }
+
+    @Test
+    void testLoadTransporterProposals() {
+        // given
+
+        ZonedDateTime[] edges = PeriodValue.M1
+                .calculateLowerAndHigherEdges(Instant.now().atZone(ZoneId.of("Africa/Tunis")));
+
+        LoadTransporterProposalsCriteria criteria = LoadTransporterProposalsCriteria.builder()
+                .transporterUsername(TestConstants.DEFAULT_EMAIL).pageNumber(0).pageSize(25)
+                .statusCodes(Arrays.stream(JourneyProposalStatusCode.values()).collect(Collectors.toSet()))
+                .sortingCriterion(new SortCriterion("date-time", "desc"))
+                .periodCriterion(new PeriodCriterion("m1", edges[0], edges[1])).build();
+        Page<JourneyProposalJpaEntity> jpPage = defaultJourneyProposalJpaEntityPage();
+
+        given(journeyProposalRepository.findByTransporter_EmailAndJourneyDateTimeBetweenAndProposal_Status_Code(
+                any(Instant.class), any(Instant.class), any(String.class), any(Set.class), any(String.class),
+                any(Pageable.class))).willReturn(jpPage);
+
+        given(journeyProposalMapper.mapToTransporterProposalOutput(jpPage.getContent().get(0), "en_US"))
+                .willReturn(defaultTransporterProposalOutputList().get(0));
+        given(journeyProposalMapper.mapToTransporterProposalOutput(jpPage.getContent().get(1), "en_US"))
+                .willReturn(defaultTransporterProposalOutputList().get(1));
+
+        // When
+        TransporterProposalsOutput tpo = proposalPersistenceAdapter.loadTransporterProposals(criteria, "en_US");
+        // then
+
+        assertEquals(jpPage.getTotalPages(), tpo.getTotalPages());
+        assertEquals(jpPage.getTotalElements(), tpo.getTotalElements());
+        assertEquals(jpPage.getNumber(), tpo.getPageNumber());
+        assertEquals(jpPage.getSize(), tpo.getPageSize());
+        assertEquals(tpo.getContent().size(), 2);
+        assertEquals(tpo.getContent().get(0), defaultTransporterProposalOutputList().get(0));
+        assertEquals(tpo.getContent().get(1), defaultTransporterProposalOutputList().get(1));
+
+    }
 
 }

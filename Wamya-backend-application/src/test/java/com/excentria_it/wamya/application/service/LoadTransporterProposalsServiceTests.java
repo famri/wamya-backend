@@ -50,8 +50,8 @@ public class LoadTransporterProposalsServiceTests {
 
 		given(dateTimeHelper.findUserZoneId(any(String.class))).willReturn(ZoneId.of("Africa/Tunis"));
 
-		given(documentUrlResolver.resolveUrl(tpo.getContent().get(0).getVehicule().getImageId(),
-				tpo.getContent().get(0).getVehicule().getImageHash())).willReturn("https://vehicule1/photo/url");
+		given(documentUrlResolver.resolveUrl(tpo.getContent().get(0).getVehicle().getImageId(),
+				tpo.getContent().get(0).getVehicle().getImageHash())).willReturn("https://vehicle1/photo/url");
 
 		given(documentUrlResolver.resolveUrl(tpo.getContent().get(0).getJourney().getClient().getImageId(),
 				tpo.getContent().get(0).getJourney().getClient().getImageHash()))
@@ -65,8 +65,8 @@ public class LoadTransporterProposalsServiceTests {
 				tpo.getContent().get(1).getJourney().getClient().getImageHash()))
 						.willReturn("https://client2/photo/url");
 
-		given(documentUrlResolver.resolveUrl(tpo.getContent().get(1).getVehicule().getImageId(),
-				tpo.getContent().get(1).getVehicule().getImageHash())).willReturn("https://vehicule2/photo/url");
+		given(documentUrlResolver.resolveUrl(tpo.getContent().get(1).getVehicle().getImageId(),
+				tpo.getContent().get(1).getVehicle().getImageHash())).willReturn("https://vehicle2/photo/url");
 
 		LocalDateTime ldt2 = LocalDateTime.of(2022, 01, 15, 16, 30);
 		given(dateTimeHelper.systemToUserLocalDateTime(tpo.getContent().get(1).getJourney().getDateTime(),
@@ -89,22 +89,22 @@ public class LoadTransporterProposalsServiceTests {
 		assertEquals(tpo.getContent().get(0).getStatus(), result.getContent().get(0).getStatus());
 		assertEquals(tpo.getContent().get(0).getStatusCode(), result.getContent().get(0).getStatusCode());
 
-		assertEquals(tpo.getContent().get(0).getVehicule().getId(), result.getContent().get(0).getVehicule().getId());
-		assertEquals(tpo.getContent().get(0).getVehicule().getRegistrationNumber(),
-				result.getContent().get(0).getVehicule().getRegistrationNumber());
-		assertEquals(tpo.getContent().get(0).getVehicule().getCirculationDate(),
-				result.getContent().get(0).getVehicule().getCirculationDate());
-		assertEquals(tpo.getContent().get(0).getVehicule().getConstructorName(),
-				result.getContent().get(0).getVehicule().getConstructorName());
-		assertEquals(tpo.getContent().get(0).getVehicule().getModelName(),
-				result.getContent().get(0).getVehicule().getModelName());
+		assertEquals(tpo.getContent().get(0).getVehicle().getId(), result.getContent().get(0).getVehicle().getId());
+		assertEquals(tpo.getContent().get(0).getVehicle().getRegistrationNumber(),
+				result.getContent().get(0).getVehicle().getRegistrationNumber());
+		assertEquals(tpo.getContent().get(0).getVehicle().getCirculationDate(),
+				result.getContent().get(0).getVehicle().getCirculationDate());
+		assertEquals(tpo.getContent().get(0).getVehicle().getConstructorName(),
+				result.getContent().get(0).getVehicle().getConstructorName());
+		assertEquals(tpo.getContent().get(0).getVehicle().getModelName(),
+				result.getContent().get(0).getVehicle().getModelName());
 
-		assertEquals(tpo.getContent().get(0).getVehicule().getEngineTypeId(),
-				result.getContent().get(0).getVehicule().getEngineTypeId());
-		assertEquals(tpo.getContent().get(0).getVehicule().getEngineTypeName(),
-				result.getContent().get(0).getVehicule().getEngineTypeName());
+		assertEquals(tpo.getContent().get(0).getVehicle().getEngineTypeId(),
+				result.getContent().get(0).getVehicle().getEngineTypeId());
+		assertEquals(tpo.getContent().get(0).getVehicle().getEngineTypeName(),
+				result.getContent().get(0).getVehicle().getEngineTypeName());
 
-		assertEquals("https://vehicule1/photo/url", result.getContent().get(0).getVehicule().getPhotoUrl());
+		assertEquals("https://vehicle1/photo/url", result.getContent().get(0).getVehicle().getPhotoUrl());
 
 		assertEquals(tpo.getContent().get(0).getJourney().getId(), result.getContent().get(0).getJourney().getId());
 		assertEquals(tpo.getContent().get(0).getJourney().getDistance(),
@@ -163,22 +163,22 @@ public class LoadTransporterProposalsServiceTests {
 		assertEquals(tpo.getContent().get(1).getStatus(), result.getContent().get(1).getStatus());
 		assertEquals(tpo.getContent().get(1).getStatusCode(), result.getContent().get(1).getStatusCode());
 
-		assertEquals(tpo.getContent().get(1).getVehicule().getId(), result.getContent().get(1).getVehicule().getId());
-		assertEquals(tpo.getContent().get(1).getVehicule().getRegistrationNumber(),
-				result.getContent().get(1).getVehicule().getRegistrationNumber());
-		assertEquals(tpo.getContent().get(1).getVehicule().getCirculationDate(),
-				result.getContent().get(1).getVehicule().getCirculationDate());
-		assertEquals(tpo.getContent().get(1).getVehicule().getConstructorName(),
-				result.getContent().get(1).getVehicule().getConstructorName());
-		assertEquals(tpo.getContent().get(1).getVehicule().getModelName(),
-				result.getContent().get(1).getVehicule().getModelName());
+		assertEquals(tpo.getContent().get(1).getVehicle().getId(), result.getContent().get(1).getVehicle().getId());
+		assertEquals(tpo.getContent().get(1).getVehicle().getRegistrationNumber(),
+				result.getContent().get(1).getVehicle().getRegistrationNumber());
+		assertEquals(tpo.getContent().get(1).getVehicle().getCirculationDate(),
+				result.getContent().get(1).getVehicle().getCirculationDate());
+		assertEquals(tpo.getContent().get(1).getVehicle().getConstructorName(),
+				result.getContent().get(1).getVehicle().getConstructorName());
+		assertEquals(tpo.getContent().get(1).getVehicle().getModelName(),
+				result.getContent().get(1).getVehicle().getModelName());
 
-		assertEquals(tpo.getContent().get(1).getVehicule().getEngineTypeId(),
-				result.getContent().get(1).getVehicule().getEngineTypeId());
-		assertEquals(tpo.getContent().get(1).getVehicule().getEngineTypeName(),
-				result.getContent().get(1).getVehicule().getEngineTypeName());
+		assertEquals(tpo.getContent().get(1).getVehicle().getEngineTypeId(),
+				result.getContent().get(1).getVehicle().getEngineTypeId());
+		assertEquals(tpo.getContent().get(1).getVehicle().getEngineTypeName(),
+				result.getContent().get(1).getVehicle().getEngineTypeName());
 
-		assertEquals("https://vehicule2/photo/url", result.getContent().get(1).getVehicule().getPhotoUrl());
+		assertEquals("https://vehicle2/photo/url", result.getContent().get(1).getVehicle().getPhotoUrl());
 
 		assertEquals(tpo.getContent().get(1).getJourney().getId(), result.getContent().get(1).getJourney().getId());
 		assertEquals(tpo.getContent().get(1).getJourney().getDistance(),

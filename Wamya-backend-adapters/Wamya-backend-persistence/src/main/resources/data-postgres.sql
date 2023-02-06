@@ -9,72 +9,65 @@ INSERT INTO international_calling_code(id, value, country_name, flag_path, enabl
 *******************************************/ 
 INSERT INTO ENGINE_TYPE(id,code) VALUES(1,'UTILITY') ON CONFLICT DO NOTHING;
 INSERT INTO ENGINE_TYPE(id,code) VALUES(2,'PICKUP') ON CONFLICT DO NOTHING;
-INSERT INTO ENGINE_TYPE(id,code) VALUES(3,'BUS')  ON CONFLICT DO NOTHING;
-INSERT INTO ENGINE_TYPE(id,code) VALUES(4,'MINIBUS')  ON CONFLICT DO NOTHING;
-INSERT INTO ENGINE_TYPE(id,code) VALUES(5,'VAN_L1H1') ON CONFLICT DO NOTHING;
+INSERT INTO ENGINE_TYPE(id,code) VALUES(3,'VAN_L1H1') ON CONFLICT DO NOTHING;
+INSERT INTO ENGINE_TYPE(id,code) VALUES(4,'VAN_L1H2') ON CONFLICT DO NOTHING;
+INSERT INTO ENGINE_TYPE(id,code) VALUES(5,'VAN_L2H1') ON CONFLICT DO NOTHING;
 INSERT INTO ENGINE_TYPE(id,code) VALUES(6,'VAN_L2H2') ON CONFLICT DO NOTHING;
 INSERT INTO ENGINE_TYPE(id,code) VALUES(7,'VAN_L3H2') ON CONFLICT DO NOTHING;
-INSERT INTO ENGINE_TYPE(id,code) VALUES(8,'FLATBED_TRUCK') ON CONFLICT DO NOTHING;
-INSERT INTO ENGINE_TYPE(id,code) VALUES(9,'BOX_TRUCK') ON CONFLICT DO NOTHING;
-INSERT INTO ENGINE_TYPE(id,code) VALUES(10,'REFRIGERATED_TRUCK') ON CONFLICT DO NOTHING;
-INSERT INTO ENGINE_TYPE(id,code) VALUES(11,'TANKER') ON CONFLICT DO NOTHING; 
-INSERT INTO ENGINE_TYPE(id,code) VALUES(12,'DUMP_TRUCK') ON CONFLICT DO NOTHING; 
-INSERT INTO ENGINE_TYPE(id,code) VALUES(13,'HOOK_LIFT_TRUCK') ON CONFLICT DO NOTHING;
-INSERT INTO ENGINE_TYPE(id,code) VALUES(14,'TANK_TRANSPORTER') ON CONFLICT DO NOTHING;
+INSERT INTO ENGINE_TYPE(id,code) VALUES(8,'VAN_L3H3') ON CONFLICT DO NOTHING;
+INSERT INTO ENGINE_TYPE(id,code) VALUES(9,'LIFT_TRUCK') ON CONFLICT DO NOTHING;
+INSERT INTO ENGINE_TYPE(id,code) VALUES(10,'BOX_TRUCK') ON CONFLICT DO NOTHING;
+INSERT INTO ENGINE_TYPE(id,code) VALUES(11,'FLATBED_TRUCK') ON CONFLICT DO NOTHING;
+INSERT INTO ENGINE_TYPE(id,code) VALUES(12,'REFRIGERATED_TRUCK') ON CONFLICT DO NOTHING;
+INSERT INTO ENGINE_TYPE(id,code) VALUES(13,'TANKER') ON CONFLICT DO NOTHING;
+INSERT INTO ENGINE_TYPE(id,code) VALUES(14,'DUMP_TRUCK') ON CONFLICT DO NOTHING;
+
 
 /*******************************************
 * INSERTING ENGINE TYPES TRANSLATIONS
 *******************************************/ 
-INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(1,'en_US', 'Utility vehicule', 'Examples of utility vehicule: Renault Kangoo, Ciroï¿½n Jumper, Peugeot Partner') ON CONFLICT DO NOTHING;
-INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(1,'fr_FR', 'Vï¿½hicule utilitaire', 'Examples de vï¿½hicule utilitaire: Renault Kangoo, Ciroï¿½n Jumper, Peugeot Partner') ON CONFLICT DO NOTHING;
+INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(1,'en_US', 'Little utility', 'Dimensions of loading zone: length 1.80m / width: 1.20m / height 1.10m') ON CONFLICT DO NOTHING;
+INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(1,'fr_FR', 'Petit utilitaire', 'Dimensions de la zone de chargement: longeur 1.80m / largeur 1.20m / hauteur 1.10m') ON CONFLICT DO NOTHING;
 
-0
-INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(2,'en_US', 'Pickup vehicule', 'Examples of pickup vehicule: Isuzu D-max, Mazda BT-50, Mahindra SC') ON CONFLICT DO NOTHING;
-INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(2,'fr_FR', 'Vï¿½hicule pickup', 'Examples de vï¿½hicule pickup: Isuzu D-max, Mazda BT-50, Mahindra SC') ON CONFLICT DO NOTHING;
+INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(2,'en_US', 'Pickup vehicle', 'A pickup truck is a type of  light-duty truck with an open cargo area for carrying goods and a cab for passengers.') ON CONFLICT DO NOTHING;
+INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(2,'fr_FR', 'Camionnette', 'Une camionnette est un type de camion léger avec une zone de chargement ouverte pour transporter des marchandises et une cabine pour des passagers.') ON CONFLICT DO NOTHING;
 
-INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(3,'en_US', 'Bus', 'Examples of bus: Mercedes Tourismo, MAN R07, Irisbus Recreo') ON CONFLICT DO NOTHING;
-INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(3,'fr_FR', 'Bus', 'Examples de bus: Mercedes Tourismo, MAN R07, Irisbus Recreo') ON CONFLICT DO NOTHING;
+INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(3,'en_US', 'L1H1 vehicle', 'Dimensions of loading zone: length ~2.50m / height ~1.70m') ON CONFLICT DO NOTHING;
+INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(3,'fr_FR', 'Véhicule L1H1', 'Dimensions de la zone de chargement: longeur ~2.50m / hauteur ~1.70m') ON CONFLICT DO NOTHING;
 
+INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(4,'en_US', 'L1H2 vehicle', 'Dimensions of loading zone: length ~2.50m / height ~1.80m') ON CONFLICT DO NOTHING;
+INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(4,'fr_FR', 'Véhicule L1H2', 'Dimensions de la zone de chargement: longeur ~2.50m / hauteur ~1.80m') ON CONFLICT DO NOTHING;
 
-INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(4,'en_US', 'Minibus', 'Examples of minibus: Hyundai County, Toyota Coaster, Otokar Minibus') ON CONFLICT DO NOTHING;
-INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(4,'fr_FR', 'Minibus', 'Examples de minibus: Hyundai County, Toyota Coaster, Otokar Minibus') ON CONFLICT DO NOTHING;
+INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(5,'en_US', 'L2H1 vehicle', 'Dimensions of loading zone: length ~3.00m / height ~1.70m') ON CONFLICT DO NOTHING;
+INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(5,'fr_FR', 'Véhicule L2H1', 'Dimensions de la zone de chargement: longeur ~3.00m / hauteur ~1.70m') ON CONFLICT DO NOTHING;
 
+INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(6,'en_US', 'L2H2 vehicle', 'Dimensions of loading zone: length ~3.00m / height ~1.80m') ON CONFLICT DO NOTHING;
+INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(6,'fr_FR', 'Véhicule L2H2', 'Dimensions de la zone de chargement: longeur ~3.00m / hauteur ~1.80m') ON CONFLICT DO NOTHING;
 
-INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(5,'en_US', 'L1H1 vehicule', 'Examples of L1H1 vehicule: Renault Trafic, Peugeot Boxer, Volkswagen Transporter') ON CONFLICT DO NOTHING;
-INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(5,'fr_FR', 'Vï¿½hicule L1H1', 'Examples de Vï¿½hicule L1H1: Renault Trafic, Peugeot Boxer, Volkswagen Transporter') ON CONFLICT DO NOTHING;
+INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(7,'en_US', 'L3H2 vehicle', 'Dimensions of loading zone: length ~3.70m / height ~2.20m') ON CONFLICT DO NOTHING;
+INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(7,'fr_FR', 'Véhicule L3H2', 'Dimensions de la zone de chargement: longeur ~3.70m / hauteur ~2.20m') ON CONFLICT DO NOTHING;
 
+INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(8,'en_US', 'L3H3 vehicle', 'Dimensions of loading zone: length ~3.70m / height ~2.60m') ON CONFLICT DO NOTHING;
+INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(8,'fr_FR', 'Véhicule L3H3', 'Dimensions de la zone de chargement: longeur ~3.70m /hauteur ~2.60m') ON CONFLICT DO NOTHING;
 
-INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(6,'en_US', 'L2H2 vehicule', 'Examples of L2H2 vehicule: Renault Master L2H2, Peugeot Boxer L2H2, Citroï¿½n Jumper L2H2') ON CONFLICT DO NOTHING;
-INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(6,'fr_FR', 'Vï¿½hicule L2H2', 'Examples de Vï¿½hicule L2H2: Renault Master L2H2, Peugeot Boxer L2H2, Citroï¿½n Jumper L2H2') ON CONFLICT DO NOTHING;
+INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(9,'en_US', 'Lift truck', 'The lift truck is equipped with a lifting mechanism, such as a set of forks or a platform, that can be raised or lowered to pick up and transport loads.') ON CONFLICT DO NOTHING;
+INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(9,'fr_FR', 'Monte-charge', 'Le monte-charge est équipé d''un mécanisme de levage, tel qu''un ensemble de fourches ou une plate-forme, qui peut être levé ou abaissé pour ramasser et transporter des charges.') ON CONFLICT DO NOTHING;
 
+INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(10,'en_US', 'Box truck', 'A box truck is a type of truck with an enclosed cargo area used for deliveries, transport of goods, and moving household items.') ON CONFLICT DO NOTHING;
+INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(10,'fr_FR', 'Fourgon caisse', 'Un camion fourgon est un type de camion avec une zone de chargement fermée utilisée pour les livraisons, le transport de marchandises et le déplacement d''articles ménagers.') ON CONFLICT DO NOTHING;
 
-INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(7,'en_US', 'L3H3 vehicule', 'Examples of L3H3 vehicule: Renault Master L3H3, Peugeot Boxer L3H3, Fiat Ducato L3H3') ON CONFLICT DO NOTHING;
-INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(7,'fr_FR', 'Vï¿½hicule L3H3', 'Examples de Vï¿½hicule L1H1: Renault Master L3H3, Peugeot Boxer L3H3, Fiat Ducato L3H3') ON CONFLICT DO NOTHING;
+INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(11,'en_US', 'Flatbed truck', 'A flatbed truck is a type of heavy truck used for transporting goods on a flat platform located at the rear of the vehicle.') ON CONFLICT DO NOTHING;
+INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(11,'fr_FR', 'Camion plateau', 'Un camion plateau est un type de camion lourd utilisé pour le transport de marchandises sur une plateforme plate située à l''arrière du véhicule.') ON CONFLICT DO NOTHING;
 
-INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(8,'en_US', 'L4H3 vehicule', 'Examples of L4H3 vehicule: Renault Master L4H3, Peugeot Boxer L4H3, Fiat Ducato L3H3') ON CONFLICT DO NOTHING;
-INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(8,'fr_FR', 'Vï¿½hicule L4H3', 'Examples de Vï¿½hicule L4H3: Renault Master L4H3, Peugeot Boxer L4H3, Fiat Ducato L3H3') ON CONFLICT DO NOTHING;
+INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(12,'en_US', 'Refrigerated truck', 'A refrigerated truck is a type of truck equipped with a refrigeration system that helps maintain temperatures inside the vehicle at specific levels.') ON CONFLICT DO NOTHING;
+INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(12,'fr_FR', 'Camion frigorifique', 'Un camion frigorifique est un type de camion équipé d''un système de réfrigération qui permet de maintenir les températures à l''intérieur du véhicule à des niveaux précis.') ON CONFLICT DO NOTHING;
 
+INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(13,'en_US', 'Tanker', 'A tank truck is a type of truck equipped with a cylindrical tank used to transport liquids such as chemicals, fuel or hazardous materials.') ON CONFLICT DO NOTHING;
+INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(13,'fr_FR', 'Camion-citerne', 'Un camion-citerne est un type de camion équipé d''un réservoir cylindrique utilisé pour transporter des liquides tels que les produits chimiques, du carburant ou des matières dangereuses.') ON CONFLICT DO NOTHING;
 
-INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(9,'en_US', 'Flatbed truck', 'Examples of flatbed truck: Man TGA, Renault Premium, Iveco Trakker') ON CONFLICT DO NOTHING;
-INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(9,'fr_FR', 'Camion plateau', 'Examples de camion plateau: Man TGA, Renault Premium, Iveco Trakker') ON CONFLICT DO NOTHING;
+INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(14,'en_US', 'Dump truck', 'A dump truck is a type of truck equipped with a large, hinged, open-box bed at the rear, which can be raised to dump its contents.') ON CONFLICT DO NOTHING;
+INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(14,'fr_FR', 'Camion à benne basculante', 'Un camion à benne basculante est un type de camion équipé d''une grande caisse ouverte à charnière à l''arrière, qui peut être relevée pour vider son contenu.') ON CONFLICT DO NOTHING;
 
-INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(10,'en_US', 'Box truck', 'Examples of box truck: Renault Premium, Iveco Eurocargo, MAN TGX') ON CONFLICT DO NOTHING;
-INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(10,'fr_FR', 'Fourgon caisse', 'Examples de fourgon caisse: Renault Premium, Iveco Eurocargo, MAN TGX') ON CONFLICT DO NOTHING;
-
-INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(11,'en_US', 'Refrigerated truck', 'Examples of refrigerated truck: Renault Midlum, Scania P, Mercedes Atego') ON CONFLICT DO NOTHING;
-INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(11,'fr_FR', 'Camion frigorifique', 'Examples de camion frigorifique: Renault Midlum, Scania P, Mercedes Atego') ON CONFLICT DO NOTHING;
-
-INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(12,'en_US', 'Tanker', 'Examples of tanker: MAN TGS, Renault Premium, Scania G') ON CONFLICT DO NOTHING;
-INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(12,'fr_FR', 'Camion-citerne', 'Examples de camion-citerne: MAN TGS, Renault Premium, Scania G') ON CONFLICT DO NOTHING;
-
-INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(13,'en_US', 'Dump truck', 'Examples of dump truck: Iveco Stralis, Renault Kerax, Mercedes Arocs') ON CONFLICT DO NOTHING;
-INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(13,'fr_FR', 'Camion ï¿½ benne basculante', 'Examples de camion ï¿½ benne basculante: Iveco Stralis, Renault Kerax, Mercedes Arocs') ON CONFLICT DO NOTHING;
-
-INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(14,'en_US', 'Hook lift truck', 'Examples of hook lift truck: Iveco Stralis, Mercedes Atego, Man TGS') ON CONFLICT DO NOTHING;
-INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(14,'fr_FR', 'Camion Ampliroll', 'Examples de Camion Ampliroll: Iveco Stralis, Mercedes Atego, Man TGS') ON CONFLICT DO NOTHING;
-
-INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(15,'en_US', 'Tank transporter', 'Examples of tank transporter: Scania D, Mercedes Actros, Renault Premium') ON CONFLICT DO NOTHING;
-INSERT INTO LOCALIZED_ENGINE_TYPE(id, locale, name, description) VALUES(15,'fr_FR', 'Camion porte char', 'Examples de camion porte char: Scania D, Mercedes Actros, Renault Premium') ON CONFLICT DO NOTHING;
 
 /*************************************
 * INSERTING JOURNEY REQUEST STATUSES
@@ -88,10 +81,10 @@ INSERT INTO public.localized_journey_request_status(id, locale, value) VALUES (1
 INSERT INTO public.localized_journey_request_status(id, locale, value) VALUES (1, 'fr_FR', 'ouvert')ON CONFLICT DO NOTHING;
 
 INSERT INTO public.localized_journey_request_status(id, locale, value) VALUES (2, 'en_US', 'canceled')ON CONFLICT DO NOTHING;
-INSERT INTO public.localized_journey_request_status(id, locale, value) VALUES (2, 'fr_FR', 'annulï¿½')ON CONFLICT DO NOTHING;
+INSERT INTO public.localized_journey_request_status(id, locale, value) VALUES (2, 'fr_FR', 'annul?')ON CONFLICT DO NOTHING;
 
 INSERT INTO public.localized_journey_request_status(id, locale, value) VALUES (3, 'en_US', 'expired')ON CONFLICT DO NOTHING;
-INSERT INTO public.localized_journey_request_status(id, locale, value) VALUES (3, 'fr_FR', 'expirï¿½')ON CONFLICT DO NOTHING;
+INSERT INTO public.localized_journey_request_status(id, locale, value) VALUES (3, 'fr_FR', 'expir?')ON CONFLICT DO NOTHING;
 
 INSERT INTO public.localized_journey_request_status(id, locale, value) VALUES (4, 'en_US', 'fulfilled')ON CONFLICT DO NOTHING;
 INSERT INTO public.localized_journey_request_status(id, locale, value) VALUES (4, 'fr_FR', 'rempli')ON CONFLICT DO NOTHING;
@@ -106,16 +99,16 @@ INSERT INTO public.journey_proposal_status(id, code, description) VALUES (3, 'RE
 INSERT INTO public.journey_proposal_status(id, code, description) VALUES (4, 'ACCEPTED', 'Client accepted this journey proposal.')ON CONFLICT DO NOTHING;
 
 INSERT INTO public.localized_journey_proposal_status(id, locale, value) VALUES (1, 'en_US', 'submitted')ON CONFLICT DO NOTHING;
-INSERT INTO public.localized_journey_proposal_status(id, locale, value) VALUES (1, 'fr_FR', 'envoyï¿½e')ON CONFLICT DO NOTHING;
+INSERT INTO public.localized_journey_proposal_status(id, locale, value) VALUES (1, 'fr_FR', 'envoy?e')ON CONFLICT DO NOTHING;
 
 INSERT INTO public.localized_journey_proposal_status(id, locale, value) VALUES (2, 'en_US', 'canceled')ON CONFLICT DO NOTHING;
-INSERT INTO public.localized_journey_proposal_status(id, locale, value) VALUES (2, 'fr_FR', 'annulï¿½e')ON CONFLICT DO NOTHING;
+INSERT INTO public.localized_journey_proposal_status(id, locale, value) VALUES (2, 'fr_FR', 'annul?e')ON CONFLICT DO NOTHING;
 
 INSERT INTO public.localized_journey_proposal_status(id, locale, value) VALUES (3, 'en_US', 'rejected')ON CONFLICT DO NOTHING;
-INSERT INTO public.localized_journey_proposal_status(id, locale, value) VALUES (3, 'fr_FR', 'rejetï¿½e')ON CONFLICT DO NOTHING;
+INSERT INTO public.localized_journey_proposal_status(id, locale, value) VALUES (3, 'fr_FR', 'rejet?e')ON CONFLICT DO NOTHING;
 
 INSERT INTO public.localized_journey_proposal_status(id, locale, value) VALUES (4, 'en_US', 'accepted')ON CONFLICT DO NOTHING;
-INSERT INTO public.localized_journey_proposal_status(id, locale, value) VALUES (4, 'fr_FR', 'acceptï¿½e')ON CONFLICT DO NOTHING;
+INSERT INTO public.localized_journey_proposal_status(id, locale, value) VALUES (4, 'fr_FR', 'accept?e')ON CONFLICT DO NOTHING;
 
 
 			
