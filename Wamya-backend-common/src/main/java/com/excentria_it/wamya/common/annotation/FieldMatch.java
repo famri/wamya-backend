@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 import javax.validation.Constraint;
 import javax.validation.Payload;
 
-import com.excentria_it.wamya.common.impl.FieldMatchValidator;
+import com.excentria_it.wamya.common.validator.impl.FieldMatchValidator;
 
 /**
  * Validation annotation to validate that 2 fields have the same value. An array

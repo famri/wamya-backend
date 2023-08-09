@@ -1,78 +1,56 @@
 package com.excentria_it.wamya;
 
-import java.util.Locale;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
-import org.springframework.amqp.support.converter.MessageConverter;
-import org.springframework.context.MessageSource;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.support.ReloadableResourceBundleMessageSource;
-import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
-import org.springframework.web.servlet.LocaleResolver;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
-import org.springframework.web.servlet.i18n.SessionLocaleResolver;
+import org.springframework.context.annotation.Import;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
+import org.springframework.security.crypto.password.StandardPasswordEncoder;
+import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
 
-import com.excentria_it.wamya.common.annotation.ValidationMessageSource;
-import com.excentria_it.wamya.common.annotation.ViewMessageSource;
+import com.excentria_it.wamya.adapter.b2b.rest.B2bRestConfiguration;
+import com.excentria_it.wamya.adapter.file.storage.FileStorageConfiguration;
+import com.excentria_it.wamya.adapter.messaging.MessagingConfiguration;
+import com.excentria_it.wamya.adapter.messaging.WebSocketConfiguration;
+import com.excentria_it.wamya.adapter.messaging.WebSocketSecurityConfiguration;
+import com.excentria_it.wamya.adapter.persistence.PersistenceConfiguration;
+import com.excentria_it.wamya.adapter.web.WebConfiguration;
+import com.excentria_it.wamya.adapter.web.WebSecurityConfiguration;
+import com.excentria_it.wamya.application.props.CodeGeneratorProperties;
+import com.excentria_it.wamya.application.props.CreateTransporterRatingRequestProperties;
+import com.excentria_it.wamya.application.props.PasswordResetProperties;
+import com.excentria_it.wamya.application.props.SendTransporterRatingRequestProperties;
+import com.excentria_it.wamya.application.props.ServerUrlProperties;
 
 @Configuration
-public class WamyaConfiguration implements WebMvcConfigurer {
+@Import(value = { B2bRestConfiguration.class, MessagingConfiguration.class, WebSocketConfiguration.class,
+		FileStorageConfiguration.class, PersistenceConfiguration.class, WebConfiguration.class,
+		WebSecurityConfiguration.class, WebSocketSecurityConfiguration.class })
+@EnableConfigurationProperties(value = { CodeGeneratorProperties.class, ServerUrlProperties.class,
+		PasswordResetProperties.class, SendTransporterRatingRequestProperties.class,
+		CreateTransporterRatingRequestProperties.class })
+public class WamyaConfiguration {
 
-	@Override
-	public void addInterceptors(InterceptorRegistry registry) {
-		registry.addInterceptor(localeChangeInterceptor());
-	}
-
-	// I18N validation messages
-	@Bean
-	@ValidationMessageSource
-	public MessageSource validationMessageSource() {
-		ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
-		messageSource.setBasename("classpath:messages/validation/messages");
-		messageSource.setDefaultEncoding("UTF-8");
-		return messageSource;
-
-	}
+	private static final String DEFAULT_ENCODING_ALGORITHM = "bcrypt";
 
 	@Bean
-	@ViewMessageSource
-	public MessageSource viewMessageSource() {
-		ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
-		messageSource.setBasename("classpath:messages/view/messages");
-		messageSource.setDefaultEncoding("UTF-8");
+	public PasswordEncoder delegatingPasswordEncoder() {
 
-		return messageSource;
+		Map<String, PasswordEncoder> encoders = new HashMap<>();
+		encoders.put(DEFAULT_ENCODING_ALGORITHM, new BCryptPasswordEncoder());
+		encoders.put("noop", NoOpPasswordEncoder.getInstance());
+		encoders.put("pbkdf2", new Pbkdf2PasswordEncoder());
+		encoders.put("scrypt", new SCryptPasswordEncoder());
+		encoders.put("sha256", new StandardPasswordEncoder());
+
+		return new DelegatingPasswordEncoder(DEFAULT_ENCODING_ALGORITHM, encoders);
 
 	}
-
-	@Bean
-	public LocalValidatorFactoryBean getValidator() {
-		LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();
-		localValidatorFactoryBean.setValidationMessageSource(validationMessageSource());
-		return localValidatorFactoryBean;
-	}
-
-	@Bean
-	public LocaleResolver localeResolver() {
-		SessionLocaleResolver slr = new SessionLocaleResolver();
-		slr.setDefaultLocale(Locale.US);
-		return slr;
-	}
-
-	@Bean
-	public LocaleChangeInterceptor localeChangeInterceptor() {
-		LocaleChangeInterceptor lci = new LocaleChangeInterceptor();
-		lci.setParamName("lang");
-		return lci;
-	}
-
-	// This bean is for RabbitMQ to convert messages before sending them
-	@Bean
-	public MessageConverter messageConverter() {
-		return new Jackson2JsonMessageConverter();
-	}
-
 }

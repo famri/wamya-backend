@@ -1,7 +1,8 @@
 package com.excentria_it.wamya.domain;
 
-import java.time.LocalDateTime;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.ZonedDateTime;
+import java.util.Map;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -16,15 +17,17 @@ public class UserAccount {
 
 	private Long id;
 
+	private String oauthId;
+
 	private Boolean isTransporter;
 
-	private Gender gender;
+	private Long genderId;
 
-	private String firstName;
+	private String firstname;
 
-	private String lastName;
+	private String lastname;
 
-	private Date dateOfBirth;
+	private LocalDate dateOfBirth;
 
 	private String email;
 
@@ -38,11 +41,19 @@ public class UserAccount {
 
 	private Boolean isValidatedMobileNumber;
 
-	private String userPassword;
-
 	private Boolean receiveNewsletter;
 
-	private LocalDateTime creationTimestamp;
+	private ZonedDateTime creationDateTime;
+
+	private String photoUrl;
+
+	private Double globalRating;
+
+	private Map<String, String> preferences;
+
+	private String deviceRegistrationToken;
+	
+	private Boolean isWebSocketConnected;
 
 	@NoArgsConstructor
 	@AllArgsConstructor
@@ -70,6 +81,16 @@ public class UserAccount {
 			return this.internationalCallingCode + this.mobileNumber;
 		}
 
+	}
+
+	@NoArgsConstructor
+	@AllArgsConstructor
+	@Data
+	public static class UserGender {
+
+		Long id;
+
+		String name;
 	}
 
 }

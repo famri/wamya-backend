@@ -5,8 +5,11 @@ import java.util.Map;
 
 public enum EmailTemplate {
 
-	EMAIL_VALIDATION(List.of("validation_url"), Map.of("logo_wamya", "static/logo_wamya.png"));
-
+	EMAIL_VALIDATION(List.of("validation_url"), Map.of("logo_wamya", "static/logo_wamya.png")),
+	PASSWORD_RESET(List.of("passwordResetUrl"), Map.of("logo_wamya", "static/logo_wamya.png")),
+	RECEIVED_MESSAGE(List.of("sender_name", "discussions_url"), Map.of("logo_wamya", "static/logo_wamya.png")),
+	RATING_REQUEST(List.of("user_name", "rating_url", "transporter_name", "transporter_photo_url", "departure_place", "arrival_place", "journey_date"), Map.of("logo_wamya", "static/logo_wamya.png"));
+	
 	private List<String> templateParams;
 
 	private Map<String, String> templateResources;

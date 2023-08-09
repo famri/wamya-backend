@@ -1,0 +1,56 @@
+plugins {
+	id 'org.springframework.boot' version '2.3.2.RELEASE'
+}
+
+group = 'com.excentria_it.wamya'
+version = '1.0.0-SNAPSHOT'
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11
+
+ext{
+	mapstructVersion ="1.4.1.Final"
+}
+
+dependencies {
+
+    compileOnly 'org.projectlombok:lombok'
+    compileOnly "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+
+    annotationProcessor 'org.projectlombok:lombok'
+    annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+    
+   	implementation("org.mapstruct:mapstruct:${mapstructVersion}")
+	
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+	implementation 'org.springframework.security.oauth.boot:spring-security-oauth2-autoconfigure'
+	implementation 'org.springframework.security:spring-security-oauth2-jose'
+	
+	
+	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+	
+	
+	runtimeOnly  'org.postgresql:postgresql:42.2.14'
+	runtimeOnly 'com.h2database:h2'
+	
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testCompileOnly "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+	testAnnotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+	testImplementation 'com.h2database:h2'
+	testCompile 'org.springframework.security:spring-security-test'
+	
+
+}
+
+test {
+    useJUnitPlatform()
+}
+
+
+
+

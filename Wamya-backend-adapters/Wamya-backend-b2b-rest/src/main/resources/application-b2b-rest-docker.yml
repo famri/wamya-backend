@@ -1,0 +1,39 @@
+spring:
+  security:
+    oauth2:
+      client:   
+        registration:
+          on-prem-auth-server-cc:
+            authorization-grant-type: client_credentials
+            client-id: fretto-backend
+            client-secret: rGbIlwVtAMOjozwEImlmD94SVfLoZoZI
+            provider: on-prem-auth-server
+            scope: 'user:create'
+        provider:
+          on-prem-auth-server:
+            token-uri: "http://${app.auth-server}:${app.auth-server-port}/realms/fretto/protocol/openid-connect/token"
+            jwk-set-uri: "http://${app.auth-server}:${app.auth-server-port}/realms/fretto/protocol/openid-connect/certs"
+
+app:
+  auth-server: auth-server
+  auth-server-port: 8080
+  oauth2:
+    client-credentials-registration-id: client-credentials-on-prem-auth-server
+    password-registration-id: password-on-prem-auth-server
+    create-user-uri: "http://${app.auth-server}:${app.auth-server-port}/admin/realms/fretto/users"
+    read-user-uri: "http://${app.auth-server}:${app.auth-server-port}/admin/realms/fretto/users/{userId}"
+    update-user-uri: "http://${app.auth-server}:${app.auth-server-port}/admin/realms/fretto/users/{userId}"
+    reset-user-password-uri: "http://${app.auth-server}:${app.auth-server-port}/admin/fretto/users/{userId}/reset-password"
+    read-realm-roles-uri: "http://${app.auth-server}:${app.auth-server-port}/admin/realms/fretto/roles"
+    add-role-to-user-uri: "http://${app.auth-server}:${app.auth-server-port}/admin/realms/fretto/users/{userId}/role-mappings/realm"
+    token-uri: "http://${app.auth-server}:${app.auth-server-port}/realms/fretto/protocol/openid-connect/token"
+    client-id: fretto-backend
+    client-secret: rGbIlwVtAMOjozwEImlmD94SVfLoZoZI
+
+    
+  google-api:
+    api-key: AIzaSyD5ZWuXfEdL8BGnQ4lW4cziV1I5uFl6oFQ
+    distance-matrix-api:
+      url: "https://maps.googleapis.com/maps/api/distancematrix/json?origins={origins}&destinations={destinations}&key={key}"
+    geo-coding-api:
+      url: "https://maps.googleapis.com/maps/api/geocode/json?latlng={latlng}&result_type={result_type}&key={key}&language={language}"

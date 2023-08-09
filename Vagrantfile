@@ -4,36 +4,37 @@
 VAGRANTFILE_API_VERSION = "2"
 VAGRANT_USER = "vagrant"
 
+#ENV['VAGRANT_EXPERIMENTAL'] = 'disks'
+
 #A shell script to install docker and docker-compose 
 $bootstrap = <<-'INSTALL_DOCKER'
 
-apt-get remove -qq -y docker docker-engine docker.io containerd runc
+ apt-get remove docker docker-engine docker.io containerd runc
 
  apt-get update -qq -y
 
- apt-get install -qq -y --force-yes \
- apt-transport-https=1.9.4ubuntu0.1 \
- ca-certificates=20190110ubuntu0.19.10.1 \
- curl=7.65.3-1ubuntu3.1 \
- gnupg-agent=2.2.12-1ubuntu3 \
- software-properties-common=0.98.5
+ apt-get install -qq -y --allow-unauthenticated \
+ apt-transport-https \
+ ca-certificates \
+ curl \
+ gnupg \
+ lsb-release
 
- curl -fsSL https://download.docker.com/linux/ubuntu/gpg |  apt-key add -
-
- add-apt-repository \
- "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
- $(lsb_release -cs) \
- stable"
+ curl -fsSL https://download.docker.com/linux/ubuntu/gpg |  gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
  
+ echo \
+  "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+  
  apt-get update -qq -y
 
- apt-get install -qq -y docker-ce=5:19.03.12~3-0~ubuntu-eoan docker-ce-cli=5:19.03.12~3-0~ubuntu-eoan containerd.io
+ apt-get install -qq -y docker-ce docker-ce-cli containerd.io
 
  gpasswd -a "$1" docker 
 
  sleep 5
 
- curl -fsSL "https://github.com/docker/compose/releases/download/1.26.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+ curl -fsSL "https://github.com/docker/compose/releases/download/1.28.5/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 
  chmod +x /usr/local/bin/docker-compose
 
@@ -46,46 +47,85 @@ INSTALL_DOCKER
 #A shell script to bring spring boot app and database containers up in Vagrant VM
 $docker_compose = <<-'RUN_DOCKER_COMPOSE'
 
- cd /vagrant/Wamya-backend-configuration && docker-compose up --build -d
+ cd /vagrant/Messaging-gateway && docker-compose up --build -d && cd /vagrant/Wamya-backend && docker-compose up --build -d
 
 RUN_DOCKER_COMPOSE
 
 #Create the host VM volume to backup database
-$create_database_volume = <<-'DATABASE_VOLUME'
+$create_database_volumes = <<-'DATABASE_VOLUME'
 
 mkdir -m 700 -p /postgres/database-data
 
+mkdir -m 700 -p /postgres/auth-database-data
+
 DATABASE_VOLUME
 
+$create_file_storage_volumes = <<-'FILE_STORAGE_VOLUME'
+
+mkdir -m 700 -p /file-storage
+
+FILE_STORAGE_VOLUME
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  config.disksize.size = '50GB'
   
-  config.vm.box = "ubuntu/eoan64" 
-  
-  config.vm.provider "virtualbox" do |vb|
-    vb.memory = "2048"
-  end
-  
-  config.vm.provision "shell", inline: $bootstrap, args: VAGRANT_USER
-  config.vm.provision "shell", inline: $create_database_volume
-  config.vm.provision "shell", inline: $docker_compose, run: 'always'
-  
-  config.vm.synced_folder ".", "/vagrant", disabled: true
-  config.vm.synced_folder "Wamya-backend-configuration", "/vagrant/Wamya-backend-configuration"
-  config.vm.synced_folder "Messaging-gateway", "/vagrant/Messaging-gateway"
-  config.vm.synced_folder "rabbitmq", "/vagrant/rabbitmq"
-  config.vm.synced_folder "kannel", "/vagrant/kannel"
-#  config.vm.synced_folder "../kannel_vagrant_sms_gateway", "/vagrant/kannel_vagrant_sms_gateway"
-  
-  config.vm.network "private_network", ip: "192.168.50.4"
-  config.vm.network "forwarded_port", guest: 22, host: 2222
-  config.vm.network "forwarded_port", guest: 5432, host: 5432
-  config.vm.network "forwarded_port", guest: 8080, host: 8080
-  config.vm.network "forwarded_port", guest: 9090, host: 9090
-  config.vm.network "forwarded_port", guest: 8585, host: 8585
-  config.vm.network "forwarded_port", guest: 9595, host: 9595
-  config.vm.network "forwarded_port", guest: 15672, host: 15672
-  config.vm.network "forwarded_port", guest: 13000, host: 13000
-  config.vm.network "forwarded_port", guest: 13001, host: 13001
-  
+  config.vm.define "dev_env" do |dev|
+		dev.vm.box = "ubuntu/groovy64"
+		dev.vm.boot_timeout = 600
+	  	dev.vm.provider "virtualbox" do |vb|
+	  	  vb.memory = "5120"
+	  	  vb.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
+	  	end
+	  	
+	  	dev.vm.provision "shell", inline: $bootstrap, args: VAGRANT_USER
+		dev.vm.provision "shell", inline: $create_database_volumes
+		dev.vm.provision "shell", inline: $create_file_storage_volumes
+#		dev.vm.provision "shell", inline: $docker_compose, run: 'always'
+#			
+#		the following does not work because folders are synchronized entirely 
+#		dev.vm.synced_folder "./fretto-web-app/node_modules/", "/vagrant/fretto-web-app/node_modules", disabled: true
+#		dev.vm.synced_folder "Wamya-backend-configuration", "/vagrant/Wamya-backend-configuration"		
+#		dev.vm.synced_folder "Messaging-gateway", "/vagrant/Messaging-gateway"
+#		dev.vm.synced_folder "Wamya-spring-cloud", "/vagrant/Wamya-spring-cloud"
+
+
+		dev.vm.network "private_network", ip: "192.168.50.4"
+		dev.vm.network "forwarded_port", guest: 22, host: 2222
+		
+# POSTGRES WAMYA DB	PORT	
+		dev.vm.network "forwarded_port", guest: 5432, host: 5432
+		
+# POSTGRES AUTH DB PORT	
+		dev.vm.network "forwarded_port", guest: 5433, host: 5433
+		
+# GATEWAY PORT
+		dev.vm.network "forwarded_port", guest: 8443, host: 8443
+# WAMYA WEB PORT
+		dev.vm.network "forwarded_port", guest: 8080, host: 8080
+		
+# WAMYA WEB DEBUG PORT		
+		dev.vm.network "forwarded_port", guest: 9090, host: 9090
+
+# MESSAGING-GATEWAY WEB PORT
+		dev.vm.network "forwarded_port", guest: 8585, host: 8585
+
+# MESSAGING-GATEWAY WEB DEBUG PORT
+		dev.vm.network "forwarded_port", guest: 9595, host: 9595
+		
+# RABBIT MQ MANAGER PORT		
+		dev.vm.network "forwarded_port", guest: 15672, host: 15672
+		
+# KANNEL ADMIN PORT
+		dev.vm.network "forwarded_port", guest: 13000, host: 13000
+		
+# KANNEL SMS BOX PORT
+		dev.vm.network "forwarded_port", guest: 13013, host: 13013
+		
+# MAILHOG WEB PORT
+		dev.vm.network "forwarded_port", guest: 8025, host: 8025
+
+# MAILHOG WEB PORT
+		dev.vm.network "forwarded_port", guest: 3000, host: 3000		
+
+	end
 end

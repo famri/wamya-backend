@@ -1,9 +1,16 @@
 dependencies {
-    implementation project(':Wamya-backend-application')
-    implementation project(':Wamya-backend-common')
-    implementation project(':Wamya-backend-adapters:Wamya-backend-persistence')
 
-    implementation 'com.fasterxml.jackson.core:jackson-databind'
     compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'    
+    annotationProcessor 'org.projectlombok:lombok'  
+    
+    implementation (project(':Wamya-backend-application'))
+    implementation (project(':Wamya-backend-common'))
+    implementation (project(':Wamya-backend-adapters:Wamya-backend-persistence'))
+    
+    implementation "org.springframework.data:spring-data-jpa:${springBootVersion}"
+   
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+    
+    implementation 'commons-codec:commons-codec:1.15'
+  
 }

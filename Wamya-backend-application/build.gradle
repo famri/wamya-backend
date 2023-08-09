@@ -1,18 +1,51 @@
+apply plugin: 'jacoco'
+
+
+jacoco {
+	toolVersion = "0.8.6"
+}
+	
+jacocoTestCoverageVerification {
+	violationRules {
+		rule {
+			element = 'CLASS'
+			limit {
+			counter = 'LINE'
+			value = 'COVEREDRATIO'
+			minimum = 1.0
+			}
+			excludes = [
+					//'com.excentria_it.wamya.WamyaApplication' #commented because redendent when @Generated is used
+				]
+		}
+	}
+}
+
+check.dependsOn jacocoTestCoverageVerification
+
 dependencies {
-    implementation project(':Wamya-backend-common')
+   
+
+	
+    implementation (project(':Wamya-backend-common')){
+     	transitive = false;
+    }
 
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     
-    implementation 'org.springframework.boot:spring-boot-starter-security';
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation "org.springframework.security:spring-security-oauth2-core:${springSecurityVersion}"
     implementation ('org.springframework.boot:spring-boot-starter-validation')
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
 
     implementation 'javax.transaction:javax.transaction-api'
 	implementation 'org.apache.commons:commons-text:1.9'
-
-	testCompileOnly 'org.projectlombok:lombok'
-	testAnnotationProcessor 'org.projectlombok:lombok'
-	
+	implementation 'com.fasterxml.jackson.core:jackson-annotations'
+	implementation 'com.fasterxml.jackson.core:jackson-databind'
+	implementation 'org.apache.commons:commons-collections4:4.4' 
+	implementation 'org.apache.tika:tika-core:1.26'
+	implementation 'commons-codec:commons-codec:1.15'
 	
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'junit' // excluding junit 4   
@@ -25,13 +58,23 @@ dependencies {
     testImplementation 'org.mockito:mockito-junit-jupiter'
     testImplementation 'com.tngtech.archunit:archunit:0.9.3'
     testImplementation 'de.adesso:junit-insights:1.1.0'
+    testImplementation 'org.powermock:powermock-module-junit4:2.0.9'
+	testImplementation 'org.powermock:powermock-api-mockito2:2.0.9'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    testImplementation 'org.springframework.boot:spring-boot-starter-validation'   
-    testImplementation project(':Wamya-backend-testdata')
-
+      
+    testImplementation (project(':Wamya-backend-testdata')){
+     	transitive = false;
+    }
+    
+   	testCompileOnly 'org.projectlombok:lombok'
+	testAnnotationProcessor 'org.projectlombok:lombok'
+	
 }
 
 test {
+    finalizedBy jacocoTestReport
     useJUnitPlatform()
 }
 
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11

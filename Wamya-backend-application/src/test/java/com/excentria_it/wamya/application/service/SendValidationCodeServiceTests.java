@@ -4,7 +4,6 @@ import static com.excentria_it.wamya.test.data.common.TestConstants.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
-import static org.mockito.Mockito.*;
 
 import java.util.Locale;
 import java.util.Optional;
@@ -22,8 +21,9 @@ import org.springframework.context.MessageSource;
 import com.excentria_it.wamya.application.port.in.SendValidationCodeUseCase.SendEmailValidationLinkCommand;
 import com.excentria_it.wamya.application.port.in.SendValidationCodeUseCase.SendSMSValidationCodeCommand;
 import com.excentria_it.wamya.application.port.out.LoadUserAccountPort;
-import com.excentria_it.wamya.application.port.out.MessagingPort;
+import com.excentria_it.wamya.application.port.out.AsynchronousMessagingPort;
 import com.excentria_it.wamya.application.port.out.UpdateUserAccountPort;
+import com.excentria_it.wamya.application.props.ServerUrlProperties;
 import com.excentria_it.wamya.application.service.helper.CodeGenerator;
 import com.excentria_it.wamya.common.domain.EmailMessage;
 import com.excentria_it.wamya.common.domain.SMSMessage;
@@ -39,51 +39,19 @@ public class SendValidationCodeServiceTests {
 	@Mock
 	private CodeGenerator codeGenerator;
 	@Mock
-	private MessagingPort messagingPort;
+	private AsynchronousMessagingPort messagingPort;
 	@Mock
 	private LoadUserAccountPort loadUserAccountPort;
 	@Mock
 	private UpdateUserAccountPort updateUserAccountPort;
 	@Mock
 	private MessageSource messageSource;
+	@Mock
+	private ServerUrlProperties serverUrlProperties;
 
 	@Spy
 	@InjectMocks
 	private SendValidationCodeService sendValidationCodeService;
-
-	@Test
-	void testUpdateSMSValidationCode() {
-
-		String validationCode = TestConstants.DEFAULT_VALIDATION_CODE;
-		UserAccount userAccount = Mockito.mock(UserAccount.class);
-
-		sendValidationCodeService.updateSMSValidationCode(userAccount, validationCode);
-
-		InOrder inOrder = Mockito.inOrder(userAccount, updateUserAccountPort);
-
-		then(userAccount).should(inOrder).setMobileNumberValidationCode(validationCode);
-
-		then(userAccount).should(inOrder).setIsValidatedMobileNumber(false);
-
-		then(updateUserAccountPort).should(inOrder).updateUserAccount(userAccount);
-	}
-
-	@Test
-	void testUpdateEmailValidationCode() {
-
-		String validationCode = TestConstants.DEFAULT_VALIDATION_CODE;
-		UserAccount userAccount = Mockito.mock(UserAccount.class);
-
-		sendValidationCodeService.updateEmailValidationCode(userAccount, validationCode);
-
-		InOrder inOrder = Mockito.inOrder(userAccount, updateUserAccountPort);
-
-		then(userAccount).should(inOrder).setEmailValidationCode(validationCode);
-
-		then(userAccount).should(inOrder).setIsValidatedEmail(false);
-
-		then(updateUserAccountPort).should(inOrder).updateUserAccount(userAccount);
-	}
 
 	@Test
 	void givenNonExistentEmail_whenCheckExistingAccount_ThenThrowUserAccountNotFoundException() {
@@ -136,7 +104,7 @@ public class SendValidationCodeServiceTests {
 		SendEmailValidationLinkCommand command = new SendEmailValidationLinkCommand(TestConstants.DEFAULT_EMAIL);
 
 		assertThrows(UserAccountNotFoundException.class,
-				() -> sendValidationCodeService.sendEmailValidationLink(command, new Locale("fr")));
+				() -> sendValidationCodeService.sendEmailValidationLink(command, new Locale("fr", "FR")));
 	}
 
 	@Test
@@ -145,8 +113,8 @@ public class SendValidationCodeServiceTests {
 		SendSMSValidationCodeCommand sendSMSValidationCodeCommand = new SendSMSValidationCodeCommand(
 				TestConstants.DEFAULT_INTERNATIONAL_CALLING_CODE, TestConstants.DEFAULT_MOBILE_NUMBER);
 
-		assertThrows(UserAccountNotFoundException.class,
-				() -> sendValidationCodeService.sendSMSValidationCode(sendSMSValidationCodeCommand, new Locale("fr")));
+		assertThrows(UserAccountNotFoundException.class, () -> sendValidationCodeService
+				.sendSMSValidationCode(sendSMSValidationCodeCommand, new Locale("fr", "FR")));
 	}
 
 	@Test
@@ -161,7 +129,7 @@ public class SendValidationCodeServiceTests {
 		doReturn(userAccount).when(sendValidationCodeService).checkExistingAccount(command);
 
 		assertThrows(UserEmailValidationException.class,
-				() -> sendValidationCodeService.sendEmailValidationLink(command, new Locale("fr")));
+				() -> sendValidationCodeService.sendEmailValidationLink(command, new Locale("fr", "FR")));
 	}
 
 	@Test
@@ -176,8 +144,8 @@ public class SendValidationCodeServiceTests {
 		// Use doReturn() instead of given() because Spy not Mock
 		doReturn(userAccount).when(sendValidationCodeService).checkExistingAccount(sendSMSValidationCodeCommand);
 
-		assertThrows(UserMobileNumberValidationException.class,
-				() -> sendValidationCodeService.sendSMSValidationCode(sendSMSValidationCodeCommand, new Locale("fr")));
+		assertThrows(UserMobileNumberValidationException.class, () -> sendValidationCodeService
+				.sendSMSValidationCode(sendSMSValidationCodeCommand, new Locale("fr", "FR")));
 	}
 
 	@Test
@@ -195,12 +163,12 @@ public class SendValidationCodeServiceTests {
 		// Use doReturn() instead of given() because Spy not Mock
 		doReturn(userAccount).when(sendValidationCodeService).checkExistingAccount(sendSMSValidationCodeCommand);
 
-		sendValidationCodeService.sendSMSValidationCode(sendSMSValidationCodeCommand, new Locale("fr"));
+		sendValidationCodeService.sendSMSValidationCode(sendSMSValidationCodeCommand, new Locale("fr", "FR"));
 
-		InOrder inOrder = Mockito.inOrder(codeGenerator, sendValidationCodeService, messagingPort);
+		InOrder inOrder = Mockito.inOrder(codeGenerator, updateUserAccountPort, messagingPort);
 
 		inOrder.verify(codeGenerator).generateNumericCode();
-		inOrder.verify(sendValidationCodeService).updateSMSValidationCode(userAccount,
+		inOrder.verify(updateUserAccountPort).updateSMSValidationCode(userAccount.getId(),
 				TestConstants.DEFAULT_VALIDATION_CODE);
 		inOrder.verify(messagingPort).sendSMSMessage(any(SMSMessage.class));
 	}
@@ -210,21 +178,42 @@ public class SendValidationCodeServiceTests {
 		UserAccount userAccount = Mockito.mock(UserAccount.class);
 
 		given(userAccount.getIsValidatedEmail()).willReturn(false);
-		givenDefaultGeneratedCode();
+		givenDefaultGeneratedUUID();
 
 		SendEmailValidationLinkCommand command = new SendEmailValidationLinkCommand(TestConstants.DEFAULT_EMAIL);
 
 		// Use doReturn() instead of given() because Spy not Mock
 		doReturn(userAccount).when(sendValidationCodeService).checkExistingAccount(command);
 
-		sendValidationCodeService.sendEmailValidationLink(command, new Locale("fr"));
+		sendValidationCodeService.sendEmailValidationLink(command, new Locale("fr", "FR"));
 
-		InOrder inOrder = Mockito.inOrder(codeGenerator, sendValidationCodeService, messagingPort);
+		InOrder inOrder = Mockito.inOrder(codeGenerator, messagingPort, updateUserAccountPort);
 
-		inOrder.verify(codeGenerator).generateNumericCode();
-		inOrder.verify(sendValidationCodeService).updateEmailValidationCode(userAccount,
-				TestConstants.DEFAULT_VALIDATION_CODE);
+		inOrder.verify(codeGenerator).generateUUID();
+		inOrder.verify(updateUserAccountPort).updateEmailValidationCode(userAccount.getId(),
+				TestConstants.DEFAULT_VALIDATION_UUID);
 		inOrder.verify(messagingPort).sendEmailMessage(any(EmailMessage.class));
+	}
+
+	@Test
+	void givenExceptionWhenSendingEmailMessage_whenSendValidationLink_thenReturnFalse() {
+
+		UserAccount userAccount = Mockito.mock(UserAccount.class);
+
+		given(userAccount.getIsValidatedEmail()).willReturn(false);
+		givenDefaultGeneratedUUID();
+
+		SendEmailValidationLinkCommand command = new SendEmailValidationLinkCommand(TestConstants.DEFAULT_EMAIL);
+
+		// Use doReturn() instead of given() because Spy not Mock
+		doReturn(userAccount).when(sendValidationCodeService).checkExistingAccount(command);
+
+		doThrow(IllegalArgumentException.class).when(messagingPort).sendEmailMessage(any(EmailMessage.class));
+
+		boolean result = sendValidationCodeService.sendEmailValidationLink(command, new Locale("fr", "FR"));
+
+		assertEquals(false, result);
+
 	}
 
 	private String givenDefaultGeneratedCode() {
@@ -232,29 +221,32 @@ public class SendValidationCodeServiceTests {
 		return DEFAULT_VALIDATION_CODE;
 	}
 
+	private String givenDefaultGeneratedUUID() {
+		given(codeGenerator.generateUUID()).willReturn(DEFAULT_VALIDATION_UUID);
+		return DEFAULT_VALIDATION_UUID;
+	}
+
 	private void givenNonExistentEmail() {
 
-		given(loadUserAccountPort.loadUserAccountByEmail(any(String.class))).willReturn(Optional.ofNullable(null));
+		given(loadUserAccountPort.loadUserAccountBySubject(any(String.class))).willReturn(Optional.empty());
 
 	}
 
 	private void givenExistentEmail(UserAccount account) {
 
-		given(loadUserAccountPort.loadUserAccountByEmail(any(String.class))).willReturn(Optional.ofNullable(account));
+		given(loadUserAccountPort.loadUserAccountBySubject(any(String.class))).willReturn(Optional.of(account));
 
 	}
 
 	private void givenExistentMobilePhoneNumber(UserAccount account) {
 
-		given(loadUserAccountPort.loadUserAccountByIccAndMobileNumber(any(String.class), any(String.class)))
-				.willReturn(Optional.ofNullable(account));
+		given(loadUserAccountPort.loadUserAccountBySubject(any(String.class))).willReturn(Optional.of(account));
 
 	}
 
 	private void givenNonExistentMobilePhoneNumber() {
 
-		given(loadUserAccountPort.loadUserAccountByIccAndMobileNumber(any(String.class), any(String.class)))
-				.willReturn(Optional.ofNullable(null));
+		given(loadUserAccountPort.loadUserAccountBySubject(any(String.class))).willReturn(Optional.empty());
 
 	}
 

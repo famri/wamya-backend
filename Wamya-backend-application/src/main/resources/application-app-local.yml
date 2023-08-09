@@ -1,0 +1,23 @@
+#phone number and email validation code generator properties
+code:
+  generator:
+    length: 4
+    
+front:
+  url:
+    protocol: https
+    host: localhost
+    port: 8443
+
+app:
+  server.base.url: https://localhost:8443/wamya-backend
+  password.reset:
+    request-validity: H3
+    purge-cron-expression: 0 */5 * * * *
+  rating:
+    record:
+      creation-cron-expression: 0 0 */1 * * *
+      limit: 20
+    request:
+      sending-cron-expression: 0 0 */1 * * *
+      revivals: 3

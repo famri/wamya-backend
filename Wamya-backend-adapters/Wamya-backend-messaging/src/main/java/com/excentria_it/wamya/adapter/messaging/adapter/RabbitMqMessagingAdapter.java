@@ -6,9 +6,10 @@ import java.util.Map;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
-import com.excentria_it.wamya.application.port.out.MessagingPort;
+import com.excentria_it.wamya.application.port.out.AsynchronousMessagingPort;
 import com.excentria_it.wamya.common.annotation.MessagingAdapter;
 import com.excentria_it.wamya.common.domain.EmailMessage;
+import com.excentria_it.wamya.common.domain.PushMessage;
 import com.excentria_it.wamya.common.domain.SMSMessage;
 import com.excentria_it.wamya.common.rabbitmq.RabbitMqQueue;
 
@@ -16,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @MessagingAdapter
-public class RabbitMqMessagingAdapter implements MessagingPort {
+public class RabbitMqMessagingAdapter implements AsynchronousMessagingPort {
 
 	private final RabbitTemplate rabbitTemplate;
 
@@ -111,6 +112,52 @@ public class RabbitMqMessagingAdapter implements MessagingPort {
 		}
 
 		return true;
+	}
+
+	protected boolean validatePushMessage(PushMessage message) {
+
+		List<String> invalidParametersMessages = new ArrayList<>();
+
+		if (message.getTo() == null) {
+			invalidParametersMessages.add("PushMessage.to is null");
+		}
+		if (message.getLanguage() == null) {
+			invalidParametersMessages.add("PushMessage.language is null");
+		}
+		if (message.getTemplate() == null) {
+			invalidParametersMessages.add("PushMessage.template is null");
+		}
+		if (message.getTemplate() != null) {
+			List<String> templateParams = message.getTemplate().getTemplateParams();
+			Map<String, String> givenParams = message.getParams();
+
+			if (templateParams != null && !templateParams.isEmpty() && (givenParams == null || givenParams.isEmpty()
+					|| !givenParams.keySet().containsAll(templateParams))) {
+				invalidParametersMessages.add("PushMessage.params do not match PushMessage.template parameters");
+			}
+
+		}
+
+		if (!invalidParametersMessages.isEmpty()) {
+			StringBuilder validationErrorMessage = new StringBuilder("[");
+
+			for (int i = 0; i < invalidParametersMessages.size() - 1; i++) {
+				validationErrorMessage.append(invalidParametersMessages.get(i)).append(",");
+			}
+			validationErrorMessage.append(invalidParametersMessages.get(invalidParametersMessages.size() - 1))
+					.append("]");
+
+			throw new IllegalArgumentException("Invalid PushMessage parameter: " + validationErrorMessage.toString());
+		}
+		return true;
+
+	}
+
+	@Override
+	public void sendPushMessage(PushMessage message) {
+		validatePushMessage(message);
+		rabbitTemplate.convertAndSend(RabbitMqQueue.PUSH_QUEUE, message);
+
 	}
 
 }

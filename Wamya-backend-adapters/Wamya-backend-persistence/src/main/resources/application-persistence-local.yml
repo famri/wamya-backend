@@ -1,0 +1,49 @@
+server.port: 7777
+
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create
+    generate-ddl: true 
+    database-platform: H2
+    open-in-view: false
+    properties:
+      hibernate:
+        order_inserts: true
+        order_updates: true
+        jdbc:
+          batch_size: 20
+          fetch_size: 20
+          batch_versioned_data: true 
+          time_zone: UTC
+            
+  datasource:
+    platform: h2    
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:wamya_db
+    username: sa
+    password: password
+
+
+
+log4jdbc:
+  trim:
+    sql:
+      extrablanklines: false
+  dump:
+    sql:
+      addsemicolon: true
+      maxlinelength: 0
+             
+logging:
+  file: 
+    name: D:/PROJECTS/wamya/log/persistence.log
+  level:
+    jdbc:
+      sqlonly: fatal
+      resultsettable: info
+      sqltiming: info
+      audit: fatal
+      resultset: fatal
+      connection: fatal
+      

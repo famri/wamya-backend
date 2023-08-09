@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import com.excentria_it.wamya.common.LoginType;
 import com.excentria_it.wamya.common.annotation.ValidUserLogin;
-import com.excentria_it.wamya.common.impl.UserLoginValidator;
+import com.excentria_it.wamya.common.validator.impl.UserLoginValidator;
 import com.excentria_it.wamya.test.data.common.TestConstants;
 
 public class UserLoginValidatorTests {

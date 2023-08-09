@@ -19,13 +19,13 @@ public class EmailRequestListenerTests {
 	private EmailService emailService;
 
 	@InjectMocks
-	private EmailRequestListener emailRequestListener;
+	private EmailRequestReceiver emailRequestReceiver;
 
 	@Test
 	void whenReceiveEmailRequest_ThenSendEmailWithHTMTemplateShouldBeCalledOnce() {
 		EmailMessage emailMessage = EmailMessageTestData.defaultEmailMessageBuilder().build();
 
-		emailRequestListener.receiveEmailRequest(emailMessage);
+		emailRequestReceiver.receiveEmailRequest(emailMessage);
 
 		then(emailService).should(times(1)).sendEmailWithHTMTemplate(emailMessage.getFrom(), emailMessage.getTo(),
 				emailMessage.getSubject(), emailMessage.getTemplate(), emailMessage.getLanguage(),

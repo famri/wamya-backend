@@ -9,7 +9,7 @@ server:
     include-stacktrace: always
   
 spring:
-  profiles: development
+  profiles: docker
   devtools:
     remote:
       secret: test
@@ -21,7 +21,11 @@ spring:
     
 logging:
   level:
-    com.excentria_it.wamya: DEBUG
+    com.excentria_it.messaging.gateway: DEBUG
+
+management.endpoint.health.show-details: "ALWAYS"
+management.endpoints.web.exposure.include: "*"
+
     
 sms.gateway:
   host: ${SMS_GATEWAY_HOST}
@@ -30,15 +34,18 @@ sms.gateway:
   password: ${SMS_GATEWAY_PASSWORD}
 
 #gmail SMTP server properties
+#spring.mail:
+#  host: smtp-relay.sendinblue.com
+#  port: 587
+#  username: amri.foued@gmail.com
+#  password: xsmtpsib-36096652e5eab23a380fc9f9db74b3927fbfe91fe91cad9c34c63379650bcd20-92ghckVX7nQPRMtm
+#  properties.mail.smtp:
+#    auth: true
+#    starttls.enable: true
 spring.mail:
-  host: smtp.gmail.com
-  port: 587
-  username: amri.foued@gmail.com
-  password: nuzvqkqdposcqabc
-  properties.mail.smtp:
-    auth: true
-    starttls.enable: true
- 
+  host: mailhog
+  port: 1025
+
 ---
 spring:
   profiles: localtest
@@ -47,13 +54,3 @@ sms.gateway:
  port: ${SMS_GATEWAY_PORT}
  username: ${SMS_GATEWAY_USERNAME}
  password: ${SMS_GATEWAY_PASSWORD}
-
-#gmail SMTP server properties
-spring.mail:
-  host: smtp.gmail.com
-  port: 587
-  username: amri.foued@gmail.com
-  password: nuzvqkqdposcqabc
-  properties.mail.smtp:
-    auth: true
-    starttls.enable: true

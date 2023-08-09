@@ -1,6 +1,6 @@
 package com.excentria_it.messaging.gateway.email;
 
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Map;
 
 import javax.mail.MessagingException;
@@ -28,15 +28,16 @@ public class EmailServiceImpl implements EmailService {
 
 	private final MimeMessageManager mimeMessageManager;
 
+	private static final String TEMPLATES_BASEDIR = "/templates";
+
 	public boolean sendEmailWithHTMTemplate(String from, String to, String subject, EmailTemplate template,
 			String language, Map<String, String> templateParams, Map<String, String> attachements) {
 
-		try {
-			templateManager.loadTemplate(template.name(), templateParams, TemplateType.EMAIL, language);
-		} catch (FileNotFoundException e1) {
-			log.error(e1.getMessage(), e1);
+		templateManager.configure(TEMPLATES_BASEDIR);
+		boolean loadingResult = templateManager.loadTemplate(template.name(), templateParams, TemplateType.EMAIL,
+				language);
+		if (!loadingResult)
 			return false;
-		}
 
 		MimeMessage message = emailSender.createMimeMessage();
 
@@ -45,13 +46,13 @@ public class EmailServiceImpl implements EmailService {
 			String templateBody = templateManager.renderTemplate();
 
 			MimeMessageHelper helper = this.createMimeMessageHelper(message);
-
+			
 			mimeMessageManager.prepareMimeMessage(helper, from, to, subject, templateBody,
 					template.getTemplateResources(), attachements);
 
 			emailSender.send(message);
 
-		} catch (MessagingException | FileNotFoundException e) {
+		} catch (MessagingException | IOException e) {
 			log.error("Error occured when preparing mime message", e);
 			return false;
 		}
@@ -61,7 +62,7 @@ public class EmailServiceImpl implements EmailService {
 	}
 
 	protected MimeMessageHelper createMimeMessageHelper(MimeMessage message) throws MessagingException {
-		return new MimeMessageHelper(message, true);
+		return new MimeMessageHelper(message, true,"UTF-8");
 	}
 
 }

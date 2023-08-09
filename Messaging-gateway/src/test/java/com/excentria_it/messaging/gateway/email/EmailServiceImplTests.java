@@ -6,7 +6,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.*;
 
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Map;
 
 import javax.mail.MessagingException;
@@ -65,13 +65,10 @@ public class EmailServiceImplTests {
 				TestConstants.DEFAULT_TEMPLATE_LANGUAGE, templateParams, templateAttachements);
 
 		InOrder inOrder = inOrder(templateManager, emailSender, mimeMessageManager);
-		try {
-			inOrder.verify(templateManager).loadTemplate(TestConstants.DEFAULT_EMAIL_TEMPLATE.name(), templateParams,
-					TemplateType.EMAIL, TestConstants.DEFAULT_TEMPLATE_LANGUAGE);
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
+		inOrder.verify(templateManager).loadTemplate(TestConstants.DEFAULT_EMAIL_TEMPLATE.name(), templateParams,
+				TemplateType.EMAIL, TestConstants.DEFAULT_TEMPLATE_LANGUAGE);
+
 		inOrder.verify(emailSender).createMimeMessage();
 		inOrder.verify(templateManager).renderTemplate();
 		try {
@@ -81,7 +78,7 @@ public class EmailServiceImplTests {
 		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (FileNotFoundException e) {
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -92,7 +89,7 @@ public class EmailServiceImplTests {
 	@Test
 	void givenInexistingEmailTemplateName_ThenShouldReturnFalse() {
 
-		givenTemplateManagerLoadTemplateThrowsFileNotFoundExcepion();
+		givenTemplateManagerLoadTemplateReturnsFalse();
 		Boolean result = emailService.sendEmailWithHTMTemplate(TestConstants.DEFAULT_FROM_EMAIL,
 				TestConstants.DEFAULT_EMAIL, TestConstants.DEFAULT_EMAIL_SUBJECT, TestConstants.DEFAULT_EMAIL_TEMPLATE,
 				TestConstants.DEFAULT_TEMPLATE_LANGUAGE, TestConstants.DEFAULT_TEMPLATE_PARAMS,
@@ -103,6 +100,7 @@ public class EmailServiceImplTests {
 	@Test
 	void givenMimeMessageManagerThrowsMessagingException_ThenShouldReturnFalse() throws MessagingException {
 
+		givenTemplateManagerLoadsTemplateCorrectly();
 		String templateBody = givenTemplateManagerRendersTemplateCorrectly();
 		MimeMessage message = givenEmailSenderCreatesMimeMessage();
 		MimeMessageHelper mimeMessageHelper = givenEmailServiceImplCreatesMimeMessageHelper(message);
@@ -144,22 +142,16 @@ public class EmailServiceImplTests {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 
-		} catch (FileNotFoundException e) {
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
-	private void givenTemplateManagerLoadTemplateThrowsFileNotFoundExcepion() {
+	private void givenTemplateManagerLoadTemplateReturnsFalse() {
 
-		try {
-			doThrow(FileNotFoundException.class).when(templateManager).loadTemplate(any(String.class), any(Map.class),
-					any(TemplateType.class), any(String.class));
-
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		doReturn(false).when(templateManager).loadTemplate(any(String.class), any(Map.class), any(TemplateType.class),
+				any(String.class));
 
 	}
 
@@ -178,14 +170,10 @@ public class EmailServiceImplTests {
 	}
 
 	private void givenTemplateManagerLoadsTemplateCorrectly() {
-		try {
-			given(templateManager.loadTemplate(TestConstants.DEFAULT_EMAIL_TEMPLATE.name(),
-					TestConstants.DEFAULT_TEMPLATE_PARAMS, TemplateType.EMAIL, TestConstants.DEFAULT_TEMPLATE_LANGUAGE))
-							.willReturn(Boolean.TRUE);
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
+		given(templateManager.loadTemplate(TestConstants.DEFAULT_EMAIL_TEMPLATE.name(),
+				TestConstants.DEFAULT_TEMPLATE_PARAMS, TemplateType.EMAIL, TestConstants.DEFAULT_TEMPLATE_LANGUAGE))
+						.willReturn(Boolean.TRUE);
 
 	}
 }

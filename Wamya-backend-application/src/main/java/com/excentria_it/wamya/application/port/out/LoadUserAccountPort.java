@@ -1,12 +1,22 @@
 package com.excentria_it.wamya.application.port.out;
 
-import java.util.Optional;
-
 import com.excentria_it.wamya.domain.UserAccount;
+
+import java.util.Optional;
 
 public interface LoadUserAccountPort {
 
-	Optional<UserAccount> loadUserAccountByIccAndMobileNumber(String icc, String mobileNumber);
+    Optional<UserAccount> loadUserAccountBySubject(String subject);
 
-	Optional<UserAccount> loadUserAccountByEmail(String email);
+    Boolean existsByOauthId(String userOauthId);
+
+    String loadProfileImageLocation(Long userId);
+
+    Boolean hasDefaultProfileImage(Long userId);
+
+    boolean hasNoIdentityImage(Long userId);
+
+    String loadIdentityDocumentLocation(Long userId);
+
+    boolean existsBySubject(String username);
 }

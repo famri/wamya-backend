@@ -1,0 +1,33 @@
+spring.profiles: docker
+spring.profiles.include: default, b2b-rest-docker, messaging-docker, persistence-docker, file-storage-docker, web-docker, app-docker
+
+app:
+  eureka-server: eureka
+  eureka-username: u
+  eureka-password: p
+    
+eureka:
+  client:
+    eureka-connection-idle-timeout-seconds: 4
+    service-url:
+      default-zone: http://${app.eureka-username}:${app.eureka-password}@${app.eureka-server}:8761/eureka/
+    initial-instance-info-replication-interval-seconds: 5
+    registry-fetch-interval-seconds: 30
+  instance:
+    prefer-ip-address: true
+       
+ribbon.ServerListRefreshInterval: 30000
+ribbon.NFLoadBalancerPingInterval: 5
+
+management.endpoint.health.show-details: "ALWAYS"
+management.endpoints.web.exposure.include: "*"
+logging:
+  file:  
+    name: /var/log/wamya.log
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.messaging: DEBUG
+    org.springframework.web.socket: DEBUG
+
+     
+

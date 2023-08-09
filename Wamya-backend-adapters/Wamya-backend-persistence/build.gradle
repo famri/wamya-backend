@@ -1,13 +1,49 @@
+apply plugin: 'jacoco'
+
+
+jacoco {
+	toolVersion = "0.8.6"
+}
+	
+jacocoTestCoverageVerification {
+	violationRules {
+		rule {
+			element = 'CLASS'
+			limit {
+			counter = 'LINE'
+			value = 'COVEREDRATIO'
+			minimum = 1.0
+			}
+			excludes = [
+					//'com.excentria_it.wamya.WamyaApplication' #commented because redendent when @Generated is used
+				]
+		}
+	}
+}
+
+check.dependsOn jacocoTestCoverageVerification
+
 dependencies {
-    implementation project(':Wamya-backend-common')
-    implementation project(':Wamya-backend-application')
+    implementation (project(':Wamya-backend-common')){
+    	transitive = false
+    }
+    
+    implementation (project(':Wamya-backend-application')){
+    	transitive = false
+    }
 
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
+	runtimeOnly  'org.postgresql:postgresql:42.2.14'
+    
+    implementation ('org.springframework.boot:spring-boot-starter-validation')
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-
+    implementation 'redis.clients:jedis'
+	implementation 'org.apache.commons:commons-collections4:4.4'
+	
+	
+	
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'junit' // excluding junit 4
     }
@@ -17,14 +53,62 @@ dependencies {
     testRuntimeOnly 	'org.junit.vintage:junit-vintage-engine:5.6.2'
   	testRuntimeOnly 	'org.junit.platform:junit-platform-launcher:1.6.2'
     testImplementation 	'org.mockito:mockito-junit-jupiter:3.3.3'
+    testImplementation 	'org.mockito:mockito-core:3.3.3'
+ 
     testImplementation 	'com.tngtech.archunit:archunit:0.9.3'
     testImplementation 	'de.adesso:junit-insights:1.1.0'
     
+    testImplementation 'org.powermock:powermock-module-junit4:2.0.9'
+	testImplementation 'org.powermock:powermock-api-mockito2:2.0.9'
+    
     testImplementation 'com.h2database:h2'
-    testImplementation project(':Wamya-backend-testdata')
+    testImplementation (project(':Wamya-backend-testdata')){
+    	 transitive = false
+    }
+    
+    testImplementation 'com.integralblue:log4jdbc-spring-boot-starter:2.0.0'
+    testImplementation 'commons-codec:commons-codec:1.15'
+    
+}
+
+
+
+task instrument(dependsOn: [classes, project.configurations.jacocoAnt]) {
+
+	inputs.files classes.outputs.files
+	File outputDir = new File(project.buildDir, 'instrumentedClasses')
+	outputs.dir outputDir
+	doFirst {
+		project.delete(outputDir)
+		ant.taskdef(
+				resource: 'org/jacoco/ant/antlib.xml',
+				classpath: project.configurations.jacocoAnt.asPath,
+				uri: 'jacoco'
+		)
+		def instrumented = false
+			if (file(sourceSets.main.java.outputDir).exists()) {
+				def instrumentedClassedDir = "${outputDir}/${sourceSets.main.java}"
+				ant.'jacoco:instrument'(destdir: instrumentedClassedDir) {
+					fileset(dir: sourceSets.main.java.outputDir, includes: '**/*.class')
+				}
+				//Replace the classes dir in the test classpath with the instrumented one
+				sourceSets.test.runtimeClasspath -= files(sourceSets.main.java.outputDir)
+				sourceSets.test.runtimeClasspath += files(instrumentedClassedDir)
+				instrumented = true
+			}
+		if (instrumented) {
+			//Disable class verification based on https://github.com/jayway/powermock/issues/375
+			test.jvmArgs += '-noverify'
+		}
+	}
 }
 
 test {
+   	finalizedBy jacocoTestReport
     useJUnitPlatform()
     systemProperty 'de.adesso.junitinsights.enabled', 'true'
 }
+
+test.dependsOn instrument
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11

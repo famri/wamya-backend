@@ -1,0 +1,18 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /wamya-backend
+  error:
+    include-stacktrace: always
+app:
+  auth-server: localhost
+  auth-server-port: 8080
+
+spring:
+  mvc.static-path-pattern: /content/**
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: "http://${app.auth-server}:${app.auth-server-port}/realms/fretto/protocol/openid-connect/certs"
+            

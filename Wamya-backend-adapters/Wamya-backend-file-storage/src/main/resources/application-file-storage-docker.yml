@@ -1,0 +1,4 @@
+app:
+  file-strorage:
+    docker:
+      root-folder: /file-storage

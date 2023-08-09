@@ -1,14 +1,14 @@
 package com.excentria_it.wamya.application.port.in;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Locale;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
-import com.excentria_it.wamya.common.exception.UnsupportedInternationalCallingCode;
+import com.excentria_it.wamya.common.exception.UnsupportedInternationalCallingCodeException;
 import com.excentria_it.wamya.common.exception.UserAccountAlreadyExistsException;
-import com.excentria_it.wamya.domain.Gender;
+import com.excentria_it.wamya.domain.OpenIdAuthResponse;
 import com.excentria_it.wamya.domain.RegexPattern;
 
 import lombok.AllArgsConstructor;
@@ -18,11 +18,10 @@ import lombok.NoArgsConstructor;
 
 public interface CreateUserAccountUseCase {
 
-	Long registerUserAccountCreationDemand(CreateUserAccountCommand command, Locale locale)
-			throws UserAccountAlreadyExistsException, UnsupportedInternationalCallingCode;
+	OpenIdAuthResponse registerUserAccountCreationDemand(CreateUserAccountCommand command, Locale locale)
+			throws UserAccountAlreadyExistsException, UnsupportedInternationalCallingCodeException;
 
 	void checkExistingAccount(CreateUserAccountCommand command);
-	
 
 	@Data
 	@AllArgsConstructor
@@ -36,19 +35,19 @@ public interface CreateUserAccountUseCase {
 		Boolean isTransporter;
 
 		@NotNull
-		Gender gender;
+		Long genderId;
 
 		@NotNull
-		String firstName;
+		String firstname;
 
 		@NotNull
-		String lastName;
+		String lastname;
 
 		@NotNull
-		Date dateOfBirth;
+		LocalDate dateOfBirth;
 
 		@NotNull
-		@Pattern(regexp = RegexPattern.EMAIL_PATTERN, message = "{com.excentria_it.wamya.domain.mobilephone.icc.message}")
+		@Pattern(regexp = RegexPattern.EMAIL_PATTERN, message = "{com.excentria_it.wamya.domain.user.email.message}")
 		String email;
 
 		@NotNull

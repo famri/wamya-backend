@@ -17,11 +17,15 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import com.excentria_it.wamya.common.domain.EmailMessage;
 import com.excentria_it.wamya.common.domain.EmailMessage.EmailMessageBuilder;
 import com.excentria_it.wamya.common.domain.EmailTemplate;
+import com.excentria_it.wamya.common.domain.PushMessage;
+import com.excentria_it.wamya.common.domain.PushMessage.PushMessageBuilder;
+import com.excentria_it.wamya.common.domain.PushTemplate;
 import com.excentria_it.wamya.common.domain.SMSMessage;
 import com.excentria_it.wamya.common.domain.SMSMessage.SMSMessageBuilder;
 import com.excentria_it.wamya.common.domain.SMSTemplate;
 import com.excentria_it.wamya.common.rabbitmq.RabbitMqQueue;
 import com.excentria_it.wamya.test.data.common.EmailMessageTestData;
+import com.excentria_it.wamya.test.data.common.PushMessageTestData;
 import com.excentria_it.wamya.test.data.common.SMSMessageTestData;
 
 @ExtendWith(MockitoExtension.class)
@@ -242,6 +246,93 @@ public class RabbitMqMessagingAdapterTests {
 		assertThrows(IllegalArgumentException.class, () -> rabbitMqMessagingAdapter.sendEmailMessage(message));
 
 		then(rabbitTemplate).should(never()).convertAndSend(RabbitMqQueue.EMAIL_QUEUE, message);
+	}
+
+	// Test validatePushMessage
+	@Test
+	void givenValidPushMessage_WhenValidatePushMessage_ThenShouldNeverThrowIllegalArgumentException() {
+		PushMessageBuilder pushMessageBuilder = PushMessageTestData.proposalRejectedPushMessageBuilder();
+
+		assertDoesNotThrow(() -> rabbitMqMessagingAdapter.validatePushMessage(pushMessageBuilder.build()));
+	}
+
+	@Test
+	void givenNullTo_WhenValidatePushMessage_ThenShouldThrowIllegalArgumentException() {
+		PushMessageBuilder pushMessageBuilder = PushMessageTestData.proposalRejectedPushMessageBuilder();
+		pushMessageBuilder.to(null);
+
+		assertThrows(IllegalArgumentException.class,
+				() -> rabbitMqMessagingAdapter.validatePushMessage(pushMessageBuilder.build()));
+	}
+
+	@Test
+	void givenNullLanguage_WhenValidatePushMessage_ThenShouldThrowIllegalArgumentException() {
+		PushMessageBuilder pushMessageBuilder = PushMessageTestData.proposalRejectedPushMessageBuilder();
+		pushMessageBuilder.language(null);
+
+		assertThrows(IllegalArgumentException.class,
+				() -> rabbitMqMessagingAdapter.validatePushMessage(pushMessageBuilder.build()));
+	}
+
+	@Test
+	void givenNullTemplate_WhenValidatePushMessage_ThenShouldThrowIllegalArgumentException() {
+		PushMessageBuilder pushMessageBuilder = PushMessageTestData.proposalRejectedPushMessageBuilder();
+		pushMessageBuilder.template(null);
+
+		assertThrows(IllegalArgumentException.class,
+				() -> rabbitMqMessagingAdapter.validatePushMessage(pushMessageBuilder.build()));
+	}
+
+	@Test
+	void givenNonNullTemplateParamsAndNullParams_WhenValidatePushMessage_ThenShouldThrowIllegalArgumentException() {
+
+		PushMessageBuilder pushMessageBuilder = PushMessageTestData.proposalRejectedPushMessageBuilder();
+		pushMessageBuilder.params(null);
+
+		assertThrows(IllegalArgumentException.class,
+				() -> rabbitMqMessagingAdapter.validatePushMessage(pushMessageBuilder.build()));
+	}
+
+	@Test
+	void givenNonNullTemplateParamsAndEmptyParams_WhenValidatePushMessage_ThenShouldThrowIllegalArgumentException() {
+
+		PushMessageBuilder pushMessageBuilder = PushMessageTestData.proposalRejectedPushMessageBuilder();
+		pushMessageBuilder.params(Map.of());
+
+		assertThrows(IllegalArgumentException.class,
+				() -> rabbitMqMessagingAdapter.validatePushMessage(pushMessageBuilder.build()));
+	}
+
+	@Test
+	void givenNonNullTemplateParamsAndWrongParamsNames_WhenValidatePushMessage_ThenShouldThrowIllegalArgumentException() {
+
+		PushMessageBuilder pushMessageBuilder = PushMessageTestData.proposalRejectedPushMessageBuilder();
+		pushMessageBuilder.template(PushTemplate.PROPOSAL_REJECTED);
+		pushMessageBuilder.params(
+				Map.of(PushTemplate.PROPOSAL_REJECTED.getTemplateParams().get(0) + "_wrong_key", "any_param_value"));
+
+		assertThrows(IllegalArgumentException.class,
+				() -> rabbitMqMessagingAdapter.validatePushMessage(pushMessageBuilder.build()));
+	}
+
+	@Test
+	void givenNullToAndNullLanguage_WhenValidatePushMessage_ThenShouldThrowIllegalArgumentException() {
+
+		PushMessageBuilder pushMessageBuilder = PushMessageTestData.proposalRejectedPushMessageBuilder();
+		pushMessageBuilder.to(null);
+		pushMessageBuilder.language(null);
+		assertThrows(IllegalArgumentException.class,
+				() -> rabbitMqMessagingAdapter.validatePushMessage(pushMessageBuilder.build()));
+	}
+
+	@Test
+	void givenValidPushMessage_WhenSendPushMessage_ThenConvertAndSend() {
+
+		PushMessage message = PushMessageTestData.proposalRejectedPushMessageBuilder().build();
+
+		rabbitMqMessagingAdapter.sendPushMessage(message);
+
+		then(rabbitTemplate).should(times(1)).convertAndSend(RabbitMqQueue.PUSH_QUEUE, message);
 	}
 
 }

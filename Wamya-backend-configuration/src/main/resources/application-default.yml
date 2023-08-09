@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: wamya-backend 
+
+  output:
+   ansi:
+     enabled: DETECT
+#phone number and email validation code generator properties
+code:
+  generator:
+    length: 4
+      
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: "http://${app.eureka-username}:${app.eureka-password}@${app.eureka-server}:8761/eureka/"
+
+# Logging configuration
+logging:
+  level:
+    root: INFO

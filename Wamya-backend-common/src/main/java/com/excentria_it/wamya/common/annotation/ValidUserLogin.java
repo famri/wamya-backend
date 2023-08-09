@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 import javax.validation.Constraint;
 import javax.validation.Payload;
 
-import com.excentria_it.wamya.common.impl.UserLoginValidator;
+import com.excentria_it.wamya.common.validator.impl.UserLoginValidator;
 
 @Target({ FIELD, ANNOTATION_TYPE })
 @Retention(RUNTIME)
