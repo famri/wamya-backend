@@ -55,7 +55,7 @@ public interface CreateUserAccountUseCase {
 		String icc;
 
 		@NotNull
-		@Pattern(regexp = RegexPattern.MOBILE_NUMBER_PATTERN, message = "{com.excentria_it.wamya.domain.mobilephone.number.message}")
+		@Pattern(regexp = RegexPattern.FRENCH_MOBILE_NUMBER_PATTERN, message = "{com.excentria_it.wamya.domain.mobilephone.number.message}")
 		String mobileNumber;
 
 		@NotNull

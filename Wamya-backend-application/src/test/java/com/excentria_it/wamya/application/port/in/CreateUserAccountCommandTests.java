@@ -50,22 +50,15 @@ public class CreateUserAccountCommandTests {
 
     @Test
     void testValidMobileNumberFrance() {
-        Pattern pattern = Pattern.compile(RegexPattern.MOBILE_NUMBER_PATTERN);
+        Pattern pattern = Pattern.compile(RegexPattern.FRENCH_MOBILE_NUMBER_PATTERN);
         Matcher matcher = pattern.matcher("0762072850");
         assertTrue(matcher.matches());
     }
 
     @Test
-    void testValidMobileNumberTunisia() {
-        Pattern pattern = Pattern.compile(RegexPattern.MOBILE_NUMBER_PATTERN);
-        Matcher matcher = pattern.matcher("0711111111");
-        assertTrue(matcher.matches());
-    }
-
-    @Test
-    void testInvalidMobileNumberTunisia() {
-        Pattern pattern = Pattern.compile(RegexPattern.MOBILE_NUMBER_PATTERN);
-        Matcher matcher = pattern.matcher("2309341");
+    void testInvalidMobileNumberFrance() {
+        Pattern pattern = Pattern.compile(RegexPattern.FRENCH_MOBILE_NUMBER_PATTERN);
+        Matcher matcher = pattern.matcher("762072850");
         assertFalse(matcher.matches());
     }
 
@@ -82,20 +75,6 @@ public class CreateUserAccountCommandTests {
     void testInvalidIccFrance() {
         Pattern pattern = Pattern.compile(RegexPattern.ICC_PATTERN);
         Matcher matcher = pattern.matcher("0033");
-        assertFalse(matcher.matches());
-    }
-
-    @Test
-    void testValidIccTunisia() {
-        Pattern pattern = Pattern.compile(RegexPattern.ICC_PATTERN);
-        Matcher matcher = pattern.matcher("+216");
-        assertTrue(matcher.matches());
-    }
-
-    @Test
-    void testInvalidIccTunisia() {
-        Pattern pattern = Pattern.compile(RegexPattern.ICC_PATTERN);
-        Matcher matcher = pattern.matcher("00216");
         assertFalse(matcher.matches());
     }
 

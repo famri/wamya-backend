@@ -1,7 +1,6 @@
 /*******************************************
 * INSERTING INTERNATIONAL CALLING CODES
-*******************************************/ 
-INSERT INTO international_calling_code(id, value, country_name, flag_path, enabled) VALUES(1, '+216', 'TUNISIA', 'assets/images/icons/tunisia.png', TRUE) ON CONFLICT DO NOTHING;
+*******************************************/
 INSERT INTO international_calling_code(id, value, country_name, flag_path, enabled) VALUES(2, '+33', 'FRANCE', 'assets/images/icons/france.png', FALSE) ON CONFLICT DO NOTHING;
 
 /*******************************************
@@ -84,7 +83,7 @@ INSERT INTO public.localized_journey_request_status(id, locale, value) VALUES (2
 INSERT INTO public.localized_journey_request_status(id, locale, value) VALUES (2, 'fr_FR', 'annul?')ON CONFLICT DO NOTHING;
 
 INSERT INTO public.localized_journey_request_status(id, locale, value) VALUES (3, 'en_US', 'expired')ON CONFLICT DO NOTHING;
-INSERT INTO public.localized_journey_request_status(id, locale, value) VALUES (3, 'fr_FR', 'expir?')ON CONFLICT DO NOTHING;
+INSERT INTO public.localized_journey_request_status(id, locale, value) VALUES (3, 'fr_FR', 'expiré')ON CONFLICT DO NOTHING;
 
 INSERT INTO public.localized_journey_request_status(id, locale, value) VALUES (4, 'en_US', 'fulfilled')ON CONFLICT DO NOTHING;
 INSERT INTO public.localized_journey_request_status(id, locale, value) VALUES (4, 'fr_FR', 'rempli')ON CONFLICT DO NOTHING;
@@ -99,16 +98,16 @@ INSERT INTO public.journey_proposal_status(id, code, description) VALUES (3, 'RE
 INSERT INTO public.journey_proposal_status(id, code, description) VALUES (4, 'ACCEPTED', 'Client accepted this journey proposal.')ON CONFLICT DO NOTHING;
 
 INSERT INTO public.localized_journey_proposal_status(id, locale, value) VALUES (1, 'en_US', 'submitted')ON CONFLICT DO NOTHING;
-INSERT INTO public.localized_journey_proposal_status(id, locale, value) VALUES (1, 'fr_FR', 'envoy?e')ON CONFLICT DO NOTHING;
+INSERT INTO public.localized_journey_proposal_status(id, locale, value) VALUES (1, 'fr_FR', 'envoyée')ON CONFLICT DO NOTHING;
 
 INSERT INTO public.localized_journey_proposal_status(id, locale, value) VALUES (2, 'en_US', 'canceled')ON CONFLICT DO NOTHING;
-INSERT INTO public.localized_journey_proposal_status(id, locale, value) VALUES (2, 'fr_FR', 'annul?e')ON CONFLICT DO NOTHING;
+INSERT INTO public.localized_journey_proposal_status(id, locale, value) VALUES (2, 'fr_FR', 'annulée')ON CONFLICT DO NOTHING;
 
 INSERT INTO public.localized_journey_proposal_status(id, locale, value) VALUES (3, 'en_US', 'rejected')ON CONFLICT DO NOTHING;
-INSERT INTO public.localized_journey_proposal_status(id, locale, value) VALUES (3, 'fr_FR', 'rejet?e')ON CONFLICT DO NOTHING;
+INSERT INTO public.localized_journey_proposal_status(id, locale, value) VALUES (3, 'fr_FR', 'rejetée')ON CONFLICT DO NOTHING;
 
 INSERT INTO public.localized_journey_proposal_status(id, locale, value) VALUES (4, 'en_US', 'accepted')ON CONFLICT DO NOTHING;
-INSERT INTO public.localized_journey_proposal_status(id, locale, value) VALUES (4, 'fr_FR', 'accept?e')ON CONFLICT DO NOTHING;
+INSERT INTO public.localized_journey_proposal_status(id, locale, value) VALUES (4, 'fr_FR', 'acceptée')ON CONFLICT DO NOTHING;
 
 
 			
