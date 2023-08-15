@@ -4,7 +4,7 @@ front:
     host: localhost
     port: 3000
 app:
-  server.base.url: "http://192.168.21.129:8443/wamya-backend"
+  server.base.url: https://192.168.21.129:8443/wamya-backend
   password.reset:
     request-validity: H3
     purge-cron-expression: 0 */5 * * * *
